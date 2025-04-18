@@ -9,19 +9,29 @@ import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from "@/redux/store";
 
+// Note: Mantine UI Integration...!
+import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
+import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-provider";
+
 const RootLayout = (
   { children }: Readonly<{ children: React.ReactNode; }>
 ) => {
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" {...mantineHtmlProps}>
+      <head>
+        <ColorSchemeScript />
+      </head>
+
+      <body suppressHydrationWarning={true}>
         <Provider store={store}>
           <PersistGate
             loading={null}
             persistor={persistor}
           >
-          {children}
+            <MantinreUiProvider>
+              {children}
+            </MantinreUiProvider>
           </PersistGate>
         </Provider>
       </body>

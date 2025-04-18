@@ -1,11 +1,10 @@
-import React from 'react';
+'use client';
 
-const Page = () => {
+import { Container, Button, Title } from '@mantine/core';
+import LoginScreen from './login/login';
+
+export default function Home() {
   return (
-    <div>
-      <h1>Page</h1>
-    </div>
+    <LoginScreen />
   );
 };
-
-export default Page;
