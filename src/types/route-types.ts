@@ -1,7 +1,7 @@
 // Note: Routes types are defined here...!
 
 export type Routes = {
-    slash: string;
+    root: string;
     login: string;
     home: string;
     about: string;

@@ -1,5 +1,7 @@
 // Note: LoginScreen page...!
 
+"use client";
+
 import { useState } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import { TextInput, PasswordInput, Button, Box, Paper, Text, Group, LoadingOverlay, Center, Stack, Loader } from '@mantine/core';
@@ -85,6 +87,7 @@ const LoginScreen = () => {
                         height: "auto",
                         marginBottom: customStyles.size.size_40
                     }}
+                    priority={true}
                 />
 
                 {/* Note: Product image */}
@@ -97,6 +100,8 @@ const LoginScreen = () => {
                         borderRadius: customStyles.size.size_10,
                         opacity: 0.8
                     }}
+                    unoptimized={true}
+                    priority={true}
                 />
             </Box>
 

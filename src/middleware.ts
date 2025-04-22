@@ -5,7 +5,7 @@ import {
     unAuthenticatedRoutes,
     authenticatedRoutes,
     routes
-} from "@/constants/routes"
+} from "@/constants/routes";
 
 // Note: Middleware handler...!
 const middleware = (req: NextRequest) => {
@@ -14,20 +14,19 @@ const middleware = (req: NextRequest) => {
     console.log('User authentication flag: ', isUserLoggedIn);
 
     const { pathname } = req.nextUrl;
+    // console.log('Current route: ', pathname);
 
-    // Note: If user is not logged in...!
-    if (!isUserLoggedIn) {
-        if (authenticatedRoutes.includes(pathname)) {
-            return NextResponse.redirect(new URL(routes.login, req?.url));
-        };
+    // Note: Redirect unauthenticated user trying to access protected route...!
+    if (!isUserLoggedIn && authenticatedRoutes.includes(pathname)) {
+        return NextResponse.redirect(new URL(routes.login, req?.url));
     };
 
-    // Note: If user is logged in...!
-    if (isUserLoggedIn) {
-        if (unAuthenticatedRoutes.includes(pathname)) {
-            return NextResponse.redirect(new URL(routes.slash, req?.url));
-        };
+    // Note: Redirect authenticated user trying to access login page...!
+    if (isUserLoggedIn && unAuthenticatedRoutes.includes(pathname)) {
+        return NextResponse.redirect(new URL(routes.root, req?.url));
     };
+
+    return NextResponse.next();
 };
 
 export { middleware };

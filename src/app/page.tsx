@@ -1,10 +1,13 @@
-'use client';
+// Note: AppLayOut component...!
 
-import { Container, Button, Title } from '@mantine/core';
-import LoginScreen from './login/login';
+import React, { ReactNode } from 'react';
 
-export default function Home() {
+const AppLayOut = ({ children }: { children: ReactNode }) => {
   return (
-    <LoginScreen />
+    <div>
+      {children}
+    </div>
   );
 };
+
+export default AppLayOut;

@@ -14,7 +14,7 @@ const authenticatedRoutes: String[] = [
 
 // Note: Defining all routes...!
 const routes : Routes = {
-    slash: "/",
+    root: "/",
     login: "/login",
     home: "/home",
     about: "/about"
