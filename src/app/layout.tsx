@@ -1,6 +1,6 @@
-"use client";
-
 // Note: This file is used to define the layout of the application...!
+
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { getCookie } from "cookies-next";

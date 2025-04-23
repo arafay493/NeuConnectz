@@ -4,6 +4,7 @@ export interface CustomStyles {
     colors: {
         white: string;
         black: string;
+        red: string;
         _408CCE: string;
         _4D4D4D: string;
         _909090: string;

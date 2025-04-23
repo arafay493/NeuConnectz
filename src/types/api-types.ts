@@ -22,3 +22,5 @@ export interface AxiosDefaultOptions {
         "Content-Type": string;
     };
 };
+
+export type ResHandler = (res: any | null) => void;

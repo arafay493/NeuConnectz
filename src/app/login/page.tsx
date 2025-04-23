@@ -3,13 +3,15 @@
 "use client";
 
 import { useState } from 'react';
-import { useMediaQuery } from '@mantine/hooks';
-import { TextInput, PasswordInput, Button, Box, Paper, Text, Group, LoadingOverlay, Center, Stack, Loader } from '@mantine/core';
 import Image from 'next/image';
+import { useMediaQuery } from '@mantine/hooks';
+import { TextInput, PasswordInput, Button, Box, Paper, Text, Group } from '@mantine/core';
+import { setCookie } from "cookies-next";
 import { useAppDispatch } from '@/redux/store';
 import { loginUser } from '@/redux/actions/auth-actions/auth-actions';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import Loader from '@/components/loader/loader';
 import styles from "./login.module.css";
 import { customStyles } from "@/styles/custom-theme";
 
@@ -27,10 +29,32 @@ const LoginScreen = () => {
     const dispatch = useAppDispatch();
 
     // Note: Fucntion to clear states...!
-    const colearStates = () => {
+    const clearStates = () => {
         setLoading(false);
         setEmail("");
         setPassword("");
+        setLoading(false);
+    };
+
+    // Note: Login api response handler...!
+    const handleResponse = (response: any): void => {
+        // console.log("Login response: ", response);
+
+        if (response && response.status == 200) {
+            setLoading(false); // Note: Stop loading...!
+            showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
+            setCookie("UserAuthenticated", true);
+            setCookie("AuthToken", response?.data?.data?.token);
+            clearStates();
+            window.location.reload();
+            return;
+        }
+
+        if (response && response.status != 200) {
+            setLoading(false); // Note: Stop loading...!
+            showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors._408CCE);
+            return;
+        };
     };
 
     // Note: Function to login user...!
@@ -38,21 +62,25 @@ const LoginScreen = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!email.match(emailRegex)) {
-            showNotificationToast("Invalid email", "Please enter a valid email address.");
+            showNotificationToast("Invalid email", "Please enter a valid email address.", customStyles.colors.red);
             return;
         };
 
         if (password.trim().length < 6) {
-            showNotificationToast("Invalid password", "Password must be at least 6 characters long.");
+            showNotificationToast("Invalid password", "Password must be at least 6 characters long.", customStyles.colors.red);
             return;
         };
 
+        setLoading(true); // Note: Start loading...!
         const dataObj = {
             email,
             password
         };
         // console.log("Login data: ", dataObj);
-        dispatch(loginUser(dataObj));
+        dispatch(loginUser({
+            loginData: dataObj,
+            resHandler: handleResponse
+        }));
     };
 
     return (
@@ -115,26 +143,8 @@ const LoginScreen = () => {
                     padding: customStyles.size.size_20
                 }}
             >
-                {/* Note: Loading Overlay */}
-                <LoadingOverlay
-                    visible={loading}
-                    loaderProps={{
-                        children: (
-                            <Center>
-                                <Stack align={customStyles.alignment.center} gap="xs">
-                                    <div className={styles.loader}></div>
-                                    <Text
-                                        fw={500}
-                                        size="lg"
-                                        style={{ color: customStyles.colors._408CCE }}
-                                    >
-                                        Please wait...
-                                    </Text>
-                                </Stack>
-                            </Center>
-                        ),
-                    }}
-                />
+                {/* Note: Loading Component */}
+                <Loader loadingState={loading} />
 
                 {/* Note: Login form container */}
                 <Paper

@@ -6,6 +6,7 @@ const customStyles: CustomStyles = {
     colors: {
         white: "#fff",
         black: "#000",
+        red : "red",
         _408CCE: "#408CCE",
         _4D4D4D: "#4D4D4D",
         _909090: "#909090",

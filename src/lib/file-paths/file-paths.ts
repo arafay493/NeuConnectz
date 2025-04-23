@@ -7,8 +7,8 @@ import ProductImage from "@/assets/images/product-image.gif";
 
 // Note: Local assets...!
 const localAssets: { [key: string]: StaticImageData } = {
-    whiteLogo: WhiteLogo,
     loginBackGround: LoginBackGround,
+    whiteLogo: WhiteLogo,
     productImage: ProductImage,
 };
 

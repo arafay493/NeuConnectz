@@ -35,7 +35,7 @@ instance
     .use(
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
             const fetchToken = getCookie("AuthToken") as string;
-            console.log("Auth token: ", fetchToken);
+            // console.log("Auth token: ", fetchToken);
 
             if (config.headers) {
                 if (fetchToken) config.headers.Authorization = `Bearer ${fetchToken}`;
@@ -59,11 +59,11 @@ instance
         (error: AxiosError) => {
             if (error.response) {
                 const status = error.response.status;
-                console.log("Error status: ", status, error.response.data);
+                // console.log("Error status: ", status, error.response.data);
             }
 
             else {
-                console.error("Network or unexpected error:", error.message);
+                // console.error("Network or unexpected error:", error.message);
             };
 
             return Promise.reject(error);

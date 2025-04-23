@@ -1,23 +1,26 @@
 /***** Note: AuthReducer *****/
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AuthStateType } from "@/types/redux-types";
 
 // Note: Reducer states...!
-const initialState = {
-    authenticatedUser: null,
+const initialState: AuthStateType = {
+    authenticatedUser: null
 };
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        // LOG_IN_USER: (state, action: PayloadAction<any>) => {
-        //     console.log("User data in auth reducer: ", action.payload);
-        // },
+        LOG_IN_USER: (state, action: PayloadAction<any>) => {
+            // console.log("User data in auth reducer: ", action.payload);
+            state.authenticatedUser = action?.payload;
+        },
     }
 });
 
 export const
     {
+        LOG_IN_USER,
     } = authSlice.actions;
 export default authSlice.reducer;

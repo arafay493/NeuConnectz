@@ -3,7 +3,7 @@
 import { notifications } from '@mantine/notifications';
 import { customStyles } from '@/styles/custom-theme';
 
-const showNotificationToast = (title: string, message: string) => {
+const showNotificationToast = (title: string, message: string, bgColor: string) => {
     notifications.show({
         title: title,
         message: message,
@@ -11,7 +11,7 @@ const showNotificationToast = (title: string, message: string) => {
         autoClose: 3000,
         styles: (theme) => ({
             root: {
-                backgroundColor: customStyles.colors._408CCE,
+                backgroundColor: bgColor,
                 border: '1px solid white',
                 boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)'
             },
