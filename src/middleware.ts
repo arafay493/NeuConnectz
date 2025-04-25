@@ -11,7 +11,7 @@ import {
 const middleware = (req: NextRequest) => {
 
     const isUserLoggedIn: boolean = Boolean(req.cookies.get('UserAuthenticated')?.value);
-    console.log('User authentication flag: ', isUserLoggedIn);
+    // console.log('User authentication flag: ', isUserLoggedIn);
 
     const { pathname } = req.nextUrl;
     // console.log('Current route: ', pathname);

@@ -8,13 +8,16 @@ export interface CustomStyles {
         _408CCE: string;
         _4D4D4D: string;
         _909090: string;
+        _1B59F8: string;
+        _4A4A4A: string;
     };
 
     deviceSize: {
+        xs: "xs",
         sm: "sm";
         md: "md";
         lg: "lg";
-        xl: "xl"; 
+        xl: "xl";
     },
 
     size: {
@@ -43,6 +46,7 @@ export interface CustomStyles {
 
     elementDirection: {
         displayFlex: "flex";
+        flexStart: "flex-start"
         row: "row";
         column: "column";
     };
@@ -65,4 +69,9 @@ export interface CustomStyles {
         capitalize: "capitalize";
         none: "none";
     };
-}  
+
+    textDecoration: {
+        none: "none";
+        underline: "underline";
+    }
+};

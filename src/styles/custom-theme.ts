@@ -6,13 +6,16 @@ const customStyles: CustomStyles = {
     colors: {
         white: "#fff",
         black: "#000",
-        red : "red",
+        red: "red",
         _408CCE: "#408CCE",
         _4D4D4D: "#4D4D4D",
         _909090: "#909090",
+        _1B59F8: "#1B59F8",
+        _4A4A4A: "#4A4A4A",
     },
 
     deviceSize: {
+        xs: "xs",
         sm: "sm",
         md: "md",
         lg: "lg",
@@ -45,6 +48,7 @@ const customStyles: CustomStyles = {
 
     elementDirection: {
         displayFlex: "flex",
+        flexStart: "flex-start",
         row: "row",
         column: "column"
     },
@@ -67,6 +71,11 @@ const customStyles: CustomStyles = {
         capitalize: "capitalize",
         none: "none"
     },
+
+    textDecoration: {
+        none: "none",
+        underline: "underline"
+    }
 };
 
 export { customStyles };
