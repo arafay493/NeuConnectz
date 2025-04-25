@@ -19,6 +19,7 @@
     "@tabler/icons-react": "^3.31.0",
     "axios": "^1.8.4",
     "cookies-next": "^5.1.0",
+    "lottie-react": "^2.4.1",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

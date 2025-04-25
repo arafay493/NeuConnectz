@@ -88,7 +88,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         active={activeTab === index}
         onClick={() => setActiveTab(index)}
         styles={{
-          label: { fontSize: 16, fontWeight: 500 },
+          label: { fontSize: 14, fontWeight: 500 },
           root: { justifyContent: collapsed ? customStyles.alignment.center : customStyles.elementDirection.flexStart, width: customStyles.sizeWidthAndHeight.fullWidth },
         }}
       />
@@ -154,7 +154,10 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       <AppShellNavbar
         p={customStyles.deviceSize.xs}
         withBorder
-        style={{ display: authenticatedRoutes.includes(pathName) ? 'block' : 'none' }}
+        style={{
+          display: authenticatedRoutes.includes(pathName) ? 'block' : 'none',
+          overflow: isMobile ? 'scroll' : 'unset'
+        }}
       >
         <AppShellSection grow>
           <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column, marginBottom: 20 }}>
@@ -164,7 +167,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
           <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
             <div
               style={{
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: 600,
                 textTransform: customStyles.textTransformation.capitalize,
                 // paddingLeft: 15
@@ -178,7 +181,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
           <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
             <div
               style={{
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: 600,
                 textTransform: customStyles.textTransformation.capitalize,
                 marginTop: 20,
@@ -215,7 +218,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               color={customStyles.colors._4A4A4A}
               onClick={handleLogout}
               styles={{
-                label: { fontSize: 16, fontWeight: 500 },
+                label: { fontSize: 14, fontWeight: 500 },
                 root: { justifyContent: collapsed ? customStyles.alignment.center : customStyles.elementDirection.flexStart, width: customStyles.sizeWidthAndHeight.fullWidth },
               }}
             />

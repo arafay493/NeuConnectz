@@ -2,11 +2,11 @@
 
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Container, Group, Text, Title } from '@mantine/core';
-import Illustration from './404/Illustration';
-import classes from './404/not-found.module.css';
+import { Container, Text, Center } from '@mantine/core';
+import Lottie from 'lottie-react';
+import NotFoundAnimation from "../../public/lottie/Not-Found-Animation.json";
 import { customStyles } from '@/styles/custom-theme';
 import { routes } from '@/constants/routes';
 
@@ -15,34 +15,39 @@ const PageNotFound = () => {
   // Note: Handeling router here...!
   const router = useRouter();
 
+  // Note: This hook will run only once when the component mounts...!
+  useEffect(() => {
+    setTimeout(() => {
+      router.push(routes.root);
+    }, 3000);
+  }, []);
+
   return (
-    <Container className={classes.root}>
-      <div className={classes.inner}>
-        <Illustration className={classes.image} />
-        <div className={classes.content}>
-          <Title className={classes.title}>
-            Nothing to see here
-          </Title>
-          <Text
-            size={customStyles.deviceSize.lg}
-            ta={customStyles.alignment.center}
-            className={classes.description}
-          >
-            Page you are trying to open does not exist. You may have mistyped the address, or the
-            page has been moved to another URL. If you think this is an error contact support.
-          </Text>
-          <Group justify={customStyles.alignment.center}>
-            <Button
-              size={customStyles.deviceSize.md}
-              style={{ backgroundColor: customStyles.colors._408CCE }}
-              onClick={() => router.push(routes.root)}
-            >
-              Take me back to Home Page
-            </Button>
-          </Group>
-        </div>
-      </div>
-    </Container>
+    <Center
+      style={{
+        flexDirection: customStyles.elementDirection.column,
+        paddingTop: "8%",
+        paddingRight: "15%"
+      }}
+    >
+      <Container style={{ textAlign: customStyles.alignment.center }}>
+        <Lottie
+          animationData={NotFoundAnimation}
+          loop={true}
+          style={{
+            width: 400,
+            height: 400
+          }}
+        />
+        <Text
+          size={customStyles.deviceSize.xl}
+          style={{ fontWeight: 600 }}
+          mt={customStyles.deviceSize.lg}
+        >
+          Oops! The page you're looking for could not be found.
+        </Text>
+      </Container>
+    </Center>
   );
 };
 
