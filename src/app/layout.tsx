@@ -37,6 +37,7 @@ const RootLayout = (
     <html lang="en" {...mantineHtmlProps}>
       <head>
         <ColorSchemeScript />
+        <link rel="icon" href="/favicon.png" type="image/x-icon" />
       </head>
 
       <body suppressHydrationWarning={true}>

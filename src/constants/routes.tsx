@@ -17,7 +17,8 @@ const authenticatedRoutes: String[] = [
     "/it-posted-documents",
     "/tr-posted-documents",
     "/users-list",
-    "/configuration",
+    "/assign-group",
+    "/assign-warehouse"
 ];
 
 // Note: Defining all routes...!
@@ -32,7 +33,8 @@ const routes: Routes = {
     itPostedDocuments: "/it-posted-documents",
     trPostedDocuments: "/tr-posted-documents",
     usersList: "/users-list",
-    configuration: "/configuration",
+    assignGroup: "/assign-group",
+    assignWareHouse : "/assign-warehouse"
 };
 
 // Note: Defining drawer routes...!
@@ -74,13 +76,18 @@ const drawerRoutes: DrawerRoute[] = [
     },
     {
         icon: <IconListCheck size={20} />,
-        label: "Users List",
+        label: "users list",
         route: routes.usersList,
     },
     {
         icon: <IconListCheck size={20} />,
-        label: "configuration",
-        route: routes.configuration,
+        label: "assign group",
+        route: routes.assignGroup,
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "assign warehouse",
+        route: routes.assignWareHouse,
     },
 ];
 

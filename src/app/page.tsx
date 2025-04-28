@@ -128,7 +128,15 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
           <Group style={{ width: isLargeScreen ? '30%' : 'auto', justifyContent: customStyles.alignment.spaceBetween }}>
             <Burger opened={isMobile ? opened : !collapsed} onClick={isMobile ? toggle : () => setCollapsed(!collapsed)} size={customStyles.deviceSize.sm} color={customStyles.colors._1B59F8} />
-            <Image src={localAssets.blueLogo} alt="Z_Connect Logo" title="Z_Connect" width={120} height={40} />
+
+            <Image
+              src={localAssets.blueLogo}
+              alt="Z_Connect Logo"
+              title="Z_Connect"
+              width={120}
+              // height={40}
+              style={{ height: "auto" }}
+            />
 
             {!isMobile && (
               <TextInput
@@ -184,10 +192,10 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
                 fontSize: 16,
                 fontWeight: 600,
                 textTransform: customStyles.textTransformation.capitalize,
-                // paddingLeft: 15
+                display: !collapsed ? "block" : "none"
               }}
             >
-              reports
+              transaction
             </div>
             {drawerRoutes.slice(1, 6).map((item, index) => renderNavLink(item, index + 1))}
           </Group>
@@ -199,7 +207,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
                 fontWeight: 600,
                 textTransform: customStyles.textTransformation.capitalize,
                 marginTop: 20,
-                // paddingLeft: 15
+                display: !collapsed ? "block" : "none"
               }}
             >
               forms
@@ -241,7 +249,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       </AppShellNavbar>
 
       {/* Note: Components section */}
-      <AppShellMain>
+      <AppShellMain style={{ backgroundColor: customStyles.colors._F5F7FA }}>
         {children}
       </AppShellMain>
     </AppShell>

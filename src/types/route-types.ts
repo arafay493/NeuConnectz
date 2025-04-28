@@ -13,7 +13,8 @@ export type Routes = {
     itPostedDocuments: string;
     trPostedDocuments: string;
     usersList: string;
-    configuration: string;
+    assignGroup: string;
+    assignWareHouse: string
 };
 
 export type DrawerRoute = {

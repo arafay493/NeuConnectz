@@ -7,11 +7,13 @@ const customStyles: CustomStyles = {
         white: "#fff",
         black: "#000",
         red: "red",
+        green: "green",
         _408CCE: "#408CCE",
         _4D4D4D: "#4D4D4D",
         _909090: "#909090",
         _1B59F8: "#1B59F8",
         _4A4A4A: "#4A4A4A",
+        _F5F7FA : "#F5F7FA"
     },
 
     deviceSize: {

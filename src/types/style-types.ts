@@ -5,11 +5,13 @@ export interface CustomStyles {
         white: string;
         black: string;
         red: string;
+        green: string;
         _408CCE: string;
         _4D4D4D: string;
         _909090: string;
         _1B59F8: string;
         _4A4A4A: string;
+        _F5F7FA: string
     };
 
     deviceSize: {
