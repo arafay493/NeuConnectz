@@ -31,10 +31,14 @@ import {
   IconUser,
   IconLogout,
 } from '@tabler/icons-react';
-import { customStyles } from '@/styles/custom-theme';
-import { localAssets } from '@/lib/file-paths/file-paths';
+import { deleteCookie } from 'cookies-next';
+import { useAppDispatch } from '@/redux/store';
 import { DrawerRoute } from "@/types/route-types";
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { LOG_OUT_USER } from '@/redux/reducers/auth-reducer/auth-reducer';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import { customStyles } from '@/styles/custom-theme';
 
 const AppLayOut = ({ children }: { children: ReactNode }) => {
 
@@ -47,6 +51,9 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
+  // Note: Handeling redux here...!
+  const dispatch = useAppDispatch();
+
   // Note: Handle navigation here...!
   const router = useRouter();
   const pathName = usePathname();
@@ -54,7 +61,14 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
 
   // Note: Handle logout...!
   const handleLogout = () => {
-    console.log('User logged out');
+    showNotificationToast("Log Out Success", "You have logged out successfully", customStyles.colors._408CCE);
+    setTimeout(() => {
+      window.location.reload();
+      dispatch(LOG_OUT_USER());
+      deleteCookie("UserAuthenticated");
+      deleteCookie("AuthToken");
+      localStorage.clear();
+    }, 2000);
   };
 
   // Note: This hook will run only once when the component mounts...!

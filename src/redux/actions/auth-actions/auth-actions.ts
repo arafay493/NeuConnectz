@@ -8,8 +8,8 @@ import { LoginUserDataType } from "@/types/modules/user-types/user-types";
 import { LOG_IN_USER } from "@/redux/reducers/auth-reducer/auth-reducer";
 import { ResHandler } from "@/types/api-types";
 
-// Note: Action function to login user...!
-const loginUser = createAsyncThunk(
+// Note: Action function to log in user...!
+const logInUser = createAsyncThunk(
     "auth/login",
     async (
         { loginData, resHandler }: { loginData: LoginUserDataType, resHandler: ResHandler },
@@ -42,4 +42,4 @@ const loginUser = createAsyncThunk(
     }
 );
 
-export { loginUser };
+export { logInUser };

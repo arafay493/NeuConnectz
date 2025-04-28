@@ -16,11 +16,16 @@ const authSlice = createSlice({
             // console.log("User data in auth reducer: ", action.payload);
             state.authenticatedUser = action?.payload;
         },
+
+        LOG_OUT_USER: (state) => {
+            state.authenticatedUser = null;
+        },
     }
 });
 
 export const
     {
         LOG_IN_USER,
+        LOG_OUT_USER
     } = authSlice.actions;
 export default authSlice.reducer;

@@ -8,7 +8,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { TextInput, PasswordInput, Button, Box, Paper, Text, Group } from '@mantine/core';
 import { setCookie } from "cookies-next";
 import { useAppDispatch } from '@/redux/store';
-import { loginUser } from '@/redux/actions/auth-actions/auth-actions';
+import { logInUser } from '@/redux/actions/auth-actions/auth-actions';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '@/components/loader/loader';
@@ -77,7 +77,7 @@ const LoginScreen = () => {
             password
         };
         // console.log("Login data: ", dataObj);
-        dispatch(loginUser({
+        dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse
         }));
