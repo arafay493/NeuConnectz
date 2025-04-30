@@ -20,6 +20,7 @@ const DashboardCards = () => {
             <Text fw={700} size="xl" mb="xs">
                 Home
             </Text>
+            
             <Text c="dimmed" size="sm" mb="md">
                 Dashboard
             </Text>

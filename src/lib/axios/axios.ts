@@ -10,7 +10,6 @@ axios,
 }
     from "axios";
 import { Urls, AxiosDefaultOptions } from "@/types/api-types";
-import { getCookie } from "cookies-next";
 
 // Note: This is a configuration file for axios. It is used to set up the axios instance with the base...!
 const urls: Urls = {
@@ -20,9 +19,6 @@ const urls: Urls = {
 // Note: Default config options...!
 const defaultOptions: AxiosDefaultOptions = {
     baseURL: urls.deployedUrl,
-    headers: {
-        "Content-Type": "application/json",
-    }
 };
 
 // Note: Create instance...!
@@ -34,13 +30,13 @@ instance
     .request
     .use(
         (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-            const fetchToken = getCookie("AuthToken") as string;
-            // console.log("Auth token: ", fetchToken);
+            // const fetchToken = getCookie("AuthToken") as string;
+            // // console.log("Auth token: ", fetchToken);
 
-            if (config.headers) {
-                if (fetchToken) config.headers.Authorization = `Bearer ${fetchToken}`;
-                else delete config.headers.Authorization;
-            };
+            // if (config.headers) {
+            //     if (fetchToken) config.headers.Authorization = `Bearer ${fetchToken}`;
+            //     else delete config.headers.Authorization;
+            // };
 
             return config;
         },
@@ -59,7 +55,7 @@ instance
         (error: AxiosError) => {
             if (error.response) {
                 const status = error.response.status;
-                // console.log("Error status: ", status, error.response.data);
+                // console.log("Error occured in axios configuration file: ", status, error.response.data);
             }
 
             else {

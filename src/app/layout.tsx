@@ -28,7 +28,7 @@ const RootLayout = (
   // Note: THis hook will run only once when the component mounts...!
   useEffect(() => {
     const cookie = getCookie("UserAuthenticated");
-    console.log("Cookie value: ", cookie);
+    // console.log("Cookie value: ", cookie);
     if (cookie) setCookieValue(cookie as string);
     else setCookieValue("");
   }, []);

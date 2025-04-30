@@ -14,7 +14,8 @@ export type Routes = {
     trPostedDocuments: string;
     usersList: string;
     assignGroup: string;
-    assignWareHouse: string
+    assignWareHouse: string,
+    addUser: string
 };
 
 export type DrawerRoute = {

@@ -18,9 +18,9 @@ export interface ApiRequestRoutes {
 
 export interface AxiosDefaultOptions {
     baseURL: string | undefined;
-    headers: {
-        "Content-Type": string;
-    };
+    // headers: {
+    //     "Content-Type": string;
+    // };
 };
 
 export type ResHandler = (res: any | null) => void;

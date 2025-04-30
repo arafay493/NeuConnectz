@@ -2,5 +2,30 @@
 
 // Note: Auth reducer state types...!
 export interface AuthStateType {
-    authenticatedUser: object | null;
+    authenticatedUser: {
+        name: string,
+        email: string,
+        userId: string,
+        userType: string,
+        token: string,
+        refreshToken: string,
+        roleAndActions: []
+    } | null
+};
+
+// Note: User reducer state types...!
+export interface UserStateType {
+    usersList: {
+        userId: string,
+        userName: string,
+        email: string,
+        phone: string,
+        department: string,
+        role: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean
+    }[];
 };

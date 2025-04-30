@@ -18,7 +18,8 @@ const authenticatedRoutes: String[] = [
     "/tr-posted-documents",
     "/users-list",
     "/assign-group",
-    "/assign-warehouse"
+    "/assign-warehouse",
+    "/add-user"
 ];
 
 // Note: Defining all routes...!
@@ -34,7 +35,8 @@ const routes: Routes = {
     trPostedDocuments: "/tr-posted-documents",
     usersList: "/users-list",
     assignGroup: "/assign-group",
-    assignWareHouse : "/assign-warehouse"
+    assignWareHouse: "/assign-warehouse",
+    addUser: "/add-user"
 };
 
 // Note: Defining drawer routes...!
