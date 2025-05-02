@@ -44,7 +44,7 @@ const UsersListScreen = () => {
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
   // console.log("User: ", authenticatedUser);
-  // console.log('Users: ', usersList);
+  console.log('Users: ', usersList);
 
   // Note: Logic to filter data by username only...!
   const filtered = [...usersList]?.filter((user: UserType) =>

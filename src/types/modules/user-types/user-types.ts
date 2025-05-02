@@ -5,6 +5,15 @@ export interface LoginUserDataType {
     password: string;
 };
 
+export interface CreateUserDataType {
+    userName: string,
+    phone: string,
+    email: string;
+    password: string;
+    department: string,
+    role: string
+};
+
 export interface UserType {
     userId: string,
     userName: string,
@@ -18,3 +27,6 @@ export interface UserType {
     updatedDate: string,
     isActive: boolean
 };
+
+export type UserRole = "SuperAdmin" | "WareHouseUser" | "Receiver";
+export type UserDepartment = "Inventory Control" | "Logistics" | "Dispatch" | "WareHouse";

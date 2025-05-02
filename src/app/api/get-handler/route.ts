@@ -6,7 +6,7 @@ import API_METHODS from "@/constants/api-methods";
 
 export const GET = async (req: NextRequest) => {
     try {
-        const apiUrl = req.headers.get("Login-Api-Url");
+        const apiUrl = req.headers.get("Api-Url");
         // console.log("API URL from header: ", apiUrl);
 
         const token = req.headers.get('Auth-Token');

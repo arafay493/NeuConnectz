@@ -23,7 +23,7 @@ const logInUser = createAsyncThunk(
                 url: apiRequestRoutes.postRequest,
                 data: loginData,
                 headers: {
-                    "Login-Api-Url": process.env.NEXT_PUBLIC_AUTH_LOGIN_API
+                    "Api-Url": process.env.NEXT_PUBLIC_AUTH_LOGIN_API
                 }
             });
             // console.log("Response in login action: ", response);
