@@ -6,7 +6,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Text, Center } from '@mantine/core';
 import Lottie from 'lottie-react';
-import NotFoundAnimation from "../../public/lottie/Not-Found-Animation.json";
+import NotFoundAnimation from "../assets/lottie/not-found-animation.json";
 import { customStyles } from '@/styles/custom-theme';
 import { routes } from '@/constants/routes';
 

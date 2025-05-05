@@ -24,7 +24,7 @@ const fetchAllUsers = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            console.log("Response in user action: ", response);
+            // console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -57,8 +57,8 @@ const addUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Token in user action: ", token);
-        console.log("Add user data in user action: ", userData);
+        // console.log("Token in user action: ", token);
+        // console.log("Add user data in user action: ", userData);
 
         try {
             const response = await axios({
@@ -70,7 +70,7 @@ const addUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in user action: ", response);
+            // console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -79,7 +79,7 @@ const addUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log('Error occured in add user api integration: ', error);
+            // console.log('Error occured in add user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;

@@ -36,6 +36,7 @@ const RootLayout = (
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
+        <title> Z-Connect </title>
         <ColorSchemeScript />
         <link rel="icon" href="/favicon.png" type="image/x-icon" />
       </head>

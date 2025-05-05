@@ -21,12 +21,15 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconUpload, IconTrash, IconUserPlus } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { userRoles, userDepartments } from '@/constants/user-data';
+import { addUser, fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
+import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
-import { addUser, fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 
 const AddUserScreen = () => {
 
@@ -45,7 +48,11 @@ const AddUserScreen = () => {
         isActive: false,
         image: null as File | null,
         preview: null as string | null,
+        loading: false
     });
+
+    // Note: Handle routing here...!
+    const router = useRouter();
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -67,7 +74,8 @@ const AddUserScreen = () => {
             confirmPassword: '',
             isActive: false,
             image: null,
-            preview: null
+            preview: null,
+            loading: false
         });
     };
 
@@ -105,13 +113,18 @@ const AddUserScreen = () => {
 
     // Note: Add / Create user response handler...!
     const handleResponse = (response: any): void => {
-        console.log("Add user api response: ", response);
+        // console.log("Add user api response: ", response);
 
         if (response && response.status == 201) {
-            // setLoading(false); // Note: Stop loading...!
+            // Note: Stop loading...!
+            setUserData({
+                ...userData,
+                loading: false
+            });
             showNotificationToast("User Created", "User created successfully", customStyles.colors._408CCE);
             dispatch(fetchAllUsers(token));
             clearAllStates();
+            router.push(routes.usersList);
             return;
         }
 
@@ -135,6 +148,12 @@ const AddUserScreen = () => {
             password,
             confirmPassword,
         } = userData;
+
+        // Note: Enable loader...!
+        setUserData({
+            ...userData,
+            loading: true
+        });
 
         try {
             if (userName.trim().length < 1) throw "Username is required";
@@ -173,6 +192,10 @@ const AddUserScreen = () => {
 
     return (
         <Container size="xl" py="md">
+
+            {/* Note: Loading Component */}
+            <Loader loadingState={userData.loading} />
+
             <Title order={2} style={{
                 color: customStyles.colors._4D4D4D,
                 textTransform: customStyles.textTransformation.capitalize
