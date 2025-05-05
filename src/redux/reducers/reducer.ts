@@ -6,6 +6,7 @@ import storage from "redux-persist/lib/storage";
 
 import authReducer from "./auth-reducer/auth-reducer";
 import userReducer from "./user-reducer/user-reducer";
+import wareHouseReducer from "./warehouse-reducer/warehouse-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -16,7 +17,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     authStates: authReducer,
-    userStates: userReducer
+    userStates: userReducer,
+    wareHouseStates: wareHouseReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);

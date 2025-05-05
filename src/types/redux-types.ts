@@ -29,3 +29,20 @@ export interface UserStateType {
         isActive: boolean
     }[];
 };
+
+// Note: Ware House reducer state types...!
+export interface WareHouseStateType {
+    wareHousesList: {
+        id: string,
+        whsCode: string,
+        whsName: string,
+        isReceiver: boolean,
+        binActivat: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean,
+        isArchived: boolean
+    }[];
+};
