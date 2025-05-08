@@ -128,7 +128,7 @@ const AddUserScreen = () => {
             return;
         }
 
-        if (response && response.status != 200) {
+        if (response && response.status != 201) {
             // setLoading(false); // Note: Stop loading...!
             return;
         };
@@ -149,12 +149,6 @@ const AddUserScreen = () => {
             confirmPassword,
         } = userData;
 
-        // Note: Enable loader...!
-        setUserData({
-            ...userData,
-            loading: true
-        });
-
         try {
             if (userName.trim().length < 1) throw "Username is required";
             else if (!email.match(emailRegex)) throw "Email is required";
@@ -173,6 +167,13 @@ const AddUserScreen = () => {
                     role
                 };
                 // console.log('User data: ', userData);
+
+                // Note: Enable loader...!
+                setUserData({
+                    ...userData,
+                    loading: true
+                });
+
                 dispatch(addUser({
                     userData: user,
                     token,

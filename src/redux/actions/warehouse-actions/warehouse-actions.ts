@@ -6,6 +6,7 @@ import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
 import { FETCH_ALL_WAREHOUSES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 import { sessionExpired } from "@/constants/session-expired";
+import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
 import { ResHandler } from "@/types/api-types";
 
 // Note: Action function to fetch all warehouses...!
@@ -32,7 +33,56 @@ const fetchAllWareHouses = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log('Error occured in fetch all warehouses api integration: ', error);
+            // console.log('Error occured in fetch all warehouses api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) {
+                sessionExpired(data?.error);
+            };
+        };
+    }
+);
+
+
+
+// Note: Action function to assign warehouse to user...!
+const assignWareHouseToUser = createAsyncThunk(
+    "warehouse/assignWareHouseToUser",
+    async (
+        { wareHouseData, token , resHandler }:
+            {
+                wareHouseData: WareHouseDataObj,
+                token: string,
+                resHandler: ResHandler
+            },
+        { dispatch }
+    ) => {
+        console.log("Token in warehouse action: ", token);
+        console.log("Assign warehouse to user data in warehouse action: ", wareHouseData);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.POST,
+                url: apiRequestRoutes.postRequest,
+                data: wareHouseData,
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_ASSIGN_WAREHOUSE_TO_USER,
+                    "Auth-Token": token
+                }
+            });
+            console.log("Response in warehouse action: ", response);
+            const { status, data } = response;
+
+            if (status == 201) {
+                resHandler(response);
+            };
+        }
+
+        catch (error: any) {
+            console.log('Error occured in assign warehouse to user api integration: ', error);
+            resHandler(error?.response);
+
             const { status, data } = error?.response;
 
             // 401:
@@ -44,5 +94,6 @@ const fetchAllWareHouses = createAsyncThunk(
 );
 
 export {
-    fetchAllWareHouses
+    fetchAllWareHouses,
+    assignWareHouseToUser
 };

@@ -20,15 +20,17 @@ import {
 } from "@mantine/core";
 import { IconBuildingWarehouse } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
-import { customStyles } from '@/styles/custom-theme';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { fetchAllWareHouses, assignWareHouseToUser } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
-
-type AccessWareHouseDataType = {
-  id: string;
-  allow: boolean;
-  receiver: boolean;
-};
+import {
+  WareHouseDataType,
+  AccessWareHouseDataType,
+  WareHouseDataObj
+}
+  from '@/types/modules/warehouse-types/warehouse-types';
+import { customStyles } from '@/styles/custom-theme';
+import Loader from '@/components/loader/loader';
 
 const AssignWareHouse = () => {
 
@@ -37,6 +39,7 @@ const AssignWareHouse = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState([]);
   const [access, setAccess] = useState<Record<string, AccessWareHouseDataType[]>>({});
+  const [loading, setLoading] = useState(false);
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -47,12 +50,20 @@ const AssignWareHouse = () => {
   const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
-  // console.log('WareHouses list: ', wareHousesList);
+  console.log('WareHouses list: ', wareHousesList);
 
   // Note: Required variables...!
   const itemsPerPage: number = 10;
   const totalPages = Math.ceil(wareHousesList?.length / itemsPerPage);
   const paginated = [...wareHousesList].slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // Note: Function to clear all states...!
+  const clearAllStates = () => {
+    setPage(1);
+    setSelectedUser(null);
+    setAccess({});
+    setLoading(false);
+  };
 
   // Note: Handle dropdown...!
   const handleChange = (value: string | null) => {
@@ -64,7 +75,7 @@ const AssignWareHouse = () => {
     setAccess((prev) => {
       if (prev[value]) return prev; // already exists, do nothing
 
-      const initialAccess = wareHousesList.map((wh: any) => ({
+      const initialAccess = wareHousesList.map((wh: WareHouseDataType) => ({
         id: wh.id,
         allow: false,
         receiver: false
@@ -105,9 +116,66 @@ const AssignWareHouse = () => {
     });
   };
 
+  // Note: Assign warehouse to user api response handler...!
+  const handleResponse = (response: any): void => {
+    console.log("Assign warehouse to user api response: ", response);
+
+    if (response && response.status == 201) {
+      // Note: Stop loading...!
+      setLoading(false);
+      showNotificationToast("Assigned Successfully", "Requested warehouses has been assigned oo the requested user", customStyles.colors._408CCE);
+      dispatch(fetchAllWareHouses(authenticatedUser?.token as string));
+      clearAllStates();
+      return;
+    }
+
+    if (response && response.status != 201) {
+      setLoading(false); // Note: Stop loading...!
+      return;
+    };
+  };
+
   // Note: Function to assign warehouse...!
   const handleAssignWareHouse = () => {
-    console.log('Access state: ', access);
+
+    if (!selectedUser) {
+      showNotificationToast("Validation Error", 'Please select user first', customStyles.colors.red);
+      return;
+    };
+
+    // Note: For normal warehouses...!
+    const normalWareHouse = access[selectedUser]
+      .filter((item: AccessWareHouseDataType) => {
+        return item.allow && !item.receiver;
+      })
+      .map((eachItem: AccessWareHouseDataType) => {
+        return eachItem.id;
+      });
+    console.log('Normal warehouses: ', normalWareHouse);
+
+    const receiverWareHouse = access[selectedUser]
+      .filter((item: AccessWareHouseDataType) => {
+        return item.allow && item.receiver;
+      })
+      .map((eachItem: AccessWareHouseDataType) => {
+        return eachItem.id;
+      });
+    // console.log('Receiver warehouses: ', receiverWareHouse);
+
+    const wareHouseDataObj: WareHouseDataObj = {
+      userId: selectedUser as string,
+      normalWarehouses: normalWareHouse,
+      receiverWarehouses: receiverWareHouse
+    };
+
+    // Note: Enable loading...!
+    setLoading(true);
+
+    dispatch(assignWareHouseToUser({
+      wareHouseData: wareHouseDataObj,
+      token: authenticatedUser?.token as string,
+      resHandler: handleResponse
+    }));
   };
 
   // Note: This hook will run once when this component mounts...!
@@ -131,6 +199,9 @@ const AssignWareHouse = () => {
 
   return (
     <div>
+
+      {/* Note: Loading Component */}
+      <Loader loadingState={loading} />
 
       {/* Note: Table Screen Head section */}
       <Group
@@ -231,7 +302,7 @@ const AssignWareHouse = () => {
                 }}
               >
                 {
-                  paginated?.map((item: any, index) => (
+                  paginated?.map((item: WareHouseDataType) => (
                     <tr
                       key={item?.id}
                       style={{
@@ -244,17 +315,17 @@ const AssignWareHouse = () => {
                         <Checkbox
                           disabled={!selectedUser}
                           label="Allow access"
-                          checked={access[selectedUser!]?.find((a: any) => a.id === item.id)?.allow || false}
+                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.allow || false}
                           onChange={() => toggleCheckbox(item.id, 'allow')}
                         />
                       </td>
                       <td>
                         <Checkbox
                           label="Receiver"
-                          checked={access[selectedUser!]?.find((a: any) => a.id === item.id)?.receiver || false}
+                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.receiver || false}
                           onChange={() => toggleCheckbox(item.id, 'receiver')}
                           disabled={
-                            !access[selectedUser!]?.find((a: any) => a.id === item.id)?.allow || !selectedUser
+                            !access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.allow || !selectedUser
                           }
                         />
                       </td>
@@ -297,5 +368,3 @@ const AssignWareHouse = () => {
 };
 
 export default AssignWareHouse;
-
-// Note: Sb se pehle any ko remove kro then upoer ko type kr k bnaya hy wo types m define kro
