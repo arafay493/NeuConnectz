@@ -46,3 +46,18 @@ export interface WareHouseStateType {
         isArchived: boolean
     }[];
 };
+
+// Note: Group reducer state types...!
+export interface GroupStateType {
+    ListAllGroupCodes: {
+        id: string,
+        groupCode: number | string,
+        groupName: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean,
+        isArchived: boolean
+    }[];
+};

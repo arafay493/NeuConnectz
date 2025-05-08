@@ -4,14 +4,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_WAREHOUSES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
+import { FETCH_ALL_GROUP_CODES } from "@/redux/reducers/group-reducer/group-reducer";
 import { sessionExpired } from "@/constants/session-expired";
-import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
+import { AssignGrouptoUserDataType } from "@/types/modules/group-types/group-types";
 import { ResHandler } from "@/types/api-types";
 
-// Note: Action function to fetch all warehouses...!
-const fetchAllWareHouses = createAsyncThunk(
-    "warehouse/fetchAllWareHouses",
+// Note: Action function to fetch list all group codes...!
+const fetchListAllGroupCodes = createAsyncThunk(
+    "group/fetchListAllGroupCodes",
     async (authToken: string, { dispatch }) => {
         // console.log("Auth token: ", authToken);
 
@@ -20,20 +20,20 @@ const fetchAllWareHouses = createAsyncThunk(
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
                 headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_WAREHOUSES,
+                    "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_LIST_GROUP_CODES,
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in warehouse action: ", response);
+            // console.log("Response in group action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
+                dispatch(FETCH_ALL_GROUP_CODES(data?.data));
             };
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all warehouses api integration: ', error);
+            // console.log('Error occured in fetch all list group codes api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -46,32 +46,32 @@ const fetchAllWareHouses = createAsyncThunk(
 
 
 
-// Note: Action function to assign warehouse to user...!
-const assignWareHouseToUser = createAsyncThunk(
-    "warehouse/assignWareHouseToUser",
+// Note: Action function to assign group to user...!
+const assignGroupToUser = createAsyncThunk(
+    "group/assignGroupToUser",
     async (
-        { wareHouseData, token , resHandler }:
+        { addGroupToUserData, token , resHandler }:
             {
-                wareHouseData: WareHouseDataObj,
+                addGroupToUserData: AssignGrouptoUserDataType,
                 token: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
-        // console.log("Token in warehouse action: ", token);
-        // console.log("Assign warehouse to user data in warehouse action: ", wareHouseData);
+        // console.log("Token in group action: ", token);
+        // console.log("Assign group to user data in group action: ", addGroupToUserData);
 
         try {
             const response = await axios({
                 method: API_METHODS.POST,
                 url: apiRequestRoutes.postRequest,
-                data: wareHouseData,
+                data: addGroupToUserData,
                 headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ASSIGN_WAREHOUSE_TO_USER,
+                    "Api-Url": process.env.NEXT_PUBLIC_ADD_GROUP_TO_USER,
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in warehouse action: ", response);
+            // console.log("Response in group action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -80,7 +80,7 @@ const assignWareHouseToUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in assign warehouse to user api integration: ', error);
+            // console.log('Error occured in assign group to user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -94,6 +94,6 @@ const assignWareHouseToUser = createAsyncThunk(
 );
 
 export {
-    fetchAllWareHouses,
-    assignWareHouseToUser
+    fetchListAllGroupCodes,
+    assignGroupToUser
 };

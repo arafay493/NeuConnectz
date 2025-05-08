@@ -36,8 +36,11 @@ import { useAppDispatch } from '@/redux/store';
 import { DrawerRoute } from "@/types/route-types";
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { LOG_OUT_USER } from '@/redux/reducers/auth-reducer/auth-reducer';
 import { localAssets } from '@/lib/file-paths/file-paths';
+import { LOG_OUT_USER } from '@/redux/reducers/auth-reducer/auth-reducer';
+import { CLEAR_ALL_USER_STATES } from '@/redux/reducers/user-reducer/user-reducer';
+import { CLEAR_ALL_WAREHOUSE_STATES } from '@/redux/reducers/warehouse-reducer/warehouse-reducer';
+import { CLEAR_ALL_GROUP_STATES } from '@/redux/reducers/group-reducer/group-reducer';
 import { customStyles } from '@/styles/custom-theme';
 
 const AppLayOut = ({ children }: { children: ReactNode }) => {
@@ -65,6 +68,9 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
     setTimeout(() => {
       window.location.reload();
       dispatch(LOG_OUT_USER());
+      dispatch(CLEAR_ALL_USER_STATES());
+      dispatch(CLEAR_ALL_WAREHOUSE_STATES());
+      dispatch(CLEAR_ALL_GROUP_STATES());
       deleteCookie("UserAuthenticated");
       deleteCookie("AuthToken");
       localStorage.clear();

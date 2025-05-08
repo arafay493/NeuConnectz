@@ -15,7 +15,6 @@ import {
   Stack,
   Title,
   Button,
-  rem,
   Checkbox
 } from "@mantine/core";
 import { IconBuildingWarehouse } from "@tabler/icons-react";
@@ -50,7 +49,7 @@ const AssignWareHouse = () => {
   const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
-  console.log('WareHouses list: ', wareHousesList);
+  // console.log('WareHouses list: ', wareHousesList);
 
   // Note: Required variables...!
   const itemsPerPage: number = 10;
@@ -118,7 +117,7 @@ const AssignWareHouse = () => {
 
   // Note: Assign warehouse to user api response handler...!
   const handleResponse = (response: any): void => {
-    console.log("Assign warehouse to user api response: ", response);
+    // console.log("Assign warehouse to user api response: ", response);
 
     if (response && response.status == 201) {
       // Note: Stop loading...!
@@ -127,7 +126,7 @@ const AssignWareHouse = () => {
       dispatch(fetchAllWareHouses(authenticatedUser?.token as string));
       clearAllStates();
       return;
-    }
+    };
 
     if (response && response.status != 201) {
       setLoading(false); // Note: Stop loading...!
@@ -151,7 +150,7 @@ const AssignWareHouse = () => {
       .map((eachItem: AccessWareHouseDataType) => {
         return eachItem.id;
       });
-    console.log('Normal warehouses: ', normalWareHouse);
+    // console.log('Normal warehouses: ', normalWareHouse);
 
     const receiverWareHouse = access[selectedUser]
       .filter((item: AccessWareHouseDataType) => {
@@ -250,7 +249,7 @@ const AssignWareHouse = () => {
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}
         >
-          Assgn Warehouse
+          Assign Warehouse
         </Button>
       </Group>
 
