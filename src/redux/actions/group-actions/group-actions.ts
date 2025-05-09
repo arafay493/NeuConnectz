@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_GROUP_CODES } from "@/redux/reducers/group-reducer/group-reducer";
+import { FETCH_ALL_GROUP_CODES, UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA } from "@/redux/reducers/group-reducer/group-reducer";
 import { sessionExpired } from "@/constants/session-expired";
 import { AssignGrouptoUserDataType } from "@/types/modules/group-types/group-types";
 import { ResHandler } from "@/types/api-types";
@@ -37,9 +37,10 @@ const fetchListAllGroupCodes = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) {
-                sessionExpired(data?.error);
-            };
+            if (status == 401) sessionExpired(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
         };
     }
 );
@@ -50,7 +51,7 @@ const fetchListAllGroupCodes = createAsyncThunk(
 const assignGroupToUser = createAsyncThunk(
     "group/assignGroupToUser",
     async (
-        { addGroupToUserData, token , resHandler }:
+        { addGroupToUserData, token, resHandler }:
             {
                 addGroupToUserData: AssignGrouptoUserDataType,
                 token: string,

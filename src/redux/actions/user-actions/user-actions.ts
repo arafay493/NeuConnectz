@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_USERS } from "@/redux/reducers/user-reducer/user-reducer";
+import { FETCH_ALL_USERS , UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
 import { sessionExpired } from "@/constants/session-expired";
 import { CreateUserDataType } from "@/types/modules/user-types/user-types";
 import { ResHandler } from "@/types/api-types";
@@ -37,9 +37,10 @@ const fetchAllUsers = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) {
-                sessionExpired(data?.error);
-            };
+            if (status == 401) sessionExpired(data?.error);
+            
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA());
         };
     }
 );
@@ -48,7 +49,6 @@ const fetchAllUsers = createAsyncThunk(
 const addUser = createAsyncThunk(
     "user/add",
     async (
-        // { loginData, resHandler }: { loginData: LoginUserDataType, resHandler: ResHandler },
         { userData, token, resHandler }:
             {
                 userData: CreateUserDataType,

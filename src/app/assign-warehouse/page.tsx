@@ -8,7 +8,6 @@ import {
   Table,
   ScrollArea,
   Select,
-  Pagination,
   Group,
   Text,
   Paper,
@@ -28,8 +27,9 @@ import {
   WareHouseDataObj
 }
   from '@/types/modules/warehouse-types/warehouse-types';
-import { customStyles } from '@/styles/custom-theme';
 import Loader from '@/components/loader/loader';
+import PaginationComponent from '@/components/pagination/pagination';
+import { customStyles } from '@/styles/custom-theme';
 
 const AssignWareHouse = () => {
 
@@ -46,7 +46,7 @@ const AssignWareHouse = () => {
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+  const { wareHousesList, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
   // console.log('WareHouses list: ', wareHousesList);
@@ -248,6 +248,7 @@ const AssignWareHouse = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}
+          disabled={paginated?.length == 0}
         >
           Assign Warehouse
         </Button>
@@ -339,7 +340,7 @@ const AssignWareHouse = () => {
                     <tr>
                       <td colSpan={7}>
                         <Text style={{ textAlign: customStyles.alignment.center }}>
-                          No warehouse found.
+                          {warehouseErrorState || "No warehouse found."}
                         </Text>
                       </td>
                     </tr>
@@ -351,16 +352,11 @@ const AssignWareHouse = () => {
         </ScrollArea>
 
         {/* Note: Pagination section */}
-        <Group
-          justify={customStyles.alignment.left}
-          mt="md"
-        >
-          <Pagination
-            total={totalPages}
-            value={page}
-            onChange={setPage}
-          />
-        </Group>
+        <PaginationComponent
+          totalPages={totalPages}
+          pageNum={page}
+          handleNewPage={setPage}
+        />
       </Paper>
     </div>
   );

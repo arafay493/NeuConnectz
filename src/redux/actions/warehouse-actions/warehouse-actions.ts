@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_WAREHOUSES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
+import { FETCH_ALL_WAREHOUSES, UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 import { sessionExpired } from "@/constants/session-expired";
 import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
 import { ResHandler } from "@/types/api-types";
@@ -37,9 +37,10 @@ const fetchAllWareHouses = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) {
-                sessionExpired(data?.error);
-            };
+            if (status == 401) sessionExpired(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
         };
     }
 );
@@ -50,7 +51,7 @@ const fetchAllWareHouses = createAsyncThunk(
 const assignWareHouseToUser = createAsyncThunk(
     "warehouse/assignWareHouseToUser",
     async (
-        { wareHouseData, token , resHandler }:
+        { wareHouseData, token, resHandler }:
             {
                 wareHouseData: WareHouseDataObj,
                 token: string,

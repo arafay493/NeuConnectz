@@ -19,7 +19,8 @@ const authenticatedRoutes: String[] = [
     "/users-list",
     "/assign-group",
     "/assign-warehouse",
-    "/add-user"
+    "/add-user",
+    "/configuration"
 ];
 
 // Note: Defining all routes...!
@@ -36,7 +37,8 @@ const routes: Routes = {
     usersList: "/users-list",
     assignGroup: "/assign-group",
     assignWareHouse: "/assign-warehouse",
-    addUser: "/add-user"
+    addUser: "/add-user",
+    configuration: "/configuration"
 };
 
 // Note: Defining drawer routes...!
@@ -90,6 +92,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconListCheck size={20} />,
         label: "assign warehouse",
         route: routes.assignWareHouse,
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "configuration",
+        route: routes.configuration
     },
 ];
 

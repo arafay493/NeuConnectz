@@ -28,6 +28,7 @@ export interface UserStateType {
         updatedDate: string,
         isActive: boolean
     }[];
+    usersErrorState: string
 };
 
 // Note: Ware House reducer state types...!
@@ -45,6 +46,7 @@ export interface WareHouseStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    warehouseErrorState: string
 };
 
 // Note: Group reducer state types...!
@@ -60,4 +62,5 @@ export interface GroupStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    GroupErrorState: string
 };

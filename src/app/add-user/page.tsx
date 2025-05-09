@@ -128,6 +128,16 @@ const AddUserScreen = () => {
             return;
         }
 
+        if (response && response.status == 403) {
+            // Note: Stop loading...!
+            setUserData({
+                ...userData,
+                loading: false
+            });
+            showNotificationToast("Unauthorized User", "You are not authorized to create a user!", customStyles.colors.red);
+            return;
+        };
+
         if (response && response.status != 201) {
             // setLoading(false); // Note: Stop loading...!
             return;

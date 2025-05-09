@@ -1,34 +1,22 @@
-# Install dependencies only when needed
-FROM node:18-alpine AS deps
+# Build stage for Next.js
+FROM node:20-alpine
+
 WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
-COPY package.json package-lock.json ./
-RUN npm i --legacy-peer-deps
+RUN npm install --force
 
-# Rebuild the source code only when needed
-FROM node:18-alpine AS builder
-WORKDIR /app
+# Copy frontend source code
 COPY . .
-COPY --from=deps /app/node_modules ./node_modules
 
+# Build the Next.js application
 RUN npm run build
 
-# Production image, copy built assets and serve with Next.js
-FROM node:18-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-
-# Copy only necessary files for running the app
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.ts ./next.config.ts
-
-# Expose the port Next.js runs on
+# Expose Next.js port
 EXPOSE 3000
 
-# Start the Next.js server
+# Start the Next.js application
 CMD ["npm", "start"]

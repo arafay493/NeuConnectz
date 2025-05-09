@@ -8,7 +8,6 @@ import {
   Table,
   ScrollArea,
   Select,
-  Pagination,
   Group,
   Text,
   Paper,
@@ -20,8 +19,9 @@ import {
 import { IconBuildingWarehouse } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
+import PaginationComponent from '@/components/pagination/pagination';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { fetchListAllGroupCodes , assignGroupToUser } from '@/redux/actions/group-actions/group-actions';
+import { fetchListAllGroupCodes, assignGroupToUser } from '@/redux/actions/group-actions/group-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { GroupCodeDataType, AssignGrouptoUserDataType } from '@/types/modules/group-types/group-types';
 import { customStyles } from '@/styles/custom-theme';
@@ -41,7 +41,7 @@ const AssignGroup = () => {
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { ListAllGroupCodes } = useAppSelector(({ groupStates }) => { return groupStates });
+  const { ListAllGroupCodes, GroupErrorState } = useAppSelector(({ groupStates }) => { return groupStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
   // console.log('Group codes list: ', ListAllGroupCodes);
@@ -206,6 +206,7 @@ const AssignGroup = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignGroup}
+          disabled={paginated.length == 0}
         >
           Assign Group
         </Button>
@@ -293,7 +294,7 @@ const AssignGroup = () => {
                     <tr>
                       <td colSpan={7}>
                         <Text style={{ textAlign: customStyles.alignment.center }}>
-                          No item group found.
+                          {GroupErrorState || "No item group found."}
                         </Text>
                       </td>
                     </tr>
@@ -305,16 +306,11 @@ const AssignGroup = () => {
         </ScrollArea>
 
         {/* Note: Pagination section */}
-        <Group
-          justify={customStyles.alignment.left}
-          mt="md"
-        >
-          <Pagination
-            total={totalPages}
-            value={page}
-            onChange={setPage}
-          />
-        </Group>
+        <PaginationComponent
+          totalPages={totalPages}
+          pageNum={page}
+          handleNewPage={setPage}
+        />
       </Paper>
     </div>
   );

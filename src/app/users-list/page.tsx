@@ -10,7 +10,6 @@ import {
   ScrollArea,
   TextInput,
   Select,
-  Pagination,
   Flex,
   Group,
   Text,
@@ -22,6 +21,7 @@ import {
 } from "@mantine/core";
 import { IconSearch, IconUserPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
+import PaginationComponent from '@/components/pagination/pagination';
 import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { UserType } from '@/types/modules/user-types/user-types';
@@ -42,7 +42,7 @@ const UsersListScreen = () => {
 
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-  const { usersList } = useAppSelector(({ userStates }) => { return userStates });
+  const { usersList, usersErrorState } = useAppSelector(({ userStates }) => { return userStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users: ', usersList);
 
@@ -208,7 +208,7 @@ const UsersListScreen = () => {
                     <tr>
                       <td colSpan={7}>
                         <Text style={{ textAlign: customStyles.alignment.center }}>
-                          No users found.
+                          {usersErrorState || "No users found."}
                         </Text>
                       </td>
                     </tr>
@@ -220,16 +220,11 @@ const UsersListScreen = () => {
         </ScrollArea>
 
         {/* Pagination section */}
-        <Group
-          justify={customStyles.alignment.left}
-          mt="md"
-        >
-          <Pagination
-            total={totalPages}
-            value={page}
-            onChange={setPage}
-          />
-        </Group>
+        <PaginationComponent
+          totalPages={totalPages}
+          pageNum={page}
+          handleNewPage={setPage}
+        />
       </Paper>
     </div>
   );

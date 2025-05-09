@@ -15,7 +15,8 @@ export type Routes = {
     usersList: string;
     assignGroup: string;
     assignWareHouse: string,
-    addUser: string
+    addUser: string,
+    configuration: string
 };
 
 export type DrawerRoute = {
