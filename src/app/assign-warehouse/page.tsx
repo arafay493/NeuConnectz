@@ -27,6 +27,7 @@ import {
   WareHouseDataObj
 }
   from '@/types/modules/warehouse-types/warehouse-types';
+import DataNotFound from '@/components/data-not-found/data-not-found';
 import Loader from '@/components/loader/loader';
 import PaginationComponent from '@/components/pagination/pagination';
 import { customStyles } from '@/styles/custom-theme';
@@ -75,7 +76,7 @@ const AssignWareHouse = () => {
       if (prev[value]) return prev; // already exists, do nothing
 
       const initialAccess = wareHousesList.map((wh: WareHouseDataType) => ({
-        id: wh.id,
+        whsCode: wh.whsCode,
         allow: false,
         receiver: false
       }));
@@ -88,14 +89,14 @@ const AssignWareHouse = () => {
   };
 
   // Note: Handle checkbox...!
-  const toggleCheckbox = (id: string, field: 'allow' | 'receiver') => {
+  const toggleCheckbox = (whsCode: string, field: 'allow' | 'receiver') => {
     if (!selectedUser) return;
 
     setAccess((prev) => {
       const userAccess = prev[selectedUser] || [];
 
       const updatedUserAccess = userAccess.map((entry) =>
-        entry.id === id
+        entry.whsCode === whsCode
           ? {
             ...entry,
             [field]:
@@ -148,7 +149,7 @@ const AssignWareHouse = () => {
         return item.allow && !item.receiver;
       })
       .map((eachItem: AccessWareHouseDataType) => {
-        return eachItem.id;
+        return eachItem.whsCode;
       });
     // console.log('Normal warehouses: ', normalWareHouse);
 
@@ -157,14 +158,14 @@ const AssignWareHouse = () => {
         return item.allow && item.receiver;
       })
       .map((eachItem: AccessWareHouseDataType) => {
-        return eachItem.id;
+        return eachItem.whsCode;
       });
     // console.log('Receiver warehouses: ', receiverWareHouse);
 
     const wareHouseDataObj: WareHouseDataObj = {
       userId: selectedUser as string,
-      normalWarehouses: normalWareHouse,
-      receiverWarehouses: receiverWareHouse
+      normalWarehouseCodes: normalWareHouse,
+      receiverWarehouseCodes: receiverWareHouse
     };
 
     // Note: Enable loading...!
@@ -315,17 +316,17 @@ const AssignWareHouse = () => {
                         <Checkbox
                           disabled={!selectedUser}
                           label="Allow access"
-                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.allow || false}
-                          onChange={() => toggleCheckbox(item.id, 'allow')}
+                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.allow || false}
+                          onChange={() => toggleCheckbox(item.whsCode, 'allow')}
                         />
                       </td>
                       <td>
                         <Checkbox
                           label="Receiver"
-                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.receiver || false}
-                          onChange={() => toggleCheckbox(item.id, 'receiver')}
+                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.receiver || false}
+                          onChange={() => toggleCheckbox(item.whsCode, 'receiver')}
                           disabled={
-                            !access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.id === item.id)?.allow || !selectedUser
+                            !access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.allow || !selectedUser
                           }
                         />
                       </td>
@@ -335,16 +336,7 @@ const AssignWareHouse = () => {
 
                 {/* Note: If no data found */}
                 {
-                  paginated?.length === 0 &&
-                  (
-                    <tr>
-                      <td colSpan={7}>
-                        <Text style={{ textAlign: customStyles.alignment.center }}>
-                          {warehouseErrorState || "No warehouse found."}
-                        </Text>
-                      </td>
-                    </tr>
-                  )
+                  paginated?.length === 0 && (<DataNotFound notFoundContent={warehouseErrorState || "No warehouse found."} colSpanValue={7} />)
                 }
               </tbody>
             </Table>

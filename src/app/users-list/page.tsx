@@ -26,6 +26,7 @@ import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { routes } from '@/constants/routes';
+import DataNotFound from '@/components/data-not-found/data-not-found';
 
 const UsersListScreen = () => {
 
@@ -204,15 +205,7 @@ const UsersListScreen = () => {
 
                 {/* Note: If data not found or data.length == 0 */}
                 {
-                  paginated?.length === 0 && (
-                    <tr>
-                      <td colSpan={7}>
-                        <Text style={{ textAlign: customStyles.alignment.center }}>
-                          {usersErrorState || "No users found."}
-                        </Text>
-                      </td>
-                    </tr>
-                  )
+                  paginated?.length === 0 && (<DataNotFound notFoundContent={usersErrorState || "No users found."} colSpanValue={7} />)
                 }
               </tbody>
             </Table>

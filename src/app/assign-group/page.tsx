@@ -25,6 +25,7 @@ import { fetchListAllGroupCodes, assignGroupToUser } from '@/redux/actions/group
 import { UserType } from '@/types/modules/user-types/user-types';
 import { GroupCodeDataType, AssignGrouptoUserDataType } from '@/types/modules/group-types/group-types';
 import { customStyles } from '@/styles/custom-theme';
+import DataNotFound from '@/components/data-not-found/data-not-found';
 
 const AssignGroup = () => {
 
@@ -32,26 +33,24 @@ const AssignGroup = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [usersData, setUsersData] = useState([]);
-  const [checkedGroups, setCheckedGroups] = useState<string[]>([]);
+  const [usersData, setUsersData] = useState<{ label: string; value: string }[]>([]);
+  const [checkedGroups, setCheckedGroups] = useState<(string | number)[]>([]);
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
 
-  // Note: Fetch user data from redux...!
-  const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-  const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { ListAllGroupCodes, GroupErrorState } = useAppSelector(({ groupStates }) => { return groupStates });
-  // console.log("User: ", authenticatedUser);
-  // console.log('Users list: ', usersList);
-  // console.log('Group codes list: ', ListAllGroupCodes);
+  // Note: Fetching data from redux here...!
+  const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
+  const { usersList } = useAppSelector(({ userStates }) => userStates);
+  const { ListAllGroupCodes = [], GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
+  // console.log('List all group codes:', ListAllGroupCodes);
 
   // Note: Required variables...!
-  const itemsPerPage: number = 10;
-  const totalPages = Math.ceil(ListAllGroupCodes?.length / itemsPerPage);
-  const paginated = [...ListAllGroupCodes].slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(ListAllGroupCodes.length / itemsPerPage);
+  const paginated = ListAllGroupCodes.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  // Note: Function to clear all states...!
+  // Note: Handle clear all states here...!
   const clearAllStates = () => {
     setLoading(false);
     setPage(1);
@@ -59,75 +58,68 @@ const AssignGroup = () => {
     setCheckedGroups([]);
   };
 
-  // Note: Handle dropdown...!
+  // Note: Handle dropdown onchange...!
   const handleChange = (value: string | null) => {
     setSelectedUser(value);
     setCheckedGroups([]);
   };
 
-  // Note: Handle checkbox...!
-  const toggleCheckbox = (groupId: string) => {
+  // Note: Handle checkbox onchange...!
+  const toggleCheckbox = (groupCode: string | number) => {
     if (!selectedUser) return;
 
     setCheckedGroups(prev =>
-      prev.includes(groupId)
-        ? prev.filter(id => id !== groupId)
-        : [...prev, groupId]
+      prev.includes(groupCode)
+        ? prev.filter(code => code !== groupCode)
+        : [...prev, groupCode]
     );
   };
 
-  // Note: Handle to select all check boxes...!
-  const currentPageIds = [...ListAllGroupCodes].map(group => group.id);
-  const isAllSelected = currentPageIds.every(id => checkedGroups.includes(id));
-  const isIndeterminate = currentPageIds.some(id => checkedGroups.includes(id)) && !isAllSelected;
+  // Note: Required variables...!
+  const currentPageGroupCodes = [...ListAllGroupCodes].map(group => group.groupCode);
+  const isAllSelected = currentPageGroupCodes.every(code => checkedGroups.includes(code));
+  const isIndeterminate = currentPageGroupCodes.some(code => checkedGroups.includes(code)) && !isAllSelected;
 
+  // Note: Handle select all checkboxes...!
   const handleSelectAll = () => {
     if (!selectedUser) return;
 
     if (isAllSelected) {
-      setCheckedGroups(prev => prev.filter(id => !currentPageIds.includes(id)));
+      setCheckedGroups(prev => prev.filter(code => !currentPageGroupCodes.includes(code)));
     }
 
     else {
-      setCheckedGroups(prev => [...new Set([...prev, ...currentPageIds])]);
+      setCheckedGroups(prev => [...new Set([...prev, ...currentPageGroupCodes])]);
     };
   };
 
-  // Note: Assign warehouse to user api response handler...!
+  // Note: Handle api response...!
   const handleResponse = (response: any): void => {
-    // console.log("Assign group to user api response: ", response);
-
-    if (response && response.status == 201) {
-      // Note: Stop loading...!
+    if (response?.status === 201) {
       setLoading(false);
-      showNotificationToast("Assigned Successfully", "Requested groups has been assigned oo the requested user", customStyles.colors._408CCE);
+      showNotificationToast("Assigned Successfully", "Requested groups have been assigned to the user", customStyles.colors._408CCE);
       dispatch(fetchListAllGroupCodes(authenticatedUser?.token as string));
       clearAllStates();
-      return;
-    };
+    }
 
-    if (response && response.status != 201) {
-      setLoading(false); // Note: Stop loading...!
-      return;
+    else {
+      setLoading(false);
     };
   };
 
-  // Note: Function to assign group...!
+  // Note: Handle assign group...!
   const handleAssignGroup = () => {
-
     if (!selectedUser) {
-      showNotificationToast("Validation Error", 'Please select user first', customStyles.colors.red);
+      showNotificationToast("Validation Error", 'Please select a user first', customStyles.colors.red);
       return;
     };
 
     const obj: AssignGrouptoUserDataType = {
       userId: selectedUser,
-      groupcodeIds: checkedGroups
+      groupCodes: checkedGroups
     };
 
-    // Note: Enable loading...!
     setLoading(true);
-
     dispatch(assignGroupToUser({
       addGroupToUserData: obj,
       token: authenticatedUser?.token as string,
@@ -135,49 +127,34 @@ const AssignGroup = () => {
     }));
   };
 
-  // Note: This hook will run once when this component mounts...!
+  // Note: This hook will run when authenticatedUser changes...!
   useEffect(() => {
-    if (authenticatedUser) {
-      dispatch(fetchListAllGroupCodes(authenticatedUser?.token));
+    if (authenticatedUser?.token) {
+      dispatch(fetchListAllGroupCodes(authenticatedUser.token));
     };
-  }, []);
+  }, [authenticatedUser]);
 
-  // Note: This hook will run when usersList state update...!
+  // Note: This hook will run when usersList changes...!
   useEffect(() => {
-    if (usersList) {
-      const targetData = [...usersList].map((user: UserType) => ({
+    if (usersList?.length > 0) {
+      const targetData = usersList.map((user: UserType) => ({
         label: user.userName,
         value: user.userId
       }));
-      targetData && setUsersData(targetData as any);
-      // console.log('Target user data: ', targetData);
+      setUsersData(targetData);
     };
   }, [usersList]);
 
   return (
     <div>
-
-      {/* Note: Loading Component */}
       <Loader loadingState={loading} />
 
-      {/* Note: Table Screen Head section */}
-      <Group
-        justify={customStyles.alignment.spaceBetween}
-        align="flex-start"
-        p="md"
-        bg="gray.0"
-      >
+      <Group justify={customStyles.alignment.spaceBetween} align="flex-start" p="md" bg="gray.0">
         <Stack gap={4}>
-          <Title
-            order={3}
-            style={{ color: customStyles.colors._4D4D4D }}
-          >
+          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>
             Items Group
           </Title>
-
-          <Text size="sm" c="dimmed">
-            Select group to unassign
-          </Text>
+          <Text size="sm" c="dimmed">Select group to assign</Text>
         </Stack>
       </Group>
 
@@ -189,7 +166,6 @@ const AssignGroup = () => {
         style={{ borderRadius: customStyles.size.size_5 }}
       >
         <Stack gap={4}>
-
           Select User:
           <Select
             data={usersData}
@@ -206,23 +182,14 @@ const AssignGroup = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignGroup}
-          disabled={paginated.length == 0}
+          disabled={paginated.length === 0}
         >
           Assign Group
         </Button>
       </Group>
 
-      {/* Note: Table section */}
-      <Paper
-        p="lg"
-        radius="md"
-        shadow="md"
-        withBorder
-      >
-        <ScrollArea
-          type="auto"
-          style={{ maxWidth: customStyles.sizeWidthAndHeight.fullWidth }}
-        >
+      <Paper p="lg" radius="md" shadow="md" withBorder>
+        <ScrollArea type="auto" style={{ maxWidth: customStyles.sizeWidthAndHeight.fullWidth }}>
           <Box style={{ minWidth: "800px" }}>
             <Table
               withRowBorders
@@ -231,23 +198,13 @@ const AssignGroup = () => {
               style={{
                 color: customStyles.colors._909090,
                 borderCollapse: "separate",
-                borderSpacing: "0 10px",
+                borderSpacing: "0 10px"
               }}
             >
-              <thead
-                style={{
-                  color: customStyles.colors._4D4D4D,
-                  textAlign: customStyles.alignment.left
-                }}
-              >
-                <tr
-                  style={{
-                    borderBottom: "2px solid #ddd",
-                    backgroundColor: "#f8f9fa"
-                  }}
-                >
-                  <th> Group Code </th>
-                  <th> Group Name </th>
+              <thead style={{ color: customStyles.colors._4D4D4D, textAlign: customStyles.alignment.left }}>
+                <tr style={{ borderBottom: "2px solid #ddd", backgroundColor: "#f8f9fa" }}>
+                  <th>Group Code</th>
+                  <th>Group Name</th>
                   <th>
                     <Checkbox
                       disabled={!selectedUser}
@@ -260,52 +217,32 @@ const AssignGroup = () => {
                 </tr>
               </thead>
 
-              <tbody
-                style={{
-                  textAlign: customStyles.alignment.left
-                }}
-              >
+              <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
-                  paginated?.map((item: GroupCodeDataType) => (
-                    <tr
-                      key={item?.id}
-                      style={{
-                        textTransform: customStyles.textTransformation.capitalize
-                      }}
-                    >
-                      <td>{item?.groupCode}</td>
-                      <td>{item?.groupName}</td>
-                      <td>
-                        <Checkbox
-                          disabled={!selectedUser}
-                          label="Allow access"
-                          checked={checkedGroups.includes(item.id)}
-                          onChange={() => toggleCheckbox(item.id)}
-                        />
-                      </td>
-                    </tr>
-                  ))
-                }
-
-                {/* Note: If no data found */}
-                {
-                  paginated?.length === 0 &&
-                  (
-                    <tr>
-                      <td colSpan={7}>
-                        <Text style={{ textAlign: customStyles.alignment.center }}>
-                          {GroupErrorState || "No item group found."}
-                        </Text>
-                      </td>
-                    </tr>
+                  paginated.length > 0 ? (
+                    paginated.map((item: GroupCodeDataType) => (
+                      <tr key={item.id} style={{ textTransform: customStyles.textTransformation.capitalize }}>
+                        <td>{item.groupCode}</td>
+                        <td>{item.groupName}</td>
+                        <td>
+                          <Checkbox
+                            disabled={!selectedUser}
+                            label="Allow access"
+                            checked={checkedGroups.includes(item.groupCode)}
+                            onChange={() => toggleCheckbox(item.groupCode)}
+                          />
+                        </td>
+                      </tr>
+                    ))
                   )
+                    :
+                    (<DataNotFound notFoundContent={GroupErrorState || "No item group found."} colSpanValue={3} />)
                 }
               </tbody>
             </Table>
           </Box>
         </ScrollArea>
 
-        {/* Note: Pagination section */}
         <PaginationComponent
           totalPages={totalPages}
           pageNum={page}

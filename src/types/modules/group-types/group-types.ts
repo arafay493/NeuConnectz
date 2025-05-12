@@ -14,5 +14,5 @@ export interface GroupCodeDataType {
 
 export interface AssignGrouptoUserDataType {
     userId: string,
-    groupcodeIds: string[]
+    groupCodes: (string | number)[]
 };

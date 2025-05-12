@@ -17,6 +17,7 @@ export type Routes = {
     assignWareHouse: string,
     addUser: string,
     configuration: string
+    integrationMonitor : string
 };
 
 export type DrawerRoute = {

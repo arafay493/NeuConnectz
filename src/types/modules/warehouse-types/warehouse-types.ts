@@ -1,7 +1,7 @@
 // Note: All WareHouse related types are defined here...!
 
 export type AccessWareHouseDataType = {
-    id: string;
+    whsCode: string;
     allow: boolean;
     receiver: boolean;
 };
@@ -22,6 +22,6 @@ export interface WareHouseDataType {
 
 export interface WareHouseDataObj {
     userId: string,
-    normalWarehouses: string[],
-    receiverWarehouses: string[]
+    normalWarehouseCodes: string[],
+    receiverWarehouseCodes: string[]
 };

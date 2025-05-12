@@ -184,7 +184,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         withBorder
         style={{
           display: authenticatedRoutes.includes(pathName) ? 'block' : 'none',
-          overflow: isMobile ? 'scroll' : 'unset'
+          overflow: 'scroll'
         }}
       >
         <AppShellSection grow>

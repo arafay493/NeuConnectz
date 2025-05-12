@@ -11,11 +11,9 @@ import {
     Stack,
     Title,
     Button,
-    Container,
     TextInput,
     PasswordInput,
     Grid,
-    rem
 } from "@mantine/core";
 import {
     IconSend,
@@ -74,35 +72,37 @@ const Configuration = () => {
 
     // Note: Add SAP configuration api response handler...!
     const handleResponse = (response: any): void => {
-        console.log("Add SAP configuration api response: ", response);
+        // console.log("Add SAP configuration api response: ", response);
 
-        // if (response && response.status == 201) {
-        //     // Note: Stop loading...!
-        //     setUserData({
-        //         ...userData,
-        //         loading: false
-        //     });
-        //     showNotificationToast("User Created", "User created successfully", customStyles.colors._408CCE);
-        //     dispatch(fetchAllUsers(token));
-        //     clearAllStates();
-        //     router.push(routes.usersList);
-        //     return;
-        // }
+        if (response && response.status == 200) {
+            // Note: Stop loading...!
+            setFormData({
+                ...formData,
+                loading: false
+            });
+            showNotificationToast("Configuration Saved", "information saved successfully", customStyles.colors._408CCE);
+            clearAllStates();
+            return;
+        }
 
-        // if (response && response.status == 403) {
-        //     // Note: Stop loading...!
-        //     setUserData({
-        //         ...userData,
-        //         loading: false
-        //     });
-        //     showNotificationToast("Unauthorized User", "You are not authorized to create a user!", customStyles.colors.red);
-        //     return;
-        // };
+        if (response && response.status == 403) {
+            // Note: Stop loading...!
+            setFormData({
+                ...formData,
+                loading: false
+            });
+            showNotificationToast("Unauthorized User", "You are not authorized to save this information!", customStyles.colors.red);
+            return;
+        };
 
-        // if (response && response.status != 201) {
-        //     // setLoading(false); // Note: Stop loading...!
-        //     return;
-        // };
+        if (response && response.status != 200) {
+            // Note: Stop loading...!
+            setFormData({
+                ...formData,
+                loading: false
+            });
+            return;
+        };
     };
 
     // Note: Handle submit form...!
@@ -158,7 +158,7 @@ const Configuration = () => {
         catch (error) {
             if (error) {
                 const errMessage = error as string
-                console.log("Error: ", errMessage);
+                // console.log("Error: ", errMessage);
                 showNotificationToast("Validation Error", errMessage, customStyles.colors.red);
             };
         };

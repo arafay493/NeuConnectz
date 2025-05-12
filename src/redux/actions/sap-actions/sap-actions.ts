@@ -3,6 +3,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
+import { sessionExpired } from "@/constants/session-expired";
 import API_METHODS from "@/constants/api-methods";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
 import { ResHandler } from "@/types/api-types";
@@ -19,7 +20,8 @@ const addSAPConfiguration = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Add SAP configuration data in SAP action: ", sapConfigData);
+        // console.log("Token: ", token);
+        // console.log("Add SAP configuration data in SAP action: ", sapConfigData);
 
         try {
             const response = await axios({
@@ -27,20 +29,28 @@ const addSAPConfiguration = createAsyncThunk(
                 url: apiRequestRoutes.postRequest,
                 data: sapConfigData,
                 headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ADD_SAP_CONFIGURATION
+                    "Api-Url": process.env.NEXT_PUBLIC_ADD_SAP_CONFIGURATION,
+                    "Auth-Token": token
                 }
             });
-        console.log("Response in SAP action: ", response);
-        const { status, data } = response;
+            // console.log("Response in SAP action: ", response);
+            const { status, data } = response;
 
-        if (status == 200) {
-        //     resHandler(response);
-        };
+            if (status == 200) {
+                resHandler(response);
+            };
         }
 
         catch (error: any) {
-        console.log('Error occured in Add SAP configuration api integration: ', error);
-        // resHandler(error?.response);
+            // console.log('Error occured in Add SAP configuration api integration: ', error);
+            resHandler(error?.response);
+
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) {
+                sessionExpired(data?.error);
+            };
         };
     }
 );
