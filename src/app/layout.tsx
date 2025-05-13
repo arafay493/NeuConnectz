@@ -15,8 +15,9 @@ import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-provider";
 
 // Note: Importing required components...!
-import AppLayOut from "./page";
+// import AppLayOut from "./page";
 import LoginScreen from './login/page';
+import AppLayOut from '@/components/app-layout/app-layout';
 
 const RootLayout = (
   { children }: Readonly<{ children: React.ReactNode; }>
