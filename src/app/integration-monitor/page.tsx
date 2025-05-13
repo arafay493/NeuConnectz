@@ -2,12 +2,12 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button, Card, Center, Container, Grid, Group, SegmentedControl, Table, Tabs, Text, TextInput, Title, Stack, Pagination } from '@mantine/core';
+import React, { useState } from 'react';
+import { Button, Card, Container, Grid, Group, SegmentedControl, Table, Tabs, Text, TextInput, Title, Stack, Pagination, ThemeIcon } from '@mantine/core';
 import { IconSearch, IconAdjustmentsHorizontal } from '@tabler/icons-react';
-import { IconCheckbox } from "@tabler/icons-react";
+import { IconCheckbox, IconChartBar } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
+import ReplicationComponent from '@/components/replication/replication';
 
 const data = [
     { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
@@ -18,18 +18,6 @@ const data = [
     { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
     { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
 ];
-
-function ReplicationPage() {
-    return (
-        <Container>
-            <Card withBorder shadow="sm">
-                <Title order={3}>Replication Component</Title>
-                <Text>This is where you can build your Replication tab content.</Text>
-            </Card>
-        </Container>
-    );
-}
-
 
 const IntegrationMonitor = () => {
 
@@ -78,17 +66,34 @@ const IntegrationMonitor = () => {
                 />
 
                 {tab === 'replication' ? (
-                    <ReplicationPage />
+                    <ReplicationComponent />
                 ) : (
                     <>
                         <Grid grow>
                             {["ITR", "IT", "TR", "GI", "GR", "GRN"].map((type, idx) => (
                                 <Grid.Col span={{ base: 12, sm: 6, md: 2 }} key={type}>
                                     <Card shadow="sm" radius="md" withBorder>
+                                        <Group justify={customStyles.alignment.spaceBetween} mb="sm">
+                                            <ThemeIcon
+                                                variant="light"
+                                                color={customStyles.colors._1B59F8}
+                                                size="xl"
+                                                radius="md"
+                                            >
+                                                <IconChartBar size="1.5rem" />
+                                            </ThemeIcon>
+                                        </Group>
+
                                         <Title order={4}>{type}</Title>
                                         <Text size="xl" style={{ fontWeight: 700 }} mt="sm">{idx * 1000 + 260}</Text>
                                         <Text c="dimmed" size="sm">20 mins ago</Text>
-                                        <Button fullWidth mt="md">Post</Button>
+                                        <Button
+                                            fullWidth
+                                            mt="md"
+                                            variant="outline"
+                                        >
+                                            Post
+                                        </Button>
                                     </Card>
                                 </Grid.Col>
                             ))}
@@ -98,14 +103,13 @@ const IntegrationMonitor = () => {
                             <Title order={5}>Pending & Success Data</Title>
                             <Text size="sm" c="dimmed" mb="sm">Track inventory transfers that are pending or successfully synced with SAP.</Text>
 
-                            <Group gap="xs" mb="sm">
-                                <Button variant="light">Pending</Button>
-                                <Button variant="light">Success</Button>
-                                <Button variant="light">Error</Button>
-                            </Group>
+                            <Group pt={5} pb={5} justify="space-between" mb="sm" gap="sm" style={{ display : "flex", alignItems : "center" }}>
+                                <Group gap="xs">
+                                    <Button variant="outline">Pending</Button>
+                                    <Button variant="outline">Success</Button>
+                                    <Button variant="outline">Error</Button>
+                                </Group>
 
-                            <Group justify="space-between" mb="sm" gap="sm">
-                                <TextInput placeholder="Search..." leftSection={<IconSearch size={16} />} />
                                 <Group>
                                     <Button variant="light" leftSection={<IconAdjustmentsHorizontal size={16} />}>
                                         Filter
@@ -135,7 +139,7 @@ const IntegrationMonitor = () => {
                             </Table>
 
                             {/* Note: Pagination section */}
-                            <Group justify="end" mt="md">
+                            <Group justify="flex-start" mt="md">
                                 <Pagination
                                     value={activePage}
                                     onChange={setPage}
