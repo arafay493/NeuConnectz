@@ -44,26 +44,28 @@ const ReplicationComponent = () => {
             </Box>
 
             <Grid gutter="sm">
-                {data.map((item, index) => (
-                    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
-                        <Card withBorder radius="md" padding="md" shadow="xs">
-                            <Stack gap={4}>
-                                <Group justify="space-between">
-                                    <Text size="sm" style={{ fontWeight: 500 }}>
-                                        {item.label}
+                {
+                    data.map((item, index) => (
+                        <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
+                            <Card withBorder radius="md" padding="md" shadow="xs">
+                                <Stack gap={4}>
+                                    <Group justify="space-between">
+                                        <Text size="sm" style={{ fontWeight: 500 }}>
+                                            {item.label}
+                                        </Text>
+                                        <Text size="sm" color="dimmed">
+                                            {item.value}%
+                                        </Text>
+                                    </Group>
+                                    <Progress value={item.value} radius="xl" />
+                                    <Text size="xs" color="dimmed">
+                                        {item.count}
                                     </Text>
-                                    <Text size="sm" color="dimmed">
-                                        {item.value}%
-                                    </Text>
-                                </Group>
-                                <Progress value={item.value} radius="xl" />
-                                <Text size="xs" color="dimmed">
-                                    {item.count}
-                                </Text>
-                            </Stack>
-                        </Card>
-                    </Grid.Col>
-                ))}
+                                </Stack>
+                            </Card>
+                        </Grid.Col>
+                    ))
+                }
             </Grid>
         </Card>
     );

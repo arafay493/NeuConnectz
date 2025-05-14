@@ -55,4 +55,49 @@ const addSAPConfiguration = createAsyncThunk(
     }
 );
 
-export { addSAPConfiguration };
+// Note: Action function to post ITR request to SAP...!
+const postITRRequestToSAP = createAsyncThunk(
+    "sap/postITRRequestToSAP",
+    async (
+        { token, resHandler }:
+            {
+                token: string,
+                resHandler: ResHandler
+            },
+        { dispatch }
+    ) => {
+        console.log("Token: ", token);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.POST,
+                url: apiRequestRoutes.postRequest,
+                data: { userName: "Prince Ahmed" },
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP,
+                    "Auth-Token": token
+                }
+            });
+            console.log("Response in SAP action: ", response);
+            const { status, data } = response;
+
+            if (status == 201) {
+                resHandler(response);
+            };
+        }
+
+        catch (error: any) {
+            console.log('Error occured in post ITR request to SAP api integration: ', error);
+            resHandler(error?.response);
+
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) {
+                sessionExpired(data?.error);
+            };
+        };
+    }
+);
+
+export { addSAPConfiguration, postITRRequestToSAP };

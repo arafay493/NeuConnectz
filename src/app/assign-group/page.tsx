@@ -14,7 +14,8 @@ import {
   Stack,
   Title,
   Button,
-  Checkbox
+  Checkbox,
+  Flex
 } from "@mantine/core";
 import { IconBuildingWarehouse } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -35,6 +36,7 @@ const AssignGroup = () => {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState<{ label: string; value: string }[]>([]);
   const [checkedGroups, setCheckedGroups] = useState<(string | number)[]>([]);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -46,7 +48,7 @@ const AssignGroup = () => {
   // console.log('List all group codes:', ListAllGroupCodes);
 
   // Note: Required variables...!
-  const itemsPerPage = 10;
+  // const itemsPerPage = 10;
   const totalPages = Math.ceil(ListAllGroupCodes.length / itemsPerPage);
   const paginated = ListAllGroupCodes.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -243,11 +245,32 @@ const AssignGroup = () => {
           </Box>
         </ScrollArea>
 
-        <PaginationComponent
-          totalPages={totalPages}
-          pageNum={page}
-          handleNewPage={setPage}
-        />
+        <Flex
+          justify={customStyles.alignment.spaceBetween}
+          align={customStyles.alignment.center}
+          mb="md"
+          wrap="wrap"
+          gap="sm"
+        >
+          {/* Note: Pagination section */}
+          <PaginationComponent
+            totalPages={totalPages}
+            pageNum={page}
+            handleNewPage={setPage}
+          />
+
+          {/* Note: Rows per page section */}
+          <Select
+            data={["5", "10", "20", "50"]}
+            label="Rows per page"
+            value={itemsPerPage.toString()}
+            onChange={(value) => {
+              setItemsPerPage(Number(value));
+              setPage(1);
+            }}
+            w={120}
+          />
+        </Flex>
       </Paper>
     </div>
   );

@@ -14,7 +14,8 @@ import {
   Stack,
   Title,
   Button,
-  Checkbox
+  Checkbox,
+  Flex
 } from "@mantine/core";
 import { IconBuildingWarehouse } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -40,6 +41,7 @@ const AssignWareHouse = () => {
   const [usersData, setUsersData] = useState([]);
   const [access, setAccess] = useState<Record<string, AccessWareHouseDataType[]>>({});
   const [loading, setLoading] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -53,7 +55,7 @@ const AssignWareHouse = () => {
   // console.log('WareHouses list: ', wareHousesList);
 
   // Note: Required variables...!
-  const itemsPerPage: number = 10;
+  // const itemsPerPage: number = 10;
   const totalPages = Math.ceil(wareHousesList?.length / itemsPerPage);
   const paginated = [...wareHousesList].slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
@@ -343,12 +345,32 @@ const AssignWareHouse = () => {
           </Box>
         </ScrollArea>
 
-        {/* Note: Pagination section */}
-        <PaginationComponent
-          totalPages={totalPages}
-          pageNum={page}
-          handleNewPage={setPage}
-        />
+        <Flex
+          justify={customStyles.alignment.spaceBetween}
+          align={customStyles.alignment.center}
+          mb="md"
+          wrap="wrap"
+          gap="sm"
+        >
+          {/* Note: Pagination section */}
+          <PaginationComponent
+            totalPages={totalPages}
+            pageNum={page}
+            handleNewPage={setPage}
+          />
+
+          {/* Note: Rows per page section */}
+          <Select
+            data={["5", "10", "20", "50"]}
+            label="Rows per page"
+            value={itemsPerPage.toString()}
+            onChange={(value) => {
+              setItemsPerPage(Number(value));
+              setPage(1);
+            }}
+            w={120}
+          />
+        </Flex>
       </Paper>
     </div>
   );
