@@ -1,6 +1,6 @@
 // Note: Integration component...!
 
-import React, { useState, memo } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import {
     Button,
     Card,
@@ -9,27 +9,20 @@ import {
     Table,
     Text,
     Title,
-    Pagination,
-    ThemeIcon
+    ThemeIcon,
+    Flex,
+    Select
 } from '@mantine/core';
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postITRRequestToSAP } from '@/redux/actions/sap-actions/sap-actions';
+import { postITRRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
+import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
 
-// Note: THis is the dummy data in futuire it will be cming from an API...!
-const data = [
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-    { type: 'ITR', number: '10245', itemCode: 'ITM-001', from: 'DMSTHT', to: 'MW', status: 'Pending', erpDoc: '234567779', lineId: '245656667', docType: 'Active' },
-];
 const headers = ["Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "Status", "ERP Doc Entry", "ERP Line ID", "Doc Type"];
 
 interface IntegrationComponentProps {
@@ -39,20 +32,23 @@ interface IntegrationComponentProps {
 
 const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { enableLoader, disableLoader } = props;
-    console.log("Props of Integration Component: ", props);
+    // console.log("Props of Integration Component: ", props);
 
     // Note: Handeling states here...!
     const [activePage, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { listAll_ITR_IT_TRS, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
 
     // Note: Required variables...!
-    const rowsPerPage = 5;
-    const paginatedData = data.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage);
+    const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
+    const paginatedData = listAll_ITR_IT_TRS.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
     // Note: post ITR request to SAP api response handler...!
     const handleResponse = (response: any): void => {
@@ -88,6 +84,23 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             resHandler: handleResponse
         }));
     };
+
+    // Note: handle change status...!
+    const handleStatusChange = (status: "Pending" | "Integrated") => {
+        // console.log("Status: ", status);
+        if (authenticatedUser && status) {
+            const token: string = authenticatedUser?.token
+            dispatch(fetchAllITR_IT_TRS({ token, dataStatus: status }));
+        };
+    };
+
+    // Note: When this component mounted then this hook will run...!
+    useEffect(() => {
+        if (authenticatedUser) {
+            const token: string = authenticatedUser?.token
+            dispatch(fetchAllITR_IT_TRS({ token, dataStatus: "Pending" }));
+        };
+    }, []);
 
     return (
         <>
@@ -128,8 +141,20 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                 <Group pt={5} pb={5} justify="space-between" mb="sm" gap="sm" style={{ display: "flex", alignItems: "center" }}>
                     <Group gap="xs">
-                        <Button variant="outline">Pending</Button>
-                        <Button variant="outline">Success</Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => handleStatusChange("Pending")}
+                        >
+                            Pending
+                        </Button>
+                        
+                        <Button
+                            variant="outline"
+                            onClick={() => handleStatusChange("Integrated")}
+                        >
+                            Success
+                        </Button>
+
                         <Button variant="outline">Error</Button>
                     </Group>
 
@@ -140,36 +165,66 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     </Group>
                 </Group>
 
-                <Table highlightOnHover striped withTableBorder>
+                <Table
+                    highlightOnHover
+                    striped
+                    withTableBorder
+                >
                     <Table.Thead>
                         <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
                     </Table.Thead>
 
                     <Table.Tbody>
                         {
-                            paginatedData.map((row, i) => (
-                                <Table.Tr key={i}>
-                                    <Table.Td>{row.type}</Table.Td>
-                                    <Table.Td>{row.number}</Table.Td>
-                                    <Table.Td>{row.itemCode}</Table.Td>
-                                    <Table.Td>{row.from}</Table.Td>
-                                    <Table.Td>{row.to}</Table.Td>
-                                    <Table.Td>{row.status}</Table.Td>
-                                    <Table.Td>{row.erpDoc}</Table.Td>
-                                    <Table.Td>{row.lineId}</Table.Td>
-                                    <Table.Td>{row.docType}</Table.Td>
-                                </Table.Tr>
-                            ))
+                            (paginatedData.length > 0)
+                                ?
+                                (
+                                    paginatedData.map((row: SAP_ITR_IT_TRS_DataType) => (
+                                        <Table.Tr key={row.id}>
+                                            <Table.Td>{row.type}</Table.Td>
+                                            <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                            <Table.Td>{row.itemCode}</Table.Td>
+                                            <Table.Td>{row.fromWarehouse}</Table.Td>
+                                            <Table.Td>{row.toWarehouse}</Table.Td>
+                                            <Table.Td>{row.status}</Table.Td>
+                                            <Table.Td>{row.erpDocEntry ? row.erpDocEntry : '-'}</Table.Td>
+                                            <Table.Td>{row.erpLineID ? row.erpLineID : '-'}</Table.Td>
+                                            <Table.Td>{row.isActive ? "Active" : "Inactive"}</Table.Td>
+                                        </Table.Tr>
+                                    ))
+                                )
+                                :
+                                (<DataNotFound notFoundContent={sapErrorState || "No ITR_IT_TRS data found."} colSpanValue={9} />)
                         }
                     </Table.Tbody>
                 </Table>
 
-                {/* Note: Pagination section */}
-                <PaginationComponent
-                    totalPages={Math.ceil(data.length / rowsPerPage)}
-                    pageNum={activePage}
-                    handleNewPage={setPage}
-                />
+                <Flex
+                    justify={customStyles.alignment.spaceBetween}
+                    align={customStyles.alignment.center}
+                    mb="md"
+                    wrap="wrap"
+                    gap="sm"
+                >
+                    {/* Note: Pagination section */}
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        pageNum={activePage}
+                        handleNewPage={setPage}
+                    />
+
+                    {/* Note: Rows per page section */}
+                    <Select
+                        data={["5", "10", "20", "50"]}
+                        label="Rows per page"
+                        value={itemsPerPage.toString()}
+                        onChange={(value) => {
+                            setItemsPerPage(Number(value));
+                            setPage(1);
+                        }}
+                        w={120}
+                    />
+                </Flex>
             </Card>
         </>
     );

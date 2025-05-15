@@ -48,7 +48,6 @@ const AssignGroup = () => {
   // console.log('List all group codes:', ListAllGroupCodes);
 
   // Note: Required variables...!
-  // const itemsPerPage = 10;
   const totalPages = Math.ceil(ListAllGroupCodes.length / itemsPerPage);
   const paginated = ListAllGroupCodes.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 

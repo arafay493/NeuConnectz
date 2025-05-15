@@ -7,6 +7,7 @@ import { sessionExpired } from "@/constants/session-expired";
 import API_METHODS from "@/constants/api-methods";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
 import { ResHandler } from "@/types/api-types";
+import { UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA, FETCH_ALL_ITR_IT_TRS } from "@/redux/reducers/sap-reducer/sap-reducer";
 
 // Note: Action function to add SAP configuration...!
 const addSAPConfiguration = createAsyncThunk(
@@ -66,7 +67,7 @@ const postITRRequestToSAP = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Token: ", token);
+        // console.log("Token: ", token);
 
         try {
             const response = await axios({
@@ -78,7 +79,7 @@ const postITRRequestToSAP = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in SAP action: ", response);
+            // console.log("Response in SAP action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -87,7 +88,7 @@ const postITRRequestToSAP = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log('Error occured in post ITR request to SAP api integration: ', error);
+            // console.log('Error occured in post ITR request to SAP api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -100,4 +101,53 @@ const postITRRequestToSAP = createAsyncThunk(
     }
 );
 
-export { addSAPConfiguration, postITRRequestToSAP };
+// Note: Action function fetch all ITR_IT_TRS...!
+const fetchAllITR_IT_TRS = createAsyncThunk(
+    "sap/fetchAllITR_IT_TRS",
+    async (
+        { token, dataStatus }:
+            {
+                token: string,
+                dataStatus: "Pending" | "Integrated"
+            },
+        { dispatch }
+    ) => {
+        // console.log("Auth token: ", token);
+        // console.log("Status: ", dataStatus);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}`,
+                    "Auth-Token": token
+                }
+            });
+            // console.log("Response in sap action: ", response);
+            const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_ITR_IT_TRS(data?.data?.data));
+            };
+        }
+
+        catch (error: any) {
+            // console.log('Error occured in fetch all users api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) sessionExpired(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
+
+export {
+    addSAPConfiguration,
+    postITRRequestToSAP,
+    fetchAllITR_IT_TRS
+};

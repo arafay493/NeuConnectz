@@ -10,3 +10,16 @@ export interface AddSAPConfigDataType {
     systemPassword: string,
     inTransitWarehouse: string
 };
+
+export interface SAP_ITR_IT_TRS_DataType {
+    id: string,
+    type: string,
+    docNumber: string | null,
+    itemCode: string,
+    fromWarehouse: string,
+    toWarehouse: string,
+    status: string,
+    erpDocEntry: string | null,
+    erpLineID: string | null,
+    isActive: boolean
+};

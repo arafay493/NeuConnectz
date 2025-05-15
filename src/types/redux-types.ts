@@ -64,3 +64,19 @@ export interface GroupStateType {
     }[];
     GroupErrorState: string
 };
+
+export interface SAPStateType {
+    listAll_ITR_IT_TRS: {
+        id: string,
+        type: string,
+        docNumber: string | null,
+        itemCode: string,
+        fromWarehouse: string,
+        toWarehouse: string,
+        status: string,
+        erpDocEntry: string | null,
+        erpLineID: string | null,
+        isActive: boolean
+    }[];
+    sapErrorState: string
+};
