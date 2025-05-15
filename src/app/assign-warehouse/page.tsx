@@ -21,6 +21,7 @@ import { IconBuildingWarehouse } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { fetchAllWareHouses, assignWareHouseToUser } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
 import {
   WareHouseDataType,
@@ -184,6 +185,8 @@ const AssignWareHouse = () => {
   useEffect(() => {
     if (authenticatedUser) {
       dispatch(fetchAllWareHouses(authenticatedUser?.token));
+
+      if (usersList.length < 1) dispatch(fetchAllUsers(authenticatedUser?.token));
     };
   }, []);
 

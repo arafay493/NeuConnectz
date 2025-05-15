@@ -73,7 +73,7 @@ const UsersListScreen = () => {
   // Note: This hook will run once when this component mounts...!
   useEffect(() => {
     if (authenticatedUser) {
-      dispatch(fetchAllUsers(authenticatedUser?.token))
+      dispatch(fetchAllUsers(authenticatedUser?.token));
     };
   }, []);
 

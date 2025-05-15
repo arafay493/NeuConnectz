@@ -170,8 +170,9 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
                 <IconUser size="1rem" style={{ marginRight: 8 }} /> Account
               </Menu.Item>
 
-              <Menu.Item color={customStyles.colors.red}>
-                <IconLogout size="1rem" style={{ marginRight: 8 }} /> Logout
+              <Menu.Item color={customStyles.colors.red} onClick={handleLogout}>
+                <IconLogout size="1rem" style={{ marginRight: 8 }} />
+                Logout
               </Menu.Item>
             </Menu.Dropdown>
           </Menu>

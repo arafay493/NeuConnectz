@@ -15,14 +15,16 @@ import {
   Title,
   Button,
   Checkbox,
-  Flex
+  Flex,
+  TextInput
 } from "@mantine/core";
-import { IconBuildingWarehouse } from "@tabler/icons-react";
+import { IconBuildingWarehouse, IconSearch } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import PaginationComponent from '@/components/pagination/pagination';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { fetchListAllGroupCodes, assignGroupToUser } from '@/redux/actions/group-actions/group-actions';
+import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { GroupCodeDataType, AssignGrouptoUserDataType } from '@/types/modules/group-types/group-types';
 import { customStyles } from '@/styles/custom-theme';
@@ -132,6 +134,8 @@ const AssignGroup = () => {
   useEffect(() => {
     if (authenticatedUser?.token) {
       dispatch(fetchListAllGroupCodes(authenticatedUser.token));
+
+      if (usersList.length < 1) dispatch(fetchAllUsers(authenticatedUser?.token));
     };
   }, [authenticatedUser]);
 
@@ -166,18 +170,39 @@ const AssignGroup = () => {
         bg={customStyles.colors.white}
         style={{ borderRadius: customStyles.size.size_5 }}
       >
-        <Stack gap={4}>
-          Select User:
-          <Select
-            data={usersData}
-            placeholder="Select User"
-            value={selectedUser}
-            onChange={handleChange}
-            clearable
-            w={300}
-            searchable
-          />
-        </Stack>
+        <div
+          style={{
+            display: "flex"
+          }}
+        >
+          <Stack gap={4}>
+            Select User:
+            <Select
+              data={usersData}
+              placeholder="Select User"
+              value={selectedUser}
+              onChange={handleChange}
+              clearable
+              w={300}
+              searchable
+            />
+          </Stack>
+
+          {/* Note: Search by user name secion */}
+          <Stack gap={4} style={{ marginLeft: 10 }}>
+            Search Group Name:
+            <TextInput
+              placeholder="Search by username"
+              leftSection={<IconSearch size={16} />}
+              // value={search}
+              // onChange={(e) => {
+              //   setSearch(e.currentTarget.value);
+              //   setPage(1);
+              // }}
+              w={300}
+            />
+          </Stack>
+        </div>
 
         <Button
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}

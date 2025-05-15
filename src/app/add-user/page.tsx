@@ -147,8 +147,8 @@ const AddUserScreen = () => {
     // Note: Function to create / add user...!
     const addUserHandler = () => {
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^(?:\+92|92)?(03[0-9]{2})[0-9]{7}$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        const phoneRegex = /^(?:\+92|92|0)?3[0-9]{9}$/;
         const {
             userName,
             email,
@@ -164,7 +164,7 @@ const AddUserScreen = () => {
             else if (!email.match(emailRegex)) throw "Email is required";
             else if (!department) throw "Department is required";
             else if (!role) throw "Role is required";
-            else if (!phone.match(phoneRegex)) throw "Phone Number is required";
+            else if (!phone.match(phoneRegex)) throw "Invalid phone number format";
             else if (password.length < 6) throw "Password must be at least 6 characters";
             else if (confirmPassword !== password) throw "Passwords do not match";
             else {
@@ -202,7 +202,10 @@ const AddUserScreen = () => {
     };
 
     return (
-        <Container size="xl" py="md">
+        <Container
+            size="xl"
+            py="md"
+        >
 
             {/* Note: Loading Component */}
             <Loader loadingState={userData.loading} />
@@ -263,11 +266,13 @@ const AddUserScreen = () => {
 
                             <Group grow>
                                 <TextInput
-                                    type='number'
+                                    type='text'
+                                    inputMode='numeric'
                                     label="Phone Number"
                                     placeholder="Phone Number"
                                     value={userData.phone}
                                     onChange={(e) => handleChange("phone", e.target.value)}
+                                    maxLength={13}
                                     required
                                 />
 
