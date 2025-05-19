@@ -42,6 +42,7 @@ import { CLEAR_ALL_USER_STATES } from '@/redux/reducers/user-reducer/user-reduce
 import { CLEAR_ALL_WAREHOUSE_STATES } from '@/redux/reducers/warehouse-reducer/warehouse-reducer';
 import { CLEAR_ALL_GROUP_STATES } from '@/redux/reducers/group-reducer/group-reducer';
 import { customStyles } from '@/styles/custom-theme';
+import { CLEAR_ALL_SAP_STATES } from '@/redux/reducers/sap-reducer/sap-reducer';
 
 const AppLayOut = ({ children }: { children: ReactNode }) => {
 
@@ -71,6 +72,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       dispatch(CLEAR_ALL_USER_STATES());
       dispatch(CLEAR_ALL_WAREHOUSE_STATES());
       dispatch(CLEAR_ALL_GROUP_STATES());
+      dispatch(CLEAR_ALL_SAP_STATES());
       deleteCookie("UserAuthenticated");
       deleteCookie("AuthToken");
       localStorage.clear();

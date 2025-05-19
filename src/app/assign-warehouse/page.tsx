@@ -15,9 +15,11 @@ import {
   Title,
   Button,
   Checkbox,
-  Flex
+  Flex,
+  TextInput,
+  rem,
 } from "@mantine/core";
-import { IconBuildingWarehouse } from "@tabler/icons-react";
+import { IconBuildingWarehouse, IconSearch } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { fetchAllWareHouses, assignWareHouseToUser } from '@/redux/actions/warehouse-actions/warehouse-actions';
@@ -37,6 +39,7 @@ import { customStyles } from '@/styles/custom-theme';
 const AssignWareHouse = () => {
 
   // Note: Handeling states here...!
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState([]);
@@ -55,10 +58,14 @@ const AssignWareHouse = () => {
   // console.log('Users list: ', usersList);
   // console.log('WareHouses list: ', wareHousesList);
 
+  const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
+    whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
+  );
+
   // Note: Required variables...!
   // const itemsPerPage: number = 10;
-  const totalPages = Math.ceil(wareHousesList?.length / itemsPerPage);
-  const paginated = [...wareHousesList].slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.ceil(filtered?.length / itemsPerPage);
+  const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   // Note: Function to clear all states...!
   const clearAllStates = () => {
@@ -72,7 +79,11 @@ const AssignWareHouse = () => {
   const handleChange = (value: string | null) => {
     setSelectedUser(value);
 
-    if (!value) return;
+    if (value === null) {
+      setSearch("");
+      setPage(1);
+      return;
+    };
 
     // Initialize access state for selected user if not already present
     setAccess((prev) => {
@@ -231,26 +242,49 @@ const AssignWareHouse = () => {
 
       <Group
         justify={customStyles.alignment.spaceBetween}
-        align="center"
+        align={customStyles.alignment.center}
         p="md"
         bg={customStyles.colors.white}
         style={{ borderRadius: customStyles.size.size_5 }}
+        wrap="wrap"
       >
-        <Stack gap={4}>
+        <Flex
+          direction={{ base: "column", sm: "row" }}
+          gap="sm"
+          wrap="wrap"
+          style={{ flex: 1, minWidth: rem(300) }}
+        >
+          <Stack gap={4} w={{ base: "100%", sm: 300 }}>
+            Select User:
+            <Select
+              data={usersData}
+              placeholder="Select User"
+              value={selectedUser}
+              onChange={handleChange}
+              clearable
+              w={300}
+              searchable
+            />
+          </Stack>
 
-          Select User:
-          <Select
-            data={usersData}
-            placeholder="Select User"
-            value={selectedUser}
-            onChange={handleChange}
-            clearable
-            w={300}
-            searchable
-          />
-        </Stack>
+          {/* Note: Search by warehouse name secion */}
+          <Stack gap={4} w={{ base: "100%", sm: 300 }}>
+            Search Warehouse Name:
+            <TextInput
+              placeholder="Search by warehouse name"
+              leftSection={<IconSearch size={16} />}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.currentTarget.value);
+                setPage(1);
+              }}
+              w={300}
+            />
+          </Stack>
+        </Flex>
 
         <Button
+          mt={{ base: "md", sm: 0 }}
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}

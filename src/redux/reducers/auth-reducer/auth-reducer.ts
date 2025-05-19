@@ -12,6 +12,20 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+        REFRESH_TOKEN: (state, action: PayloadAction<any>) => {
+            console.log("Refresh token data in auth reducer: ", action.payload);
+
+            // const userClone = { ...state.authenticatedUser };
+            // userClone.token = action.payload?.accessToken;
+            // userClone.refreshToken = action.payload?.refreshToken;
+            // state.authenticatedUser = userClone;
+
+            if (state.authenticatedUser) {
+                state.authenticatedUser.token = action.payload.accessToken;
+                state.authenticatedUser.refreshToken = action.payload.refreshToken;
+            };
+        },
+
         LOG_IN_USER: (state, action: PayloadAction<any>) => {
             // console.log("User data in auth reducer: ", action.payload);
             state.authenticatedUser = action?.payload;
@@ -26,6 +40,7 @@ const authSlice = createSlice({
 export const
     {
         LOG_IN_USER,
-        LOG_OUT_USER
+        LOG_OUT_USER,
+        REFRESH_TOKEN
     } = authSlice.actions;
 export default authSlice.reducer;

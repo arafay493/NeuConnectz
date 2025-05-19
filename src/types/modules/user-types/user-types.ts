@@ -28,5 +28,10 @@ export interface UserType {
     isActive: boolean
 };
 
+export interface RefreshTokenType {
+    accessToken: string,
+    refreshToken: string
+};
+
 export type UserRole = "SuperAdmin" | "WareHouseUser" | "Receiver";
 export type UserDepartment = "Inventory Control" | "Logistics" | "Dispatch" | "WareHouse";

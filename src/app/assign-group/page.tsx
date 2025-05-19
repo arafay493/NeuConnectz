@@ -16,7 +16,8 @@ import {
   Button,
   Checkbox,
   Flex,
-  TextInput
+  TextInput,
+  rem,
 } from "@mantine/core";
 import { IconBuildingWarehouse, IconSearch } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -34,6 +35,7 @@ const AssignGroup = () => {
 
   // Note: Handeling states here...!
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState<{ label: string; value: string }[]>([]);
@@ -49,9 +51,13 @@ const AssignGroup = () => {
   const { ListAllGroupCodes = [], GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
   // console.log('List all group codes:', ListAllGroupCodes);
 
+  const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
+    user?.groupName?.toLowerCase().includes(search?.toLowerCase())
+  );
+
   // Note: Required variables...!
-  const totalPages = Math.ceil(ListAllGroupCodes.length / itemsPerPage);
-  const paginated = ListAllGroupCodes.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   // Note: Handle clear all states here...!
   const clearAllStates = () => {
@@ -65,6 +71,11 @@ const AssignGroup = () => {
   const handleChange = (value: string | null) => {
     setSelectedUser(value);
     setCheckedGroups([]);
+
+    if (value === null) {
+      setSearch("");
+      setPage(1);
+    };
   };
 
   // Note: Handle checkbox onchange...!
@@ -165,17 +176,19 @@ const AssignGroup = () => {
 
       <Group
         justify={customStyles.alignment.spaceBetween}
-        align="center"
+        align={customStyles.alignment.center}
         p="md"
         bg={customStyles.colors.white}
         style={{ borderRadius: customStyles.size.size_5 }}
+        wrap="wrap"
       >
-        <div
-          style={{
-            display: "flex"
-          }}
+        <Flex
+          direction={{ base: "column", sm: "row" }}
+          gap="sm"
+          wrap="wrap"
+          style={{ flex: 1, minWidth: rem(300) }}
         >
-          <Stack gap={4}>
+          <Stack gap={4} w={{ base: "100%", sm: 300 }}>
             Select User:
             <Select
               data={usersData}
@@ -188,23 +201,24 @@ const AssignGroup = () => {
             />
           </Stack>
 
-          {/* Note: Search by user name secion */}
-          <Stack gap={4} style={{ marginLeft: 10 }}>
+          {/* Note: Search by group name secion */}
+          <Stack gap={4} w={{ base: "100%", sm: 300 }}>
             Search Group Name:
             <TextInput
-              placeholder="Search by username"
+              placeholder="Search by group name"
               leftSection={<IconSearch size={16} />}
-              // value={search}
-              // onChange={(e) => {
-              //   setSearch(e.currentTarget.value);
-              //   setPage(1);
-              // }}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.currentTarget.value);
+                setPage(1);
+              }}
               w={300}
             />
           </Stack>
-        </div>
+        </Flex>
 
         <Button
+          mt={{ base: "md", sm: 0 }}
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignGroup}
