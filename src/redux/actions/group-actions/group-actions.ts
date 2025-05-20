@@ -4,7 +4,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_GROUP_CODES, UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA } from "@/redux/reducers/group-reducer/group-reducer";
+import {
+    UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA,
+    FETCH_ALL_GROUP_CODES,
+    FETCH_GROUP_CODES_BY_USER_ID,
+}
+    from "@/redux/reducers/group-reducer/group-reducer";
 import { sessionExpired } from "@/constants/session-expired";
 import { AssignGrouptoUserDataType } from "@/types/modules/group-types/group-types";
 import { ResHandler } from "@/types/api-types";
@@ -45,7 +50,49 @@ const fetchListAllGroupCodes = createAsyncThunk(
     }
 );
 
+// Note: Action function to fetch group codes list by user id...!
+const fetchGroupCodesListByUserId = createAsyncThunk(
+    "group/fetchListAllGroupCodes",
+    async (
+        { authToken, userId }: { authToken: string, userId: string },
+        { dispatch }
+    ) => {
+        // console.log("Auth token: ", authToken);
+        // console.log("User id: ", userId);
 
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                params: { userId },
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_ADD_FETCH_GROUP_CODES_BY_USER_ID,
+                    "Auth-Token": authToken
+                }
+            });
+            // console.log("Response in group action: ", response);
+            const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
+            };
+        }
+
+        catch (error: any) {
+            // console.log('Error occured in fetc group codes list by user id api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) sessionExpired(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
+
+            // 404
+            else if (status == 404) dispatch(FETCH_GROUP_CODES_BY_USER_ID([]));
+        };
+    }
+);
 
 // Note: Action function to assign group to user...!
 const assignGroupToUser = createAsyncThunk(
@@ -96,5 +143,6 @@ const assignGroupToUser = createAsyncThunk(
 
 export {
     fetchListAllGroupCodes,
+    fetchGroupCodesListByUserId,
     assignGroupToUser
 };

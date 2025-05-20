@@ -24,7 +24,12 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import PaginationComponent from '@/components/pagination/pagination';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { fetchListAllGroupCodes, assignGroupToUser } from '@/redux/actions/group-actions/group-actions';
+import {
+  fetchListAllGroupCodes,
+  fetchGroupCodesListByUserId,
+  assignGroupToUser
+}
+  from '@/redux/actions/group-actions/group-actions';
 import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { GroupCodeDataType, AssignGrouptoUserDataType } from '@/types/modules/group-types/group-types';
@@ -48,8 +53,9 @@ const AssignGroup = () => {
   // Note: Fetching data from redux here...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
-  const { ListAllGroupCodes = [], GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
-  // console.log('List all group codes:', ListAllGroupCodes);
+  const { ListAllGroupCodes, listGroupCodesByUserId, GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
+  console.log('List all group codes:', ListAllGroupCodes);
+  console.log('List group codes by user id:', listGroupCodesByUserId);
 
   const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
     user?.groupName?.toLowerCase().includes(search?.toLowerCase())
@@ -160,6 +166,29 @@ const AssignGroup = () => {
       setUsersData(targetData);
     };
   }, [usersList]);
+
+  // Note: This hook will run when selectedUser changes...!
+  useEffect(() => {
+    if (selectedUser) {
+      dispatch(fetchGroupCodesListByUserId({
+        authToken: authenticatedUser?.token as string,
+        userId: selectedUser,
+      }));
+    };
+  }, [selectedUser]);
+
+  // Note: This hook will run when selectedUser or listGroupCodesByUserId changes, update checkedGroups...!
+  useEffect(() => {
+    if (selectedUser && listGroupCodesByUserId.length > 0) {
+      const assignedGroupCodes = listGroupCodesByUserId.map(group => group.groupCode);
+      setCheckedGroups(assignedGroupCodes);
+    }
+
+    else {
+      setCheckedGroups([]);
+    };
+  }, [selectedUser, listGroupCodesByUserId]);
+
 
   return (
     <div>

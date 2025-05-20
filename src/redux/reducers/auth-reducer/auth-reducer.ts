@@ -13,12 +13,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         REFRESH_TOKEN: (state, action: PayloadAction<any>) => {
-            console.log("Refresh token data in auth reducer: ", action.payload);
-
-            // const userClone = { ...state.authenticatedUser };
-            // userClone.token = action.payload?.accessToken;
-            // userClone.refreshToken = action.payload?.refreshToken;
-            // state.authenticatedUser = userClone;
+            // console.log("Refresh token data in auth reducer: ", action.payload);
 
             if (state.authenticatedUser) {
                 state.authenticatedUser.token = action.payload.accessToken;

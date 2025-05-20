@@ -46,7 +46,7 @@ const logInUser = createAsyncThunk(
 const refreshToken = createAsyncThunk(
     "auth/refreshToken",
     async (tokenData: RefreshTokenType, { dispatch }) => {
-        console.log("Token data in auth action: ", tokenData);
+        // console.log("Token data in auth action: ", tokenData);
 
         try {
             const response = await axios({
@@ -57,7 +57,7 @@ const refreshToken = createAsyncThunk(
                     "Api-Url": process.env.NEXT_PUBLIC_AUTH_REFRESH_TOKEN
                 }
             });
-            console.log("Response in auth action: ", response);
+            // console.log("Response in auth action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -66,12 +66,15 @@ const refreshToken = createAsyncThunk(
                 localStorage.setItem("AuthToken", data?.data?.accessToken);
 
                 // Note: Update the token data in reducer...!
-                dispatch(LOG_IN_USER(data?.data));
+                dispatch(REFRESH_TOKEN(data?.data));
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             };
         }
 
         catch (error: any) {
-            console.log('Error occured in refresh token api integration: ', error);
+            // console.log('Error occured in refresh token api integration: ', error);
         };
     }
 );

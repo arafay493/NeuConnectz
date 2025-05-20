@@ -62,6 +62,17 @@ export interface GroupStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    listGroupCodesByUserId: {
+        id: string,
+        groupCode: number | string,
+        groupName: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean,
+        isArchived: boolean
+    }[];
     GroupErrorState: string
 };
 
