@@ -54,8 +54,8 @@ const AssignGroup = () => {
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
   const { ListAllGroupCodes, listGroupCodesByUserId, GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
-  console.log('List all group codes:', ListAllGroupCodes);
-  console.log('List group codes by user id:', listGroupCodesByUserId);
+  // console.log('List all group codes:', ListAllGroupCodes);
+  // console.log('List group codes by user id:', listGroupCodesByUserId);
 
   const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
     user?.groupName?.toLowerCase().includes(search?.toLowerCase())

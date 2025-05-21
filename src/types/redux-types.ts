@@ -46,6 +46,19 @@ export interface WareHouseStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    warehousesListByUserId: {
+        id: string,
+        whsCode: string,
+        whsName: string,
+        isReceiver: boolean,
+        binActivat: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean,
+        isArchived: boolean
+    }[];
     warehouseErrorState: string
 };
 

@@ -6,6 +6,7 @@ import { WareHouseStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: WareHouseStateType = {
     wareHousesList: [],
+    warehousesListByUserId: [],
     warehouseErrorState: ""
 };
 
@@ -15,6 +16,7 @@ const wareHouseSlice = createSlice({
     reducers: {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA: (state) => {
             state.wareHousesList = [];
+            state.warehousesListByUserId = [];
             state.warehouseErrorState = "You are not authorized to access this data!";
         },
 
@@ -24,8 +26,16 @@ const wareHouseSlice = createSlice({
             state.wareHousesList = action?.payload;
         },
 
+        FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {
+            // console.log("Warehouses list by user id data in reducer: ", action.payload);
+            state.warehouseErrorState = "";
+            state.warehousesListByUserId = [];
+            state.warehousesListByUserId = action?.payload;
+        },
+
         CLEAR_ALL_WAREHOUSE_STATES: (state) => {
             state.wareHousesList = [];
+            state.warehousesListByUserId = [];
             state.warehouseErrorState = "";
         },
     }
@@ -35,6 +45,7 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA,
         FETCH_ALL_WAREHOUSES,
+        FETCH_WAREHOUSES_BY_USER_ID,
         CLEAR_ALL_WAREHOUSE_STATES
     } = wareHouseSlice.actions;
 export default wareHouseSlice.reducer;

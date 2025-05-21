@@ -22,7 +22,12 @@ import {
 import { IconBuildingWarehouse, IconSearch } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { fetchAllWareHouses, assignWareHouseToUser } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import {
+  fetchAllWareHouses,
+  fetchWarehousesListByUserId,
+  assignWareHouseToUser
+}
+  from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
 import {
@@ -53,10 +58,11 @@ const AssignWareHouse = () => {
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { wareHousesList, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+  const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
   // console.log('WareHouses list: ', wareHousesList);
+  // console.log('WareHouses list by user id: ', warehousesListByUserId);
 
   const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
     whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
@@ -213,6 +219,37 @@ const AssignWareHouse = () => {
     };
   }, [usersList]);
 
+  // Note: This hook will run when selectedUser changes...!
+  useEffect(() => {
+    if (selectedUser) {
+      dispatch(fetchWarehousesListByUserId({
+        authToken: authenticatedUser?.token as string,
+        userId: selectedUser,
+      }));
+    };
+  }, [selectedUser]);
+
+  // Note: This hook will run when selectedUser, warehousesListByUserId, wareHousesList changes...!
+  useEffect(() => {
+    if (selectedUser && warehousesListByUserId.length > 0) {
+      const updatedAccess = wareHousesList.map((wh: WareHouseDataType) => {
+        const existing: any = warehousesListByUserId.find(
+          (item) => item.whsCode === wh.whsCode
+        );
+        return {
+          whsCode: wh.whsCode,
+          allow: !!existing,
+          receiver: existing?.receiver || false,
+        };
+      });
+
+      setAccess((prev) => ({
+        ...prev,
+        [selectedUser]: updatedAccess,
+      }));
+    }
+  }, [selectedUser, warehousesListByUserId, wareHousesList]);
+
   return (
     <div>
 
@@ -288,7 +325,7 @@ const AssignWareHouse = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}
-          disabled={paginated?.length == 0}
+          disabled={filtered?.length == 0}
         >
           Assign Warehouse
         </Button>
