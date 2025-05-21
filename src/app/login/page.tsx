@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useMediaQuery } from '@mantine/hooks';
 import { TextInput, PasswordInput, Button, Box, Paper, Text, Group } from '@mantine/core';
+import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { setCookie } from "cookies-next";
 import { useAppDispatch } from '@/redux/store';
 import { logInUser } from '@/redux/actions/auth-actions/auth-actions';
@@ -204,6 +205,7 @@ const LoginScreen = () => {
                             required
                             style={{ marginBottom: customStyles.size.size_25 }}
                             labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
+                            visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                         />
 
                         {/* Note: Log in button */}

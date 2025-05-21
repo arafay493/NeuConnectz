@@ -32,7 +32,7 @@ import {
   IconLogout,
 } from '@tabler/icons-react';
 import { deleteCookie } from 'cookies-next';
-import { useAppDispatch } from '@/redux/store';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { DrawerRoute } from "@/types/route-types";
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -57,6 +57,10 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
+
+  // Note: Fetch user data from redux...!
+  const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+  // console.log('User: ', authenticatedUser);
 
   // Note: Handle navigation here...!
   const router = useRouter();
@@ -142,7 +146,6 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               alt="Z_Connect Logo"
               title="Z_Connect"
               width={120}
-              // height={40}
               style={{ height: "auto" }}
             />
 
@@ -160,7 +163,13 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
           <Menu shadow={customStyles.deviceSize.md} width={200} position="bottom-end">
             <Menu.Target>
               <Group style={{ cursor: 'pointer' }}>
-                <Avatar color="cyan" radius={customStyles.deviceSize.xl}>FT</Avatar>
+                <Avatar
+                  color="cyan"
+                  radius={customStyles.deviceSize.xl}
+                  title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}
+                >
+                  {authenticatedUser?.name?.charAt(0).toUpperCase()}
+                </Avatar>
                 <IconChevronDown size="1rem" />
               </Group>
             </Menu.Target>

@@ -20,7 +20,7 @@ import {
     Stack,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconUpload, IconTrash, IconUserPlus } from '@tabler/icons-react';
+import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
@@ -34,7 +34,7 @@ import { customStyles } from '@/styles/custom-theme';
 const AddUserScreen = () => {
 
     // Note: Handle Mantine Ui Integration...!
-    const isLargeScreen = useMediaQuery('(min-width: 992px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1200px)');
 
     // Note: Handling states here...!
     const [userData, setUserData] = useState({
@@ -223,7 +223,7 @@ const AddUserScreen = () => {
 
             <Grid gutter="xl">
                 <Grid.Col span={{ base: 12, md: 8 }}>
-                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? '50vh' : "auto" }}>
+                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? "50vh" : "auto" }}>
                         <Stack gap="md">
                             <Group grow>
                                 <TextInput
@@ -282,6 +282,7 @@ const AddUserScreen = () => {
                                     value={userData.password}
                                     onChange={(e) => handleChange("password", e.target.value)}
                                     required
+                                    visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                                 />
                             </Group>
 
@@ -291,6 +292,7 @@ const AddUserScreen = () => {
                                 value={userData.confirmPassword}
                                 onChange={(e) => handleChange("confirmPassword", e.target.value)}
                                 required
+                                visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                             />
 
                             <Checkbox
@@ -303,7 +305,7 @@ const AddUserScreen = () => {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, md: 4 }}>
-                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? '50vh' : "auto" }}>
+                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? "50vh" : "auto" }}>
                         <Stack align="center" gap="md">
                             {
                                 userData.preview
@@ -364,8 +366,8 @@ const AddUserScreen = () => {
                 <Button
                     size="md"
                     leftSection={<IconUserPlus size={18} />}
-                    fullWidth={!isLargeScreen}
-                    style={{ width: isLargeScreen ? "408px" : "" }}
+                    fullWidth
+                    // style={{ width: isLargeScreen ? "400px" : "auto" }}
                     color={customStyles.colors._1B59F8}
                     onClick={addUserHandler}
                 >

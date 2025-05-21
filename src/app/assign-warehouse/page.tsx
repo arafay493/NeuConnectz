@@ -247,7 +247,7 @@ const AssignWareHouse = () => {
         ...prev,
         [selectedUser]: updatedAccess,
       }));
-    }
+    };
   }, [selectedUser, warehousesListByUserId, wareHousesList]);
 
   return (

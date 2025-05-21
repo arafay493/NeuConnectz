@@ -15,10 +15,7 @@ import {
     PasswordInput,
     Grid,
 } from "@mantine/core";
-import {
-    IconSend,
-}
-    from "@tabler/icons-react";
+import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -243,6 +240,7 @@ const Configuration = () => {
                                 value={formData.dbPassword}
                                 onChange={(event) => handleChange('dbPassword', event.currentTarget.value)}
                                 withAsterisk
+                                visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                             />
                         </Grid.Col>
 
@@ -275,6 +273,7 @@ const Configuration = () => {
                                 value={formData.sysPassword}
                                 onChange={(event) => handleChange('sysPassword', event.currentTarget.value)}
                                 withAsterisk
+                                visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                             />
                         </Grid.Col>
 
