@@ -10,7 +10,7 @@ import {
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA
 }
     from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
-import { sessionExpired } from "@/constants/session-expired";
+import { handleRefreshToken } from "@/constants/refresh-token";
 import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
 import { ResHandler } from "@/types/api-types";
 
@@ -42,7 +42,7 @@ const fetchAllWareHouses = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
 
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
@@ -83,7 +83,7 @@ const fetchWarehousesListByUserId = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
 
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
@@ -135,7 +135,7 @@ const assignWareHouseToUser = createAsyncThunk(
 
             // 401:
             if (status == 401) {
-                sessionExpired(data?.error);
+                handleRefreshToken(data?.error);
             };
         };
     }

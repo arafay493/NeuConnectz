@@ -4,7 +4,7 @@ import { store } from "@/redux/store";
 import { refreshToken } from "@/redux/actions/auth-actions/auth-actions";
 import { RefreshTokenType } from "@/types/modules/user-types/user-types";
 
-export const sessionExpired = (message: string): void => {
+export const handleRefreshToken = (message: string): void => {
     const fetchAuthUser = store.getState().authStates.authenticatedUser;
 
     if (fetchAuthUser) {

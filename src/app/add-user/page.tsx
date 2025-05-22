@@ -223,7 +223,7 @@ const AddUserScreen = () => {
 
             <Grid gutter="xl">
                 <Grid.Col span={{ base: 12, md: 8 }}>
-                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? "50vh" : "auto" }}>
+                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: "auto" }}>
                         <Stack gap="md">
                             <Group grow>
                                 <TextInput
@@ -305,7 +305,7 @@ const AddUserScreen = () => {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, md: 4 }}>
-                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: isLargeScreen ? "50vh" : "auto" }}>
+                    <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: "auto" }}>
                         <Stack align="center" gap="md">
                             {
                                 userData.preview

@@ -10,7 +10,7 @@ import {
     FETCH_GROUP_CODES_BY_USER_ID,
 }
     from "@/redux/reducers/group-reducer/group-reducer";
-import { sessionExpired } from "@/constants/session-expired";
+import { handleRefreshToken } from "@/constants/refresh-token";
 import { AssignGrouptoUserDataType } from "@/types/modules/group-types/group-types";
 import { ResHandler } from "@/types/api-types";
 
@@ -42,7 +42,7 @@ const fetchListAllGroupCodes = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
 
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
@@ -83,7 +83,7 @@ const fetchGroupCodesListByUserId = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
 
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
@@ -135,7 +135,7 @@ const assignGroupToUser = createAsyncThunk(
 
             // 401:
             if (status == 401) {
-                sessionExpired(data?.error);
+                handleRefreshToken(data?.error);
             };
         };
     }

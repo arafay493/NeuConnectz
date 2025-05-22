@@ -5,7 +5,7 @@ import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
 import { FETCH_ALL_USERS , UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
-import { sessionExpired } from "@/constants/session-expired";
+import { handleRefreshToken } from "@/constants/refresh-token";
 import { CreateUserDataType } from "@/types/modules/user-types/user-types";
 import { ResHandler } from "@/types/api-types";
 
@@ -37,7 +37,7 @@ const fetchAllUsers = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
             
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA());
@@ -86,7 +86,7 @@ const addUser = createAsyncThunk(
 
             // 401:
             if (status == 401) {
-                sessionExpired(data?.error);
+                handleRefreshToken(data?.error);
             };
         };
     }

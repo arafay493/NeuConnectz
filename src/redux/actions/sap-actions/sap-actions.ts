@@ -3,7 +3,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
-import { sessionExpired } from "@/constants/session-expired";
+import { handleRefreshToken } from "@/constants/refresh-token";
 import API_METHODS from "@/constants/api-methods";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
 import { ResHandler } from "@/types/api-types";
@@ -50,7 +50,7 @@ const addSAPConfiguration = createAsyncThunk(
 
             // 401:
             if (status == 401) {
-                sessionExpired(data?.error);
+                handleRefreshToken(data?.error);
             };
         };
     }
@@ -95,7 +95,7 @@ const postITRRequestToSAP = createAsyncThunk(
 
             // 401:
             if (status == 401) {
-                sessionExpired(data?.error);
+                handleRefreshToken(data?.error);
             };
         };
     }
@@ -137,7 +137,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
             const { status, data } = error?.response;
 
             // 401:
-            if (status == 401) sessionExpired(data?.error);
+            if (status == 401) handleRefreshToken(data?.error);
 
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
