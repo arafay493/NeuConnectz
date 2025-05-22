@@ -61,8 +61,8 @@ const AssignWareHouse = () => {
   const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
-  // console.log('WareHouses list: ', wareHousesList);
-  // console.log('WareHouses list by user id: ', warehousesListByUserId);
+  console.log('WareHouses list: ', wareHousesList);
+  console.log('WareHouses list by user id: ', warehousesListByUserId);
 
   const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
     whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
@@ -236,10 +236,11 @@ const AssignWareHouse = () => {
         const existing: any = warehousesListByUserId.find(
           (item) => item.whsCode === wh.whsCode
         );
+        console.log("Existing access: ", existing);
         return {
           whsCode: wh.whsCode,
           allow: !!existing,
-          receiver: existing?.receiver || false,
+          receiver: existing?.isReceiver || false,
         };
       });
 
