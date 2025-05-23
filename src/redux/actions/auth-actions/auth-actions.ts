@@ -7,6 +7,7 @@ import API_METHODS from "@/constants/api-methods";
 import { LoginUserDataType, RefreshTokenType } from "@/types/modules/user-types/user-types";
 import { LOG_IN_USER, REFRESH_TOKEN } from "@/redux/reducers/auth-reducer/auth-reducer";
 import { ResHandler } from "@/types/api-types";
+import { logout } from "@/constants/logout";
 
 // Note: Action function to log in user...!
 const logInUser = createAsyncThunk(
@@ -75,6 +76,15 @@ const refreshToken = createAsyncThunk(
 
         catch (error: any) {
             // console.log('Error occured in refresh token api integration: ', error);
+            const { status, data } = error?.response;
+
+            const message = "Session Expired";
+            const description = data?.error;
+
+            // Note: 401
+            if (status == 401) {
+                logout(message, description);
+            };
         };
     }
 );

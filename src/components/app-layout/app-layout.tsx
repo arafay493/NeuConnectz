@@ -31,18 +31,12 @@ import {
   IconUser,
   IconLogout,
 } from '@tabler/icons-react';
-import { deleteCookie } from 'cookies-next';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { DrawerRoute } from "@/types/route-types";
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
-import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { localAssets } from '@/lib/file-paths/file-paths';
-import { LOG_OUT_USER } from '@/redux/reducers/auth-reducer/auth-reducer';
-import { CLEAR_ALL_USER_STATES } from '@/redux/reducers/user-reducer/user-reducer';
-import { CLEAR_ALL_WAREHOUSE_STATES } from '@/redux/reducers/warehouse-reducer/warehouse-reducer';
-import { CLEAR_ALL_GROUP_STATES } from '@/redux/reducers/group-reducer/group-reducer';
+import { localAssets } from '@/lib/file-paths/file-paths';;
+import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
-import { CLEAR_ALL_SAP_STATES } from '@/redux/reducers/sap-reducer/sap-reducer';
 
 const AppLayOut = ({ children }: { children: ReactNode }) => {
 
@@ -66,22 +60,6 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathName = usePathname();
   // console.log('Path: ', pathName);
-
-  // Note: Handle logout...!
-  const handleLogout = () => {
-    showNotificationToast("Log Out Success", "You have logged out successfully", customStyles.colors._408CCE);
-    setTimeout(() => {
-      window.location.reload();
-      dispatch(LOG_OUT_USER());
-      dispatch(CLEAR_ALL_USER_STATES());
-      dispatch(CLEAR_ALL_WAREHOUSE_STATES());
-      dispatch(CLEAR_ALL_GROUP_STATES());
-      dispatch(CLEAR_ALL_SAP_STATES());
-      deleteCookie("UserAuthenticated");
-      deleteCookie("AuthToken");
-      localStorage.clear();
-    }, 2000);
-  };
 
   // Note: This hook will run only once when the component mounts...!
   useEffect(() => {
@@ -181,7 +159,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
                 <IconUser size="1rem" style={{ marginRight: 8 }} /> Account
               </Menu.Item>
 
-              <Menu.Item color={customStyles.colors.red} onClick={handleLogout}>
+              <Menu.Item color={customStyles.colors.red} onClick={() => logout("Log Out Success", "You have logged out successfully")}>
                 <IconLogout size="1rem" style={{ marginRight: 8 }} />
                 Logout
               </Menu.Item>
@@ -256,7 +234,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               px={collapsed ? customStyles.deviceSize.sm : customStyles.deviceSize.md}
               py={customStyles.deviceSize.sm}
               color={customStyles.colors._4A4A4A}
-              onClick={handleLogout}
+              onClick={() => logout("Log Out Success", "You have logged out successfully")}
               styles={{
                 label: { fontSize: 14, fontWeight: 500 },
                 root: { justifyContent: collapsed ? customStyles.alignment.center : customStyles.elementDirection.flexStart, width: customStyles.sizeWidthAndHeight.fullWidth },

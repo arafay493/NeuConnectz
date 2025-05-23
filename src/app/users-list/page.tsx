@@ -196,7 +196,7 @@ const UsersListScreen = () => {
                     >
                       <td>{(page - 1) * itemsPerPage + key + 1}</td>
                       <td>{user?.userName}</td>
-                      <td>{user?.email}</td>
+                      <td style={{ textTransform: customStyles.textTransformation.lowercase }}>{user?.email}</td>
                       <td>{user?.department}</td>
                       <td>{user?.phone}</td>
                       <td>{user?.role}</td>

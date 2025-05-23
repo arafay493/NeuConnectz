@@ -52,7 +52,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: post ITR request to SAP api response handler...!
     const handleResponse = (response: any): void => {
-        console.log("Post ITR request to SAP api response: ", response);
+        // console.log("Post ITR request to SAP api response: ", response);
 
         // Note: Stop loading...!
         disableLoader();
