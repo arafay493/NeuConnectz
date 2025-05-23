@@ -15,16 +15,26 @@ export const logout = (message: string, description: string): void => {
         // console.log("Message: ", message);
         // console.log("Description: ", description);
 
+        // Note: For showing logout message...!
         showNotificationToast(message, description, customStyles.colors._408CCE);
+        
         setTimeout(() => {
+
+            // Note: Clearing redux states...!
             store.dispatch(LOG_OUT_USER());
             store.dispatch(CLEAR_ALL_USER_STATES());
             store.dispatch(CLEAR_ALL_WAREHOUSE_STATES());
             store.dispatch(CLEAR_ALL_GROUP_STATES());
             store.dispatch(CLEAR_ALL_SAP_STATES());
+
+            // Note: Clearing cookies...!
             deleteCookie("UserAuthenticated");
             deleteCookie("AuthToken");
+
+            // Note: Clearing local storage...!
             localStorage.clear();
+
+            // Note: Reload the window and redirecting to login page...!
             window.location.reload();
         }, 2000);
     };
