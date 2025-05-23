@@ -30,7 +30,7 @@ const showNotificationToast = (
             },
 
             description: {
-                color: customStyles.colors.white
+                color: customStyles.colors.white,
             },
 
             closeButton: {
