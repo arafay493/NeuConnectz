@@ -16,7 +16,7 @@ import {
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postITRRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
+import { postRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -50,9 +50,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
     const paginatedData = listAll_ITR_IT_TRS.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
-    // Note: post ITR request to SAP api response handler...!
+    // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Post ITR request to SAP api response: ", response);
+        // console.log("Post request to SAP api response: ", response);
 
         // Note: Stop loading...!
         disableLoader();
@@ -72,17 +72,45 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         // };
     };
 
-    // Note: Handle post ITR request to SAP...!
-    const handlePostITR = (itrData: string) => {
-        // console.log("ITR Data: ", itrData);
+    // Note: Handle post request to SAP...!
+    const handleRequestToSap = (reqData: string) => {
+        console.log("Request Data: ", reqData);
 
         // Note: Enable loader...!
         enableLoader();
 
-        dispatch(postITRRequestToSAP({
-            token: authenticatedUser?.token as string,
-            resHandler: handleResponse
-        }));
+        if (reqData == "ITR") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
+
+        if (reqData == "TR") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
+
+        if (reqData == "IT") {
+            // dispatch(postRequestToSAP({
+            //     token: authenticatedUser?.token as string,
+            //     apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
+            //     resHandler: handleResponse
+            // }));
+            // return;
+        };
+
+        if (reqData == "GI" || reqData == "GR" || reqData == "GRN") {
+            disableLoader(); // Note: Disable loader...!
+            showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
+            return;
+        };
     };
 
     // Note: handle change status...!
@@ -105,41 +133,58 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     return (
         <>
             <Grid grow>
-                {["ITR", "IT", "TR", "GI", "GR", "GRN"].map((type, idx) => (
-                    <Grid.Col span={{ base: 12, sm: 6, md: 2 }} key={type}>
-                        <Card shadow="sm" radius="md" withBorder>
-                            <Group justify={customStyles.alignment.spaceBetween} mb="sm">
-                                <ThemeIcon
-                                    variant="light"
-                                    color={customStyles.colors._1B59F8}
-                                    size="xl"
-                                    radius="md"
-                                >
-                                    <IconChartBar size="1.5rem" />
-                                </ThemeIcon>
-                            </Group>
+                {
+                    ["ITR", "IT", "TR", "GI", "GR", "GRN"]
+                        .map((type, idx) => (
+                            <Grid.Col span={{ base: 12, sm: 6, md: 2 }} key={type}>
+                                <Card shadow="sm" radius="md" withBorder>
+                                    <Group justify={customStyles.alignment.spaceBetween} mb="sm">
+                                        <ThemeIcon
+                                            variant="light"
+                                            color={customStyles.colors._1B59F8}
+                                            size="xl"
+                                            radius="md"
+                                        >
+                                            <IconChartBar size="1.5rem" />
+                                        </ThemeIcon>
+                                    </Group>
 
-                            <Title order={4}>{type}</Title>
-                            <Text size="xl" style={{ fontWeight: 700 }} mt="sm">{idx * 1000 + 260}</Text>
-                            <Text c="dimmed" size="sm">20 mins ago</Text>
-                            <Button
-                                fullWidth
-                                mt="md"
-                                variant="outline"
-                                onClick={() => handlePostITR(type)}
-                            >
-                                Post
-                            </Button>
-                        </Card>
-                    </Grid.Col>
-                ))}
+                                    <Title order={4}>{type}</Title>
+                                    <Text size="xl" style={{ fontWeight: 700 }} mt="sm">{idx * 1000 + 260}</Text>
+                                    <Text c="dimmed" size="sm">20 mins ago</Text>
+                                    <Button
+                                        fullWidth
+                                        mt="md"
+                                        variant="outline"
+                                        onClick={() => handleRequestToSap(type)}
+                                    >
+                                        Post
+                                    </Button>
+                                </Card>
+                            </Grid.Col>
+                        ))
+                }
             </Grid>
 
             <Card mt="xl" withBorder>
-                <Title order={5}>Pending & Success Data</Title>
-                <Text size="sm" c="dimmed" mb="sm">Track inventory transfers that are pending or successfully synced with SAP.</Text>
+                <Title order={5}>
+                    Pending & Success Data
+                </Title>
+                <Text size="sm" c="dimmed" mb="sm">
+                    Track inventory transfers that are pending or successfully synced with SAP.
+                </Text>
 
-                <Group pt={5} pb={5} justify="space-between" mb="sm" gap="sm" style={{ display: "flex", alignItems: "center" }}>
+                <Group
+                    pt={5}
+                    pb={5}
+                    justify={customStyles.alignment.spaceBetween}
+                    mb="sm"
+                    gap="sm"
+                    style={{
+                        display: "flex",
+                        alignItems: customStyles.alignment.center,
+                    }}
+                >
                     <Group gap="xs">
                         <Button
                             variant="outline"
@@ -147,7 +192,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         >
                             Pending
                         </Button>
-                        
+
                         <Button
                             variant="outline"
                             onClick={() => handleStatusChange("Integrated")}
@@ -155,7 +200,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             Success
                         </Button>
 
-                        <Button variant="outline">Error</Button>
+                        <Button variant="outline">
+                            Error
+                        </Button>
                     </Group>
 
                     <Group>

@@ -69,9 +69,11 @@ const AssignWareHouse = () => {
   );
 
   // Note: Required variables...!
-  // const itemsPerPage: number = 10;
   const totalPages = Math.ceil(filtered?.length / itemsPerPage);
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  const isAllSelected = access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.allow) || false;
+  const isIndeterminate = access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.allow) && !isAllSelected;
 
   // Note: Function to clear all states...!
   const clearAllStates = () => {
@@ -79,6 +81,36 @@ const AssignWareHouse = () => {
     setSelectedUser(null);
     setAccess({});
     setLoading(false);
+  };
+
+  // Note: Handle allow all checkboxes...!
+  const handleSelectAll = () => {
+    if (!selectedUser) return;
+
+    if (isAllSelected) {
+      setAccess((prev) => ({
+        ...prev,
+        [selectedUser]: prev[selectedUser].map((item: AccessWareHouseDataType) => ({
+          ...item,
+          allow: false,
+          receiver: false
+        }))
+      }));
+    }
+
+    else {
+      setAccess((prev) => {
+        const updatedAccess = prev[selectedUser].map((item: AccessWareHouseDataType) => ({
+          ...item,
+          allow: true,
+          // receiver: false // Reset receiver to false when allowing access
+        }));
+        return {
+          ...prev,
+          [selectedUser]: updatedAccess
+        };
+      });
+    };
   };
 
   // Note: Handle dropdown...!
@@ -368,7 +400,15 @@ const AssignWareHouse = () => {
                 >
                   <th> Warehouse Code </th>
                   <th> Warehouse Name </th>
-                  <th> Allow </th>
+                  <th>
+                    <Checkbox
+                      disabled={!selectedUser}
+                      checked={isAllSelected}
+                      indeterminate={isIndeterminate}
+                      onChange={handleSelectAll}
+                      label="Allow All"
+                    />
+                  </th>
                   <th> Receiver </th>
                 </tr>
               </thead>

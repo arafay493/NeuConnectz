@@ -13,8 +13,8 @@ import {
 } from '@mantine/core';
 import { IconCheckbox } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
-import ReplicationComponent from '@/components/replication/replication';
 import IntegrationComponent from '@/components/integration/integration';
+import ReplicationComponent from '@/components/replication/replication';
 import Loader from '@/components/loader/loader';
 
 const IntegrationMonitor = () => {
