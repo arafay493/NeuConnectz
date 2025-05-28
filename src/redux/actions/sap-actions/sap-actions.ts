@@ -68,8 +68,8 @@ const postRequestToSAP = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Token: ", token);
-        console.log("API URL: ", apiUrl);
+        // console.log("Token: ", token);
+        // console.log("API URL: ", apiUrl);
 
         try {
             const response = await axios({
@@ -81,7 +81,7 @@ const postRequestToSAP = createAsyncThunk(
                     "Auth-Token": token,
                 }
             });
-            console.log("Response in SAP action: ", response);
+            // console.log("Response in SAP action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -90,7 +90,7 @@ const postRequestToSAP = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log('Error occured in post request to SAP api integration: ', error);
+            // console.log('Error occured in post request to SAP api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;

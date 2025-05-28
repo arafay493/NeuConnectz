@@ -74,7 +74,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string) => {
-        console.log("Request Data: ", reqData);
+        // console.log("Request Data: ", reqData);
 
         // Note: Enable loader...!
         enableLoader();
@@ -98,12 +98,12 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
 
         if (reqData == "IT") {
-            // dispatch(postRequestToSAP({
-            //     token: authenticatedUser?.token as string,
-            //     apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
-            //     resHandler: handleResponse
-            // }));
-            // return;
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
         };
 
         if (reqData == "GI" || reqData == "GR" || reqData == "GRN") {
