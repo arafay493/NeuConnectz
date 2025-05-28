@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { getCookie } from "cookies-next";
+import { Inter } from "next/font/google";
 
 // Note: Redux Integration...!
 import { Provider } from "react-redux";
@@ -17,6 +18,12 @@ import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-prov
 // Note: Importing required components...!
 import LoginScreen from './login/page';
 import AppLayOut from '@/components/app-layout/app-layout';
+
+// Note: Font family integration for Next JS...!
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter", // This is optional, but helpful for custom usage
+});
 
 const RootLayout = (
   { children }: Readonly<{ children: React.ReactNode; }>
@@ -34,14 +41,20 @@ const RootLayout = (
   }, []);
 
   return (
-    <html lang="en" {...mantineHtmlProps}>
+    <html
+      lang="en"
+      {...mantineHtmlProps}
+    >
       <head>
         <title> Z-Connect </title>
         <ColorSchemeScript />
         <link rel="icon" href="/favicon.png" type="image/x-icon" />
       </head>
 
-      <body suppressHydrationWarning={true}>
+      <body
+        suppressHydrationWarning={true}
+        className={inter.className}
+      >
         <Provider store={store}>
           <PersistGate
             loading={null}
