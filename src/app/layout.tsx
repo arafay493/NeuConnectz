@@ -2,9 +2,15 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { getCookie } from "cookies-next";
+import
+React,
+{
+  ReactNode,
+  useState,
+  useEffect
+} from 'react';
 import { Inter } from "next/font/google";
+import { getCookie } from "cookies-next";
 
 // Note: Redux Integration...!
 import { Provider } from "react-redux";
@@ -19,14 +25,14 @@ import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-prov
 import LoginScreen from './login/page';
 import AppLayOut from '@/components/app-layout/app-layout';
 
-// Note: Font family integration for Next JS...!
+// Note: Font family configuration for Next JS...!
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter", // This is optional, but helpful for custom usage
+  variable: "--font-inter",
 });
 
 const RootLayout = (
-  { children }: Readonly<{ children: React.ReactNode; }>
+  { children }: Readonly<{ children: ReactNode; }>
 ) => {
 
   // Note: handling states here...!
