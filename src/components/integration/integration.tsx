@@ -241,7 +241,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                         <Table.Tr key={row.id}>
                                             <Table.Td>{index + 1}</Table.Td>
                                             <Table.Td>{row.type}</Table.Td>
-                                            <Table.Td>{row.type}</Table.Td>
                                             <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
                                             <Table.Td>{row.itemCode}</Table.Td>
                                             <Table.Td>{row.fromWarehouse}</Table.Td>
