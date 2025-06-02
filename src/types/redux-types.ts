@@ -97,10 +97,10 @@ export interface SAPStateType {
         itemCode: string,
         fromWarehouse: string,
         toWarehouse: string,
-        status: string,
+        userName: string,
         erpDocEntry: string | null,
         erpLineID: string | null,
-        isActive: boolean
+        updatedDate: string
     }[];
     sapErrorState: string
 };

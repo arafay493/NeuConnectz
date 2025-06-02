@@ -4,9 +4,9 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_USERS , UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
+import { FETCH_ALL_USERS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { CreateUserDataType } from "@/types/modules/user-types/user-types";
+import { CreateUserDataType, ActivationStatusType } from "@/types/modules/user-types/user-types";
 import { ResHandler } from "@/types/api-types";
 
 // Note: Action function fetch all users...!
@@ -38,7 +38,7 @@ const fetchAllUsers = createAsyncThunk(
 
             // 401:
             if (status == 401) handleRefreshToken(data?.error);
-            
+
             // 403
             else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA());
         };
@@ -92,7 +92,55 @@ const addUser = createAsyncThunk(
     }
 );
 
+// Note: Action function to activate or deactivate user...!
+const activateOrDeactivateUser = createAsyncThunk(
+    "user/activateOrDeactivateUser",
+    async (
+        { statusData, token, resHandler }:
+            {
+                statusData: ActivationStatusType,
+                token: string,
+                resHandler: ResHandler
+            },
+        { dispatch }
+    ) => {
+        // console.log("Token in user action: ", token);
+        // console.log("Status data in user action: ", statusData);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.POST,
+                url: apiRequestRoutes.postRequest,
+                data: statusData,
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_ACTIVATE_OR_DEACTIVATE_USER,
+                    "Auth-Token": token
+                }
+            });
+            // console.log("Response in user action: ", response);
+            const { status, data } = response;
+
+            if (status == 201) {
+                resHandler(response);
+            };
+        }
+
+        catch (error: any) {
+            // console.log('Error occured in activate or deactivate user api integration: ', error);
+            resHandler(error?.response);
+
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) {
+                handleRefreshToken(data?.error);
+            };
+        };
+    }
+);
+
 export {
     fetchAllUsers,
-    addUser
+    addUser,
+    activateOrDeactivateUser
 };

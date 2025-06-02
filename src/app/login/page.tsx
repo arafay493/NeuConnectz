@@ -53,7 +53,7 @@ const LoginScreen = () => {
 
         if (response && response.status != 200) {
             setLoading(false); // Note: Stop loading...!
-            showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors._408CCE);
+            showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors.red);
             return;
         };
     };

@@ -18,8 +18,8 @@ export interface SAP_ITR_IT_TRS_DataType {
     itemCode: string,
     fromWarehouse: string,
     toWarehouse: string,
-    status: string,
+    userName: string,
     erpDocEntry: string | null,
     erpLineID: string | null,
-    isActive: boolean
+    updatedDate: string
 };

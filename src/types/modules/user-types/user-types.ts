@@ -35,3 +35,8 @@ export interface RefreshTokenType {
 
 export type UserRole = "SuperAdmin" | "WareHouseUser" | "Receiver";
 export type UserDepartment = "Inventory Control" | "Logistics" | "Dispatch" | "WareHouse";
+
+export interface ActivationStatusType {
+    userId: string;
+    isActive: boolean;
+};

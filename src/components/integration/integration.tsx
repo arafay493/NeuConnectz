@@ -23,7 +23,7 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
 
-const headers = ["Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "Status", "ERP Doc Entry", "ERP Line ID", "Doc Type"];
+const headers = ["S.No", "Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "User Name", "ERP Doc Entry", "ERP Line ID", "Doc Date"];
 
 interface IntegrationComponentProps {
     enableLoader: () => void,
@@ -37,6 +37,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Handeling states here...!
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [statusColor, setStatusColor] = useState("Pending");
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -116,6 +117,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: handle change status...!
     const handleStatusChange = (status: "Pending" | "Integrated") => {
         // console.log("Status: ", status);
+        setStatusColor(status);
+
         if (authenticatedUser && status) {
             const token: string = authenticatedUser?.token
             dispatch(fetchAllITR_IT_TRS({ token, dataStatus: status }));
@@ -189,6 +192,10 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         <Button
                             variant="outline"
                             onClick={() => handleStatusChange("Pending")}
+                            style={{
+                                color: statusColor === "Pending" ? customStyles.colors.white : undefined,
+                                backgroundColor: statusColor === "Pending" ? customStyles.colors._408CCE : undefined,
+                            }}
                         >
                             Pending
                         </Button>
@@ -196,6 +203,10 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         <Button
                             variant="outline"
                             onClick={() => handleStatusChange("Integrated")}
+                            style={{
+                                color: statusColor === "Integrated" ? customStyles.colors.white : undefined,
+                                backgroundColor: statusColor === "Integrated" ? customStyles.colors._408CCE : undefined,
+                            }}
                         >
                             Success
                         </Button>
@@ -226,17 +237,19 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             (paginatedData.length > 0)
                                 ?
                                 (
-                                    paginatedData.map((row: SAP_ITR_IT_TRS_DataType) => (
+                                    paginatedData.map((row: SAP_ITR_IT_TRS_DataType, index) => (
                                         <Table.Tr key={row.id}>
+                                            <Table.Td>{index + 1}</Table.Td>
+                                            <Table.Td>{row.type}</Table.Td>
                                             <Table.Td>{row.type}</Table.Td>
                                             <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
                                             <Table.Td>{row.itemCode}</Table.Td>
                                             <Table.Td>{row.fromWarehouse}</Table.Td>
                                             <Table.Td>{row.toWarehouse}</Table.Td>
-                                            <Table.Td>{row.status}</Table.Td>
-                                            <Table.Td>{row.erpDocEntry ? row.erpDocEntry : '-'}</Table.Td>
-                                            <Table.Td>{row.erpLineID ? row.erpLineID : '-'}</Table.Td>
-                                            <Table.Td>{row.isActive ? "Active" : "Inactive"}</Table.Td>
+                                            <Table.Td>{row.userName}</Table.Td>
+                                            <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                            <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                            <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
                                         </Table.Tr>
                                     ))
                                 )

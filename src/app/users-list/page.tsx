@@ -22,11 +22,13 @@ import {
 import { IconSearch, IconUserPlus } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import PaginationComponent from '@/components/pagination/pagination';
-import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
+import { fetchAllUsers, activateOrDeactivateUser } from '@/redux/actions/user-actions/user-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { routes } from '@/constants/routes';
 import DataNotFound from '@/components/data-not-found/data-not-found';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import Loader from '@/components/loader/loader';
 
 const UsersListScreen = () => {
 
@@ -35,6 +37,7 @@ const UsersListScreen = () => {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   // Note: Handeling navigation here...!
   const router = useRouter();
@@ -70,6 +73,43 @@ const UsersListScreen = () => {
     setPage(1);
   };
 
+  // Note: Add / Create user response handler...!
+  const handleResponse = (response: any): void => {
+    // console.log("Activate or Deactivate user api response: ", response);
+
+    if (response && response.status == 201) {
+      setLoading(false); // Note: Stop loading...!
+      showNotificationToast("Status Updated", "User status changed successfully", customStyles.colors._408CCE);
+      dispatch(fetchAllUsers(authenticatedUser?.token || ""));
+      return;
+    }
+
+    if (response && response.status == 403) {
+      setLoading(false); // Note: Stop loading...!
+      showNotificationToast("Unauthorized User", "You are not authorized to perform this action!", customStyles.colors.red);
+      return;
+    };
+
+    if (response && response.status != 201) {
+      setLoading(false); // Note: Stop loading...!
+      return;
+    };
+  };
+
+  // Note: Function to Activate or Deactivate user...!
+  const handleUserStatusChange = (userData: UserType) => {
+    // console.log("User data: ", userData);
+    setLoading(true); // Note: Start loading...!
+    dispatch(activateOrDeactivateUser({
+      statusData: {
+        userId: userData?.userId,
+        isActive: !userData?.isActive, // Toggle status
+      },
+      token: authenticatedUser?.token || "",
+      resHandler: handleResponse
+    }));
+  };
+
   // Note: This hook will run once when this component mounts...!
   useEffect(() => {
     if (authenticatedUser) {
@@ -79,6 +119,9 @@ const UsersListScreen = () => {
 
   return (
     <div>
+
+      {/* Note: Loader section */}
+      <Loader loadingState={loading} />
 
       {/* Note: Table Screen Head section */}
       <Group
@@ -177,15 +220,11 @@ const UsersListScreen = () => {
                   <th>Phone</th>
                   <th>Role</th>
                   <th>Status</th>
+                  <th style={{ textAlign: customStyles.alignment.center }}> Change Status </th>
                 </tr>
               </thead>
 
-              <tbody
-                style={{
-                  // height: '40vh',
-                  textAlign: customStyles.alignment.left
-                }}
-              >
+              <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
                   paginated?.map((user: UserType, key) => (
                     <tr
@@ -201,6 +240,16 @@ const UsersListScreen = () => {
                       <td>{user?.phone}</td>
                       <td>{user?.role}</td>
                       <td>{user?.isActive ? 'Active' : 'Inactive'}</td>
+                      <td style={{ textAlign: customStyles.alignment.center }}>
+                        <Button
+                          variant="light"
+                          color={user?.isActive ? customStyles.colors.red : customStyles.colors._1B59F8}
+                          onClick={() => handleUserStatusChange(user)}
+                          style={{ width: "120px" }}
+                        >
+                          {user?.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </td>
                     </tr>
                   ))
                 }
@@ -241,7 +290,7 @@ const UsersListScreen = () => {
           />
         </Flex>
       </Paper>
-    </div>
+    </div >
   );
 };
 
