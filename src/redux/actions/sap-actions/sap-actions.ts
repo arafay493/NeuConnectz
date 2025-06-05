@@ -7,7 +7,11 @@ import { handleRefreshToken } from "@/constants/refresh-token";
 import API_METHODS from "@/constants/api-methods";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
 import { ResHandler } from "@/types/api-types";
-import { UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA, FETCH_ALL_ITR_IT_TRS } from "@/redux/reducers/sap-reducer/sap-reducer";
+import {
+    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
+    FETCH_ALL_ITR_IT_TRS,
+    FETCH_BY_TYPE,
+} from "@/redux/reducers/sap-reducer/sap-reducer";
 
 // Note: Action function to add SAP configuration...!
 const addSAPConfiguration = createAsyncThunk(
@@ -127,15 +131,20 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
                 }
             });
             // console.log("Response in sap action: ", response);
-            const { status, data } = response;
+            const { status } = response;
+            const { data, ...copyTargetData } = response?.data?.data;
+            // console.log("Pending and integrated data: ", copyTargetData);
 
             if (status == 200) {
-                dispatch(FETCH_ALL_ITR_IT_TRS(data?.data?.data));
+                dispatch(FETCH_ALL_ITR_IT_TRS({
+                    listData: response?.data?.data?.data,
+                    pendingAndIntegratedData: copyTargetData
+                }));
             };
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all users api integration: ', error);
+            // console.log('Error occured in fetch all ITR, TR, IT data api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -147,9 +156,19 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
     }
 );
 
+// Note: Action function to filter ITR, IT, TR...!
+const filterByType_ITR_IT_TRS = createAsyncThunk(
+    "sap/filterITR_IT_TRS",
+    async (type: string, { dispatch }
+    ) => {
+        // console.log("Type: ", type);
+        dispatch(FETCH_BY_TYPE(type));
+    }
+);
 
 export {
     addSAPConfiguration,
     postRequestToSAP,
-    fetchAllITR_IT_TRS
+    fetchAllITR_IT_TRS,
+    filterByType_ITR_IT_TRS
 };

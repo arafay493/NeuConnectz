@@ -21,5 +21,6 @@ export interface SAP_ITR_IT_TRS_DataType {
     userName: string,
     erpDocEntry: string | null,
     erpLineID: string | null,
-    updatedDate: string
+    updatedDate: string,
+    status: string
 };

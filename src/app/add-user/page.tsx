@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
     TextInput,
@@ -19,22 +19,19 @@ import {
     Text,
     Stack,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
 import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { userRoles, userDepartments } from '@/constants/user-data';
+import { userDepartments } from '@/constants/user-data';
 import { addUser, fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
+import { fetchAllRolesList } from '@/redux/actions/roles-actions/roles-actions';
 import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
 
 const AddUserScreen = () => {
-
-    // Note: Handle Mantine Ui Integration...!
-    const isLargeScreen = useMediaQuery('(min-width: 1200px)');
 
     // Note: Handling states here...!
     const [userData, setUserData] = useState({
@@ -50,6 +47,7 @@ const AddUserScreen = () => {
         preview: null as string | null,
         loading: false
     });
+    const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
 
     // Note: Handle routing here...!
     const router = useRouter();
@@ -57,10 +55,12 @@ const AddUserScreen = () => {
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
-    // Note: Fetch user data from redux...!
+    // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
     const token = authenticatedUser?.token as string;
     // console.log("User: ", authenticatedUser);
+    // console.log("Roles: ", listRoles);
 
     // Note: Clear all states handler...!
     const clearAllStates = () => {
@@ -81,6 +81,7 @@ const AddUserScreen = () => {
 
     // Note: Handle on change...!
     const handleChange = (field: string, value: any) => {
+        // console.log(`Field: ${field}, Value: ${value}`);
         setUserData((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -201,6 +202,22 @@ const AddUserScreen = () => {
         };
     };
 
+    // Note: Fetch all roles list...!
+    useEffect(() => {
+        authenticatedUser && dispatch(fetchAllRolesList(token));
+    }, [authenticatedUser]);
+
+    // Note: This hook is used to set roles options...!
+    useEffect(() => {
+        if (listRoles && listRoles.length > 0) {
+            const options = listRoles.map((role) => ({
+                value: role.name,
+                label: role.name
+            }));
+            setRolesOptions(options);
+        };
+    }, [listRoles]);
+
     return (
         <Container
             size="xl"
@@ -257,7 +274,7 @@ const AddUserScreen = () => {
                                 <Select
                                     label="User Role"
                                     placeholder="User Role"
-                                    data={userRoles}
+                                    data={rolesOptions}
                                     value={userData.role}
                                     onChange={(val) => handleChange("role", val)}
                                     required
@@ -367,7 +384,6 @@ const AddUserScreen = () => {
                     size="md"
                     leftSection={<IconUserPlus size={18} />}
                     fullWidth
-                    // style={{ width: isLargeScreen ? "400px" : "auto" }}
                     color={customStyles.colors._1B59F8}
                     onClick={addUserHandler}
                 >

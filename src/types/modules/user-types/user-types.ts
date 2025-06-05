@@ -33,7 +33,6 @@ export interface RefreshTokenType {
     refreshToken: string
 };
 
-export type UserRole = "SuperAdmin" | "WareHouseUser" | "Receiver";
 export type UserDepartment = "Inventory Control" | "Logistics" | "Dispatch" | "WareHouse";
 
 export interface ActivationStatusType {

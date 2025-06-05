@@ -409,16 +409,38 @@ const AssignWareHouse = () => {
                       label="Allow All"
                     />
                   </th>
-                  <th> Receiver </th>
+                  <th>
+                    <Checkbox
+                      disabled={!selectedUser}
+                      checked={access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receiver) || false}
+                      indeterminate={access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.receiver) && !access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receiver)}
+                      onChange={() => {
+                        if (!selectedUser) return;
+
+                        setAccess((prev) => {
+                          const current = prev[selectedUser];
+
+                          const allReceiversChecked = current
+                            .filter((item) => item.allow)
+                            .every((item) => item.receiver);
+
+                          // If all allowed ones are already receiver, we uncheck them; otherwise, check them
+                          return {
+                            ...prev,
+                            [selectedUser]: current.map((item) => ({
+                              ...item,
+                              receiver: item.allow ? !allReceiversChecked : item.receiver, // Only toggle if `allow` is true
+                            })),
+                          };
+                        });
+                      }}
+                      label="Receive All"
+                    />
+                  </th>
                 </tr>
               </thead>
 
-              <tbody
-                style={{
-                  // height: '40vh',
-                  textAlign: customStyles.alignment.left
-                }}
-              >
+              <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
                   paginated?.map((item: WareHouseDataType) => (
                     <tr

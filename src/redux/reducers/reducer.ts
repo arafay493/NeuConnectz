@@ -9,6 +9,8 @@ import userReducer from "./user-reducer/user-reducer";
 import wareHouseReducer from "./warehouse-reducer/warehouse-reducer";
 import groupReducer from "./group-reducer/group-reducer";
 import sapReducer from "./sap-reducer/sap-reducer";
+import rolesReducer from "./roles-reducer/roles-reducer";
+import itrReducer from "./itr-reducer/itr-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -22,7 +24,9 @@ const rootReducer = combineReducers({
     userStates: userReducer,
     wareHouseStates: wareHouseReducer,
     groupStates: groupReducer,
-    sapStates: sapReducer
+    sapStates: sapReducer,
+    rolesStates: rolesReducer,
+    itrStates: itrReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);

@@ -1,13 +1,6 @@
 // Note: All constant user data is defined here...!
 
-import { UserRole, UserDepartment } from "@/types/modules/user-types/user-types";
-
-// Note: User roles...!
-const userRoles: UserRole[] = [
-    "SuperAdmin",
-    "WareHouseUser",
-    "Receiver"
-];
+import { UserDepartment } from "@/types/modules/user-types/user-types";
 
 const userDepartments: UserDepartment[] = [
     "Inventory Control",
@@ -16,4 +9,4 @@ const userDepartments: UserDepartment[] = [
     "WareHouse"
 ];
 
-export { userRoles, userDepartments };
+export { userDepartments };

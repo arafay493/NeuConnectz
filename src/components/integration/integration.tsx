@@ -13,17 +13,49 @@ import {
     Flex,
     Select
 } from '@mantine/core';
-import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
+import { postRequestToSAP, fetchAllITR_IT_TRS, filterByType_ITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
 
-const headers = ["S.No", "Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "User Name", "ERP Doc Entry", "ERP Line ID", "Doc Date"];
+const headers: string[] = ["S.No", "Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "User Name", "ERP Doc Entry", "ERP Line ID", "SAP Status", "Doc Date"];
+const types: string[] = ["ITR", "IT", "TR"];
+const cardsData = [
+    {
+        label: "ITR",
+        pendingValue: "pendingItrs",
+        integratedValue: "integratedItrs"
+    },
+    {
+        label: "IT",
+        pendingValue: "pendingIts",
+        integratedValue: "integratedIts"
+    },
+    {
+        label: "TR",
+        pendingValue: "pendingTrs",
+        integratedValue: "integratedTrs"
+    },
+    {
+        label: "GI",
+        pendingValue: "pendingGis",
+        integratedValue: "integratedGis"
+    },
+    {
+        label: "GR",
+        pendingValue: "pendingGrs",
+        integratedValue: "integratedGrs"
+    },
+    {
+        label: "GRN",
+        pendingValue: "pendingGrns",
+        integratedValue: "integratedGrns"
+    },
+];
 
 interface IntegrationComponentProps {
     enableLoader: () => void,
@@ -38,18 +70,41 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [statusColor, setStatusColor] = useState("Pending");
+    const [selectedType, setSelectedType] = useState("");
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { listAll_ITR_IT_TRS, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    const { listAll_ITR_IT_TRS, filtered_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
     // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    // console.log("filtered_ITR_IT_TRS: ", filtered_ITR_IT_TRS);
+    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
     // Note: Required variables...!
     const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
     const paginatedData = listAll_ITR_IT_TRS.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+    // Note: Status dropdown handler...!
+    const dropDownHandler = (val: string): void => {
+        // console.log("Selected type: ", val);
+        dispatch(filterByType_ITR_IT_TRS(val));
+        setSelectedType(val || "");
+        setPage(1);
+    };
+
+    // Note: Function to shoe pending and integrated values...!
+    const showPendingAndIntegratedValues = (type: string, value: string) => {
+        // console.log("Type: ", type);
+        // console.log("Value: ", value);
+
+        if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(value)) {
+            return pendingAndIntegratedData[value] || 0;
+        };
+
+        return 0;
+    };
 
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
@@ -59,7 +114,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         disableLoader();
 
         if (response && response.status == 201) {
-            showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
+            if (response?.data?.data?.success) {
+                showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
+            }
+
+            else if (!response?.data?.data?.success) {
+                showNotificationToast(response?.data?.data?.message, response?.data?.data?.error, customStyles.colors.red);
+            };
             return;
         };
 
@@ -137,35 +198,39 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         <>
             <Grid grow>
                 {
-                    ["ITR", "IT", "TR", "GI", "GR", "GRN"]
-                        .map((type, idx) => (
-                            <Grid.Col span={{ base: 12, sm: 6, md: 2 }} key={type}>
-                                <Card shadow="sm" radius="md" withBorder>
-                                    <Group justify={customStyles.alignment.spaceBetween} mb="sm">
-                                        <ThemeIcon
-                                            variant="light"
-                                            color={customStyles.colors._1B59F8}
-                                            size="xl"
-                                            radius="md"
-                                        >
-                                            <IconChartBar size="1.5rem" />
-                                        </ThemeIcon>
-                                    </Group>
-
-                                    <Title order={4}>{type}</Title>
-                                    <Text size="xl" style={{ fontWeight: 700 }} mt="sm">{idx * 1000 + 260}</Text>
-                                    <Text c="dimmed" size="sm">20 mins ago</Text>
-                                    <Button
-                                        fullWidth
-                                        mt="md"
-                                        variant="outline"
-                                        onClick={() => handleRequestToSap(type)}
+                    cardsData.map((item) => (
+                        <Grid.Col
+                            span={{ base: 12, sm: 6, md: 2 }}
+                            key={item.label}
+                        >
+                            <Card shadow="sm" radius="md" withBorder>
+                                <Group justify={customStyles.alignment.spaceBetween} mb="sm">
+                                    <ThemeIcon
+                                        variant="light"
+                                        color={customStyles.colors._1B59F8}
+                                        size="xl"
+                                        radius="md"
                                     >
-                                        Post
-                                    </Button>
-                                </Card>
-                            </Grid.Col>
-                        ))
+                                        <IconChartBar size="1.5rem" />
+                                    </ThemeIcon>
+                                </Group>
+
+                                <Title order={4}>{item.label}</Title>
+                                <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
+                                    {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
+                                </Text>
+                                <Text c="dimmed" size="sm">20 mins ago</Text>
+                                <Button
+                                    fullWidth
+                                    mt="md"
+                                    variant="outline"
+                                    onClick={() => handleRequestToSap(item.label)}
+                                >
+                                    Post
+                                </Button>
+                            </Card>
+                        </Grid.Col>
+                    ))
                 }
             </Grid>
 
@@ -217,9 +282,14 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     </Group>
 
                     <Group>
-                        <Button variant="light" leftSection={<IconAdjustmentsHorizontal size={16} />}>
-                            Filter
-                        </Button>
+                        <Select
+                            data={types}
+                            placeholder="Filter by ITR, IT, TR"
+                            value={selectedType}
+                            onChange={(value) => dropDownHandler(value as string)}
+                            clearable
+                            w={200}
+                        />
                     </Group>
                 </Group>
 
@@ -237,20 +307,24 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             (paginatedData.length > 0)
                                 ?
                                 (
-                                    paginatedData.map((row: SAP_ITR_IT_TRS_DataType, index) => (
-                                        <Table.Tr key={row.id}>
-                                            <Table.Td>{index + 1}</Table.Td>
-                                            <Table.Td>{row.type}</Table.Td>
-                                            <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                            <Table.Td>{row.itemCode}</Table.Td>
-                                            <Table.Td>{row.fromWarehouse}</Table.Td>
-                                            <Table.Td>{row.toWarehouse}</Table.Td>
-                                            <Table.Td>{row.userName}</Table.Td>
-                                            <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                            <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                            <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                        </Table.Tr>
-                                    ))
+                                    (filtered_ITR_IT_TRS && filtered_ITR_IT_TRS.length > 0
+                                        ? filtered_ITR_IT_TRS
+                                        : paginatedData)
+                                        .map((row: SAP_ITR_IT_TRS_DataType, index) => (
+                                            <Table.Tr key={row.id}>
+                                                <Table.Td>{index + 1}</Table.Td>
+                                                <Table.Td>{row.type}</Table.Td>
+                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                                <Table.Td>{row.itemCode}</Table.Td>
+                                                <Table.Td>{row.fromWarehouse}</Table.Td>
+                                                <Table.Td>{row.toWarehouse}</Table.Td>
+                                                <Table.Td>{row.userName}</Table.Td>
+                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                                <Table.Td>{row.status}</Table.Td>
+                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                            </Table.Tr>
+                                        ))
                                 )
                                 :
                                 (<DataNotFound notFoundContent={sapErrorState || "No ITR_IT_TRS data found."} colSpanValue={9} />)
