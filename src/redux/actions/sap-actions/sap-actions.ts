@@ -111,10 +111,11 @@ const postRequestToSAP = createAsyncThunk(
 const fetchAllITR_IT_TRS = createAsyncThunk(
     "sap/fetchAllITR_IT_TRS",
     async (
-        { token, dataStatus }:
+        { token, dataStatus, handleLoading }:
             {
                 token: string,
-                dataStatus: "Pending" | "Integrated"
+                dataStatus: "Pending" | "Integrated",
+                handleLoading: () => void
             },
         { dispatch }
     ) => {
@@ -140,6 +141,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
                     listData: response?.data?.data?.data,
                     pendingAndIntegratedData: copyTargetData
                 }));
+                handleLoading(); // Disable loading state...!
             };
         }
 

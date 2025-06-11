@@ -61,7 +61,7 @@ const TR_TableCom = (props: any) => {
                                 paginatedData
                                     .map((row: TR_DataType, index: number) => (
                                         <Table.Tr key={row.id}>
-                                            <Table.Td>{index + 1}</Table.Td>
+                                            <Table.Td> {(activePage - 1) * itemsPerPage + index + 1} </Table.Td>
                                             <Table.Td>{row.docNum}</Table.Td>
                                             <Table.Td>{row.fromWareHouseCode}</Table.Td>
                                             <Table.Td>{row.toWareHouseCode}</Table.Td>

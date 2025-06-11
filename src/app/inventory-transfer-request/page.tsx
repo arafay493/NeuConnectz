@@ -8,7 +8,9 @@ import {
   SegmentedControl,
   Title,
   Stack,
+  Button,
 } from '@mantine/core';
+import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '@/components/loader/loader';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -16,6 +18,7 @@ import { fetchAll_ITR_Data } from '@/redux/actions/itr-actions/itr-actions';
 import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
+import { exportToCSV } from '@/constants/export-to-csv';
 
 const InventoryTransferRequestScreen = () => {
 
@@ -43,7 +46,7 @@ const InventoryTransferRequestScreen = () => {
     itData,
     itrErrorState
   } = useAppSelector(({ itrStates }) => { return itrStates });
-  // console.log("ITR , IT, TR data in Inventory Transfer Request screen: ", itrData);
+  // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
   // console.log("TR data in Inventory Transfer Request screen: ", trData);
   // console.log("IT data in Inventory Transfer Request screen: ", itData);
 
@@ -93,6 +96,13 @@ const InventoryTransferRequestScreen = () => {
     };
   };
 
+  // Note: Export to CSV handler...!
+  const handleExportToCSV = () => {
+    if (tab === 'ITR') exportToCSV(paginatedData, 'inventory_transfer_request.csv');
+    else if (tab === 'TR') exportToCSV(paginatedData_TR, 'transfer_request.csv');
+    else if (tab === 'IT') exportToCSV(paginatedData_IT, 'inventory_transfer.csv');
+  };
+
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
@@ -122,6 +132,14 @@ const InventoryTransferRequestScreen = () => {
             Inventory Transfer Request
           </Title>
         </Stack>
+
+        <Button
+          leftSection={<IconFileTypeCsv size={20} color={customStyles.colors.white} />}
+          color={customStyles.colors._1B59F8}
+          onClick={handleExportToCSV}
+        >
+          Export to CSV
+        </Button>
       </Group>
 
       <div style={{ padding: 10, paddingTop: 20 }}>

@@ -62,7 +62,9 @@ const ITR_TableCom = (props: any) => {
                                 paginatedData
                                     .map((row: ITR_DataType, index: number) => (
                                         <Table.Tr key={row.id}>
-                                            <Table.Td>{index + 1}</Table.Td>
+                                            <Table.Td>
+                                                {(activePage - 1) * itemsPerPage + index + 1}
+                                            </Table.Td>
                                             <Table.Td>{row.docNum}</Table.Td>
                                             <Table.Td>{new Date(row.docDate).toLocaleDateString()}</Table.Td>
                                             <Table.Td>{row.fromWarehouseId}</Table.Td>

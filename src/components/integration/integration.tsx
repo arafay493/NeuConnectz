@@ -21,6 +21,7 @@ import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
+import Loader from '../loader/loader';
 
 const headers: string[] = ["S.No", "Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "User Name", "ERP Doc Entry", "ERP Line ID", "SAP Status", "Doc Date"];
 const types: string[] = ["ITR", "IT", "TR"];
@@ -71,6 +72,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [statusColor, setStatusColor] = useState("Pending");
     const [selectedType, setSelectedType] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -116,6 +118,11 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
                 showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
+                dispatch(fetchAllITR_IT_TRS({
+                    token : authenticatedUser?.token as string,
+                    dataStatus: "Pending",
+                    handleLoading: () => setLoading(false)
+                }));
             }
 
             else if (!response?.data?.data?.success) {
@@ -179,10 +186,15 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const handleStatusChange = (status: "Pending" | "Integrated") => {
         // console.log("Status: ", status);
         setStatusColor(status);
+        setLoading(true);
 
         if (authenticatedUser && status) {
             const token: string = authenticatedUser?.token
-            dispatch(fetchAllITR_IT_TRS({ token, dataStatus: status }));
+            dispatch(fetchAllITR_IT_TRS({
+                token,
+                dataStatus: status,
+                handleLoading: () => setLoading(false)
+            }));
         };
     };
 
@@ -190,7 +202,11 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     useEffect(() => {
         if (authenticatedUser) {
             const token: string = authenticatedUser?.token
-            dispatch(fetchAllITR_IT_TRS({ token, dataStatus: "Pending" }));
+            dispatch(fetchAllITR_IT_TRS({
+                token,
+                dataStatus: "Pending",
+                handleLoading: () => setLoading(false)
+            }));
         };
     }, []);
 
@@ -293,6 +309,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     </Group>
                 </Group>
 
+
+                {loading && <Loader loadingState={loading} />}
+
                 <Table
                     highlightOnHover
                     striped
@@ -312,7 +331,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                         : paginatedData)
                                         .map((row: SAP_ITR_IT_TRS_DataType, index) => (
                                             <Table.Tr key={row.id}>
-                                                <Table.Td>{index + 1}</Table.Td>
+                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
                                                 <Table.Td>{row.type}</Table.Td>
                                                 <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
                                                 <Table.Td>{row.itemCode}</Table.Td>

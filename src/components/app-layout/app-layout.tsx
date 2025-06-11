@@ -66,6 +66,12 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
     if (window.location.pathname === routes.root) router.push(routes.dashboard);
   }, []);
 
+  // Note: This hook will automatically update activeTab based on current route path...!
+  useEffect(() => {
+    const activeRouteIndex = drawerRoutes.findIndex(route => route.route === pathName);
+    setActiveTab(activeRouteIndex >= 0 ? activeRouteIndex : 0);
+  }, [pathName]);
+
   // Note: Link component for navigation...!
   const renderNavLink = (item: DrawerRoute, index: number) => (
     <Link

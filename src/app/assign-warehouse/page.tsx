@@ -175,7 +175,7 @@ const AssignWareHouse = () => {
     if (response && response.status == 201) {
       // Note: Stop loading...!
       setLoading(false);
-      showNotificationToast("Assigned Successfully", "Requested warehouses has been assigned oo the requested user", customStyles.colors._408CCE);
+      showNotificationToast("Assigned Successfully", "Requested warehouses has been assigned to the requested user", customStyles.colors._408CCE);
       dispatch(fetchAllWareHouses(authenticatedUser?.token as string));
       clearAllStates();
       return;

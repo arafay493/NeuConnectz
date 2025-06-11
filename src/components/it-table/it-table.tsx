@@ -60,7 +60,7 @@ const IT_TableCom = (props: any) => {
                                 paginatedData
                                     .map((row: IT_DataType, index: number) => (
                                         <Table.Tr key={row.id}>
-                                            <Table.Td>{index + 1}</Table.Td>
+                                            <Table.Td> {(activePage - 1) * itemsPerPage + index + 1} </Table.Td>
                                             <Table.Td>{row.docNum}</Table.Td>
                                             <Table.Td>{row.fromWarehouseId}</Table.Td>
                                             <Table.Td>{row.toWarehouseId}</Table.Td>
