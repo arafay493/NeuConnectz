@@ -122,8 +122,18 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         style={{ display: authenticatedRoutes.includes(pathName) ? 'block' : 'none' }}
       >
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
-          <Group style={{ width: isLargeScreen ? '30%' : 'auto', justifyContent: customStyles.alignment.spaceBetween }}>
-            <Burger opened={isMobile ? opened : !collapsed} onClick={isMobile ? toggle : () => setCollapsed(!collapsed)} size={customStyles.deviceSize.sm} color={customStyles.colors._1B59F8} />
+          <Group style={{
+            width: 'auto',
+            // justifyContent: customStyles.alignment.spaceBetween,
+            // backgroundColor: "yellow"
+          }}
+          >
+            <Burger
+              opened={isMobile ? opened : !collapsed}
+              onClick={isMobile ? toggle : () => setCollapsed(!collapsed)}
+              size={customStyles.deviceSize.sm}
+              color={customStyles.colors._1B59F8}
+            />
 
             <Image
               src={localAssets.blueLogo}
@@ -133,7 +143,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               style={{ height: "auto" }}
             />
 
-            {!isMobile && (
+            {/* {!isMobile && (
               <TextInput
                 placeholder="Search..."
                 radius={customStyles.deviceSize.md}
@@ -141,7 +151,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
                 style={{ width: '300px' }}
                 leftSection={<IconSearch size="1rem" />}
               />
-            )}
+            )} */}
           </Group>
 
           <Menu shadow={customStyles.deviceSize.md} width={200} position="bottom-end">
@@ -219,7 +229,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         </AppShellSection>
 
         {/* Note: logout section */}
-        <Group align={customStyles.alignment.center} style={{ marginTop: 'auto', paddingBottom: 20 }}>
+        <Group align={customStyles.alignment.center} style={{ marginTop: '15px', paddingBottom: 20 }}>
           <Link
             href="#"
             passHref

@@ -16,7 +16,13 @@ import {
 const fetchAll_ITR_Data = createAsyncThunk(
     "itr/fetchAll_ITR_Data",
     async (
-        { token, apiUrl, type }: { token: string, apiUrl: string, type: string },
+        { token, apiUrl, type, handleLoading }:
+            {
+                token: string,
+                apiUrl: string,
+                type: string,
+                handleLoading: () => void
+            },
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
@@ -36,6 +42,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
             const { status, data } = response;
 
             if (status == 200) {
+                handleLoading(); // Note: Stop loading...!
                 if (type === 'ITR') dispatch(FETCH_ALL_ITR_DATA(data?.data?.data));
                 else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA(data?.data?.data));
                 else if (type === 'IT') dispatch(FETCH_ALL_IT_DATA(data?.data?.data));

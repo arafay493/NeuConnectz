@@ -67,12 +67,14 @@ const InventoryTransferRequestScreen = () => {
   const handleTabChange = (value: 'ITR' | 'IT' | 'TR') => {
     // console.log("Tab value: ", value);
     setTab(value);
+    setLoading(true);
 
     if (value === 'ITR') {
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: 'ITR'
+        type: 'ITR',
+        handleLoading: () => setLoading(false)
       }));
       return;
     };
@@ -81,7 +83,8 @@ const InventoryTransferRequestScreen = () => {
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
-        type: 'TR'
+        type: 'TR',
+        handleLoading: () => setLoading(false)
       }));
       return;
     };
@@ -90,7 +93,8 @@ const InventoryTransferRequestScreen = () => {
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
-        type: 'IT'
+        type: 'IT',
+        handleLoading: () => setLoading(false)
       }));
       return;
     };
@@ -106,10 +110,12 @@ const InventoryTransferRequestScreen = () => {
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
+      setLoading(true);
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: 'ITR'
+        type: 'ITR',
+        handleLoading: () => setLoading(false)
       }));
     };
   }, []);

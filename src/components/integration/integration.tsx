@@ -23,7 +23,21 @@ import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
 
-const headers: string[] = ["S.No", "Type", "Number", "Item Code", "From Warehouse", "To Warehouse", "User Name", "ERP Doc Entry", "ERP Line ID", "SAP Status", "Doc Date"];
+const headers: string[] =
+    [
+        "S.No",
+        "Type",
+        "Number",
+        "Item Code",
+        "From Warehouse",
+        "To Warehouse",
+        "User Name",
+        "ERP Doc Entry",
+        "ERP Line ID",
+        "SAP Status",
+        "Doc Status",
+        "Doc Date"
+    ];
 const types: string[] = ["ITR", "IT", "TR"];
 const cardsData = [
     {
@@ -119,7 +133,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             if (response?.data?.data?.success) {
                 showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
                 dispatch(fetchAllITR_IT_TRS({
-                    token : authenticatedUser?.token as string,
+                    token: authenticatedUser?.token as string,
                     dataStatus: "Pending",
                     handleLoading: () => setLoading(false)
                 }));
@@ -341,6 +355,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                                 <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
                                                 <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
                                                 <Table.Td>{row.status}</Table.Td>
+                                                <Table.Td>{row.docStatus}</Table.Td>
                                                 <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
                                             </Table.Tr>
                                         ))

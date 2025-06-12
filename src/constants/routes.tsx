@@ -10,7 +10,7 @@ const unAuthenticatedRoutes: String[] = ["/login"];
 const authenticatedRoutes: String[] = [
     "/",
     "/dashboard",
-    "/inventory-transfer-request",
+    "/stock-movement",
     "/item-movement",
     "/inventory-transfer",
     "/it-tr-difference",
@@ -29,7 +29,7 @@ const routes: Routes = {
     root: "/",
     login: "/login",
     dashboard: "/dashboard",
-    inventoryTransferRequest: "/inventory-transfer-request",
+    stockMovement: "/stock-movement",
     itemMovement: "/item-movement",
     inventoryTransfer: "/inventory-transfer",
     itTrDifference: "/it-tr-difference",
@@ -47,13 +47,13 @@ const routes: Routes = {
 const drawerRoutes: DrawerRoute[] = [
     {
         icon: <IconListCheck size={20} />,
-        label: "Dashboard",
+        label: "dashboard",
         route: routes.dashboard,
     },
     {
         icon: <IconListCheck size={20} />,
-        label: "ITR",
-        route: routes.inventoryTransferRequest,
+        label: "stock movement",
+        route: routes.stockMovement,
     },
     {
         icon: <IconListCheck size={20} />,

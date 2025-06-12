@@ -42,7 +42,6 @@ const AddUserScreen = () => {
         phone: '',
         password: '',
         confirmPassword: '',
-        isActive: false,
         image: null as File | null,
         preview: null as string | null,
         loading: false
@@ -72,7 +71,6 @@ const AddUserScreen = () => {
             phone: '',
             password: '',
             confirmPassword: '',
-            isActive: false,
             image: null,
             preview: null,
             loading: false
@@ -223,7 +221,6 @@ const AddUserScreen = () => {
             size="xl"
             py="md"
         >
-
             {/* Note: Loading Component */}
             <Loader loadingState={userData.loading} />
 
@@ -311,12 +308,6 @@ const AddUserScreen = () => {
                                 required
                                 visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                             />
-
-                            <Checkbox
-                                label="Active"
-                                checked={userData.isActive}
-                                onChange={(e) => handleChange("isActive", e.currentTarget.checked)}
-                            />
                         </Stack>
                     </Card>
                 </Grid.Col>
@@ -333,11 +324,11 @@ const AddUserScreen = () => {
                                             alt="Profile Preview"
                                             style={{
                                                 width: "auto",
-                                                height: 200,
+                                                height: 150,
                                                 objectFit: 'cover'
                                             }}
                                             width={200}
-                                            height={200}
+                                            height={150}
                                             unoptimized
                                         />
                                     )
@@ -346,7 +337,7 @@ const AddUserScreen = () => {
                                         <Image
                                             src={localAssets.userIcon}
                                             alt="User Icon"
-                                            style={{ width: "auto", height: "auto", objectFit: 'cover', marginBottom: 10 }}
+                                            style={{ width: "auto", height: "180px", objectFit: 'cover', marginBottom: 10 }}
                                         />
                                     )
                             }

@@ -6,7 +6,7 @@ export type Routes = {
     root: string;
     login: string;
     dashboard: string;
-    inventoryTransferRequest: string;
+    stockMovement: string;
     itemMovement: string;
     inventoryTransfer: string;
     itTrDifference: string;
