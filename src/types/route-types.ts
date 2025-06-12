@@ -7,6 +7,7 @@ export type Routes = {
     login: string;
     dashboard: string;
     stockMovement: string;
+    reconciliation: string;
     itemMovement: string;
     inventoryTransfer: string;
     itTrDifference: string;
@@ -14,10 +15,11 @@ export type Routes = {
     trPostedDocuments: string;
     usersList: string;
     assignGroup: string;
-    assignWareHouse: string,
-    addUser: string,
-    configuration: string
-    integrationMonitor : string
+    assignWareHouse: string;
+    addUser: string;
+    configuration: string;
+    integrationMonitor: string;
+    editUser: string
 };
 
 export type DrawerRoute = {

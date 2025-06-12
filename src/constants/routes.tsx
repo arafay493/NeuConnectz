@@ -11,6 +11,7 @@ const authenticatedRoutes: String[] = [
     "/",
     "/dashboard",
     "/stock-movement",
+    "/reconciliation",
     "/item-movement",
     "/inventory-transfer",
     "/it-tr-difference",
@@ -21,7 +22,8 @@ const authenticatedRoutes: String[] = [
     "/assign-warehouse",
     "/add-user",
     "/configuration",
-    "/integration-monitor"
+    "/integration-monitor",
+    "/edit-user"
 ];
 
 // Note: Defining all routes...!
@@ -30,6 +32,7 @@ const routes: Routes = {
     login: "/login",
     dashboard: "/dashboard",
     stockMovement: "/stock-movement",
+    reconciliation: "/reconciliation",
     itemMovement: "/item-movement",
     inventoryTransfer: "/inventory-transfer",
     itTrDifference: "/it-tr-difference",
@@ -40,7 +43,8 @@ const routes: Routes = {
     assignWareHouse: "/assign-warehouse",
     addUser: "/add-user",
     configuration: "/configuration",
-    integrationMonitor: "/integration-monitor"
+    integrationMonitor: "/integration-monitor",
+    editUser: "/edit-user"
 };
 
 // Note: Defining drawer routes...!
@@ -54,6 +58,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconListCheck size={20} />,
         label: "stock movement",
         route: routes.stockMovement,
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "reconciliation",
+        route: routes.reconciliation,
     },
     {
         icon: <IconListCheck size={20} />,
