@@ -135,7 +135,7 @@ const InventoryTransferRequestScreen = () => {
       >
         <Stack gap={4}>
           <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>
-            Inventory Transfer Request
+            Stock Movement
           </Title>
         </Stack>
 

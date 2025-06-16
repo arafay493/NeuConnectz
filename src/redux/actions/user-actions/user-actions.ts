@@ -6,7 +6,7 @@ import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
 import { FETCH_ALL_USERS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { CreateUserDataType, ActivationStatusType } from "@/types/modules/user-types/user-types";
+import { CreateUserDataType, UpdateUserType } from "@/types/modules/user-types/user-types";
 import { ResHandler } from "@/types/api-types";
 
 // Note: Action function fetch all users...!
@@ -92,28 +92,28 @@ const addUser = createAsyncThunk(
     }
 );
 
-// Note: Action function to activate or deactivate user...!
-const activateOrDeactivateUser = createAsyncThunk(
-    "user/activateOrDeactivateUser",
+// Note: Action function to update user...!
+const updateUser = createAsyncThunk(
+    "user/updateUser",
     async (
-        { statusData, token, resHandler }:
+        { editUserData, token, resHandler }:
             {
-                statusData: ActivationStatusType,
+                editUserData: UpdateUserType,
                 token: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
         // console.log("Token in user action: ", token);
-        // console.log("Status data in user action: ", statusData);
+        // console.log("Status data in user action: ", editUserData);
 
         try {
             const response = await axios({
                 method: API_METHODS.POST,
                 url: apiRequestRoutes.postRequest,
-                data: statusData,
+                data: editUserData,
                 headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ACTIVATE_OR_DEACTIVATE_USER,
+                    "Api-Url": process.env.NEXT_PUBLIC_UPDATE_USER,
                     "Auth-Token": token
                 }
             });
@@ -126,7 +126,7 @@ const activateOrDeactivateUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in activate or deactivate user api integration: ', error);
+            // console.log('Error occured in update user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -142,5 +142,5 @@ const activateOrDeactivateUser = createAsyncThunk(
 export {
     fetchAllUsers,
     addUser,
-    activateOrDeactivateUser
+    updateUser
 };

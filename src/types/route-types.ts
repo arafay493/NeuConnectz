@@ -19,7 +19,7 @@ export type Routes = {
     addUser: string;
     configuration: string;
     integrationMonitor: string;
-    editUser: string
+    editUser: (uid: string) => string
 };
 
 export type DrawerRoute = {

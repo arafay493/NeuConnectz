@@ -94,7 +94,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, filtered_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
     // console.log("filtered_ITR_IT_TRS: ", filtered_ITR_IT_TRS);
     // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
@@ -120,6 +120,24 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
 
         return 0;
+    };
+
+    // Note: Handle disable values...!
+    const handleDisable = (label: string) => {
+        console.log("Label: ", label);
+
+        let disableTrue = false;
+        const isITRDataExist = [...listAll_ITR_IT_TRS].find((item) => { return item.type == "ITR" });
+
+        if ((label == "IT" || label == "TR") && isITRDataExist) {
+            disableTrue = true;
+        }
+
+        else {
+            disableTrue = false;
+        };
+
+        return disableTrue;
     };
 
     // Note: post request to SAP api response handler...!
@@ -255,6 +273,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                     mt="md"
                                     variant="outline"
                                     onClick={() => handleRequestToSap(item.label)}
+                                    disabled={handleDisable(item.label)}
                                 >
                                     Post
                                 </Button>

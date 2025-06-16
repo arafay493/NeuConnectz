@@ -10,7 +10,6 @@ import {
     Select,
     Button,
     FileButton,
-    Checkbox,
     Group,
     Container,
     Grid,
@@ -138,7 +137,12 @@ const AddUserScreen = () => {
         };
 
         if (response && response.status != 201) {
-            // setLoading(false); // Note: Stop loading...!
+            // Note: Stop loading...!
+            setUserData({
+                ...userData,
+                loading: false
+            });
+            showNotificationToast(`Error with the status code: ${response?.status}`, response?.data?.error, customStyles.colors.red);
             return;
         };
     };

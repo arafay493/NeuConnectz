@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -17,18 +17,13 @@ import {
 import { MantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
 import { IconSearch, IconUserPlus, IconFileTypeCsv, IconEdit } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAllUsers, activateOrDeactivateUser } from '@/redux/actions/user-actions/user-actions';
+import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { UserType } from '@/types/modules/user-types/user-types';
 import { routes } from '@/constants/routes';
-import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import Loader from '@/components/loader/loader';
 import { exportToCSV } from '@/constants/export-to-csv';
 
 const UsersListScreen = () => {
-
-  // Note: Handeling states here...!
-  const [loading, setLoading] = useState(false);
 
   // Note: Handle routing...!
   const router = useRouter();
@@ -39,12 +34,12 @@ const UsersListScreen = () => {
   // Note: fetching data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
-  console.log('Users: ', usersList);
+  // console.log('Users: ', usersList);
 
   // Note: Handle to go to edit user screen...!
   const goToUpdateUserScreen = (uid: string) => {
-    console.log("Uid: ", uid);
-    uid && router.push(routes.editUser);
+    // console.log("Uid: ", uid);
+    uid && router.push(routes.editUser(uid as string));
   };
 
   const columns = useMemo<MRT_ColumnDef<UserType>[]>(() => [
@@ -148,30 +143,6 @@ const UsersListScreen = () => {
     },
   ], []);
 
-  const handleResponse = (response: any): void => {
-    setLoading(false);
-    if (response?.status === 201) {
-      showNotificationToast("Status Updated", "User status changed successfully", customStyles.colors._408CCE);
-      dispatch(fetchAllUsers(authenticatedUser?.token || ""));
-    }
-
-    else if (response?.status === 403) {
-      showNotificationToast("Unauthorized", "You are not authorized to perform this action!", customStyles.colors.red);
-    };
-  };
-
-  const handleUserStatusChange = (userData: UserType) => {
-    setLoading(true);
-    dispatch(activateOrDeactivateUser({
-      statusData: {
-        userId: userData?.userId,
-        isActive: !userData?.isActive,
-      },
-      token: authenticatedUser?.token || "",
-      resHandler: handleResponse,
-    }));
-  };
-
   // Note: This hook will run when the component mounts...!
   useEffect(() => {
     if (authenticatedUser) {
@@ -181,8 +152,6 @@ const UsersListScreen = () => {
 
   return (
     <div>
-      <Loader loadingState={loading} />
-
       <Group justify="space-between" align="flex-start" p="md" bg="gray.0">
         <Stack gap={4}>
           <Title order={3}>User List</Title>

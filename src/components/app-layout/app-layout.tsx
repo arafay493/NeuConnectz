@@ -69,7 +69,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   // Note: This hook will automatically update activeTab based on current route path...!
   useEffect(() => {
     const activeRouteIndex = drawerRoutes.findIndex(route => route.route === pathName);
-    setActiveTab(activeRouteIndex >= 0 ? activeRouteIndex : 0);
+    setActiveTab(activeRouteIndex >= 0 ? activeRouteIndex : -1);
   }, [pathName]);
 
   // Note: Link component for navigation...!
@@ -119,7 +119,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       {/* Note: Navbar section */}
       <AppShellHeader
         withBorder
-        style={{ display: authenticatedRoutes.includes(pathName) ? 'block' : 'none' }}
+        style={{ display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[15] as string) ? 'block' : 'none' }}
       >
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
           <Group style={{
@@ -189,7 +189,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         p={customStyles.deviceSize.xs}
         withBorder
         style={{
-          display: authenticatedRoutes.includes(pathName) ? 'block' : 'none',
+          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[15] as string) ? 'block' : 'none',
           overflow: 'scroll'
         }}
       >

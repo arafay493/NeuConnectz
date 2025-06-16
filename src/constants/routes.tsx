@@ -23,7 +23,7 @@ const authenticatedRoutes: String[] = [
     "/add-user",
     "/configuration",
     "/integration-monitor",
-    "/edit-user"
+    "/edit"
 ];
 
 // Note: Defining all routes...!
@@ -44,7 +44,7 @@ const routes: Routes = {
     addUser: "/add-user",
     configuration: "/configuration",
     integrationMonitor: "/integration-monitor",
-    editUser: "/edit-user"
+    editUser: (uid: string) => `/edit/${uid}`
 };
 
 // Note: Defining drawer routes...!

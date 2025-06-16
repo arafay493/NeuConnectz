@@ -35,7 +35,7 @@ export interface RefreshTokenType {
 
 export type UserDepartment = "Inventory Control" | "Logistics" | "Dispatch" | "WareHouse";
 
-export interface ActivationStatusType {
+export interface UpdateUserType {
     userId: string;
     isActive: boolean;
 };
