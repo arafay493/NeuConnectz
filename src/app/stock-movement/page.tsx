@@ -9,6 +9,7 @@ import {
   Title,
   Stack,
   Button,
+  ScrollArea
 } from '@mantine/core';
 import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
@@ -157,50 +158,53 @@ const InventoryTransferRequestScreen = () => {
           mb="lg"
         />
 
-        {/* Note: ITR data table */}
-        {
-          tab === 'ITR' && (
-            <ITR_TableCom
-              paginatedData={paginatedData}
-              totalPages={totalPages}
-              activePage={activePage}
-              setPage={setPage}
-              itemsPerPage={itemsPerPage}
-              setItemsPerPage={setItemsPerPage}
-              itrErrorState={itrErrorState}
-            />
-          )
-        }
+        <ScrollArea type='auto'>
 
-        {/* Note: TR data table */}
-        {
-          tab === 'TR' && (
-            <TR_TableCom
-              paginatedData={paginatedData_TR}
-              totalPages={totalPages_TR}
-              activePage={activePage_TR}
-              setPage={setPage_TR}
-              itemsPerPage={itemsPerPage_TR}
-              setItemsPerPage={setItemsPerPage_TR}
-              itrErrorState={itrErrorState}
-            />
-          )
-        }
+          {/* Note: ITR data table */}
+          {
+            tab === 'ITR' && (
+              <ITR_TableCom
+                paginatedData={paginatedData}
+                totalPages={totalPages}
+                activePage={activePage}
+                setPage={setPage}
+                itemsPerPage={itemsPerPage}
+                setItemsPerPage={setItemsPerPage}
+                itrErrorState={itrErrorState}
+              />
+            )
+          }
 
-        {/* Note: IT data table */}
-        {
-          tab === 'IT' && (
-            <IT_TableCom
-              paginatedData={paginatedData_IT}
-              totalPages={totalPages_IT}
-              activePage={activePage_IT}
-              setPage={setPage_IT}
-              itemsPerPage={itemsPerPage_IT}
-              setItemsPerPage={setItemsPerPage_IT}
-              itrErrorState={itrErrorState}
-            />
-          )
-        }
+          {/* Note: TR data table */}
+          {
+            tab === 'TR' && (
+              <TR_TableCom
+                paginatedData={paginatedData_TR}
+                totalPages={totalPages_TR}
+                activePage={activePage_TR}
+                setPage={setPage_TR}
+                itemsPerPage={itemsPerPage_TR}
+                setItemsPerPage={setItemsPerPage_TR}
+                itrErrorState={itrErrorState}
+              />
+            )
+          }
+
+          {/* Note: IT data table */}
+          {
+            tab === 'IT' && (
+              <IT_TableCom
+                paginatedData={paginatedData_IT}
+                totalPages={totalPages_IT}
+                activePage={activePage_IT}
+                setPage={setPage_IT}
+                itemsPerPage={itemsPerPage_IT}
+                setItemsPerPage={setItemsPerPage_IT}
+                itrErrorState={itrErrorState}
+              />
+            )
+          }
+        </ScrollArea>
       </div>
     </div>
   );

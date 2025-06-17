@@ -11,7 +11,8 @@ import {
     Title,
     ThemeIcon,
     Flex,
-    Select
+    Select,
+    ScrollArea
 } from '@mantine/core';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -94,7 +95,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, filtered_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
-    console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
     // console.log("filtered_ITR_IT_TRS: ", filtered_ITR_IT_TRS);
     // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
@@ -124,7 +125,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Handle disable values...!
     const handleDisable = (label: string) => {
-        console.log("Label: ", label);
+        // console.log("Label: ", label);
 
         let disableTrue = false;
         const isITRDataExist = [...listAll_ITR_IT_TRS].find((item) => { return item.type == "ITR" });
@@ -345,45 +346,47 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                 {loading && <Loader loadingState={loading} />}
 
-                <Table
-                    highlightOnHover
-                    striped
-                    withTableBorder
-                >
-                    <Table.Thead>
-                        <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
-                    </Table.Thead>
+                <ScrollArea type="auto">
+                    <Table
+                        highlightOnHover
+                        striped
+                        withTableBorder
+                    >
+                        <Table.Thead>
+                            <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
+                        </Table.Thead>
 
-                    <Table.Tbody>
-                        {
-                            (paginatedData.length > 0)
-                                ?
-                                (
-                                    (filtered_ITR_IT_TRS && filtered_ITR_IT_TRS.length > 0
-                                        ? filtered_ITR_IT_TRS
-                                        : paginatedData)
-                                        .map((row: SAP_ITR_IT_TRS_DataType, index) => (
-                                            <Table.Tr key={row.id}>
-                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                <Table.Td>{row.type}</Table.Td>
-                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                                <Table.Td>{row.itemCode}</Table.Td>
-                                                <Table.Td>{row.fromWarehouse}</Table.Td>
-                                                <Table.Td>{row.toWarehouse}</Table.Td>
-                                                <Table.Td>{row.userName}</Table.Td>
-                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                                <Table.Td>{row.status}</Table.Td>
-                                                <Table.Td>{row.docStatus}</Table.Td>
-                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                            </Table.Tr>
-                                        ))
-                                )
-                                :
-                                (<DataNotFound notFoundContent={sapErrorState || "No ITR_IT_TRS data found."} colSpanValue={9} />)
-                        }
-                    </Table.Tbody>
-                </Table>
+                        <Table.Tbody>
+                            {
+                                (paginatedData.length > 0)
+                                    ?
+                                    (
+                                        (filtered_ITR_IT_TRS && filtered_ITR_IT_TRS.length > 0
+                                            ? filtered_ITR_IT_TRS
+                                            : paginatedData)
+                                            .map((row: SAP_ITR_IT_TRS_DataType, index) => (
+                                                <Table.Tr key={row.id}>
+                                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                    <Table.Td>{row.type}</Table.Td>
+                                                    <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                                    <Table.Td>{row.itemCode}</Table.Td>
+                                                    <Table.Td>{row.fromWarehouse}</Table.Td>
+                                                    <Table.Td>{row.toWarehouse}</Table.Td>
+                                                    <Table.Td>{row.userName}</Table.Td>
+                                                    <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                                    <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                                    <Table.Td>{row.status}</Table.Td>
+                                                    <Table.Td>{row.docStatus}</Table.Td>
+                                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                                </Table.Tr>
+                                            ))
+                                    )
+                                    :
+                                    (<DataNotFound notFoundContent={sapErrorState || "No ITR_IT_TRS data found."} colSpanValue={9} />)
+                            }
+                        </Table.Tbody>
+                    </Table>
+                </ScrollArea>
 
                 <Flex
                     justify={customStyles.alignment.spaceBetween}

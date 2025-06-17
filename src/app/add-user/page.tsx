@@ -152,6 +152,8 @@ const AddUserScreen = () => {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
         const phoneRegex = /^(?:\+92|92|0)?3[0-9]{9}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+
         const {
             userName,
             email,
@@ -168,7 +170,9 @@ const AddUserScreen = () => {
             else if (!department) throw "Department is required";
             else if (!role) throw "Role is required";
             else if (!phone.match(phoneRegex)) throw "Invalid phone number format";
-            else if (password.length < 6) throw "Password must be at least 6 characters";
+            else if (!password.match(passwordRegex)) throw "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one special character";
+            else if (password.trim().length < 1) throw "Password is required";
+            else if (confirmPassword.trim().length < 1) throw "Confirm password is required";
             else if (confirmPassword !== password) throw "Passwords do not match";
             else {
                 const user = {

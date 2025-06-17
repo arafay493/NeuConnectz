@@ -10,7 +10,6 @@ import {
   Select,
   Button,
   FileButton,
-  Checkbox,
   Group,
   Container,
   Grid,
@@ -18,6 +17,7 @@ import {
   Title,
   Text,
   Stack,
+  Switch
 } from '@mantine/core';
 import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff } from '@tabler/icons-react';
 import { useRouter, useParams } from 'next/navigation';
@@ -30,7 +30,6 @@ import { fetchAllRolesList } from '@/redux/actions/roles-actions/roles-actions';
 import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
-import { UserType } from '@/types/modules/user-types/user-types';
 
 const EditUserScreen = () => {
 
@@ -275,13 +274,19 @@ const EditUserScreen = () => {
                 disabled
               />
 
-              <Group grow>
-                <Checkbox
-                  label={`${isUserActiveState ? 'Deactivate' : 'Activate'} user`}
+              <div style={{ display: 'flex', flexDirection: "row", alignItems: 'center', gap: 10, marginTop: 10 }}>
+                <Switch
+                  size="md"
+                  // onLabel="ON"
+                  // offLabel="OFF"
                   checked={isUserActiveState}
                   onChange={(event) => setIsUserActiveState(event.currentTarget.checked)}
                 />
-              </Group>
+
+                <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+                  Activate user
+                </Text>
+              </div>
             </Stack>
           </Card>
         </Grid.Col>
