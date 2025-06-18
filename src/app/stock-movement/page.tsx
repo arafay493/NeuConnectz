@@ -10,8 +10,10 @@ import {
   Stack,
   Button,
   ScrollArea,
-  Select
+  Select,
+  TextInput
 } from '@mantine/core';
+import { DateInput } from '@mantine/dates';
 import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '@/components/loader/loader';
@@ -21,22 +23,7 @@ import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
-
-// Note: Filters dropdown data...!
-const filters: string[] = [
-  "SAP Status",
-  "DOC Status",
-  "From Warehouse Code",
-  "To Warehouse Code",
-  "Doc Date",
-];
-
-// SAP Status options...!
-const sapStatusOptions: string[] = [
-  "Pending",
-  "Updated",
-  "Integrated",
-];
+import { filters, sapStatusOptions, docStatusOptions } from '@/constants/filters';
 
 const InventoryTransferRequestScreen = () => {
 
@@ -137,6 +124,14 @@ const InventoryTransferRequestScreen = () => {
       // console.log('Clear button clicked!');
       setSelectFilter(null);
       setAppliedFilter(null);
+      setTab('ITR');
+
+      dispatch(fetchAll_ITR_Data({
+        token: authenticatedUser?.token || '',
+        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+        type: tab,
+        handleLoading: () => setLoading(false)
+      }));
     }
 
     else {
@@ -168,6 +163,18 @@ const InventoryTransferRequestScreen = () => {
           token: authenticatedUser?.token || '',
           apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
           type: 'IT',
+          handleLoading: () => setLoading(false),
+          filterIndex: filters.indexOf(selectFilter),
+          appliedFilter: appliedFilter || null
+        }));
+        return;
+      };
+
+      if (tab === 'TR') {
+        dispatch(fetchAll_ITR_Data({
+          token: authenticatedUser?.token || '',
+          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
+          type: 'TR',
           handleLoading: () => setLoading(false),
           filterIndex: filters.indexOf(selectFilter),
           appliedFilter: appliedFilter || null
@@ -232,13 +239,65 @@ const InventoryTransferRequestScreen = () => {
         />
 
         {
-          selectFilter &&
+          (selectFilter == "SAP Status" || selectFilter == "DOC Status") &&
           <Select
             label={`Select ${selectFilter}`}
             placeholder={`Select ${selectFilter}`}
-            data={sapStatusOptions}
+            data={selectFilter == "SAP Status" ? sapStatusOptions : docStatusOptions}
             value={appliedFilter}
             onChange={(value) => setAppliedFilter(value as string)}
+          />
+        }
+
+        {
+          (selectFilter == "From Warehouse Code" || selectFilter == "To Warehouse Code") &&
+          <TextInput
+            label={`Enter ${selectFilter}`}
+            placeholder={`Enter ${selectFilter}`}
+            value={appliedFilter || ''}
+            onChange={(e) => setAppliedFilter(e.target.value)}
+          />
+        }
+
+        {
+          (selectFilter == "Doc Date") &&
+          <DateInput
+            label="Select Doc Date"
+            placeholder="Select Doc Date"
+            value={appliedFilter ? new Date(appliedFilter) : null}
+            onChange={(date) => setAppliedFilter(date ? date : null)}
+            clearable
+            size="sm" // makes the input smaller
+            popoverProps={{
+              withinPortal: true,
+              styles: {
+                dropdown: {
+                  padding: 8,
+                  borderRadius: 8,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                  maxWidth: 320,
+                },
+              },
+            }}
+            styles={{
+              input: {
+                fontSize: 14,
+              },
+              calendarHeaderControl: {
+                fontSize: 14,
+                padding: 4,
+                width: 30,
+                height: 30,
+              },
+              calendarHeaderLevel: {
+                fontSize: 16,
+              },
+              day: {
+                fontSize: 13,
+                width: 34,
+                height: 34,
+              },
+            }}
           />
         }
 

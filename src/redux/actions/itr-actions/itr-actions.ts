@@ -11,14 +11,7 @@ import {
     FETCH_ALL_IT_DATA,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA,
 } from "@/redux/reducers/itr-reducer/itr-reducer";
-
-const apiFilterParams: string[] = [
-    "sapStatus",
-    "docStatus",
-    "fromWarehouseCode",
-    "toWarehouseCode",
-    "docDate",
-];
+import { apiFilterParams } from "@/constants/filters";
 
 // Note: Action function fetch all ITR Data...!
 const fetchAll_ITR_Data = createAsyncThunk(
