@@ -9,7 +9,8 @@ import {
   Title,
   Stack,
   Button,
-  ScrollArea
+  ScrollArea,
+  Select
 } from '@mantine/core';
 import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
@@ -20,6 +21,22 @@ import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
+
+// Note: Filters dropdown data...!
+const filters: string[] = [
+  "SAP Status",
+  "DOC Status",
+  "From Warehouse Code",
+  "To Warehouse Code",
+  "Doc Date",
+];
+
+// SAP Status options...!
+const sapStatusOptions: string[] = [
+  "Pending",
+  "Updated",
+  "Integrated",
+];
 
 const InventoryTransferRequestScreen = () => {
 
@@ -37,6 +54,10 @@ const InventoryTransferRequestScreen = () => {
   // Note: For IT...!
   const [activePage_IT, setPage_IT] = useState(1);
   const [itemsPerPage_IT, setItemsPerPage_IT] = useState(10);
+
+  // Note: Filters states...!
+  const [selectFilter, setSelectFilter] = useState<string | null>(null);
+  const [appliedFilter, setAppliedFilter] = useState<string | null>(null);
 
   // Note: Redux dispatch and selector hooks...!
   const dispatch = useAppDispatch();
@@ -69,13 +90,15 @@ const InventoryTransferRequestScreen = () => {
     // console.log("Tab value: ", value);
     setTab(value);
     setLoading(true);
+    setSelectFilter(null);
+    setAppliedFilter(null);
 
     if (value === 'ITR') {
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
         type: 'ITR',
-        handleLoading: () => setLoading(false)
+        handleLoading: () => setLoading(false),
       }));
       return;
     };
@@ -108,10 +131,46 @@ const InventoryTransferRequestScreen = () => {
     else if (tab === 'IT') exportToCSV(paginatedData_IT, 'inventory_transfer.csv');
   };
 
+  // Note: Handle filter dropdown onchange...!
+  const handleFilterOnChange = (val: string | null) => {
+    if (val === null) {
+      // console.log('Clear button clicked!');
+      setSelectFilter(null);
+      setAppliedFilter(null);
+    }
+
+    else {
+      // console.log('Selected:', val);
+      setSelectFilter(val);
+    };
+  };
+
+  // Note: Function to applied filter...!
+  const handleAppliedFilter = () => {
+    if (selectFilter && appliedFilter) {
+      console.log(`Applied Filter: ${appliedFilter}`);
+      setLoading(true);
+
+      if (tab === 'ITR') {
+        dispatch(fetchAll_ITR_Data({
+          token: authenticatedUser?.token || '',
+          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+          type: 'ITR',
+          handleLoading: () => setLoading(false),
+          filterIndex: filters.indexOf(selectFilter),
+          appliedFilter: appliedFilter || null
+        }));
+        return;
+      };
+    };
+  };
+
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
       setLoading(true);
+      setSelectFilter(null);
+      setAppliedFilter(null);
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
@@ -146,6 +205,37 @@ const InventoryTransferRequestScreen = () => {
           onClick={handleExportToCSV}
         >
           Export to CSV
+        </Button>
+      </Group>
+
+      {/* Filters */}
+      <Group grow align="flex-end" p='md'>
+        <Select
+          label="Selected Filter"
+          placeholder="Select Filter"
+          data={filters}
+          value={selectFilter}
+          onChange={handleFilterOnChange}
+          clearable
+        />
+
+        {
+          selectFilter &&
+          <Select
+            label={`Select ${selectFilter}`}
+            placeholder={`Select ${selectFilter}`}
+            data={sapStatusOptions}
+            value={appliedFilter}
+            onChange={(value) => setAppliedFilter(value as string)}
+          />
+        }
+
+        <Button
+          mt="xs"
+          disabled={!selectFilter || !appliedFilter}
+          onClick={handleAppliedFilter}
+        >
+          Applied Filter
         </Button>
       </Group>
 

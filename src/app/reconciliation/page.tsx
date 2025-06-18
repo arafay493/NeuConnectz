@@ -2,6 +2,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -17,7 +18,6 @@ import {
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconSearch, IconTable } from '@tabler/icons-react';
-import { useState } from 'react';
 
 const dummyData = Array(6).fill({
   itemCode: 'ITM-0001',

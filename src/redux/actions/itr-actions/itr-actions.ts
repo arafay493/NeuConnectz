@@ -12,33 +12,50 @@ import {
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA,
 } from "@/redux/reducers/itr-reducer/itr-reducer";
 
+const apiFilterParams: string[] = [
+    "sapStatus",
+    "docStatus",
+    "fromWarehouseCode",
+    "toWarehouseCode",
+    "docDate",
+];
+
 // Note: Action function fetch all ITR Data...!
 const fetchAll_ITR_Data = createAsyncThunk(
     "itr/fetchAll_ITR_Data",
     async (
-        { token, apiUrl, type, handleLoading }:
+        { token, apiUrl, type, handleLoading, filterIndex, appliedFilter }:
             {
                 token: string,
                 apiUrl: string,
                 type: string,
-                handleLoading: () => void
+                handleLoading: () => void,
+                filterIndex?: number,
+                appliedFilter?: string | null,
             },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", token);
-        // console.log("API URL: ", apiUrl);
-        // console.log("Type: ", type);
+        console.log("Auth token: ", token);
+        console.log("API URL: ", apiUrl);
+        console.log("Type: ", type);
+        console.log("Filter Index: ", filterIndex);
+        console.log("Applied Filter: ", appliedFilter);
+
+        const modifiedApiUrl = (filterIndex != undefined && appliedFilter != undefined) ?
+            (`${apiUrl}?${apiFilterParams[filterIndex || 0]}=${appliedFilter || ''}`) :
+            apiUrl;
+        console.log("Modified API URL: ", modifiedApiUrl);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
                 headers: {
-                    "Api-Url": apiUrl,
+                    "Api-Url": modifiedApiUrl,
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in ITR action: ", response);
+            console.log("Response in ITR action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -50,7 +67,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all ITR data integration: ', error);
+            console.log(`Error occured in fetch all ${type} data integration:`, error);
             const { status, data } = error?.response;
 
             // 401:
