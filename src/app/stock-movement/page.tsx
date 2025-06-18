@@ -162,6 +162,18 @@ const InventoryTransferRequestScreen = () => {
         }));
         return;
       };
+
+      if (tab === 'IT') {
+        dispatch(fetchAll_ITR_Data({
+          token: authenticatedUser?.token || '',
+          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
+          type: 'IT',
+          handleLoading: () => setLoading(false),
+          filterIndex: filters.indexOf(selectFilter),
+          appliedFilter: appliedFilter || null
+        }));
+        return;
+      };
     };
   };
 
