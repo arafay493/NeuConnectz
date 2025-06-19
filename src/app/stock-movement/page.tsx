@@ -143,7 +143,7 @@ const InventoryTransferRequestScreen = () => {
   // Note: Function to applied filter...!
   const handleAppliedFilter = () => {
     if (selectFilter && appliedFilter) {
-      console.log(`Applied Filter: ${appliedFilter}`);
+      // console.log(`Applied Filter: ${appliedFilter}`);
       setLoading(true);
 
       if (tab === 'ITR') {

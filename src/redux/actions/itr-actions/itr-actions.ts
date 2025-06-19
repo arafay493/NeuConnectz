@@ -28,16 +28,16 @@ const fetchAll_ITR_Data = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Auth token: ", token);
-        console.log("API URL: ", apiUrl);
-        console.log("Type: ", type);
-        console.log("Filter Index: ", filterIndex);
-        console.log("Applied Filter: ", appliedFilter);
+        // console.log("Auth token: ", token);
+        // console.log("API URL: ", apiUrl);
+        // console.log("Type: ", type);
+        // console.log("Filter Index: ", filterIndex);
+        // console.log("Applied Filter: ", appliedFilter);
 
         const modifiedApiUrl = (filterIndex != undefined && appliedFilter != undefined) ?
             (`${apiUrl}?${apiFilterParams[filterIndex || 0]}=${appliedFilter || ''}`) :
             apiUrl;
-        console.log("Modified API URL: ", modifiedApiUrl);
+        // console.log("Modified API URL: ", modifiedApiUrl);
 
         try {
             const response = await axios({
@@ -48,7 +48,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in ITR action: ", response);
+            // console.log("Response in ITR action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -60,7 +60,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log(`Error occured in fetch all ${type} data integration:`, error);
+            // console.log(`Error occured in fetch all ${type} data integration:`, error);
             const { status, data } = error?.response;
 
             // 401:
