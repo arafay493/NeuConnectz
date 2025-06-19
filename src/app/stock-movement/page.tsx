@@ -313,7 +313,11 @@ const InventoryTransferRequestScreen = () => {
       <div style={{ padding: 10, paddingTop: 20 }}>
         <SegmentedControl
           fullWidth
-          data={[{ label: 'Inventory Transfer Request', value: 'ITR' }, { label: 'Inventory Transfer', value: 'IT' }, { label: 'Transfer Request', value: 'TR' }]}
+          data={[
+            { label: 'Inventory Transfer Request', value: 'ITR' },
+            { label: 'Inventory Transfer', value: 'IT' },
+            { label: 'Transfer Request', value: 'TR' }
+          ]}
           value={tab}
           onChange={(value) => handleTabChange(value as 'ITR' | 'IT' | 'TR')}
           mb="lg"
