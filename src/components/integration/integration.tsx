@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postRequestToSAP, fetchAllITR_IT_TRS, filterByType_ITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
+import { postRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -44,32 +44,38 @@ const cardsData = [
     {
         label: "ITR",
         pendingValue: "pendingItrs",
-        integratedValue: "integratedItrs"
+        integratedValue: "integratedItrs",
+        lastIntegrationDate: "lastItrIntegrationDate"
     },
     {
         label: "IT",
         pendingValue: "pendingIts",
-        integratedValue: "integratedIts"
+        integratedValue: "integratedIts",
+        lastIntegrationDate: "lastItIntegrationDate"
     },
     {
         label: "TR",
         pendingValue: "pendingTrs",
-        integratedValue: "integratedTrs"
+        integratedValue: "integratedTrs",
+        lastIntegrationDate: "lastTrIntegrationDate"
     },
     {
         label: "GI",
         pendingValue: "pendingGis",
-        integratedValue: "integratedGis"
+        integratedValue: "integratedGis",
+        lastIntegrationDate: ""
     },
     {
         label: "GR",
         pendingValue: "pendingGrs",
-        integratedValue: "integratedGrs"
+        integratedValue: "integratedGrs",
+        lastIntegrationDate: ""
     },
     {
         label: "GRN",
         pendingValue: "pendingGrns",
-        integratedValue: "integratedGrns"
+        integratedValue: "integratedGrns",
+        lastIntegrationDate: ""
     },
 ];
 
@@ -94,9 +100,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { listAll_ITR_IT_TRS, filtered_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
+    const { listAll_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
     // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    // console.log("filtered_ITR_IT_TRS: ", filtered_ITR_IT_TRS);
     // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
     // Note: Required variables...!
@@ -105,14 +110,32 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Status dropdown handler...!
     const dropDownHandler = (val: string): void => {
-        // console.log("Selected type: ", val);
-        dispatch(filterByType_ITR_IT_TRS(val));
-        setSelectedType(val || "");
-        setPage(1);
+
+        if (val === null) {
+            setSelectedType("");
+            // console.log('Clear button clicked!');
+            dispatch(fetchAllITR_IT_TRS({
+                token : authenticatedUser?.token as string,
+                dataStatus: statusColor as "Pending" | "Integrated",
+                handleLoading: () => setLoading(false)
+            }));
+        }
+
+        else {
+            setLoading(true);
+            // console.log("Selected type: ", val);
+            setSelectedType(val);
+            dispatch(fetchAllITR_IT_TRS({
+                token : authenticatedUser?.token as string,
+                dataStatus: statusColor as "Pending" | "Integrated",
+                handleLoading: () => setLoading(false),
+                type: val as "ITR" | "TR" | "IT"
+            }));
+        };
     };
 
     // Note: Function to shoe pending and integrated values...!
-    const showPendingAndIntegratedValues = (type: string, value: string) => {
+    const showPendingAndIntegratedValues = (value: string) => {
         // console.log("Type: ", type);
         // console.log("Value: ", value);
 
@@ -275,9 +298,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                                 <Title order={4}>{item.label}</Title>
                                 <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
-                                    {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
+                                    {`${showPendingAndIntegratedValues(item.pendingValue)} / ${showPendingAndIntegratedValues(item.integratedValue)}`}
                                 </Text>
-                                <Text c="dimmed" size="sm">20 mins ago</Text>
+
+                                <Text c="dimmed" size="sm">
+                                    {`${new Date(showPendingAndIntegratedValues(item.lastIntegrationDate)).getMinutes()} mins ago`}
+                                </Text>
+
                                 <Button
                                     fullWidth
                                     mt="md"
@@ -351,7 +378,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     <Group>
                         <Select
                             data={types}
-                            placeholder="Filter by ITR, IT, TR"
+                            placeholder="Filters by ITR, IT, TR"
                             value={selectedType}
                             onChange={(value) => dropDownHandler(value as string)}
                             clearable
@@ -375,28 +402,25 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                         <Table.Tbody>
                             {
-                                (paginatedData.length > 0)
+                                (paginatedData?.length > 0)
                                     ?
                                     (
-                                        (filtered_ITR_IT_TRS && filtered_ITR_IT_TRS.length > 0
-                                            ? filtered_ITR_IT_TRS
-                                            : paginatedData)
-                                            .map((row: SAP_ITR_IT_TRS_DataType, index) => (
-                                                <Table.Tr key={row.id}>
-                                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                    <Table.Td>{row.type}</Table.Td>
-                                                    <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                                    <Table.Td>{row.itemCode}</Table.Td>
-                                                    <Table.Td>{row.fromWarehouse}</Table.Td>
-                                                    <Table.Td>{row.toWarehouse}</Table.Td>
-                                                    <Table.Td>{row.userName}</Table.Td>
-                                                    <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                                    <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                                    <Table.Td>{row.status}</Table.Td>
-                                                    <Table.Td>{row.docStatus}</Table.Td>
-                                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                                </Table.Tr>
-                                            ))
+                                        paginatedData?.map((row: SAP_ITR_IT_TRS_DataType, index) => (
+                                            <Table.Tr key={row.id}>
+                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                <Table.Td>{row.type}</Table.Td>
+                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                                <Table.Td>{row.itemCode}</Table.Td>
+                                                <Table.Td>{row.fromWarehouse}</Table.Td>
+                                                <Table.Td>{row.toWarehouse}</Table.Td>
+                                                <Table.Td>{row.userName}</Table.Td>
+                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                                <Table.Td>{row.status}</Table.Td>
+                                                <Table.Td>{row.docStatus}</Table.Td>
+                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                            </Table.Tr>
+                                        ))
                                     )
                                     :
                                     (<DataNotFound notFoundContent={sapErrorState || "No data found."} colSpanValue={9} />)

@@ -6,7 +6,6 @@ import { SAPStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: SAPStateType = {
     listAll_ITR_IT_TRS: [],
-    filtered_ITR_IT_TRS: [],
     pendingAndIntegratedData: null,
     sapErrorState: ""
 };
@@ -23,22 +22,11 @@ const SAPReducer = createSlice({
         FETCH_ALL_ITR_IT_TRS: (state, action: PayloadAction<any>) => {
             // console.log("ITR_IT_TRS list data in sap reducer: ", action.payload);
             state.sapErrorState = "";
-            state.filtered_ITR_IT_TRS = [];
             state.listAll_ITR_IT_TRS = [];
             state.pendingAndIntegratedData = null;
 
             state.listAll_ITR_IT_TRS = action?.payload?.listData;
             state.pendingAndIntegratedData = action?.payload?.pendingAndIntegratedData;
-        },
-
-        FETCH_BY_TYPE: (state, action: PayloadAction<any>) => {
-            // console.log("Filter by type: ", action.payload);
-            const listDataClone = [...state.listAll_ITR_IT_TRS]
-                .filter((item) => {
-                    return item?.type == action.payload;
-                });
-            // console.log("Filtered list data: ", listDataClone);
-            state.filtered_ITR_IT_TRS = listDataClone;
         },
 
         CLEAR_ALL_SAP_STATES: (state) => {
@@ -54,7 +42,6 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
-        FETCH_BY_TYPE,
         CLEAR_ALL_SAP_STATES
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

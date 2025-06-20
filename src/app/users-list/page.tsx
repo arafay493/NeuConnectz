@@ -12,10 +12,11 @@ import {
   Stack,
   Title,
   Button,
-  ScrollArea
+  ScrollArea,
+  TextInput
 } from "@mantine/core";
 import { MantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
-import { IconSearch, IconUserPlus, IconFileTypeCsv, IconEdit } from "@tabler/icons-react";
+import { IconSearch, IconUserPlus, IconFileTypeCsv, IconEdit, IconFilter } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { customStyles } from '@/styles/custom-theme';
@@ -65,6 +66,9 @@ const UsersListScreen = () => {
             <span>{column.getIsSorted() === 'asc' ? '↑' : column.getIsSorted() === 'desc' ? '↓' : ''}</span>
           )}
         </div>
+      ),
+      Cell: ({ cell }) => (
+        <Text style={{ textTransform: "lowercase" }}>{String(cell.getValue())}</Text>
       )
     },
     {
@@ -185,6 +189,27 @@ const UsersListScreen = () => {
             <MantineReactTable
               columns={columns}
               data={usersList}
+              // globalFilterFn="includesString"
+              // renderTopToolbarCustomActions={
+              //   ({ table }) => (
+              //     <>
+              //       <Group gap="lg" pr="md">
+              //         <TextInput
+              //           placeholder="Search..."
+              //           leftSection={<IconSearch size={16} />}
+              //           value={table.getState().globalFilter as string ?? ''}
+              //           onChange={(e) => table.setGlobalFilter(e.currentTarget.value)}
+              //           size="xs"
+              //         />
+              //         <Group gap={6} align="center">
+              //           <IconFilter size={16} />
+              //           <Text size="sm" c="dimmed">Use filters above the columns</Text>
+              //         </Group>
+              //       </Group>
+              //     </>
+              //   )
+              // }
+
               enableColumnFilters={true}
               enablePagination={true}
               enableSorting={true}
@@ -260,7 +285,7 @@ const UsersListScreen = () => {
           </Box>
         </ScrollArea>
       </Paper>
-    </div>
+    </div >
   );
 };
 

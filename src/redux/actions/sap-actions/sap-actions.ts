@@ -10,7 +10,6 @@ import { ResHandler } from "@/types/api-types";
 import {
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
     FETCH_ALL_ITR_IT_TRS,
-    FETCH_BY_TYPE,
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 
 // Note: Action function to add SAP configuration...!
@@ -111,28 +110,36 @@ const postRequestToSAP = createAsyncThunk(
 const fetchAllITR_IT_TRS = createAsyncThunk(
     "sap/fetchAllITR_IT_TRS",
     async (
-        { token, dataStatus, handleLoading }:
+        { token, dataStatus, handleLoading, type }:
             {
                 token: string,
                 dataStatus: "Pending" | "Integrated",
-                handleLoading: () => void
+                handleLoading: () => void,
+                type?: "ITR" | "TR" | "IT"
             },
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
         // console.log("Status: ", dataStatus);
+        // console.log("Type: ", type);
+
+        const apiUrl = !type ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
+        `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
+        // console.log("Api url: ", apiUrl);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
                 headers: {
-                    "Api-Url": `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}`,
+                    "Api-Url": apiUrl,
                     "Auth-Token": token
                 }
             });
             // console.log("Response in sap action: ", response);
             const { status } = response;
+            // console.log("Api res: ", response);
+
             const { data, ...copyTargetData } = response?.data?.data;
             // console.log("Pending and integrated data: ", copyTargetData);
 
@@ -158,19 +165,8 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
     }
 );
 
-// Note: Action function to filter ITR, IT, TR...!
-const filterByType_ITR_IT_TRS = createAsyncThunk(
-    "sap/filterITR_IT_TRS",
-    async (type: string, { dispatch }
-    ) => {
-        // console.log("Type: ", type);
-        dispatch(FETCH_BY_TYPE(type));
-    }
-);
-
 export {
     addSAPConfiguration,
     postRequestToSAP,
-    fetchAllITR_IT_TRS,
-    filterByType_ITR_IT_TRS
+    fetchAllITR_IT_TRS
 };
