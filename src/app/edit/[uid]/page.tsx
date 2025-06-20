@@ -284,7 +284,7 @@ const EditUserScreen = () => {
                 />
 
                 <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
-                  Activate user
+                  Activate User
                 </Text>
               </div>
             </Stack>

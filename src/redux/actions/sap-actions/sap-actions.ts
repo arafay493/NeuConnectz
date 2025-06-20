@@ -60,7 +60,7 @@ const addSAPConfiguration = createAsyncThunk(
     }
 );
 
-// Note: Action function to post ITR, TR, IT request to SAP...!
+// Note: Action function to post ITR, TR, IT , GRN request to SAP...!
 const postRequestToSAP = createAsyncThunk(
     "sap/postRequestToSAP",
     async (

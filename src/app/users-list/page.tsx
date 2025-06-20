@@ -188,7 +188,7 @@ const UsersListScreen = () => {
               enableColumnFilters={true}
               enablePagination={true}
               enableSorting={true}
-              enableGlobalFilter={false}
+              enableGlobalFilter={true}
               enableRowSelection={false}
               enableColumnActions={false}
               enableFullScreenToggle={false}
@@ -256,13 +256,6 @@ const UsersListScreen = () => {
                   },
                 },
               }}
-              // mantineBottomToolbarProps={{
-              //   style: {
-              //     // backgroundColor: 'orange',
-              //     display: 'flex',
-              //     justifyContent: 'flex-end',
-              //   },
-              // }}
             />
           </Box>
         </ScrollArea>

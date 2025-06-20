@@ -1,4 +1,4 @@
-// Note: Inventory Transfer Request screen...!
+// Note: Stock movement screen...!
 
 "use client";
 
@@ -25,7 +25,7 @@ import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions } from '@/constants/filters';
 
-const InventoryTransferRequestScreen = () => {
+const StockMovementScreen = () => {
 
   // Note: Handeling states here...!
   const [tab, setTab] = useState<'ITR' | 'IT' | 'TR'>('ITR');
@@ -137,6 +137,7 @@ const InventoryTransferRequestScreen = () => {
     else {
       // console.log('Selected:', val);
       setSelectFilter(val);
+      setAppliedFilter(null);
     };
   };
 
@@ -306,7 +307,7 @@ const InventoryTransferRequestScreen = () => {
           disabled={!selectFilter || !appliedFilter}
           onClick={handleAppliedFilter}
         >
-          Applied Filter
+          Apply Filter
         </Button>
       </Group>
 
@@ -375,4 +376,4 @@ const InventoryTransferRequestScreen = () => {
   );
 };
 
-export default InventoryTransferRequestScreen;
+export default StockMovementScreen;

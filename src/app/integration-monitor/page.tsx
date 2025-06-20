@@ -46,12 +46,12 @@ const IntegrationMonitor = () => {
                     </Text>
                 </Stack>
 
-                <Button
+                {/* <Button
                     leftSection={<IconCheckbox size={14} color={customStyles.colors.white} />}
                     color={customStyles.colors._1B59F8}
                 >
                     Post All
-                </Button>
+                </Button> */}
             </Group>
 
             <div style={{ padding: 10 }}>

@@ -21,9 +21,45 @@ import { store, persistor } from "@/redux/store";
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-provider";
 
+// Note: Custom hook to monitor network status...!
+import { useNetworkStatus } from "@/hooks/userNetworkStatus";
+
+import Lottie from 'lottie-react';
+import InternetNotConnectedAnimation from "../assets/lottie/no-internet-connection.json";
+
 // Note: Importing required components...!
 import LoginScreen from './login/page';
 import AppLayOut from '@/components/app-layout/app-layout';
+import { customStyles } from '@/styles/custom-theme';
+
+// Note: Internet not connected component...!
+const InternetNotConnected = () => {
+  return (
+    <div
+      style={{
+        height: "100vh",
+        width: "100%",
+        backgroundColor: "#f0f0f0",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+      }}
+    >
+      <Lottie
+        animationData={InternetNotConnectedAnimation}
+        loop={true}
+        style={{
+          width: 400,
+          height: 400
+        }}
+      />
+      <h1 style={{ color: customStyles.colors.black }}>Internet Not Connected</h1>
+      <p style={{ color: customStyles.colors.black }}>Please check your internet connection and try again.</p>
+    </div>
+  );
+};
 
 // Note: Font family configuration for Next JS...!
 const inter = Inter({
@@ -31,9 +67,10 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const RootLayout = (
-  { children }: Readonly<{ children: ReactNode; }>
-) => {
+const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
+
+  // Note: Custom hook to monitor network status...!
+  const isOnline = useNetworkStatus();
 
   // Note: handling states here...!
   const [cookieValue, setCookieValue] = useState("");
@@ -46,6 +83,14 @@ const RootLayout = (
     else setCookieValue("");
   }, []);
 
+  // Note: If the user is not online, then we will show the internet not connected component...!
+  if (!isOnline) {
+    return (
+      <InternetNotConnected />
+    );
+  };
+
+  // Note: If the user is online, then we will show the main layout...!
   return (
     <html
       lang="en"

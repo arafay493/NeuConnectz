@@ -12,7 +12,7 @@ import {
     ThemeIcon,
     Flex,
     Select,
-    ScrollArea
+    ScrollArea,
 } from '@mantine/core';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -208,7 +208,16 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             return;
         };
 
-        if (reqData == "GI" || reqData == "GR" || reqData == "GRN") {
+        if (reqData == "GRN") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
+
+        if (reqData == "GI" || reqData == "GR") {
             disableLoader(); // Note: Disable loader...!
             showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
             return;
@@ -274,7 +283,15 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                     mt="md"
                                     variant="outline"
                                     onClick={() => handleRequestToSap(item.label)}
-                                    disabled={handleDisable(item.label)}
+                                    disabled={handleDisable(item.label) || listAll_ITR_IT_TRS.length == 0}
+                                    color={customStyles.colors._1B59F8}
+                                    style={{
+                                        root: {
+                                            '&:hover': {
+                                                backgroundColor: 'yellow',
+                                            },
+                                        },
+                                    }}
                                 >
                                     Post
                                 </Button>
@@ -309,7 +326,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             onClick={() => handleStatusChange("Pending")}
                             style={{
                                 color: statusColor === "Pending" ? customStyles.colors.white : undefined,
-                                backgroundColor: statusColor === "Pending" ? customStyles.colors._408CCE : undefined,
+                                backgroundColor: statusColor === "Pending" ? customStyles.colors._1B59F8 : undefined,
                             }}
                         >
                             Pending
@@ -320,15 +337,15 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             onClick={() => handleStatusChange("Integrated")}
                             style={{
                                 color: statusColor === "Integrated" ? customStyles.colors.white : undefined,
-                                backgroundColor: statusColor === "Integrated" ? customStyles.colors._408CCE : undefined,
+                                backgroundColor: statusColor === "Integrated" ? customStyles.colors._1B59F8 : undefined,
                             }}
                         >
                             Success
                         </Button>
 
-                        <Button variant="outline">
+                        {/* <Button variant="outline">
                             Error
-                        </Button>
+                        </Button> */}
                     </Group>
 
                     <Group>
@@ -382,7 +399,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                             ))
                                     )
                                     :
-                                    (<DataNotFound notFoundContent={sapErrorState || "No ITR_IT_TRS data found."} colSpanValue={9} />)
+                                    (<DataNotFound notFoundContent={sapErrorState || "No data found."} colSpanValue={9} />)
                             }
                         </Table.Tbody>
                     </Table>
