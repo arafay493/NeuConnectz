@@ -1,9 +1,12 @@
 // Note: DashboardCards component ...!
 
+"use client";
+
 import React, { memo } from 'react';
 import { Card, Text, Group, SimpleGrid, ThemeIcon } from '@mantine/core';
 import { IconChartBar } from '@tabler/icons-react';
 import { customStyles } from '@/styles/custom-theme';
+// import { useAppSelector } from '@/redux/store';
 
 const statsData = [
     { label: 'ITR Posted', value: 6260, color: 'red' },
@@ -15,12 +18,17 @@ const statsData = [
 ];
 
 const DashboardCards = () => {
+
+    // const { listAll_ITR_IT_TRS, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+
     return (
         <div>
             <Text fw={700} size="xl" mb="xs">
                 Home
             </Text>
-            
+
             <Text c="dimmed" size="sm" mb="md">
                 Dashboard
             </Text>

@@ -31,7 +31,6 @@ const SAPReducer = createSlice({
 
         CLEAR_ALL_SAP_STATES: (state) => {
             state.listAll_ITR_IT_TRS = [];
-            state.filtered_ITR_IT_TRS = [];
             state.pendingAndIntegratedData = null;
             state.sapErrorState = "";
         },

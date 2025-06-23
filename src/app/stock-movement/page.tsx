@@ -1,4 +1,4 @@
-// Note: Stock movement screen...!
+// Note: Inventory Transfer Request screen...!
 
 "use client";
 
@@ -23,14 +23,13 @@ import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
-import { filters, sapStatusOptions, docStatusOptions } from '@/constants/filters';
+import { filters, sapStatusOptions, docStatusOptions, apiFilterParams } from '@/constants/filters';
 
-const StockMovementScreen = () => {
+const InventoryTransferRequestScreen = () => {
 
   // Note: Handeling states here...!
   const [tab, setTab] = useState<'ITR' | 'IT' | 'TR'>('ITR');
   const [loading, setLoading] = useState(false);
-  // Note: For ITR...!
   const [activePage, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
@@ -43,8 +42,9 @@ const StockMovementScreen = () => {
   const [itemsPerPage_IT, setItemsPerPage_IT] = useState(10);
 
   // Note: Filters states...!
-  const [selectFilter, setSelectFilter] = useState<string | null>(null);
-  const [appliedFilter, setAppliedFilter] = useState<string | null>(null);
+
+  // Note: Multi-filter state...!
+  const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
 
   // Note: Redux dispatch and selector hooks...!
   const dispatch = useAppDispatch();
@@ -77,8 +77,7 @@ const StockMovementScreen = () => {
     // console.log("Tab value: ", value);
     setTab(value);
     setLoading(true);
-    setSelectFilter(null);
-    setAppliedFilter(null);
+    setAppliedFilters({});
 
     if (value === 'ITR') {
       dispatch(fetchAll_ITR_Data({
@@ -118,79 +117,32 @@ const StockMovementScreen = () => {
     else if (tab === 'IT') exportToCSV(paginatedData_IT, 'inventory_transfer.csv');
   };
 
-  // Note: Handle filter dropdown onchange...!
-  const handleFilterOnChange = (val: string | null) => {
-    if (val === null) {
-      // console.log('Clear button clicked!');
-      setSelectFilter(null);
-      setAppliedFilter(null);
-      setTab('ITR');
-
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: tab,
-        handleLoading: () => setLoading(false)
-      }));
-    }
-
-    else {
-      // console.log('Selected:', val);
-      setSelectFilter(val);
-      setAppliedFilter(null);
-    };
-  };
-
   // Note: Function to applied filter...!
-  const handleAppliedFilter = () => {
-    if (selectFilter && appliedFilter) {
-      // console.log(`Applied Filter: ${appliedFilter}`);
-      setLoading(true);
+  // const handleAppliedFilter = () => {
+  //   const cleanedFilters = Object.entries(appliedFilters)
+  //     .filter(([_, value]) => value) // remove empty
+  //     .reduce((acc, [key, value]) => {
+  //       const paramKey = apiFilterParams[filters.indexOf(key)];
+  //       if (paramKey) acc[paramKey] = value;
+  //       return acc;
+  //     }, {} as Record<string, string>);
 
-      if (tab === 'ITR') {
-        dispatch(fetchAll_ITR_Data({
-          token: authenticatedUser?.token || '',
-          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-          type: 'ITR',
-          handleLoading: () => setLoading(false),
-          filterIndex: filters.indexOf(selectFilter),
-          appliedFilter: appliedFilter || null
-        }));
-        return;
-      };
+  //   const queryString = new URLSearchParams(cleanedFilters).toString();
 
-      if (tab === 'IT') {
-        dispatch(fetchAll_ITR_Data({
-          token: authenticatedUser?.token || '',
-          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
-          type: 'IT',
-          handleLoading: () => setLoading(false),
-          filterIndex: filters.indexOf(selectFilter),
-          appliedFilter: appliedFilter || null
-        }));
-        return;
-      };
+  //   const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA}?${queryString}`;
 
-      if (tab === 'TR') {
-        dispatch(fetchAll_ITR_Data({
-          token: authenticatedUser?.token || '',
-          apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
-          type: 'TR',
-          handleLoading: () => setLoading(false),
-          filterIndex: filters.indexOf(selectFilter),
-          appliedFilter: appliedFilter || null
-        }));
-        return;
-      };
-    };
-  };
+  //   dispatch(fetchAll_ITR_Data({
+  //     token: authenticatedUser?.token || '',
+  //     apiUrl: modifiedUrl,
+  //     type: tab,
+  //     handleLoading: () => setLoading(false),
+  //   }));
+  // };
 
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
       setLoading(true);
-      setSelectFilter(null);
-      setAppliedFilter(null);
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
@@ -229,96 +181,140 @@ const StockMovementScreen = () => {
       </Group>
 
       {/* Filters */}
-      <Group grow align="flex-end" p='md'>
-        <Select
-          label="Selected Filter"
-          placeholder="Select Filter"
-          data={filters}
-          value={selectFilter}
-          onChange={handleFilterOnChange}
-          clearable
-        />
-
+      <Group grow align="flex-end" p="md" style={{ flexWrap: "wrap" }}>
         {
-          (selectFilter == "SAP Status" || selectFilter == "DOC Status") &&
-          <Select
-            label={`Select ${selectFilter}`}
-            placeholder={`Select ${selectFilter}`}
-            data={selectFilter == "SAP Status" ? sapStatusOptions : docStatusOptions}
-            value={appliedFilter}
-            onChange={(value) => setAppliedFilter(value as string)}
-          />
-        }
+          filters.map((filter) => {
+            const label = `Select ${filter}`;
 
-        {
-          (selectFilter == "From Warehouse Code" || selectFilter == "To Warehouse Code") &&
-          <TextInput
-            label={`Enter ${selectFilter}`}
-            placeholder={`Enter ${selectFilter}`}
-            value={appliedFilter || ''}
-            onChange={(e) => setAppliedFilter(e.target.value)}
-          />
-        }
+            if (filter === "SAP Status" || filter === "DOC Status") {
+              const options = filter === "SAP Status" ? sapStatusOptions : docStatusOptions;
 
-        {
-          (selectFilter == "Doc Date") &&
-          <DateInput
-            label="Select Doc Date"
-            placeholder="Select Doc Date"
-            value={appliedFilter ? new Date(appliedFilter) : null}
-            onChange={(date) => setAppliedFilter(date ? date : null)}
-            clearable
-            size="sm" // makes the input smaller
-            popoverProps={{
-              withinPortal: true,
-              styles: {
-                dropdown: {
-                  padding: 8,
-                  borderRadius: 8,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  maxWidth: 320,
-                },
-              },
-            }}
-            styles={{
-              input: {
-                fontSize: 14,
-              },
-              calendarHeaderControl: {
-                fontSize: 14,
-                padding: 4,
-                width: 30,
-                height: 30,
-              },
-              calendarHeaderLevel: {
-                fontSize: 16,
-              },
-              day: {
-                fontSize: 13,
-                width: 34,
-                height: 34,
-              },
-            }}
-          />
+              return (
+                <Select
+                  key={filter}
+                  label={label}
+                  placeholder={label}
+                  data={options}
+                  value={appliedFilters[filter] || null}
+                  onChange={(value) =>
+                    setAppliedFilters((prev) => ({
+                      ...prev,
+                      [filter]: value || '',
+                    }))
+                  }
+                  clearable
+                />
+              );
+            }
+
+            if (filter === "From Warehouse Code" || filter === "To Warehouse Code") {
+              return (
+                <TextInput
+                  key={filter}
+                  label={label}
+                  placeholder={label}
+                  value={appliedFilters[filter] || ''}
+                  onChange={(e) =>
+                    setAppliedFilters((prev) => ({
+                      ...prev,
+                      [filter]: e.target.value,
+                    }))
+                  }
+                />
+              );
+            }
+
+            if (filter === "Doc Date") {
+              return (
+                <DateInput
+                  key={filter}
+                  label={label}
+                  placeholder={label}
+                  value={appliedFilters[filter] ? new Date(appliedFilters[filter]) : null}
+                  onChange={(date) =>
+                    setAppliedFilters((prev) => ({
+                      ...prev,
+                      [filter]: date ? new Date(date).toISOString().split('T')[0] : '',
+                    }))
+                  }
+                  clearable
+                  size="sm"
+                  popoverProps={{
+                    withinPortal: true,
+                    styles: {
+                      dropdown: {
+                        padding: 8,
+                        borderRadius: 8,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        maxWidth: 320,
+                      },
+                    },
+                  }}
+                  styles={{
+                    input: { fontSize: 14 },
+                    calendarHeaderControl: { fontSize: 14, padding: 4, width: 30, height: 30 },
+                    calendarHeaderLevel: { fontSize: 16 },
+                    day: { fontSize: 13, width: 34, height: 34 },
+                  }}
+                />
+              );
+            }
+
+            return null;
+          })
         }
 
         <Button
           mt="xs"
-          disabled={!selectFilter || !appliedFilter}
-          onClick={handleAppliedFilter}
+          onClick={() => {
+            const cleanedFilters = Object.entries(appliedFilters)
+              .filter(([_, value]) => value && value.trim() !== '')
+              .reduce((acc, [key, value]) => {
+                const paramKey = apiFilterParams[filters.indexOf(key)];
+                if (paramKey) acc[paramKey] = value;
+                return acc;
+              }, {} as Record<string, string>);
+
+            const queryString = new URLSearchParams(cleanedFilters).toString();
+            const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA}?${queryString}`;
+
+            setLoading(true);
+            dispatch(fetchAll_ITR_Data({
+              token: authenticatedUser?.token || '',
+              apiUrl: modifiedUrl,
+              type: tab,
+              handleLoading: () => setLoading(false)
+            }));
+          }}
+          disabled={Object.values(appliedFilters).every(v => !v || v.trim() === '')}
         >
-          Apply Filter
+          Apply Filters
+        </Button>
+
+        <Button
+          variant="outline"
+          color="red"
+          mt="xs"
+          onClick={() => {
+            setAppliedFilters({});
+            setLoading(true);
+            dispatch(fetchAll_ITR_Data({
+              token: authenticatedUser?.token || '',
+              apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+              type: tab,
+              handleLoading: () => setLoading(false)
+            }));
+          }}
+        >
+          Clear All
         </Button>
       </Group>
+
 
       <div style={{ padding: 10, paddingTop: 20 }}>
         <SegmentedControl
           fullWidth
-          data={[
-            { label: 'Inventory Transfer Request', value: 'ITR' },
-            { label: 'Inventory Transfer', value: 'IT' },
-            { label: 'Transfer Request', value: 'TR' }
-          ]}
+          data={[{ label: 'Inventory Transfer Request', value: 'ITR' }, { label: 'Inventory Transfer', value: 'IT' }, { label: 'Transfer Request', value: 'TR' }]}
           value={tab}
           onChange={(value) => handleTabChange(value as 'ITR' | 'IT' | 'TR')}
           mb="lg"
@@ -376,4 +372,4 @@ const StockMovementScreen = () => {
   );
 };
 
-export default StockMovementScreen;
+export default InventoryTransferRequestScreen;
