@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Group,
   SegmentedControl,
@@ -26,6 +26,9 @@ import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions, apiFilterParams } from '@/constants/filters';
 
 const InventoryTransferRequestScreen = () => {
+
+  // Note: Using useRef to store the previous tab value...!
+  const controlRef = useRef<HTMLDivElement>(null);
 
   // Note: Handeling states here...!
   const [tab, setTab] = useState<'ITR' | 'IT' | 'TR'>('ITR');
@@ -312,13 +315,48 @@ const InventoryTransferRequestScreen = () => {
 
 
       <div style={{ padding: 10, paddingTop: 20 }}>
-        <SegmentedControl
+        {/* <SegmentedControl
           fullWidth
-          data={[{ label: 'Inventory Transfer Request', value: 'ITR' }, { label: 'Inventory Transfer', value: 'IT' }, { label: 'Transfer Request', value: 'TR' }]}
           value={tab}
           onChange={(value) => handleTabChange(value as 'ITR' | 'IT' | 'TR')}
           mb="lg"
-        />
+          data={[{ label: 'Inventory Transfer Request', value: 'ITR' }, { label: 'Inventory Transfer', value: 'IT' }, { label: 'Transfer Request', value: 'TR' }]}
+        /> */}
+
+        <div ref={controlRef}>
+          <SegmentedControl
+            fullWidth
+            mb="lg"
+            value={tab}
+            onChange={(value) => handleTabChange(value as 'ITR' | 'IT' | 'TR')}
+            data={[
+              {
+                label: (
+                  <div onClick={() => handleTabChange('ITR')}>
+                    Inventory Transfer Request
+                  </div>
+                ),
+                value: 'ITR',
+              },
+              {
+                label: (
+                  <div onClick={() => handleTabChange('IT')}>
+                    Inventory Transfer
+                  </div>
+                ),
+                value: 'IT',
+              },
+              {
+                label: (
+                  <div onClick={() => handleTabChange('TR')}>
+                    Transfer Request
+                  </div>
+                ),
+                value: 'TR',
+              },
+            ]}
+          />
+        </div>
 
         <ScrollArea type='auto'>
 

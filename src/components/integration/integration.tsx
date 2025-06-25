@@ -101,8 +101,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
-    console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
     // Note: Required variables...!
     const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
@@ -164,10 +164,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         // return disableTrue;
 
         // let disableTrue = false;
-        const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
-        // console.log("Check Data in Prop: ", checkDataInProp);
-        const disableTrue = checkDataInProp > 0 ? false : true;
-        return disableTrue;
+
+        if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(pendingType)) {
+            const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
+            // console.log("Check Data in Prop: ", checkDataInProp);
+            const disableTrue = checkDataInProp > 0 ? false : true;
+            return disableTrue;
+        }
     };
 
     // Note: post request to SAP api response handler...!
@@ -205,52 +208,52 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string) => {
-        console.log("Request Data: ", reqData);
+        // console.log("Request Data: ", reqData);
 
         // Note: Enable loader...!
-        // enableLoader();
+        enableLoader();
 
-        // if (reqData == "ITR") {
-        //     dispatch(postRequestToSAP({
-        //         token: authenticatedUser?.token as string,
-        //         apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
-        //         resHandler: handleResponse
-        //     }));
-        //     return;
-        // };
+        if (reqData == "ITR") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
 
-        // if (reqData == "TR") {
-        //     dispatch(postRequestToSAP({
-        //         token: authenticatedUser?.token as string,
-        //         apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
-        //         resHandler: handleResponse
-        //     }));
-        //     return;
-        // };
+        if (reqData == "TR") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
 
-        // if (reqData == "IT") {
-        //     dispatch(postRequestToSAP({
-        //         token: authenticatedUser?.token as string,
-        //         apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
-        //         resHandler: handleResponse
-        //     }));
-        //     return;
-        // };
+        if (reqData == "IT") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
 
-        // if (reqData == "GRN") {
-        //     dispatch(postRequestToSAP({
-        //         token: authenticatedUser?.token as string,
-        //         apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
-        //         resHandler: handleResponse
-        //     }));
-        //     return;
-        // };
+        if (reqData == "GRN") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }));
+            return;
+        };
 
-        // if (reqData == "GI" || reqData == "GR") {
-        //     disableLoader(); // Note: Disable loader...!
-        //     showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
-        //     return;
-        // };
+        if (reqData == "GI" || reqData == "GR") {
+            disableLoader(); // Note: Disable loader...!
+            showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
+            return;
+        };
     };
 
     // Note: handle change status...!
