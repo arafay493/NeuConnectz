@@ -101,8 +101,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+    console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
+    console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
     // Note: Required variables...!
     const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
@@ -115,7 +115,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             setSelectedType("");
             // console.log('Clear button clicked!');
             dispatch(fetchAllITR_IT_TRS({
-                token : authenticatedUser?.token as string,
+                token: authenticatedUser?.token as string,
                 dataStatus: statusColor as "Pending" | "Integrated",
                 handleLoading: () => setLoading(false)
             }));
@@ -126,7 +126,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             // console.log("Selected type: ", val);
             setSelectedType(val);
             dispatch(fetchAllITR_IT_TRS({
-                token : authenticatedUser?.token as string,
+                token: authenticatedUser?.token as string,
                 dataStatus: statusColor as "Pending" | "Integrated",
                 handleLoading: () => setLoading(false),
                 type: val as "ITR" | "TR" | "IT"
@@ -147,20 +147,26 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     };
 
     // Note: Handle disable values...!
-    const handleDisable = (label: string) => {
-        // console.log("Label: ", label);
+    const handleDisable = (pendingType: string) => {
+        // console.log("Pending Type: ", pendingType);
 
-        let disableTrue = false;
-        const isITRDataExist = [...listAll_ITR_IT_TRS].find((item) => { return item.type == "ITR" });
+        // let disableTrue = false;
+        // const isITRDataExist = [...listAll_ITR_IT_TRS].find((item) => { return item.type == "ITR" });
 
-        if ((label == "IT" || label == "TR") && isITRDataExist) {
-            disableTrue = true;
-        }
+        // if ((label == "IT" || label == "TR") && isITRDataExist) {
+        //     disableTrue = true;
+        // }
 
-        else {
-            disableTrue = false;
-        };
+        // else {
+        //     disableTrue = false;
+        // };
 
+        // return disableTrue;
+
+        // let disableTrue = false;
+        const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
+        // console.log("Check Data in Prop: ", checkDataInProp);
+        const disableTrue = checkDataInProp > 0 ? false : true;
         return disableTrue;
     };
 
@@ -199,52 +205,52 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string) => {
-        // console.log("Request Data: ", reqData);
+        console.log("Request Data: ", reqData);
 
         // Note: Enable loader...!
-        enableLoader();
+        // enableLoader();
 
-        if (reqData == "ITR") {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
-        };
+        // if (reqData == "ITR") {
+        //     dispatch(postRequestToSAP({
+        //         token: authenticatedUser?.token as string,
+        //         apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
+        //         resHandler: handleResponse
+        //     }));
+        //     return;
+        // };
 
-        if (reqData == "TR") {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
-        };
+        // if (reqData == "TR") {
+        //     dispatch(postRequestToSAP({
+        //         token: authenticatedUser?.token as string,
+        //         apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
+        //         resHandler: handleResponse
+        //     }));
+        //     return;
+        // };
 
-        if (reqData == "IT") {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
-        };
+        // if (reqData == "IT") {
+        //     dispatch(postRequestToSAP({
+        //         token: authenticatedUser?.token as string,
+        //         apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
+        //         resHandler: handleResponse
+        //     }));
+        //     return;
+        // };
 
-        if (reqData == "GRN") {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
-        };
+        // if (reqData == "GRN") {
+        //     dispatch(postRequestToSAP({
+        //         token: authenticatedUser?.token as string,
+        //         apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
+        //         resHandler: handleResponse
+        //     }));
+        //     return;
+        // };
 
-        if (reqData == "GI" || reqData == "GR") {
-            disableLoader(); // Note: Disable loader...!
-            showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
-            return;
-        };
+        // if (reqData == "GI" || reqData == "GR") {
+        //     disableLoader(); // Note: Disable loader...!
+        //     showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
+        //     return;
+        // };
     };
 
     // Note: handle change status...!
@@ -310,7 +316,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                     mt="md"
                                     variant="outline"
                                     onClick={() => handleRequestToSap(item.label)}
-                                    disabled={handleDisable(item.label) || listAll_ITR_IT_TRS.length == 0}
+                                    disabled={handleDisable(item.pendingValue)}
                                     color={customStyles.colors._1B59F8}
                                     style={{
                                         root: {
@@ -378,7 +384,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     <Group>
                         <Select
                             data={types}
-                            placeholder="Filters by ITR, IT, TR"
+                            placeholder="Filters"
                             value={selectedType}
                             onChange={(value) => dropDownHandler(value as string)}
                             clearable
