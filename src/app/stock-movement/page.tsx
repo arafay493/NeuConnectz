@@ -80,37 +80,37 @@ const InventoryTransferRequestScreen = () => {
     // console.log("Tab value: ", value);
     setTab(value);
     setLoading(true);
-    setAppliedFilters({});
+    // setAppliedFilters({});
 
-    if (value === 'ITR') {
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: 'ITR',
-        handleLoading: () => setLoading(false),
-      }));
-      return;
-    };
+    // if (value === 'ITR') {
+    //   dispatch(fetchAll_ITR_Data({
+    //     token: authenticatedUser?.token || '',
+    //     apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+    //     type: 'ITR',
+    //     handleLoading: () => setLoading(false),
+    //   }));
+    //   return;
+    // };
 
-    if (value === 'TR') {
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
-        type: 'TR',
-        handleLoading: () => setLoading(false)
-      }));
-      return;
-    };
+    // if (value === 'TR') {
+    //   dispatch(fetchAll_ITR_Data({
+    //     token: authenticatedUser?.token || '',
+    //     apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
+    //     type: 'TR',
+    //     handleLoading: () => setLoading(false)
+    //   }));
+    //   return;
+    // };
 
-    if (value === 'IT') {
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
-        type: 'IT',
-        handleLoading: () => setLoading(false)
-      }));
-      return;
-    };
+    // if (value === 'IT') {
+    //   dispatch(fetchAll_ITR_Data({
+    //     token: authenticatedUser?.token || '',
+    //     apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
+    //     type: 'IT',
+    //     handleLoading: () => setLoading(false)
+    //   }));
+    //   return;
+    // };
   };
 
   // Note: Export to CSV handler...!

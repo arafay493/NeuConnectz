@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { FC, memo } from 'react';
+import React, { FC, useEffect, memo } from 'react';
 import { Text, LoadingOverlay, Center, Stack } from '@mantine/core';
 import { customStyles } from '@/styles/custom-theme';
 import styles from './loader.module.css';
@@ -12,6 +12,18 @@ type LoaderProps = {
 };
 
 const Loader: FC<LoaderProps> = ({ loadingState }) => {
+
+    // Note: This effect is used to manage the body's overflow style based on the loading state.
+    useEffect(() => {
+        if (loadingState) document.body.style.overflow = 'hidden';
+        else document.body.style.overflow = '';
+
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [loadingState]);
+
+
     return (
         <LoadingOverlay
             visible={loadingState}
