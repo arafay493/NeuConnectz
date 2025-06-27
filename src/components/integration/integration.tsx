@@ -102,7 +102,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
     // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+    console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
 
     // Note: Required variables...!
     const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
@@ -144,6 +144,34 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
 
         return 0;
+    };
+
+    // Note: Function to show time / minutes...!
+    const showTime = (start: string, end = new Date()) => {
+        console.log("Start: ", start);
+
+        if (!start) return "No data";
+
+        const diffInMs = end.getTime() - new Date(start).getTime();
+
+        const totalSeconds = Math.floor(diffInMs / 1000);
+        const totalMinutes = Math.floor(diffInMs / (1000 * 60));
+        const totalHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const totalDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+        if (totalSeconds < 60) return "just now";
+        if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes > 1 ? "s" : ""} ago`;
+        if (totalHours < 24) return `${totalHours} hour${totalHours > 1 ? "s" : ""} ago`;
+        if (totalDays < 7) return `${totalDays} day${totalDays > 1 ? "s" : ""} ago`;
+
+        const totalWeeks = Math.floor(totalDays / 7);
+        if (totalWeeks < 4) return `${totalWeeks} week${totalWeeks > 1 ? "s" : ""} ago`;
+
+        const totalMonths = Math.floor(totalDays / 30);
+        if (totalMonths < 12) return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
+
+        const totalYears = Math.floor(totalDays / 365);
+        return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
     };
 
     // Note: Handle disable values...!
@@ -311,7 +339,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                 </Text>
 
                                 <Text c="dimmed" size="sm">
-                                    {`${new Date(showPendingAndIntegratedValues(item.lastIntegrationDate)).getMinutes()} mins ago`}
+                                    {showTime(showPendingAndIntegratedValues(item.lastIntegrationDate))}
                                 </Text>
 
                                 <Button
