@@ -1,28 +1,28 @@
-.loader {
-    width: 120px;
-    height: 22px;
-    border-radius: 40px;
-    color: #408CCE;
-    border: 2px solid;
-    position: relative;
-}
-
-.loader::before {
-    content: "";
-    position: absolute;
-    margin: 2px;
-    width: 25%;
+.fullscreenOverlay {
+    position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
-    border-radius: inherit;
-    background: currentColor;
-    animation: l3 1s infinite linear;
+    z-index: 2000;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.8);
+    /* or dark if needed */
+    backdrop-filter: blur(3px);
+    /* optional blur */
 }
 
-@keyframes l3 {
-    50% {
-        left: 100%;
-        transform: translateX(calc(-100% - 4px))
+/* Optional spinner */
+.loader {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ccc;
+    border-top: 4px solid #408CCE;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }

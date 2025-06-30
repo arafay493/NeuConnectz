@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { IconChartBar } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postRequestToSAP, fetchAllITR_IT_TRS } from '@/redux/actions/sap-actions/sap-actions';
+import { postRequestToSAP, fetchAllITR_IT_TRS, fetchAll_GRNS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -39,6 +39,20 @@ const headers: string[] =
         "Doc Status",
         "Doc Date"
     ];
+const grnsHeaders: string[] =
+    [
+        "S.No",
+        "Type", // GRN
+        "Number",
+        "Item Code",
+        "Warehouse",
+        "Vendor",
+        "User Name",
+        "SAP Status",
+        "Doc Status",
+        "Doc Date"
+    ];
+
 const types: string[] = ["ITR", "IT", "TR"];
 const cardsData = [
     {
@@ -94,19 +108,27 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const [statusColor, setStatusColor] = useState("Pending");
     const [selectedType, setSelectedType] = useState("");
     const [loading, setLoading] = useState(false);
+    const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { listAll_ITR_IT_TRS, sapErrorState, pendingAndIntegratedData } = useAppSelector(({ sapStates }) => { return sapStates });
+    const {
+        listAll_ITR_IT_TRS,
+        list_GRNS_Data,
+        pendingAndIntegratedData,
+        sapErrorState,
+    } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
     // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+    // console.log("list_GRNS_Data: ", list_GRNS_Data);
 
     // Note: Required variables...!
-    const totalPages = Math.ceil(listAll_ITR_IT_TRS.length / itemsPerPage);
-    const paginatedData = listAll_ITR_IT_TRS.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+    const targetTableData = headerBtnType === "GRN" ? list_GRNS_Data : listAll_ITR_IT_TRS;
+    const totalPages = Math.ceil(targetTableData.length / itemsPerPage);
+    const paginatedData = targetTableData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
     // Note: Status dropdown handler...!
     const dropDownHandler = (val: string): void => {
@@ -148,7 +170,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Function to show time / minutes...!
     const showTime = (start: string, end = new Date()) => {
-        console.log("Start: ", start);
+        // console.log("Start: ", start);
 
         if (!start) return "No data";
 
@@ -244,6 +266,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "ITR") {
             dispatch(postRequestToSAP({
                 token: authenticatedUser?.token as string,
+                type: "Post to ITR",
                 apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
             }));
@@ -253,6 +276,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "TR") {
             dispatch(postRequestToSAP({
                 token: authenticatedUser?.token as string,
+                type: "Post to TR",
                 apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
             }));
@@ -262,6 +286,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "IT") {
             dispatch(postRequestToSAP({
                 token: authenticatedUser?.token as string,
+                type: "Post to IT",
                 apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
             }));
@@ -271,6 +296,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "GRN") {
             dispatch(postRequestToSAP({
                 token: authenticatedUser?.token as string,
+                type: "Post to GRN",
                 apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
             }));
@@ -290,14 +316,57 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         setStatusColor(status);
         setLoading(true);
 
-        if (authenticatedUser && status) {
-            const token: string = authenticatedUser?.token
+        if (!authenticatedUser && !status) {
+            return;
+        };
+
+        if (headerBtnType == "Stock Movement") {
             dispatch(fetchAllITR_IT_TRS({
-                token,
+                token: authenticatedUser?.token || "",
                 dataStatus: status,
                 handleLoading: () => setLoading(false)
             }));
+            return;
         };
+
+        if (headerBtnType == "GRN") {
+            dispatch(fetchAll_GRNS({
+                token: authenticatedUser?.token || "",
+                sapStatus: status,
+                handleLoading: () => setLoading(false)
+            }));
+        };
+    };
+
+    // Note: Function to see stock movement data...!
+    const viewStockMovementData = () => {
+
+        // Note: Enable loader...!
+        setLoading(true);
+        setHeaderBtnType("Stock Movement");
+        // setStatusColor("Pending");
+
+        const token = authenticatedUser?.token || "";
+        dispatch(fetchAllITR_IT_TRS({
+            token,
+            dataStatus: statusColor,
+            handleLoading: () => setLoading(false)
+        }));
+    };
+
+    // Note: Functio to fetch GRNS data...!
+    const viewGrnsData = () => {
+
+        // Note: Enable loader...!
+        setLoading(true);
+        setHeaderBtnType("GRN");
+        // setStatusColor("Pending");
+
+        dispatch(fetchAll_GRNS({
+            token: authenticatedUser?.token || "",
+            sapStatus: statusColor,
+            handleLoading: () => setLoading(false)
+        }));
     };
 
     // Note: When this component mounted then this hook will run...!
@@ -376,6 +445,42 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 <Group
                     pt={5}
                     pb={5}
+                    justify={customStyles.alignment.left}
+                    mb="sm"
+                    gap="sm"
+                    style={{
+                        display: "flex",
+                        alignItems: customStyles.alignment.center,
+                    }}
+                >
+                    <Button
+                        variant="outline"
+                        onClick={viewStockMovementData}
+                        style={{
+                            width: 200,
+                            color: headerBtnType === "Stock Movement" ? customStyles.colors.white : undefined,
+                            backgroundColor: headerBtnType === "Stock Movement" ? customStyles.colors._1B59F8 : undefined,
+                        }}
+                    >
+                        Stock Movement
+                    </Button>
+
+                    <Button
+                        variant="outline"
+                        onClick={viewGrnsData}
+                        style={{
+                            width: 200,
+                            color: headerBtnType === "GRN" ? customStyles.colors.white : undefined,
+                            backgroundColor: headerBtnType === "GRN" ? customStyles.colors._1B59F8 : undefined,
+                        }}
+                    >
+                        GRN
+                    </Button>
+                </Group>
+
+                <Group
+                    pt={5}
+                    pb={5}
                     justify={customStyles.alignment.spaceBetween}
                     mb="sm"
                     gap="sm"
@@ -389,6 +494,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             variant="outline"
                             onClick={() => handleStatusChange("Pending")}
                             style={{
+                                width: 200,
                                 color: statusColor === "Pending" ? customStyles.colors.white : undefined,
                                 backgroundColor: statusColor === "Pending" ? customStyles.colors._1B59F8 : undefined,
                             }}
@@ -400,16 +506,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             variant="outline"
                             onClick={() => handleStatusChange("Integrated")}
                             style={{
+                                width: 200,
                                 color: statusColor === "Integrated" ? customStyles.colors.white : undefined,
                                 backgroundColor: statusColor === "Integrated" ? customStyles.colors._1B59F8 : undefined,
                             }}
                         >
                             Success
                         </Button>
-
-                        {/* <Button variant="outline">
-                            Error
-                        </Button> */}
                     </Group>
 
                     <Group>
@@ -434,7 +537,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         withTableBorder
                     >
                         <Table.Thead>
-                            <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
+                            {
+                                (headerBtnType === "GRN")
+                                    ?
+                                    (<Table.Tr>{grnsHeaders.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>)
+                                    :
+                                    (<Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>)
+                            }
                         </Table.Thead>
 
                         <Table.Tbody>
@@ -442,21 +551,39 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                 (paginatedData?.length > 0)
                                     ?
                                     (
-                                        paginatedData?.map((row: SAP_ITR_IT_TRS_DataType, index) => (
-                                            <Table.Tr key={row.id}>
-                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                <Table.Td>{row.type}</Table.Td>
-                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                                <Table.Td>{row.itemCode}</Table.Td>
-                                                <Table.Td>{row.fromWarehouse}</Table.Td>
-                                                <Table.Td>{row.toWarehouse}</Table.Td>
-                                                <Table.Td>{row.userName}</Table.Td>
-                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                                <Table.Td>{row.status}</Table.Td>
-                                                <Table.Td>{row.docStatus}</Table.Td>
-                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                            </Table.Tr>
+                                        paginatedData?.map((row: any, index) => (
+                                            headerBtnType === "GRN"
+                                                ? (
+                                                    <Table.Tr key={row.id}>
+                                                        <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                        <Table.Td>{headerBtnType}</Table.Td>
+                                                        <Table.Td>{row.docNum}</Table.Td>
+                                                        <Table.Td>{row.itemCode}</Table.Td>
+                                                        <Table.Td>{row.whsCode}</Table.Td>
+                                                        <Table.Td>{row.vendorCode}</Table.Td>
+                                                        <Table.Td>{row.userName}</Table.Td>
+                                                        <Table.Td>{row.sapStatus}</Table.Td>
+                                                        <Table.Td>{row.docStatus}</Table.Td>
+                                                        <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                                    </Table.Tr>
+                                                )
+                                                :
+                                                (
+                                                    <Table.Tr key={row.id}>
+                                                        <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                        <Table.Td>{row.type}</Table.Td>
+                                                        <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                                        <Table.Td>{row.itemCode}</Table.Td>
+                                                        <Table.Td>{row.fromWarehouse}</Table.Td>
+                                                        <Table.Td>{row.toWarehouse}</Table.Td>
+                                                        <Table.Td>{row.userName}</Table.Td>
+                                                        <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                                        <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                                        <Table.Td>{row.status}</Table.Td>
+                                                        <Table.Td>{row.docStatus}</Table.Td>
+                                                        <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                                    </Table.Tr>
+                                                )
                                         ))
                                     )
                                     :

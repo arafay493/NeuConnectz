@@ -60,7 +60,7 @@ const BarChart = () => {
                         barChartData.map((data, idx) => {
                             const valueHeight = (data.value / data.max) * 100;
                             return (
-                                <Box key={idx} style={{ textAlign: 'center', width: '100%' }}>
+                                <Box key={idx} style={{ textAlign: 'center', width: '80%' }}>
                                     <Box
                                         style={{
                                             position: 'relative',

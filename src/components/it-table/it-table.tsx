@@ -16,6 +16,7 @@ const headers: string[] =
     [
         "S.No",
         "Doc Num",
+        "Base Doc Num",
         "From WH Code",
         "To WH Code",
         "Doc Status",
@@ -62,6 +63,7 @@ const IT_TableCom = (props: any) => {
                                         <Table.Tr key={row.id}>
                                             <Table.Td> {(activePage - 1) * itemsPerPage + index + 1} </Table.Td>
                                             <Table.Td>{row.docNum}</Table.Td>
+                                            <Table.Td>{row.itrDocNum}</Table.Td>
                                             <Table.Td>{row.fromWarehouseId}</Table.Td>
                                             <Table.Td>{row.toWarehouseId}</Table.Td>
                                             <Table.Td>{row.docStatus}</Table.Td>

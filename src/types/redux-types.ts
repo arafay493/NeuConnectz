@@ -104,6 +104,24 @@ export interface SAPStateType {
         status: string,
         docStatus: string
     }[];
+    list_GRNS_Data: {
+        createdBy: string,
+        createdDate: string,
+        docNum: string | number,
+        docStatus: string,
+        grnNumber: string | number,
+        id: string,
+        isActive: boolean,
+        isArchived: boolean,
+        itemCode: string,
+        sapStatus: string,
+        updatedBy: string
+        updatedDate: string
+        userName: string,
+        vendorCode: string,
+        vendorReference: string,
+        whsCode: string,
+    }[];
     sapErrorState: string;
     pendingAndIntegratedData: any;
 };
@@ -253,6 +271,7 @@ export interface IT_DataType {
     sapStatus: string,
     inTransit: string,
     docNum: string | number,
+    itrDocNum: string | number,
     uniqueId: string,
     createdBy: string,
     updatedBy: string,

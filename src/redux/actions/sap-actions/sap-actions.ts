@@ -10,6 +10,7 @@ import { ResHandler } from "@/types/api-types";
 import {
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
     FETCH_ALL_ITR_IT_TRS,
+    FETCH_ALL_GRNS
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 
 // Note: Action function to add SAP configuration...!
@@ -63,22 +64,24 @@ const addSAPConfiguration = createAsyncThunk(
 const postRequestToSAP = createAsyncThunk(
     "sap/postRequestToSAP",
     async (
-        { token, apiUrl, resHandler }:
+        { token, type, apiUrl, resHandler }:
             {
                 token: string,
+                type: string,
                 apiUrl: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
         // console.log("Token: ", token);
+        // console.log("Type: ", type);
         // console.log("API URL: ", apiUrl);
 
         try {
             const response = await axios({
                 method: API_METHODS.POST,
                 url: apiRequestRoutes.postRequest,
-                data: { userName: "Prince Ahmed" },
+                data: { userName: type },
                 headers: {
                     "Api-Url": apiUrl,
                     "Auth-Token": token,
@@ -113,7 +116,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
         { token, dataStatus, handleLoading, type }:
             {
                 token: string,
-                dataStatus: "Pending" | "Integrated",
+                dataStatus: string,
                 handleLoading: () => void,
                 type?: "ITR" | "TR" | "IT"
             },
@@ -124,7 +127,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
         // console.log("Type: ", type);
 
         const apiUrl = !type ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
-        `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
+            `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
         // console.log("Api url: ", apiUrl);
 
         try {
@@ -165,8 +168,63 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
     }
 );
 
+// Note: Action function fetch all GRNS...!
+const fetchAll_GRNS = createAsyncThunk(
+    "sap/fetchAll_GRNS",
+    async (
+        { token, sapStatus, handleLoading }:
+            {
+                token: string,
+                sapStatus: string,
+                handleLoading: () => void,
+            },
+        { dispatch }
+    ) => {
+        // console.log("Auth token: ", token);
+        // console.log("Sap Status: ", sapStatus);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${sapStatus}`,
+                    "Auth-Token": token
+                }
+            });
+            console.log("Response in sap action: ", response);
+            const { status, data } = response;
+
+            const countsObj = {
+                pendingGrns: data?.data?.pendingGrnsCount,
+                integratedGrns: data?.data?.integratedGrnsCount
+            };
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_GRNS({
+                    grnsData: data?.data?.items,
+                    counts: countsObj
+                }));
+                handleLoading(); // Disable loading state...!
+            };
+        }
+
+        catch (error: any) {
+            // console.log('Error occured in fetch all GRNS data api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     postRequestToSAP,
-    fetchAllITR_IT_TRS
+    fetchAllITR_IT_TRS,
+    fetchAll_GRNS
 };
