@@ -123,7 +123,6 @@ export interface SAPStateType {
         whsCode: string,
     }[];
     sapErrorState: string;
-    pendingAndIntegratedData: any;
 };
 
 export interface RolesStateType {
@@ -279,3 +278,50 @@ export interface IT_DataType {
     updatedDate: string,
     isActive: boolean,
 };
+
+// Note: Dashboard reducer state types...!
+export interface DashboardStateType {
+    // dashboardStats: {
+    //     totalItrIntegrated: string | number,
+    //     totalItrPending: string | number,
+    //     totalItIntegrated: string | number,
+    //     totalItPending: string | number,
+    //     totalTrIntegrated: string | number,
+    //     totalTrPending: string | number,
+    //     totalGrnIntegrated: string | number,
+    //     totalGrnPending: string | number,
+    //     lastItrIntegrationDate: string,
+    //     lastItIntegrationDate: string,
+    //     lastTrIntegrationDate: string,
+    //     lastGrnIntegrationDate: string,
+    // } | null,
+    // dashboardBarChartData: {
+    //     itemCode: string,
+    //     count: string | number
+    // }[],
+    dashboardErrorState: string,
+    dashboardAnalyticsData: {
+        grnStatistics: {
+            totalGrnIntegrated: string | number,
+            totalGrnPending: string | number
+        },
+        lastIntegrationDates: {
+            lastItrIntegrationDate: string,
+            lastItIntegrationDate: string,
+            lastTrIntegrationDate: string,
+            lastGrnIntegrationDate: string
+        },
+        topCreatedItems: {
+            count: string | number,
+            itemCode: string
+        }[],
+        transferStatistics: {
+            totalItIntegrated: number,
+            totalItPending: number,
+            totalItrIntegrated: number,
+            totalItrPending: number,
+            totalTrIntegrated: number,
+            totalTrPending: number,
+        }
+    } | null;
+}

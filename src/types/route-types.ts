@@ -8,11 +8,11 @@ export type Routes = {
     dashboard: string;
     stockMovement: string;
     reconciliation: string;
-    itemMovement: string;
-    inventoryTransfer: string;
-    itTrDifference: string;
-    itPostedDocuments: string;
-    trPostedDocuments: string;
+    // itemMovement: string;
+    // inventoryTransfer: string;
+    // itTrDifference: string;
+    // itPostedDocuments: string;
+    // trPostedDocuments: string;
     usersList: string;
     assignGroup: string;
     assignWareHouse: string;

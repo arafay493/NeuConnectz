@@ -75,7 +75,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   // Note: Link component for navigation...!
   const renderNavLink = (item: DrawerRoute, index: number) => (
     <Link
-      key={drawerRoutes[index].label}
+      key={drawerRoutes[index]?.label}
       href={item.route}
       passHref
       style={{
@@ -89,8 +89,8 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
     >
       <NavLink
         component="a"
-        leftSection={item.icon}
-        label={collapsed ? null : item.label}
+        leftSection={item?.icon}
+        label={collapsed ? null : item?.label}
         variant="light"
         px={collapsed ? customStyles.deviceSize.sm : customStyles.deviceSize.md}
         py={customStyles.deviceSize.sm}
@@ -122,12 +122,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         style={{ display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[15] as string) ? 'block' : 'none' }}
       >
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
-          <Group style={{
-            width: 'auto',
-            // justifyContent: customStyles.alignment.spaceBetween,
-            // backgroundColor: "yellow"
-          }}
-          >
+          <Group style={{ width: 'auto' }}>
             <Burger
               opened={isMobile ? opened : !collapsed}
               onClick={isMobile ? toggle : () => setCollapsed(!collapsed)}
@@ -142,16 +137,6 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               width={120}
               style={{ height: "auto" }}
             />
-
-            {/* {!isMobile && (
-              <TextInput
-                placeholder="Search..."
-                radius={customStyles.deviceSize.md}
-                size={customStyles.deviceSize.sm}
-                style={{ width: '300px' }}
-                leftSection={<IconSearch size="1rem" />}
-              />
-            )} */}
           </Group>
 
           <Menu shadow={customStyles.deviceSize.md} width={200} position="bottom-end">
@@ -194,37 +179,8 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         }}
       >
         <AppShellSection grow>
-          <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column, marginBottom: 20 }}>
-            {renderNavLink(drawerRoutes[0], 0)}
-          </Group>
-
           <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
-            <div
-              style={{
-                fontSize: 16,
-                fontWeight: 600,
-                textTransform: customStyles.textTransformation.capitalize,
-                display: !collapsed ? "block" : "none"
-              }}
-            >
-              transaction
-            </div>
-            {drawerRoutes.slice(1, 6).map((item, index) => renderNavLink(item, index + 1))}
-          </Group>
-
-          <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
-            <div
-              style={{
-                fontSize: 16,
-                fontWeight: 600,
-                textTransform: customStyles.textTransformation.capitalize,
-                marginTop: 20,
-                display: !collapsed ? "block" : "none"
-              }}
-            >
-              forms
-            </div>
-            {drawerRoutes.slice(6).map((item, index) => renderNavLink(item, index + 6))}
+            {drawerRoutes.slice(0).map((item, index) => renderNavLink(item, index))}
           </Group>
         </AppShellSection>
 

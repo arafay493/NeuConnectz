@@ -20,7 +20,6 @@ import { postRequestToSAP, fetchAllITR_IT_TRS, fetchAll_GRNS } from '@/redux/act
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { SAP_ITR_IT_TRS_DataType } from '@/types/modules/sap-types/sap-types';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
 
@@ -57,39 +56,39 @@ const types: string[] = ["ITR", "IT", "TR"];
 const cardsData = [
     {
         label: "ITR",
-        pendingValue: "pendingItrs",
-        integratedValue: "integratedItrs",
+        pendingValue: "totalItrPending",
+        integratedValue: "totalItrIntegrated",
         lastIntegrationDate: "lastItrIntegrationDate"
     },
     {
         label: "IT",
-        pendingValue: "pendingIts",
-        integratedValue: "integratedIts",
+        pendingValue: "totalItPending",
+        integratedValue: "totalItIntegrated",
         lastIntegrationDate: "lastItIntegrationDate"
     },
     {
         label: "TR",
-        pendingValue: "pendingTrs",
-        integratedValue: "integratedTrs",
+        pendingValue: "totalTrPending",
+        integratedValue: "totalTrIntegrated",
         lastIntegrationDate: "lastTrIntegrationDate"
     },
     {
         label: "GI",
-        pendingValue: "pendingGis",
-        integratedValue: "integratedGis",
+        pendingValue: "",
+        integratedValue: "",
         lastIntegrationDate: ""
     },
     {
         label: "GR",
-        pendingValue: "pendingGrs",
-        integratedValue: "integratedGrs",
+        pendingValue: "",
+        integratedValue: "",
         lastIntegrationDate: ""
     },
     {
         label: "GRN",
-        pendingValue: "pendingGrns",
-        integratedValue: "integratedGrns",
-        lastIntegrationDate: ""
+        pendingValue: "totalGrnPending",
+        integratedValue: "totalGrnIntegrated",
+        lastIntegrationDate: "lastGrnIntegrationDate"
     },
 ];
 
@@ -118,12 +117,12 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const {
         listAll_ITR_IT_TRS,
         list_GRNS_Data,
-        pendingAndIntegratedData,
         sapErrorState,
     } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("pendingAndIntegratedData: ", pendingAndIntegratedData);
+    const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
     // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
     // console.log("list_GRNS_Data: ", list_GRNS_Data);
+    // console.log("Dashboard Analytics Data: ", dashboardAnalyticsData);
 
     // Note: Required variables...!
     const targetTableData = headerBtnType === "GRN" ? list_GRNS_Data : listAll_ITR_IT_TRS;
@@ -157,24 +156,43 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     };
 
     // Note: Function to shoe pending and integrated values...!
-    const showPendingAndIntegratedValues = (value: string) => {
-        // console.log("Type: ", type);
+    const showPendingAndIntegratedValues = (sapType: string, value: string) => {
+        // console.log('SAP Type: ', sapType);
         // console.log("Value: ", value);
 
-        if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(value)) {
-            return pendingAndIntegratedData[value] || 0;
+        if (sapType === "ITR" || sapType === "IT" || sapType === "TR") {
+            const { transferStatistics } = dashboardAnalyticsData || {};
+            // console.log("Transfer Statistics: ", transferStatistics);
+            const pendingValue = transferStatistics ? transferStatistics[value as keyof typeof transferStatistics] : 0;
+            // console.log("Pending Value: ", pendingValue);
+            return pendingValue;
+        }
+
+        if (sapType === "GRN") {
+            const { grnStatistics } = dashboardAnalyticsData || {};
+            // console.log("GRN Statistics: ", grnStatistics);
+            const pendingValue = grnStatistics ? grnStatistics[value as keyof typeof grnStatistics] : 0;
+            // console.log("Pending Value: ", pendingValue);
+            return pendingValue;
         };
 
         return 0;
     };
 
     // Note: Function to show time / minutes...!
-    const showTime = (start: string, end = new Date()) => {
-        // console.log("Start: ", start);
+    const showTime = (dateVal: string) => {
+        // console.log("Date Value: ", dateVal);
 
-        if (!start) return "No data";
+        const { lastIntegrationDates } = dashboardAnalyticsData || {};
+        const lastIntegrationDateValue = lastIntegrationDates ? lastIntegrationDates[dateVal as keyof typeof lastIntegrationDates] : 0;
+        // console.log("Last Integration Date Value: ", lastIntegrationDateValue);
 
-        const diffInMs = end.getTime() - new Date(start).getTime();
+        if (!lastIntegrationDateValue) return "No data";
+
+        const start = new Date(lastIntegrationDateValue);
+        const end = new Date();
+
+        const diffInMs = end.getTime() - start.getTime();
 
         const totalSeconds = Math.floor(diffInMs / 1000);
         const totalMinutes = Math.floor(diffInMs / (1000 * 60));
@@ -215,12 +233,12 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
         // let disableTrue = false;
 
-        if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(pendingType)) {
-            const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
-            // console.log("Check Data in Prop: ", checkDataInProp);
-            const disableTrue = checkDataInProp > 0 ? false : true;
-            return disableTrue;
-        }
+        // if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(pendingType)) {
+        //     const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
+        //     // console.log("Check Data in Prop: ", checkDataInProp);
+        //     const disableTrue = checkDataInProp > 0 ? false : true;
+        //     return disableTrue;
+        // }
     };
 
     // Note: post request to SAP api response handler...!
@@ -404,11 +422,11 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                                 <Title order={4}>{item.label}</Title>
                                 <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
-                                    {`${showPendingAndIntegratedValues(item.pendingValue)} / ${showPendingAndIntegratedValues(item.integratedValue)}`}
+                                    {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
                                 </Text>
 
                                 <Text c="dimmed" size="sm">
-                                    {showTime(showPendingAndIntegratedValues(item.lastIntegrationDate))}
+                                    {showTime(item.lastIntegrationDate)}
                                 </Text>
 
                                 <Button
@@ -416,7 +434,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                     mt="md"
                                     variant="outline"
                                     onClick={() => handleRequestToSap(item.label)}
-                                    disabled={handleDisable(item.pendingValue)}
+                                    // disabled={handleDisable(item.pendingValue)}
                                     color={customStyles.colors._1B59F8}
                                     style={{
                                         root: {
@@ -515,7 +533,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         </Button>
                     </Group>
 
-                    <Group>
+                    <Group style={{ display : headerBtnType == "GRN" ? "none" : "block" }}>
                         <Select
                             data={types}
                             placeholder="Filters"

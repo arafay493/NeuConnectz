@@ -143,13 +143,9 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
             const { status } = response;
             // console.log("Api res: ", response);
 
-            const { data, ...copyTargetData } = response?.data?.data;
-            // console.log("Pending and integrated data: ", copyTargetData);
-
             if (status == 200) {
                 dispatch(FETCH_ALL_ITR_IT_TRS({
                     listData: response?.data?.data?.data,
-                    pendingAndIntegratedData: copyTargetData
                 }));
                 handleLoading(); // Disable loading state...!
             };
@@ -192,18 +188,12 @@ const fetchAll_GRNS = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in sap action: ", response);
+            // console.log("Response in sap action: ", response);
             const { status, data } = response;
-
-            const countsObj = {
-                pendingGrns: data?.data?.pendingGrnsCount,
-                integratedGrns: data?.data?.integratedGrnsCount
-            };
 
             if (status == 200) {
                 dispatch(FETCH_ALL_GRNS({
                     grnsData: data?.data?.items,
-                    counts: countsObj
                 }));
                 handleLoading(); // Disable loading state...!
             };

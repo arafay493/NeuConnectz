@@ -12,11 +12,11 @@ const authenticatedRoutes: String[] = [
     "/dashboard",
     "/stock-movement",
     "/reconciliation",
-    "/item-movement",
-    "/inventory-transfer",
-    "/it-tr-difference",
-    "/it-posted-documents",
-    "/tr-posted-documents",
+    // "/item-movement",
+    // "/inventory-transfer",
+    // "/it-tr-difference",
+    // "/it-posted-documents",
+    // "/tr-posted-documents",
     "/users-list",
     "/assign-group",
     "/assign-warehouse",
@@ -33,11 +33,11 @@ const routes: Routes = {
     dashboard: "/dashboard",
     stockMovement: "/stock-movement",
     reconciliation: "/reconciliation",
-    itemMovement: "/item-movement",
-    inventoryTransfer: "/inventory-transfer",
-    itTrDifference: "/it-tr-difference",
-    itPostedDocuments: "/it-posted-documents",
-    trPostedDocuments: "/tr-posted-documents",
+    // itemMovement: "/item-movement",
+    // inventoryTransfer: "/inventory-transfer",
+    // itTrDifference: "/it-tr-difference",
+    // itPostedDocuments: "/it-posted-documents",
+    // trPostedDocuments: "/tr-posted-documents",
     usersList: "/users-list",
     assignGroup: "/assign-group",
     assignWareHouse: "/assign-warehouse",
@@ -64,31 +64,31 @@ const drawerRoutes: DrawerRoute[] = [
         label: "reconciliation",
         route: routes.reconciliation,
     },
-    {
-        icon: <IconListCheck size={20} />,
-        label: "item movement",
-        route: routes.itemMovement,
-    },
-    {
-        icon: <IconListCheck size={20} />,
-        label: "inventory transfer",
-        route: routes.inventoryTransfer,
-    },
-    {
-        icon: <IconListCheck size={20} />,
-        label: "IT - TR difference",
-        route: routes.itTrDifference,
-    },
-    {
-        icon: <IconListCheck size={20} />,
-        label: "IT posted documents",
-        route: routes.itPostedDocuments,
-    },
-    {
-        icon: <IconListCheck size={20} />,
-        label: "TR posted documents",
-        route: routes.trPostedDocuments,
-    },
+    // {
+    //     icon: <IconListCheck size={20} />,
+    //     label: "item movement",
+    //     route: routes.itemMovement,
+    // },
+    // {
+    //     icon: <IconListCheck size={20} />,
+    //     label: "inventory transfer",
+    //     route: routes.inventoryTransfer,
+    // },
+    // {
+    //     icon: <IconListCheck size={20} />,
+    //     label: "IT - TR difference",
+    //     route: routes.itTrDifference,
+    // },
+    // {
+    //     icon: <IconListCheck size={20} />,
+    //     label: "IT posted documents",
+    //     route: routes.itPostedDocuments,
+    // },
+    // {
+    //     icon: <IconListCheck size={20} />,
+    //     label: "TR posted documents",
+    //     route: routes.trPostedDocuments,
+    // },
     {
         icon: <IconListCheck size={20} />,
         label: "users list",
@@ -115,7 +115,6 @@ const drawerRoutes: DrawerRoute[] = [
         route: routes.integrationMonitor
     },
 ];
-
 
 export {
     unAuthenticatedRoutes,

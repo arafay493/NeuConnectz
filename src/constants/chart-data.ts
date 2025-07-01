@@ -15,6 +15,6 @@ const barChartData: { month: string, value: number, max: number }[] = [
     { month: '12', value: 390, max: 400 },
 ];
 
-const barChartYAxisLabels: number[] = [400, 300, 200, 100, 0];
+const barChartYAxisLabels: number[] = [10, 8, 6, 4, 2, 0];
 
 export { barChartData, barChartYAxisLabels };

@@ -1,10 +1,18 @@
 // NOte: BarChart component...!
 
+"use client";
+
 import React, { memo } from 'react';
 import { Card, Box, Text } from '@mantine/core';
 import { barChartData, barChartYAxisLabels } from '@/constants/chart-data';
+import { useAppSelector } from '@/redux/store';
 
 const BarChart = () => {
+
+    // Note: Fetchinf data from redux...!
+    const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
+    // console.log("Dashboard Stats in Bar Chart com: ", dashboardAnalyticsData);
+
     return (
         <Card withBorder shadow="md" radius="lg" p="lg">
             <Box
@@ -20,10 +28,6 @@ const BarChart = () => {
                 <Text size="lg" style={{ color: '#4D4D4D', fontWeight: 500 }}>
                     Top Transfer Items
                 </Text>
-
-                {/* <Text size="sm" c="dimmed">
-                    Last 12 months
-                </Text> */}
             </Box>
 
             <Box style={{ display: 'flex', alignItems: 'flex-end' }} pt={'3%'}>
@@ -57,8 +61,9 @@ const BarChart = () => {
                     }}
                 >
                     {
-                        barChartData.map((data, idx) => {
-                            const valueHeight = (data.value / data.max) * 100;
+                        dashboardAnalyticsData?.topCreatedItems.map((data : any, idx) => {
+                            const maxValue = 10;
+                            const valueHeight = (data.count / maxValue) * 100;
                             return (
                                 <Box key={idx} style={{ textAlign: 'center', width: '80%' }}>
                                     <Box
@@ -93,7 +98,7 @@ const BarChart = () => {
                                         />
                                     </Box>
                                     <Text size="xs" mt="xs" c="dimmed">
-                                        {data.month}
+                                        {data?.itemCode}
                                     </Text>
                                 </Box>
                             );
