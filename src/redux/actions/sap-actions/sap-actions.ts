@@ -8,6 +8,7 @@ import API_METHODS from "@/constants/api-methods";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
 import { ResHandler } from "@/types/api-types";
 import {
+    CHECK_SAP_CONFIG_EXIST,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
     FETCH_ALL_ITR_IT_TRS,
     FETCH_ALL_GRNS
@@ -212,9 +213,44 @@ const fetchAll_GRNS = createAsyncThunk(
     }
 );
 
+// Note: Action function to check is SAP config exist...!
+const checkSAPConfigExist = createAsyncThunk(
+    "sap/checkSAPConfigExist",
+    async (token: string, { dispatch }) => {
+        console.log("Auth token: ", token);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_CHECK_SAP_CONFIG_EXIST,
+                    "Auth-Token": token
+                }
+            });
+            console.log("Response in sap action: ", response);
+            const { status, data } = response;
+
+            if (status == 200) dispatch(CHECK_SAP_CONFIG_EXIST(data?.data));
+        }
+
+        catch (error: any) {
+            console.log('Error occured in check SAP config exist api integration: ', error);
+            // const { status, data } = error?.response;
+
+            // 401:
+            // if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            // else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     postRequestToSAP,
     fetchAllITR_IT_TRS,
-    fetchAll_GRNS
+    fetchAll_GRNS,
+    checkSAPConfigExist
 };

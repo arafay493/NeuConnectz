@@ -123,6 +123,7 @@ export interface SAPStateType {
         whsCode: string,
     }[];
     sapErrorState: string;
+    isSAPConfigExist: boolean
 };
 
 export interface RolesStateType {

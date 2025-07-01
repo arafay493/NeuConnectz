@@ -7,13 +7,19 @@ import { SAPStateType } from "@/types/redux-types";
 const initialState: SAPStateType = {
     listAll_ITR_IT_TRS: [],
     list_GRNS_Data: [],
-    sapErrorState: ""
+    sapErrorState: "",
+    isSAPConfigExist: false
 };
 
 const SAPReducer = createSlice({
     name: "sap",
     initialState,
     reducers: {
+        CHECK_SAP_CONFIG_EXIST: (state, action: PayloadAction<any>) => {
+            console.log('Payload: ', action.payload);
+            state.isSAPConfigExist = action.payload;
+        },
+
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA: (state) => {
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
@@ -46,6 +52,7 @@ const SAPReducer = createSlice({
 
 export const
     {
+        CHECK_SAP_CONFIG_EXIST,
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
         FETCH_ALL_GRNS,
