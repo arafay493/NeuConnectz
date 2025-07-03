@@ -131,7 +131,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
             />
 
             <Image
-              src={localAssets.blueLogo}
+              src={localAssets.newLogo}
               alt="Z_Connect Logo"
               title="Z_Connect"
               width={120}

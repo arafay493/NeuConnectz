@@ -61,8 +61,8 @@ const AssignWareHouse = () => {
   const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
-  // console.log('WareHouses list: ', wareHousesList);
-  // console.log('WareHouses list by user id: ', warehousesListByUserId);
+  console.log('WareHouses list: ', wareHousesList);
+  console.log('WareHouses list by user id: ', warehousesListByUserId);
 
   const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
     whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
@@ -74,6 +74,8 @@ const AssignWareHouse = () => {
 
   const isAllSelected = access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.allow) || false;
   const isIndeterminate = access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.allow) && !isAllSelected;
+
+  // console.log('Is all selected: ', isAllSelected);
 
   // Note: Function to clear all states...!
   const clearAllStates = () => {
@@ -120,24 +122,34 @@ const AssignWareHouse = () => {
     if (value === null) {
       setSearch("");
       setPage(1);
+      setAccess({});
       return;
     };
 
     // Initialize access state for selected user if not already present
-    setAccess((prev) => {
-      if (prev[value]) return prev; // already exists, do nothing
-
-      const initialAccess = wareHousesList.map((wh: WareHouseDataType) => ({
+    setAccess((prev) => ({
+      ...prev,
+      [value]: wareHousesList.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
         receiver: false
-      }));
+      }))
+    }));
 
-      return {
-        ...prev,
-        [value]: initialAccess
-      };
-    });
+    // setAccess((prev) => {
+    //   if (prev[value]) return prev; // already exists, do nothing
+
+    //   const initialAccess = wareHousesList.map((wh: WareHouseDataType) => ({
+    //     whsCode: wh.whsCode,
+    //     allow: false,
+    //     receiver: false
+    //   }));
+
+    //   return {
+    //     ...prev,
+    //     [value]: initialAccess
+    //   };
+    // });
   };
 
   // Note: Handle checkbox...!
@@ -263,12 +275,13 @@ const AssignWareHouse = () => {
 
   // Note: This hook will run when selectedUser, warehousesListByUserId, wareHousesList changes...!
   useEffect(() => {
-    if (selectedUser && warehousesListByUserId.length > 0) {
+    if (!selectedUser) return;
+
+    if (warehousesListByUserId.length > 0) {
       const updatedAccess = wareHousesList.map((wh: WareHouseDataType) => {
-        const existing: any = warehousesListByUserId.find(
+        const existing = warehousesListByUserId.find(
           (item) => item.whsCode === wh.whsCode
         );
-        // console.log("Existing access: ", existing);
         return {
           whsCode: wh.whsCode,
           allow: !!existing,
@@ -280,7 +293,19 @@ const AssignWareHouse = () => {
         ...prev,
         [selectedUser]: updatedAccess,
       }));
-    };
+    } else {
+      // 💡 Clear access for selected user when no data is returned
+      const resetAccess = wareHousesList.map((wh: WareHouseDataType) => ({
+        whsCode: wh.whsCode,
+        allow: false,
+        receiver: false,
+      }));
+
+      setAccess((prev) => ({
+        ...prev,
+        [selectedUser]: resetAccess,
+      }));
+    }
   }, [selectedUser, warehousesListByUserId, wareHousesList]);
 
   return (

@@ -42,7 +42,7 @@ const IntegrationMonitor = () => {
                     </Title>
 
                     <Text size="sm" c="dimmed">
-                        Track the status of your data syncs between ZConnect and SAP in real time
+                        Track the status of your data syncs between NeuConnectz and SAP in real time.
                     </Text>
                 </Stack>
 

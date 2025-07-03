@@ -217,7 +217,7 @@ const fetchAll_GRNS = createAsyncThunk(
 const checkSAPConfigExist = createAsyncThunk(
     "sap/checkSAPConfigExist",
     async (token: string, { dispatch }) => {
-        console.log("Auth token: ", token);
+        // console.log("Auth token: ", token);
 
         try {
             const response = await axios({
@@ -228,7 +228,7 @@ const checkSAPConfigExist = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in sap action: ", response);
+            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) dispatch(CHECK_SAP_CONFIG_EXIST(data?.data));

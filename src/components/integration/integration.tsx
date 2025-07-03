@@ -212,7 +212,12 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (totalMonths < 12) return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
 
         const totalYears = Math.floor(totalDays / 365);
-        return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
+        // console.log('Total Years:', totalYears);
+
+        if ( totalYears == 1 ) return `1 year ago`;
+        else return `Long time ago`;
+        
+        // return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
     };
 
     // Note: Handle disable values...!

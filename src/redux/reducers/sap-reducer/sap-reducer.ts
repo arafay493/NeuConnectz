@@ -16,7 +16,7 @@ const SAPReducer = createSlice({
     initialState,
     reducers: {
         CHECK_SAP_CONFIG_EXIST: (state, action: PayloadAction<any>) => {
-            console.log('Payload: ', action.payload);
+            // console.log('Payload: ', action.payload);
             state.isSAPConfigExist = action.payload;
         },
 

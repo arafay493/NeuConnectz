@@ -22,7 +22,7 @@ const DashboardScreen = () => {
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-  console.log("User: ", authenticatedUser);
+  // console.log("User: ", authenticatedUser);
 
   // Note: This hook will run when this component mounts...!
   useEffect(() => {

@@ -181,7 +181,7 @@ const LoginScreen = () => {
                             marginBottom: customStyles.size.size_20,
                         }}
                     >
-                        Welcome to ZConnect
+                        Welcome to NeuConnectz
                     </Text>
 
                     <div>

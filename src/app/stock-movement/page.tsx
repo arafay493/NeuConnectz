@@ -115,9 +115,10 @@ const InventoryTransferRequestScreen = () => {
 
   // Note: Export to CSV handler...!
   const handleExportToCSV = () => {
-    if (tab === 'ITR') exportToCSV(paginatedData, 'inventory_transfer_request.csv');
-    else if (tab === 'TR') exportToCSV(paginatedData_TR, 'transfer_request.csv');
-    else if (tab === 'IT') exportToCSV(paginatedData_IT, 'inventory_transfer.csv');
+    const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+    if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
+    else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
+    else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
   };
 
   // Note: Function to applied filter...!

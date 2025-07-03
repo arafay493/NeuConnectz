@@ -175,7 +175,10 @@ const UsersListScreen = () => {
           <Button
             leftSection={<IconFileTypeCsv size={20} color="white" />}
             color={customStyles.colors._1B59F8}
-            onClick={() => exportToCSV(usersList, 'users_list.csv')}
+            onClick={() => {
+              const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+              exportToCSV(usersList, `${rightNow} - Users_List.csv`)
+            }}
             style={{ marginRight: '10px', width: '180px' }}
           >
             Export to CSV
