@@ -22,6 +22,7 @@ import DataNotFound from '../data-not-found/data-not-found';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
+import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashboard-actions';
 
 const headers: string[] =
     [
@@ -396,6 +397,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 dataStatus: "Pending",
                 handleLoading: () => setLoading(false)
             }));
+            dispatch(fetchDashboardAnalytics(token));
         };
     }, []);
 
