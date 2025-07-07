@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Select,
     Group,
@@ -21,6 +21,7 @@ import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { addSAPConfiguration } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
+import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
 
 const Configuration = () => {
 
@@ -163,6 +164,11 @@ const Configuration = () => {
         };
     };
 
+    // Note: This hook will run when this component mounts...!
+    useEffect(() => {
+        authenticatedUser && dispatch(checkSAPConfigExist(authenticatedUser?.token));
+    }, []);
+
     return (
         <div>
 
@@ -185,7 +191,7 @@ const Configuration = () => {
                     </Title>
 
                     <Text size="sm" c="dimmed">
-                        Customizable integration
+                        Customizable Integration
                     </Text>
                 </Stack>
             </Group>

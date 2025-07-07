@@ -247,10 +247,125 @@ const checkSAPConfigExist = createAsyncThunk(
     }
 );
 
+// Note: Action function to get SAP data...!
+const getSAPData = createAsyncThunk(
+    "sap/getSAPData",
+    async (
+        { token, apiUrl, resHandler }:
+            {
+                token: string,
+                apiUrl: string,
+                resHandler: ResHandler
+            },
+        { dispatch }) => {
+        // console.log("Auth token: ", token);
+        // console.log('Api Url: ', apiUrl);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": apiUrl,
+                    "Auth-Token": token
+                }
+            });
+            // console.log("Response in sap action: ", response);
+            const { status, data } = response;
+
+            if (status == 200) resHandler(data);
+        }
+
+        catch (error: any) {
+            // console.log('Error occured in getting data from SAP api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
+// Note: Action function to export data to csv...!
+const exportDataToCsvFile = createAsyncThunk(
+    "sap/exportDataToCsvFile",
+    async (
+        { token, apiUrl }:
+            {
+                token: string,
+                apiUrl: string,
+            },
+        { dispatch }) => {
+        console.log("Auth token: ", token);
+        console.log('Api Url: ', apiUrl);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": apiUrl,
+                    "Auth-Token": token,
+                    "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                responseType: 'blob'
+            });
+            console.log("Response in sap action: ", response);
+
+            // Create a blob from response
+            // Extract filename from Content-Disposition header if available
+            let filename = 'InventoryTransferRequests.xlsx'; // Default filename
+            const contentDisposition = response.headers['content-disposition'];
+            if (contentDisposition) {
+                const filenameMatch = contentDisposition.match(/filename=([^;]+)/);
+                if (filenameMatch) {
+                    filename = filenameMatch[1].replace(/"/g, ''); // Remove quotes
+                }
+            }
+
+            // Create a blob from response
+            const blob = new Blob([response.data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            // Create a download link
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename); // Use extracted filename
+            link.style.display = 'none'; // Hide the link
+
+            // Append to body and trigger click
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        catch (error: any) {
+            console.log('Error occured in exporting data to csv api integration: ', error);
+            // const { status, data } = error?.response;
+
+            // 401:
+            // if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            // else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     postRequestToSAP,
     fetchAllITR_IT_TRS,
     fetchAll_GRNS,
-    checkSAPConfigExist
+    checkSAPConfigExist,
+    getSAPData,
+    exportDataToCsvFile
 };

@@ -1,8 +1,6 @@
 // Note: Dashboard screen...!
 
-"use client";
-
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { SimpleGrid, Box } from '@mantine/core';
 
@@ -12,23 +10,9 @@ import ProgressBarCard from '@/components/progress-bar/progress-bar';
 import BarChart from '@/components/bar-chart/bar-chart';
 import ProductStackedBarChart from '@/components/product-stacked-bar-chart/product-stacked-bar-chart';
 import DonutChart from '@/components/donut-chart/donut-chart';
-
 import { customStyles } from '@/styles/custom-theme';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
 
 const DashboardScreen = () => {
-
-  // Note: Handeling redux here...!
-  const dispatch = useAppDispatch();
-  const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-  // console.log("User: ", authenticatedUser);
-
-  // Note: This hook will run when this component mounts...!
-  useEffect(() => {
-    authenticatedUser && dispatch(checkSAPConfigExist(authenticatedUser?.token));
-  }, []);
-
   return (
     <div>
 
