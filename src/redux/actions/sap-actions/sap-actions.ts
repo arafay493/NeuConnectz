@@ -308,23 +308,11 @@ const exportDataToCsvFile = createAsyncThunk(
                 url: apiRequestRoutes.getRequest,
                 headers: {
                     "Api-Url": apiUrl,
-                    "Auth-Token": token,
-                    "Accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    "Auth-Token": token
                 },
                 responseType: 'blob'
             });
             console.log("Response in sap action: ", response);
-
-            // Create a blob from response
-            // Extract filename from Content-Disposition header if available
-            let filename = 'InventoryTransferRequests.xlsx'; // Default filename
-            const contentDisposition = response.headers['content-disposition'];
-            if (contentDisposition) {
-                const filenameMatch = contentDisposition.match(/filename=([^;]+)/);
-                if (filenameMatch) {
-                    filename = filenameMatch[1].replace(/"/g, ''); // Remove quotes
-                }
-            }
 
             // Create a blob from response
             const blob = new Blob([response.data], {
@@ -335,8 +323,9 @@ const exportDataToCsvFile = createAsyncThunk(
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', filename); // Use extracted filename
-            link.style.display = 'none'; // Hide the link
+
+            // Set a default file name (you can customize it)
+            link.setAttribute('download', 'file.xlsx');
 
             // Append to body and trigger click
             document.body.appendChild(link);
