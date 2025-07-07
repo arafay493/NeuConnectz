@@ -119,29 +119,29 @@ const InventoryTransferRequestScreen = () => {
   const handleExportToCSV = () => {
     console.log('Tab: ', tab);
 
-    // if (tab === 'ITR') {
-    //   dispatch(exportDataToCsvFile({
-    //     token: authenticatedUser?.token || "",
-    //     apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string
-    //   }));
-    // }
+    if (tab === 'ITR') {
+      dispatch(exportDataToCsvFile({
+        token: authenticatedUser?.token || "",
+        apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string
+      }));
+    }
 
-    // if (tab === 'IT') {
-    //   dispatch(exportDataToCsvFile({
-    //     token: authenticatedUser?.token || "",
-    //     apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string
-    //   }));
-    // }
+    if (tab === 'IT') {
+      dispatch(exportDataToCsvFile({
+        token: authenticatedUser?.token || "",
+        apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string
+      }));
+    }
 
-    // if (tab === 'TR') {
-    //   dispatch(exportDataToCsvFile({
-    //     token: authenticatedUser?.token || "",
-    //     apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string
-    //   }));
-    // }
+    if (tab === 'TR') {
+      dispatch(exportDataToCsvFile({
+        token: authenticatedUser?.token || "",
+        apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string
+      }));
+    }
 
-    const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-    if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
+    // const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+    // if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
     // else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
     // else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
   };
