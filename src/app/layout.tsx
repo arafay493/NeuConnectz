@@ -97,7 +97,7 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       {...mantineHtmlProps}
     >
       <head>
-        <title> Z-Connect </title>
+        <title> NeuConnectz </title>
         <ColorSchemeScript />
         <link rel="icon" href="/favicon.png" type="image/x-icon" />
       </head>

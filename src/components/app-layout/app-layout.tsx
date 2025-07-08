@@ -119,7 +119,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       {/* Note: Navbar section */}
       <AppShellHeader
         withBorder
-        style={{ display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[15] as string) ? 'block' : 'none' }}
+        style={{ display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none' }}
       >
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
           <Group style={{ width: 'auto' }}>
@@ -174,7 +174,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         p={customStyles.deviceSize.xs}
         withBorder
         style={{
-          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[15] as string) ? 'block' : 'none',
+          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
           overflow: 'scroll'
         }}
       >

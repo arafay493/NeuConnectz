@@ -21,6 +21,7 @@ const headers: string[] =
         "To WH Code",
         "Doc Status",
         "Item Code",
+        "Item Description",
         "ERP Doc Entry",
         "ERP Object Type",
         "ERP Doc Line",
@@ -68,6 +69,7 @@ const IT_TableCom = (props: any) => {
                                             <Table.Td>{row.toWarehouseId}</Table.Td>
                                             <Table.Td>{row.docStatus}</Table.Td>
                                             <Table.Td>{row.itemCode}</Table.Td>
+                                            <Table.Td>{row.itemName}</Table.Td>
                                             <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : "-"}</Table.Td>
                                             <Table.Td>{row.erpObjectType != null ? row.erpObjectType : "-"}</Table.Td>
                                             <Table.Td>{row.erpDocLine != null ? row.erpDocLine : "-"}</Table.Td>

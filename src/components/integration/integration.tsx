@@ -73,18 +73,18 @@ const cardsData = [
         integratedValue: "totalTrIntegrated",
         lastIntegrationDate: "lastTrIntegrationDate"
     },
-    {
-        label: "GI",
-        pendingValue: "",
-        integratedValue: "",
-        lastIntegrationDate: ""
-    },
-    {
-        label: "GR",
-        pendingValue: "",
-        integratedValue: "",
-        lastIntegrationDate: ""
-    },
+    // {
+    //     label: "GI",
+    //     pendingValue: "",
+    //     integratedValue: "",
+    //     lastIntegrationDate: ""
+    // },
+    // {
+    //     label: "GR",
+    //     pendingValue: "",
+    //     integratedValue: "",
+    //     lastIntegrationDate: ""
+    // },
     {
         label: "GRN",
         pendingValue: "totalGrnPending",
@@ -194,11 +194,13 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         const end = new Date();
 
         const diffInMs = end.getTime() - start.getTime();
+        // console.log(start , end , diffInMs);
 
         const totalSeconds = Math.floor(diffInMs / 1000);
         const totalMinutes = Math.floor(diffInMs / (1000 * 60));
         const totalHours = Math.floor(diffInMs / (1000 * 60 * 60));
-        const totalDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+        const totalDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+        // console.log('Days: ', totalDays);
 
         if (totalSeconds < 60) return "just now";
         if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes > 1 ? "s" : ""} ago`;
@@ -214,37 +216,24 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         const totalYears = Math.floor(totalDays / 365);
         // console.log('Total Years:', totalYears);
 
-        if ( totalYears == 1 ) return `1 year ago`;
+        if (totalYears == 1) return `1 year ago`;
         else return `Long time ago`;
-        
+
         // return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
     };
 
     // Note: Handle disable values...!
-    const handleDisable = (pendingType: string) => {
-        // console.log("Pending Type: ", pendingType);
+    const handleDisable = (pendingVal: string, integratedVal: string) => {
+        // console.log("Pending value: ", pendingVal);
+        // console.log("Integrated value: ", integratedVal);
 
-        // let disableTrue = false;
-        // const isITRDataExist = [...listAll_ITR_IT_TRS].find((item) => { return item.type == "ITR" });
+        const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+        // console.log("Stats: ", statsData);
 
-        // if ((label == "IT" || label == "TR") && isITRDataExist) {
-        //     disableTrue = true;
-        // }
-
-        // else {
-        //     disableTrue = false;
-        // };
-
-        // return disableTrue;
-
-        // let disableTrue = false;
-
-        // if (pendingAndIntegratedData && pendingAndIntegratedData.hasOwnProperty(pendingType)) {
-        //     const checkDataInProp = pendingAndIntegratedData[pendingType] || 0;
-        //     // console.log("Check Data in Prop: ", checkDataInProp);
-        //     const disableTrue = checkDataInProp > 0 ? false : true;
-        //     return disableTrue;
-        // }
+        // const isPendingVal0 = statsData[pendingVal];
+        const isPendingVal0 = statsData[pendingVal as keyof typeof statsData];
+        if (isPendingVal0 == 0) return true;
+        return false;
     };
 
     // Note: post request to SAP api response handler...!
@@ -281,8 +270,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     };
 
     // Note: Handle post request to SAP...!
-    const handleRequestToSap = (reqData: string) => {
+    const handleRequestToSap = (reqData: string, totalPendingValue: string) => {
         // console.log("Request Data: ", reqData);
+        // console.log("Total pending Value: ", totalPendingValue);
 
         // Note: Enable loader...!
         enableLoader();
@@ -308,13 +298,27 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
 
         if (reqData == "IT") {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                type: "Post to IT",
-                apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
+
+            const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+            const itrPendingVal: any = statsData[totalPendingValue as keyof typeof statsData];
+            // console.log('X:', itrPendingVal)
+
+            if (itrPendingVal != undefined && itrPendingVal > 0) {
+                disableLoader();
+                showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
+                return;
+            }
+
+            else if (itrPendingVal == 0) {
+                // console.log('Hello');
+                dispatch(postRequestToSAP({
+                    token: authenticatedUser?.token as string,
+                    type: "Post to IT",
+                    apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
+                    resHandler: handleResponse
+                }));
+                return;
+            }
         };
 
         if (reqData == "GRN") {
@@ -440,8 +444,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                     fullWidth
                                     mt="md"
                                     variant="outline"
-                                    onClick={() => handleRequestToSap(item.label)}
-                                    // disabled={handleDisable(item.pendingValue)}
+                                    onClick={() => handleRequestToSap(item.label, item.pendingValue)}
+                                    disabled={handleDisable(item.pendingValue, item.integratedValue)}
                                     color={customStyles.colors._1B59F8}
                                     style={{
                                         root: {
@@ -540,7 +544,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         </Button>
                     </Group>
 
-                    <Group style={{ display : headerBtnType == "GRN" ? "none" : "block" }}>
+                    <Group style={{ display: headerBtnType == "GRN" ? "none" : "block" }}>
                         <Select
                             data={types}
                             placeholder="Filters"
