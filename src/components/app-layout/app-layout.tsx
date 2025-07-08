@@ -33,7 +33,7 @@ import {
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { DrawerRoute } from "@/types/route-types";
-import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
+import { routes, drawerRoutes, authenticatedRoutes, authenticatedRoutesCheck } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';;
 import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
@@ -119,7 +119,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       {/* Note: Navbar section */}
       <AppShellHeader
         withBorder
-        style={{ display: authenticatedRoutes.includes(pathName) ? 'block' : 'none' }}
+        style={{ display: authenticatedRoutesCheck(pathName) ? 'block' : 'none' }}
       >
         <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
           <Group style={{
@@ -189,7 +189,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         p={customStyles.deviceSize.xs}
         withBorder
         style={{
-          display: authenticatedRoutes.includes(pathName) ? 'block' : 'none',
+          display: authenticatedRoutesCheck(pathName) ? 'block' : 'none',
           overflow: 'scroll'
         }}
       >
@@ -224,7 +224,22 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
             >
               forms
             </div>
-            {drawerRoutes.slice(6).map((item, index) => renderNavLink(item, index + 6))}
+            {drawerRoutes.slice(6, 13).map((item, index) => renderNavLink(item, index + 6))}
+          </Group>
+
+          <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                textTransform: customStyles.textTransformation.capitalize,
+                marginTop: 20,
+                display: !collapsed ? "block" : "none"
+              }}
+            >
+              trace and track
+            </div>
+            {drawerRoutes.slice(13).map((item, index) => renderNavLink(item, index + 13))}
           </Group>
         </AppShellSection>
 

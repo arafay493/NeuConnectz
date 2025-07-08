@@ -23,7 +23,13 @@ const authenticatedRoutes: String[] = [
     "/add-user",
     "/configuration",
     "/integration-monitor",
-    "/edit-user"
+    "/edit-user",
+    "/history",
+    "/handling-units",
+    "/handling-units/add",
+    "/production-order",
+    "/production-order/add",
+    "/production-order/scan/:docNumber"
 ];
 
 // Note: Defining all routes...!
@@ -44,7 +50,13 @@ const routes: Routes = {
     addUser: "/add-user",
     configuration: "/configuration",
     integrationMonitor: "/integration-monitor",
-    editUser: "/edit-user"
+    editUser: "/edit-user",
+    history: "/history",
+    handlingUnits: "/handling-units",
+    addHandlingUnit: "/handling-units/add",
+    productionOrder: "/production-order",
+    addProductionOrder: "/production-order/add",
+    scanProductionOrder: "/production-order/scan/:dynamicPath",
 };
 
 // Note: Defining drawer routes...!
@@ -114,12 +126,53 @@ const drawerRoutes: DrawerRoute[] = [
         label: "integration monitor",
         route: routes.integrationMonitor
     },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "history",
+        route: routes.history
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "handling units",
+        route: routes.handlingUnits
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "production order",
+        route: routes.productionOrder
+    },
 ];
+
+const authenticatedRoutesCheck = (path: string): boolean => {
+    const routeValues = Object.values(routes);
+
+    return routeValues.some((route) => {
+        // Convert route pattern (like /production-order/scan/:dynamicPath)
+        // to a regular expression (like ^/production-order/scan/[^/]+$)
+        if (route.includes(":")) {
+            const regex = new RegExp(
+                "^" +
+                route
+                    .split("/")
+                    .map((segment) =>
+                        segment.startsWith(":") ? "[^/]+" : segment
+                    )
+                    .join("/") +
+                "$"
+            );
+            return regex.test(path);
+        }
+
+        // Exact match for static routes
+        return route === path;
+    });
+};
 
 
 export {
     unAuthenticatedRoutes,
     authenticatedRoutes,
+    authenticatedRoutesCheck,
     routes,
     drawerRoutes
 };

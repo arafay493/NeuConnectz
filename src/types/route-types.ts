@@ -19,7 +19,13 @@ export type Routes = {
     addUser: string;
     configuration: string;
     integrationMonitor: string;
-    editUser: string
+    editUser: string;
+    history: string;
+    handlingUnits: string;
+    addHandlingUnit: string;
+    productionOrder: string;
+    addProductionOrder: string;
+    scanProductionOrder: string;
 };
 
 export type DrawerRoute = {
