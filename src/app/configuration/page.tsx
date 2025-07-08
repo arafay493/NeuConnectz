@@ -22,6 +22,7 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { addSAPConfiguration } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
+import ConfigAccessComponent from "@/components/config-access-component/config-access-component";
 
 const Configuration = () => {
 
@@ -45,6 +46,7 @@ const Configuration = () => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { isSAPConfigExist } = useAppSelector(({ sapStates }) => { return sapStates });
     // console.log("Is SAP Config Exist: ", isSAPConfigExist);
+    // const isSAPConfigExist = false;
 
     // Note: Fucntion to clear all states...!
     const clearAllStates = () => {
@@ -169,6 +171,8 @@ const Configuration = () => {
         authenticatedUser && dispatch(checkSAPConfigExist(authenticatedUser?.token));
     }, []);
 
+    if (isSAPConfigExist) return <ConfigAccessComponent />
+
     return (
         <div>
 
@@ -182,15 +186,19 @@ const Configuration = () => {
                 p="md"
                 bg="gray.0"
             >
-                <Stack gap={4}>
+                <Stack gap={0}>
                     <Title
                         order={3}
-                        style={{ color: customStyles.colors._4D4D4D }}
+                        style={{
+                            color: customStyles.colors._4D4D4D,
+                            fontSize: "24px",
+                            fontWeight: 700
+                        }}
                     >
                         Configuration
                     </Title>
 
-                    <Text size="sm" c="dimmed">
+                    <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
                         Customizable Integration
                     </Text>
                 </Stack>

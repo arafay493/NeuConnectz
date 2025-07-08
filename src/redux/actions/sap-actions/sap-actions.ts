@@ -293,58 +293,73 @@ const getSAPData = createAsyncThunk(
 const exportDataToCsvFile = createAsyncThunk(
     "sap/exportDataToCsvFile",
     async (
-        { token, apiUrl }:
+        { token, apiUrl, type }:
             {
                 token: string,
                 apiUrl: string,
+                type: string
             },
         { dispatch }) => {
-        console.log("Auth token: ", token);
-        console.log('Api Url: ', apiUrl);
+        // console.log("Auth token: ", token);
+        // console.log('Api Url: ', apiUrl);
 
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
+            const response = await fetch(apiRequestRoutes.getRequest, {
+                method: 'GET',
                 headers: {
                     "Api-Url": apiUrl,
                     "Auth-Token": token
-                },
-                responseType: 'blob'
+                }
             });
-            console.log("Response in sap action: ", response);
+            // console.log("Csv Response in sap action: ", response);
 
-            // Create a blob from response
-            const blob = new Blob([response.data], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            });
+            // if (!response.ok) {
+            //     const errorText = await response.text();
+            //     console.error("Server error response:", errorText);
+            //     throw new Error(HTTP error! status: ${ response.status });
+            // }
 
-            // Create a download link
-            const url = window.URL.createObjectURL(blob);
+            const csvText = await response.text();
+
+            // Remove outer double quotes if present
+            const trimmedCsvText = csvText.replace(/^"|"$/g, '');
+
+            // Convert \n to actual line breaks for proper CSV formatting
+            const formattedCsvText = trimmedCsvText.replace(/\\n/g, '\n');
+
+            // Extract filename from content-disposition header or use default
+            const contentDisposition = response.headers.get('content-disposition');
+            // let filename = "InventoryTransferRequests.csv";
+            let filename = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()} - ${type}.csv`;
+
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename\?=(?:UTF-8''|)([^;\n])/);
+                if (match && match[1]) {
+                    filename = decodeURIComponent(match[1].replace(/"/g, ''));
+                }
+            }
+
+            // Create blob from formatted CSV text
+            const blob = new Blob([formattedCsvText], { type: 'text/csv;charset=utf-8;' });
+
+            // Create download link
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-
-            // Set a default file name (you can customize it)
-            link.setAttribute('download', 'file.xlsx');
-
-            // Append to body and trigger click
+            link.download = filename;
             document.body.appendChild(link);
             link.click();
-
-            // Clean up
             document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
+
+            // console.log(CSV file downloaded successfully: ${ filename });
+            // console.log(Records found: ${ formattedCsvText.split('\n').length - 1 }); // -1 for header
+            return { success: true, filename, recordCount: formattedCsvText.split('\n').length - 1 };
+
         }
 
-        catch (error: any) {
-            console.log('Error occured in exporting data to csv api integration: ', error);
-            // const { status, data } = error?.response;
-
-            // 401:
-            // if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            // else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        catch (error) {
+            console.log("Something went wrong while exporting data to csv: ", error);
         };
     }
 );

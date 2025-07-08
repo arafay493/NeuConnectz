@@ -24,10 +24,10 @@ const getITAndTRData = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Auth token: ", token);
-        console.log("From WH Code: ", fromWhCode);
-        console.log("To WH Code: ", toWhCode);
-        console.log("Date and Time: ", dateAndTime);
+        // console.log("Auth token: ", token);
+        // console.log("From WH Code: ", fromWhCode);
+        // console.log("To WH Code: ", toWhCode);
+        // console.log("Date and Time: ", dateAndTime);
 
         const apiParams = `fromWarehouseCode=${fromWhCode}&toWarehouseCode=${toWhCode}&dateTime=${dateAndTime}`;
 
@@ -40,7 +40,7 @@ const getITAndTRData = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in reconciliation action: ", response);
+            // console.log("Response in reconciliation action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -50,7 +50,7 @@ const getITAndTRData = createAsyncThunk(
         }
 
         catch (error: any) {
-            console.log('Error occured in getting IT and TR data from fetching reconciliation data api integration: ', error);
+            // console.log('Error occured in getting IT and TR data from fetching reconciliation data api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:

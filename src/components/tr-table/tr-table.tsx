@@ -20,6 +20,7 @@ const headers: string[] =
         "To WH Code",
         "Doc Status",
         "Item Code",
+        "Item Description",
         "Quantity",
         "ERP Doc Entry",
         "ERP Object Type",
@@ -67,6 +68,7 @@ const TR_TableCom = (props: any) => {
                                             <Table.Td>{row.toWareHouseCode}</Table.Td>
                                             <Table.Td>{row.docStatus}</Table.Td>
                                             <Table.Td>{row.itemCode}</Table.Td>
+                                            <Table.Td>{row.itemName}</Table.Td>
                                             <Table.Td>{row.quantity}</Table.Td>
                                             <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : "-"}</Table.Td>
                                             <Table.Td>{row.erpObjectType != null ? row.erpObjectType : "-"}</Table.Td>

@@ -6,6 +6,7 @@ import ProductImage from "@/assets/images/product-image.gif";
 import UserIcon from "@/assets/images/user.png";
 import NewLogo from "@/assets/images/new-logo.svg";
 import WhiteLogo from "@/assets/images/white-logo.svg";
+import ConfigAccessLogo from "@/assets/images/configuration-logo.svg";
 
 // Note: Local assets...!
 const localAssets: { [key: string]: StaticImageData } = {
@@ -13,7 +14,8 @@ const localAssets: { [key: string]: StaticImageData } = {
     newLogo: NewLogo,
     productImage: ProductImage,
     userIcon: UserIcon,
-    whiteLogo: WhiteLogo
+    whiteLogo: WhiteLogo,
+    configAccessLogo: ConfigAccessLogo
 };
 
 export { localAssets };

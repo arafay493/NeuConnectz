@@ -55,9 +55,9 @@ const ReconciliationScreen = () => {
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   const { inventoryTransferItems, transferReceiptItems } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
-  console.log("Warehouses list: ", wareHousesList);
-  console.log("Inventory transfer items: ", inventoryTransferItems);
-  console.log("Transfer receipt items: ", transferReceiptItems);
+  // console.log("Warehouses list: ", wareHousesList);
+  // console.log("Inventory transfer items: ", inventoryTransferItems);
+  // console.log("Transfer receipt items: ", transferReceiptItems);
 
   // Note: Function to clear form states...!
   const clearFormStates = () => {
@@ -118,13 +118,25 @@ const ReconciliationScreen = () => {
 
       <Group justify="space-between" align="flex-start" bg="gray.0">
         <Stack gap={0}>
-          <Title order={3}> Reconciliation </Title>
-          <Text size="sm" c="dimmed"> Match Inventory Transfers with their Receipts to keep your stock records accurate and up-to-date </Text>
+          <Title
+            order={3}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
+          >
+            Reconciliation
+          </Title>
+
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+            Match Inventory Transfers with their Receipts to keep your stock records accurate and up-to-date
+          </Text>
         </Stack>
       </Group>
 
-      {/* Filters */}
-      <Group grow align="flex-end" mt={10}>
+      {/* Note: Filters */}
+      <Group grow align="flex-end" mt={5}>
 
         {/* Note: From warehouse */}
         <Select
@@ -146,6 +158,7 @@ const ReconciliationScreen = () => {
           searchable
         />
 
+        {/* Note: Date filter */}
         <DateInput
           label="Date"
           placeholder="DD/MM/YY"
@@ -171,6 +184,7 @@ const ReconciliationScreen = () => {
             day: { fontSize: 13, width: 34, height: 34 },
           }}
         />
+
         <Button
           mt="xs"
           onClick={getItAndTrReconcileData}
@@ -178,6 +192,22 @@ const ReconciliationScreen = () => {
           Get Data
         </Button>
       </Group>
+
+      {/* Note: If no data this component will render */}
+      {
+        (inventoryTransferItems.length < 1 && transferReceiptItems.length < 1) ?
+          <h3
+            style={{
+              textAlign: "center",
+              color: customStyles.colors._4D4D4D,
+              fontWeight: "normal",
+              marginTop: "10%"
+            }}
+          >
+            There are no Inventory Transfers or Transfer Receipts to show right now. <br /> Try adjusting your filters or date range to view records.
+          </h3>
+          : null
+      }
 
       {/* Inventory Transfer & Receipt */}
       <Grid style={{ display: (inventoryTransferItems.length > 0 && transferReceiptItems.length > 0) ? ('block') : ('none') }}>

@@ -37,7 +37,7 @@ const ReplicationComponent = () => {
         // console.log("Get SAP data api response: ", response);
 
         if (response && response.statusCode == 200) {
-        //     // Note: Stop loading...!
+            //     // Note: Stop loading...!
             setLoading(false);
             showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
             return;
@@ -111,7 +111,11 @@ const ReplicationComponent = () => {
                 </Text>
             </Group>
 
-            <Box mb="lg">
+            <Box mb="lg" style={{
+                border: "1px solid lightgray",
+                borderRadius : 10,
+                padding : '15px'
+            }}>
                 <Text size="sm" style={{ fontWeight: 500 }} mb={4}>
                     Overall Syncing Status
                 </Text>

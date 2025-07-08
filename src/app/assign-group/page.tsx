@@ -195,11 +195,21 @@ const AssignGroup = () => {
       <Loader loadingState={loading} />
 
       <Group justify={customStyles.alignment.spaceBetween} align="flex-start" p="md" bg="gray.0">
-        <Stack gap={4}>
-          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>
+        <Stack gap={0}>
+          <Title
+            order={3}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
+          >
             Items Group
           </Title>
-          <Text size="sm" c="dimmed">Select group to assign</Text>
+
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+            Select group to assign
+          </Text>
         </Stack>
       </Group>
 

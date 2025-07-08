@@ -157,9 +157,26 @@ const UsersListScreen = () => {
   return (
     <div>
       <Group justify="space-between" align="flex-start" p="md" bg="gray.0">
-        <Stack gap={4}>
-          <Title order={3}>User List</Title>
+        {/* <Stack gap={4}>
+          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>User List</Title>
           <Text size="sm" c="dimmed">List of Users</Text>
+        </Stack> */}
+
+        <Stack gap={0}>
+          <Title
+            order={3}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
+          >
+            User List
+          </Title>
+
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+            List of Users
+          </Text>
         </Stack>
 
         <div>

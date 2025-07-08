@@ -3,7 +3,7 @@
 "use client";
 
 import React, { memo, useEffect } from 'react';
-import { Card, Text, Group, SimpleGrid, ThemeIcon } from '@mantine/core';
+import { Card, Text, Group, SimpleGrid, ThemeIcon, Stack, Title } from '@mantine/core';
 import { IconChartBar } from '@tabler/icons-react';
 import { customStyles } from '@/styles/custom-theme';
 import { useAppSelector, useAppDispatch } from '@/redux/store';
@@ -72,13 +72,22 @@ const DashboardCards = () => {
 
     return (
         <div>
-            <Text fw={700} size="xl" mb={2}>
-                Home
-            </Text>
+            <Stack gap={4}>
+                <Title
+                    order={3}
+                    style={{
+                        color: customStyles.colors._4D4D4D,
+                        fontSize: "24px",
+                        fontWeight: 700
+                    }}
+                >
+                    Home
+                </Title>
 
-            <Text c="dimmed" size="sm" mb="md">
-                Dashboard
-            </Text>
+                <Text size="sm" c="dimmed" mb="xl" style={{ color: customStyles.colors._909090 }}>
+                    Dashboard
+                </Text>
+            </Stack>
 
             <SimpleGrid
                 cols={{ base: 1, sm: 2, md: 3, lg: 5, xl: 6 }}

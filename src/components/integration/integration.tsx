@@ -73,18 +73,18 @@ const cardsData = [
         integratedValue: "totalTrIntegrated",
         lastIntegrationDate: "lastTrIntegrationDate"
     },
-    {
-        label: "GI",
-        pendingValue: "",
-        integratedValue: "",
-        lastIntegrationDate: ""
-    },
-    {
-        label: "GR",
-        pendingValue: "",
-        integratedValue: "",
-        lastIntegrationDate: ""
-    },
+    // {
+    //     label: "GI",
+    //     pendingValue: "",
+    //     integratedValue: "",
+    //     lastIntegrationDate: ""
+    // },
+    // {
+    //     label: "GR",
+    //     pendingValue: "",
+    //     integratedValue: "",
+    //     lastIntegrationDate: ""
+    // },
     {
         label: "GRN",
         pendingValue: "totalGrnPending",
@@ -299,23 +299,26 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
         if (reqData == "IT") {
 
-            // const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-            // const itrPendingVal = statsData[totalPendingValue as keyof typeof statsData];
+            const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+            const itrPendingVal: any = statsData[totalPendingValue as keyof typeof statsData];
+            // console.log('X:', itrPendingVal)
 
-            // if (itrPendingVal != undefined && itrPendingVal > "0") {
-            //     showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
-            //     return;
-            // }
+            if (itrPendingVal != undefined && itrPendingVal > 0) {
+                disableLoader();
+                showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
+                return;
+            }
 
-            // else {
-            dispatch(postRequestToSAP({
-                token: authenticatedUser?.token as string,
-                type: "Post to IT",
-                apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
-                resHandler: handleResponse
-            }));
-            return;
-            // }
+            else if (itrPendingVal == 0) {
+                // console.log('Hello');
+                dispatch(postRequestToSAP({
+                    token: authenticatedUser?.token as string,
+                    type: "Post to IT",
+                    apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
+                    resHandler: handleResponse
+                }));
+                return;
+            }
         };
 
         if (reqData == "GRN") {

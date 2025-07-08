@@ -1,4 +1,4 @@
-// Note: Inventory Transfer Request screen...!
+// Note: Stock Movement screen...!
 
 "use client";
 
@@ -27,7 +27,7 @@ import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions, apiFilterParams } from '@/constants/filters';
 import { exportDataToCsvFile } from '@/redux/actions/sap-actions/sap-actions';
 
-const InventoryTransferRequestScreen = () => {
+const StockMovementScreen = () => {
 
   // Note: Using useRef to store the previous tab value...!
   const controlRef = useRef<HTMLDivElement>(null);
@@ -60,9 +60,9 @@ const InventoryTransferRequestScreen = () => {
     itData,
     itrErrorState
   } = useAppSelector(({ itrStates }) => { return itrStates });
-  // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
-  // console.log("TR data in Inventory Transfer Request screen: ", trData);
-  // console.log("IT data in Inventory Transfer Request screen: ", itData);
+  console.log("ITR data in Inventory Transfer Request screen: ", itrData);
+  console.log("TR data in Inventory Transfer Request screen: ", trData);
+  console.log("IT data in Inventory Transfer Request screen: ", itData);
 
   // Note: Required variables...!
   // Note: For ITR...!
@@ -117,27 +117,70 @@ const InventoryTransferRequestScreen = () => {
 
   // Note: Export to CSV handler...!
   const handleExportToCSV = () => {
-    console.log('Tab: ', tab);
+    // console.log('Tab: ', tab);
 
-    if (tab === 'ITR') {
-      dispatch(exportDataToCsvFile({
-        token: authenticatedUser?.token || "",
-        apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string
-      }));
+    const isFiltersApplied = Object.keys(appliedFilters);
+
+    if (isFiltersApplied.length < 1) {
+      if (tab === 'ITR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string,
+          type: 'ITR',
+        }));
+      }
+
+      if (tab === 'IT') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string,
+          type: 'IT',
+        }));
+      }
+
+      if (tab === 'TR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string,
+          type: 'TR',
+        }));
+      }
     }
 
-    if (tab === 'IT') {
-      dispatch(exportDataToCsvFile({
-        token: authenticatedUser?.token || "",
-        apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string
-      }));
-    }
+    else if (isFiltersApplied.length > 0) {
+      const cleanedFilters = Object.entries(appliedFilters)
+        .filter(([_, value]) => value && value.trim() !== '')
+        .reduce((acc, [key, value]) => {
+          const paramKey = apiFilterParams[filters.indexOf(key)];
+          if (paramKey) acc[paramKey] = value;
+          return acc;
+        }, {} as Record<string, string>);
 
-    if (tab === 'TR') {
-      dispatch(exportDataToCsvFile({
-        token: authenticatedUser?.token || "",
-        apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string
-      }));
+      const queryString = new URLSearchParams(cleanedFilters).toString();
+
+      if (tab === 'ITR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL}?${queryString}` as string,
+          type: 'ITR',
+        }));
+      }
+
+      if (tab === 'IT') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL}?${queryString}` as string,
+          type: 'IT',
+        }));
+      }
+
+      if (tab === 'TR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL}?${queryString}` as string,
+          type: 'TR',
+        }));
+      }
     }
 
     // const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
@@ -199,11 +242,18 @@ const InventoryTransferRequestScreen = () => {
         }}
       >
         <Stack gap={4}>
-          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>
+          <Title
+            order={3}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
+          >
             Stock Movement
           </Title>
 
-          <Text size="sm" c="dimmed" mb="xl" style={{ color: customStyles.colors._909090 }}>
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
             Monitor and review how stock moves between warehouses and systems.
           </Text>
         </Stack>
@@ -437,4 +487,4 @@ const InventoryTransferRequestScreen = () => {
   );
 };
 
-export default InventoryTransferRequestScreen;
+export default StockMovementScreen;
