@@ -153,6 +153,7 @@ export interface ITRStateType {
         toWarehouseId: string,
         docStatus: string,
         itemCode: string,
+        itemName: string,
         quantity: string | number,
         uom: string,
         openQuantity: string | number,
@@ -172,6 +173,7 @@ export interface ITRStateType {
         fromWareHouseCode: string,
         toWareHouseCode: string,
         itemCode: string,
+        itemName: string,
         quantity: string | number,
         uom: string,
         barCode: string | number,
@@ -194,6 +196,7 @@ export interface ITRStateType {
         fromWarehouseId: string,
         toWarehouseId: string,
         itemCode: string,
+        itemName: string,
         binCode: string,
         barCode: string,
         docStatus: string,
@@ -222,6 +225,7 @@ export interface ITR_DataType {
     toWarehouseId: string,
     docStatus: string,
     itemCode: string,
+    itemName: string,
     quantity: string | number,
     uom: string,
     openQuantity: string | number,
@@ -242,6 +246,7 @@ export interface TR_DataType {
     fromWareHouseCode: string,
     toWareHouseCode: string,
     itemCode: string,
+    itemName: string,
     quantity: string | number,
     uom: string,
     barCode: string | number,
@@ -265,6 +270,7 @@ export interface IT_DataType {
     fromWarehouseId: string,
     toWarehouseId: string,
     itemCode: string,
+    itemName: string,
     binCode: string,
     barCode: string,
     docStatus: string,
@@ -286,24 +292,6 @@ export interface IT_DataType {
 
 // Note: Dashboard reducer state types...!
 export interface DashboardStateType {
-    // dashboardStats: {
-    //     totalItrIntegrated: string | number,
-    //     totalItrPending: string | number,
-    //     totalItIntegrated: string | number,
-    //     totalItPending: string | number,
-    //     totalTrIntegrated: string | number,
-    //     totalTrPending: string | number,
-    //     totalGrnIntegrated: string | number,
-    //     totalGrnPending: string | number,
-    //     lastItrIntegrationDate: string,
-    //     lastItIntegrationDate: string,
-    //     lastTrIntegrationDate: string,
-    //     lastGrnIntegrationDate: string,
-    // } | null,
-    // dashboardBarChartData: {
-    //     itemCode: string,
-    //     count: string | number
-    // }[],
     dashboardErrorState: string,
     dashboardAnalyticsData: {
         grnStatistics: {

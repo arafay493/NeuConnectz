@@ -7,6 +7,7 @@ import UserIcon from "@/assets/images/user.png";
 import NewLogo from "@/assets/images/new-logo.svg";
 import WhiteLogo from "@/assets/images/white-logo.svg";
 import ReconciliationNotFoundImage from "@/assets/images/reconciliation-not-found.svg";
+import ConfigAccessLogo from "@/assets/images/configuration-logo.svg";
 
 // Note: Local assets...!
 const localAssets: { [key: string]: StaticImageData } = {
@@ -16,6 +17,7 @@ const localAssets: { [key: string]: StaticImageData } = {
     userIcon: UserIcon,
     whiteLogo: WhiteLogo,
     reconciliationNotFoundImage: ReconciliationNotFoundImage,
+    configAccessLogo: ConfigAccessLogo
 };
 
 export { localAssets };

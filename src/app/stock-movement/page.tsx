@@ -1,9 +1,10 @@
-// Note: Inventory Transfer Request screen...!
+// Note: Stock Movement screen...!
 
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
+  Text,
   Group,
   SegmentedControl,
   Title,
@@ -24,8 +25,9 @@ import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions, apiFilterParams } from '@/constants/filters';
+import { exportDataToCsvFile } from '@/redux/actions/sap-actions/sap-actions';
 
-const InventoryTransferRequestScreen = () => {
+const StockMovementScreen = () => {
 
   // Note: Using useRef to store the previous tab value...!
   const controlRef = useRef<HTMLDivElement>(null);
@@ -58,9 +60,9 @@ const InventoryTransferRequestScreen = () => {
     itData,
     itrErrorState
   } = useAppSelector(({ itrStates }) => { return itrStates });
-  // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
-  // console.log("TR data in Inventory Transfer Request screen: ", trData);
-  // console.log("IT data in Inventory Transfer Request screen: ", itData);
+  console.log("ITR data in Inventory Transfer Request screen: ", itrData);
+  console.log("TR data in Inventory Transfer Request screen: ", trData);
+  console.log("IT data in Inventory Transfer Request screen: ", itData);
 
   // Note: Required variables...!
   // Note: For ITR...!
@@ -115,10 +117,76 @@ const InventoryTransferRequestScreen = () => {
 
   // Note: Export to CSV handler...!
   const handleExportToCSV = () => {
-    const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-    if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
-    else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
-    else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
+    // console.log('Tab: ', tab);
+
+    const isFiltersApplied = Object.keys(appliedFilters);
+
+    if (isFiltersApplied.length < 1) {
+      if (tab === 'ITR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string,
+          type: 'ITR',
+        }));
+      }
+
+      if (tab === 'IT') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string,
+          type: 'IT',
+        }));
+      }
+
+      if (tab === 'TR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string,
+          type: 'TR',
+        }));
+      }
+    }
+
+    else if (isFiltersApplied.length > 0) {
+      const cleanedFilters = Object.entries(appliedFilters)
+        .filter(([_, value]) => value && value.trim() !== '')
+        .reduce((acc, [key, value]) => {
+          const paramKey = apiFilterParams[filters.indexOf(key)];
+          if (paramKey) acc[paramKey] = value;
+          return acc;
+        }, {} as Record<string, string>);
+
+      const queryString = new URLSearchParams(cleanedFilters).toString();
+
+      if (tab === 'ITR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL}?${queryString}` as string,
+          type: 'ITR',
+        }));
+      }
+
+      if (tab === 'IT') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL}?${queryString}` as string,
+          type: 'IT',
+        }));
+      }
+
+      if (tab === 'TR') {
+        dispatch(exportDataToCsvFile({
+          token: authenticatedUser?.token || "",
+          apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL}?${queryString}` as string,
+          type: 'TR',
+        }));
+      }
+    }
+
+    // const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
+    // if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
+    // else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
+    // else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
   };
 
   // Note: Function to applied filter...!
@@ -168,11 +236,26 @@ const InventoryTransferRequestScreen = () => {
         align="flex-start"
         p="md"
         bg="gray.0"
+        style={{
+          // backgroundColor :"yellow",
+          alignItems: "center"
+        }}
       >
         <Stack gap={4}>
-          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>
+          <Title
+            order={3}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
+          >
             Stock Movement
           </Title>
+
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+            Monitor and review how stock moves between warehouses and systems.
+          </Text>
         </Stack>
 
         <Button
@@ -343,7 +426,7 @@ const InventoryTransferRequestScreen = () => {
               {
                 label: (
                   <div onClick={() => handleTabChange('TR')}>
-                    Transfer Request
+                    Transfer Receipt
                   </div>
                 ),
                 value: 'TR',
@@ -404,4 +487,4 @@ const InventoryTransferRequestScreen = () => {
   );
 };
 
-export default InventoryTransferRequestScreen;
+export default StockMovementScreen;

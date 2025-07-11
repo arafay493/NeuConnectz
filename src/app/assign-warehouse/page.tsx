@@ -61,8 +61,8 @@ const AssignWareHouse = () => {
   const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
-  console.log('WareHouses list: ', wareHousesList);
-  console.log('WareHouses list by user id: ', warehousesListByUserId);
+  // console.log('WareHouses list: ', wareHousesList);
+  // console.log('WareHouses list by user id: ', warehousesListByUserId);
 
   const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
     whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
@@ -321,15 +321,19 @@ const AssignWareHouse = () => {
         p="md"
         bg="gray.0"
       >
-        <Stack gap={4}>
+        <Stack gap={0}>
           <Title
             order={3}
-            style={{ color: customStyles.colors._4D4D4D }}
+            style={{
+              color: customStyles.colors._4D4D4D,
+              fontSize: "24px",
+              fontWeight: 700
+            }}
           >
             Assign WareHouse
           </Title>
 
-          <Text size="sm" c="dimmed">
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
             Select user & assign single or multiple warehouse to user
           </Text>
         </Stack>

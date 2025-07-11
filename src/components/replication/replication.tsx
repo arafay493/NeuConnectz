@@ -2,8 +2,13 @@
 
 "use client";
 
-import React, { memo } from 'react';
-import { Card, Text, Progress, Grid, Group, Box, Stack } from "@mantine/core";
+import React, { memo, useState } from 'react';
+import { Card, Text, Progress, Grid, Group, Box, Stack, Button } from "@mantine/core";
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { getSAPData } from '@/redux/actions/sap-actions/sap-actions';
+import { customStyles } from '@/styles/custom-theme';
+import Loader from '../loader/loader';
 
 const data = [
     { label: "Warehouse", value: 100, count: "60/60" },
@@ -17,9 +22,82 @@ const data = [
 ];
 
 const ReplicationComponent = () => {
+
+    // Note: Handeling states here...!
+    const [loading, setLoading] = useState(false);
+
+    // Note: Handeling redux here...!
+    const dispatch = useAppDispatch();
+
+    // Note: Fetching data from redux...!
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+
+    // Note: Get SAP data api response handler...!
+    const handleResponse = (response: any): void => {
+        // console.log("Get SAP data api response: ", response);
+
+        if (response && response.statusCode == 200) {
+            //     // Note: Stop loading...!
+            setLoading(false);
+            showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
+            return;
+        }
+    };
+
+    // Note: Get SAP data handler...!
+    const getSAPDataHandler = (params: string | undefined) => {
+        // console.log("Params: ", params);
+
+        // Enablde loader...!
+        setLoading(true);
+
+        params && dispatch(getSAPData({
+            token: authenticatedUser?.token || "",
+            apiUrl: params,
+            resHandler: handleResponse
+        }));
+    };
+
     return (
         <Card withBorder radius="md" p="lg" shadow="sm">
-            <Group justify="space-between" mb="md">
+
+            {/* Note: Loader component */}
+            {loading && <Loader loadingState={loading} />}
+
+            <Group grow gap="md" wrap="wrap">
+                <Button
+                    color={customStyles.colors._1B59F8}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA)}
+                >
+                    Fetch Items
+                </Button>
+                <Button
+                    color={customStyles.colors._1B59F8}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA)}
+                >
+                    Fetch Vendors
+                </Button>
+                <Button
+                    color={customStyles.colors._1B59F8}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA)}
+                >
+                    Fetch Barcodes
+                </Button>
+                <Button
+                    color={customStyles.colors._1B59F8}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA)}
+                >
+                    Fetch Warehouses
+                </Button>
+                <Button
+                    color={customStyles.colors._1B59F8}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA)}
+                >
+                    Fetch Item Groups
+                </Button>
+            </Group>
+
+            <Group justify="space-between" mb="md" mt="md">
                 <div>
                     <Text size="lg" style={{ fontWeight: 600 }}>
                         Replication
@@ -33,7 +111,11 @@ const ReplicationComponent = () => {
                 </Text>
             </Group>
 
-            <Box mb="lg">
+            <Box mb="lg" style={{
+                border: "1px solid lightgray",
+                borderRadius : 10,
+                padding : '15px'
+            }}>
                 <Text size="sm" style={{ fontWeight: 500 }} mb={4}>
                     Overall Syncing Status
                 </Text>
