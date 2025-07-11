@@ -31,6 +31,7 @@ import InternetNotConnectedAnimation from "../assets/lottie/no-internet-connecti
 import LoginScreen from './login/page';
 import AppLayOut from '@/components/app-layout/app-layout';
 import { customStyles } from '@/styles/custom-theme';
+import '@/app/globals.css'; // Import global styles
 
 // Note: Internet not connected component...!
 const InternetNotConnected = () => {
