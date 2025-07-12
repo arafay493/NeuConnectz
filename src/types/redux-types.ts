@@ -348,7 +348,3 @@ export interface QuantityDifferenceData {
     quantityDifference: number;
     action: string;
 }
-
-// export interface ReconciliationStateProps {
-//     reconciliation: ItTrStateProps
-// }

@@ -10,7 +10,7 @@ const initialState: ItTrStateProps = {
     reconciliationErrorState: ''
 };
 
-const wareHouseSlice = createSlice({
+const reconciliationSlice = createSlice({
     name: "reconciliation",
     initialState,
     reducers: {
@@ -21,7 +21,6 @@ const wareHouseSlice = createSlice({
         },
 
         FETCH_RECONCILIATION_DATA: (state, action: PayloadAction<any>) => {
-            // console.log("Warehouses list data in reducer: ", action.payload);
             state.reconciliationErrorState = "";
             state.inventoryTransferItems = action?.payload.inventoryTransferItems;
             state.transferReceiptItems = action?.payload.transferReceiptItems;
@@ -46,6 +45,6 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA,
         FETCH_RECONCILIATION_DATA,
-    } = wareHouseSlice.actions;
+    } = reconciliationSlice.actions;
 
-export default wareHouseSlice.reducer;
+export default reconciliationSlice.reducer;

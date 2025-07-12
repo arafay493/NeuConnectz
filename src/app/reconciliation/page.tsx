@@ -1,4 +1,4 @@
-import ReconciliationComponent from '@/components/reconcilliation/ReconciliationComponent';
+import ReconciliationComponent from '@/components/reconciliation/ReconciliationComponent';
 
 const ReconciliationScreen = () => {
 
