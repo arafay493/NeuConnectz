@@ -35,7 +35,10 @@ export interface UserStateType {
 
 // Note: Ware House reducer state types...!
 export interface WareHouseStateType {
-    wareHousesList: Array<WarehousesListData>;
+    wareHousesList: {
+        data: Array<WarehousesListData>
+        totalCount: number
+    };
     warehousesListByUserId: {
         id: string,
         whsCode: string,

@@ -133,7 +133,6 @@ const ReconciliationComponent = () => {
         // Calculate quantity difference whenever inventory transfer or transfer receipt data changes
         handleCalculateQuantityDifference();
     }, [handleCalculateQuantityDifference])
-
     return (
         <Box p={8}>
             <Title order={2} mb={8} c={customStyles.colors._4D4D4D}>Reconciliation</Title>
@@ -147,7 +146,7 @@ const ReconciliationComponent = () => {
                 setToWarehouse={setToWarehouse}
                 selectDate={selectDate}
                 setSelectDate={setSelectDate}
-                warehouseData={wareHousesList}
+                warehouseData={wareHousesList.data}
                 handleGetData={handleGetReconciliationData}
             />
 
