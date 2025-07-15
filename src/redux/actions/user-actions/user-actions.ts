@@ -12,13 +12,27 @@ import { ResHandler } from "@/types/api-types";
 // Note: Action function fetch all users...!
 const fetchAllUsers = createAsyncThunk(
     "user/fetchAllUsers",
-    async (authToken: string, { dispatch }) => {
+    async (
+        { authToken, LastCount, skipRecord }:
+            {
+                authToken: string,
+                LastCount?: number,
+                skipRecord?: number
+            },
+        { dispatch }
+    ) => {
         // console.log("Auth token: ", authToken);
+        // console.log("Last count: ", LastCount);
+        // console.log("Skip record: ", skipRecord);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
+                params: {
+                    LastCount: LastCount,
+                    skipRecord: skipRecord,
+                },
                 headers: {
                     "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_USERS,
                     "Auth-Token": authToken
@@ -28,7 +42,10 @@ const fetchAllUsers = createAsyncThunk(
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_USERS(data?.data?.users));
+                dispatch(FETCH_ALL_USERS({
+                    users: data?.data?.users,
+                    count: data?.data?.totalCount
+                }));
             };
         }
 

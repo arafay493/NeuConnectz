@@ -3,22 +3,23 @@
 "use client";
 
 import React, { memo, useState } from 'react';
-import { Card, Text, Progress, Grid, Group, Box, Stack, Button } from "@mantine/core";
+import { Card, Text, Progress, Grid, Group, Box, Stack, Button, ThemeIcon, SimpleGrid } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { getSAPData } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
+import { IconChartBar } from '@tabler/icons-react';
 
 const data = [
-    { label: "Warehouse", value: 100, count: "60/60" },
-    { label: "Group Code", value: 40, count: "37/60" },
-    { label: "Stock Master", value: 0, count: "0/60" },
-    { label: "Stock Barcode", value: 0, count: "0/60" },
+    { label: "Warehouse", value: "6,260" },
+    { label: "Group Code", value: "0" },
+    { label: "Stock Master", value: "5,420" },
+    { label: "Stock Barcode", value: "3,255" },
     { label: "Stock Warehouse", value: 0, count: "0/60" },
-    { label: "Bin Location", value: 0, count: "0/80" },
-    { label: "Vendor Master", value: 0, count: "0/60" },
-    { label: "Unit of Measure", value: 0, count: "0/60" },
+    { label: "Bin Location", value: "5,420" },
+    { label: "Vendor Master", value: "26,560" },
+    { label: "Unit of Measure", value: "3,255" },
 ];
 
 const ReplicationComponent = () => {
@@ -113,8 +114,8 @@ const ReplicationComponent = () => {
 
             <Box mb="lg" style={{
                 border: "1px solid lightgray",
-                borderRadius : 10,
-                padding : '15px'
+                borderRadius: 10,
+                padding: '15px'
             }}>
                 <Text size="sm" style={{ fontWeight: 500 }} mb={4}>
                     Overall Syncing Status
@@ -125,30 +126,45 @@ const ReplicationComponent = () => {
                 </Text>
             </Box>
 
-            <Grid gutter="sm">
-                {
-                    data.map((item, index) => (
-                        <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
-                            <Card withBorder radius="md" padding="md" shadow="xs">
-                                <Stack gap={4}>
-                                    <Group justify="space-between">
-                                        <Text size="sm" style={{ fontWeight: 500 }}>
-                                            {item.label}
-                                        </Text>
-                                        <Text size="sm" color="dimmed">
-                                            {item.value}%
-                                        </Text>
-                                    </Group>
-                                    <Progress value={item.value} radius="xl" />
-                                    <Text size="xs" color="dimmed">
-                                        {item.count}
-                                    </Text>
-                                </Stack>
-                            </Card>
-                        </Grid.Col>
-                    ))
-                }
-            </Grid>
+            {/* <Grid gutter="sm"> */}
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
+                {data.map((stat) => (
+                    <Card
+                        key={stat.label}
+                        shadow="sm"
+                        padding="lg"
+                        radius="md"
+                        withBorder
+                    >
+                        <Group justify="space-between" align="flex-end">
+                            <div>
+                                <Text
+                                    c="dimmed"
+                                    style={{
+                                        fontWeight: 500,
+                                        fontSize: '16px',
+                                        color: customStyles.colors._4D4D4D,
+                                        height: '24px',
+                                        lineHeight: '24px',
+                                    }}
+                                    mb={'10px'}
+                                >
+                                    {stat.label}
+                                </Text>
+
+                                <ThemeIcon size={40} radius="xl" color="blue">
+                                    <IconChartBar size={24} />
+                                </ThemeIcon>
+                            </div>
+
+                            <Text size="xl" fw={700}>
+                                {stat.value}
+                            </Text>
+                        </Group>
+                    </Card>
+                ))}
+            </SimpleGrid>
+            {/* </Grid> */}
         </Card>
     );
 };

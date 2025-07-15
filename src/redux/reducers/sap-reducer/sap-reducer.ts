@@ -8,7 +8,8 @@ const initialState: SAPStateType = {
     listAll_ITR_IT_TRS: [],
     list_GRNS_Data: [],
     sapErrorState: "",
-    isSAPConfigExist: false
+    isSAPConfigExist: false,
+    vendorCodeList: [],
 };
 
 const SAPReducer = createSlice({
@@ -42,10 +43,17 @@ const SAPReducer = createSlice({
             state.list_GRNS_Data = action?.payload?.grnsData;
         },
 
+        FETCH_ALL_VENDOR_CODES: (state, action: PayloadAction<any>) => {
+            // console.log("Vendor code list data in sap reducer: ", action?.payload);
+            state.vendorCodeList = action?.payload;
+        },
+
         CLEAR_ALL_SAP_STATES: (state) => {
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
             state.sapErrorState = "";
+            state.isSAPConfigExist = false;
+            state.vendorCodeList = [];
         },
     }
 });
@@ -56,6 +64,7 @@ export const
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
         FETCH_ALL_GRNS,
-        CLEAR_ALL_SAP_STATES
+        CLEAR_ALL_SAP_STATES,
+        FETCH_ALL_VENDOR_CODES
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

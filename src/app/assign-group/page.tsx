@@ -41,11 +41,14 @@ const AssignGroup = () => {
   // Note: Handeling states here...!
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState<{ label: string; value: string }[]>([]);
   const [checkedGroups, setCheckedGroups] = useState<(string | number)[]>([]);
+  const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const lastCount = itemsPerPage;
+  const skipRecords = (page - 1) * itemsPerPage;
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -53,17 +56,30 @@ const AssignGroup = () => {
   // Note: Fetching data from redux here...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
-  const { ListAllGroupCodes, listGroupCodesByUserId, GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
+  const { listGroupCodesByUserId, GroupErrorState, totalGroupCodesCount } = useAppSelector(({ groupStates }) => groupStates);
+
+  const ListAllGroupCodes = useAppSelector(({ groupStates }) => groupStates.ListAllGroupCodes)
+    ?.filter((user: GroupCodeDataType) =>
+      user?.groupName?.toLowerCase().includes(search?.toLowerCase())
+    );
+
   // console.log('List all group codes:', ListAllGroupCodes);
+  // console.log("Total group codes count:", totalGroupCodesCount);
   // console.log('List group codes by user id:', listGroupCodesByUserId);
 
-  const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
-    user?.groupName?.toLowerCase().includes(search?.toLowerCase())
-  );
+  // const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
+  //   user?.groupName?.toLowerCase().includes(search?.toLowerCase())
+  // );
+  // console.log('Filtered: ', filtered);
 
   // Note: Required variables...!
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const totalPages = Math.ceil(totalGroupCodesCount / itemsPerPage);
+  // const paginated = [...ListAllGroupCodes].slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+
+  const handleNewPage = (newPage: number) => {
+    setPage(newPage);
+  };
 
   // Note: Handle clear all states here...!
   const clearAllStates = () => {
@@ -118,7 +134,7 @@ const AssignGroup = () => {
     if (response?.status === 201) {
       setLoading(false);
       showNotificationToast("Assigned Successfully", "Requested groups have been assigned to the user", customStyles.colors._408CCE);
-      dispatch(fetchListAllGroupCodes(authenticatedUser?.token as string));
+      dispatch(fetchListAllGroupCodes({ authToken: authenticatedUser?.token || "" }));
       clearAllStates();
     }
 
@@ -150,9 +166,21 @@ const AssignGroup = () => {
   // Note: This hook will run when authenticatedUser changes...!
   useEffect(() => {
     if (authenticatedUser?.token) {
-      dispatch(fetchListAllGroupCodes(authenticatedUser.token));
+      dispatch(fetchListAllGroupCodes({
+        authToken: authenticatedUser.token,
+        lastCount: lastCount,
+        skipRecords: skipRecords
+      }));
+    };
+  }, [authenticatedUser, skipRecords, lastCount]);
 
-      if (usersList.length < 1) dispatch(fetchAllUsers(authenticatedUser?.token));
+  useEffect(() => {
+    if (authenticatedUser) {
+      if (usersList.length < 1) {
+        dispatch(fetchAllUsers({
+          authToken: authenticatedUser?.token,
+        }));
+      }
     };
   }, [authenticatedUser]);
 
@@ -261,7 +289,7 @@ const AssignGroup = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignGroup}
-          disabled={paginated.length === 0}
+          disabled={ListAllGroupCodes.length === 0}
         >
           Assign Group
         </Button>
@@ -298,56 +326,57 @@ const AssignGroup = () => {
 
               <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
-                  paginated.length > 0 ? (
-                    paginated.map((item: GroupCodeDataType) => (
-                      <tr key={item.id} style={{ textTransform: customStyles.textTransformation.capitalize }}>
-                        <td>{item.groupCode}</td>
-                        <td>{item.groupName}</td>
-                        <td>
-                          <Checkbox
-                            disabled={!selectedUser}
-                            label="Allow access"
-                            checked={checkedGroups.includes(item.groupCode)}
-                            onChange={() => toggleCheckbox(item.groupCode)}
-                          />
-                        </td>
-                      </tr>
-                    ))
-                  )
-                    :
-                    (<DataNotFound notFoundContent={GroupErrorState || "No item group found."} colSpanValue={3} />)
+                  ListAllGroupCodes?.map((item: GroupCodeDataType) => (
+                    <tr key={item.id} style={{ textTransform: customStyles.textTransformation.capitalize }}>
+                      <td>{item.groupCode}</td>
+                      <td>{item.groupName}</td>
+                      <td>
+                        <Checkbox
+                          disabled={!selectedUser}
+                          label="Allow access"
+                          checked={checkedGroups.includes(item.groupCode)}
+                          onChange={() => toggleCheckbox(item.groupCode)}
+                        />
+                      </td>
+                    </tr>
+                  ))
                 }
               </tbody>
             </Table>
+
+            {ListAllGroupCodes.length < 1 && <DataNotFound notFoundContent={GroupErrorState || "No item group found."} />}
           </Box>
         </ScrollArea>
 
-        <Flex
-          justify={customStyles.alignment.spaceBetween}
-          align={customStyles.alignment.center}
-          mb="md"
-          wrap="wrap"
-          gap="sm"
-        >
-          {/* Note: Pagination section */}
-          <PaginationComponent
-            totalPages={totalPages}
-            pageNum={page}
-            handleNewPage={setPage}
-          />
+        {
+          ListAllGroupCodes.length > 1 &&
+          <Flex
+            justify={customStyles.alignment.spaceBetween}
+            align={customStyles.alignment.center}
+            mb="md"
+            wrap="wrap"
+            gap="sm"
+          >
+            {/* Note: Pagination section */}
+            <PaginationComponent
+              totalPages={totalPages}
+              pageNum={page}
+              handleNewPage={handleNewPage}
+            />
 
-          {/* Note: Rows per page section */}
-          <Select
-            data={["5", "10", "20", "50"]}
-            label="Rows per page"
-            value={itemsPerPage.toString()}
-            onChange={(value) => {
-              setItemsPerPage(Number(value));
-              setPage(1);
-            }}
-            w={120}
-          />
-        </Flex>
+            {/* Note: Rows per page section */}
+            <Select
+              data={["5", "10", "20", "50"]}
+              label="Rows per page"
+              value={itemsPerPage.toString()}
+              onChange={(value) => {
+                setItemsPerPage(Number(value));
+                setPage(1);
+              }}
+              w={120}
+            />
+          </Flex>
+        }
       </Paper>
     </div>
   );

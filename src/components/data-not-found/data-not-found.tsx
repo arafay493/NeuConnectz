@@ -6,18 +6,27 @@ import { customStyles } from '@/styles/custom-theme';
 
 type DataNotFoundProps = {
     notFoundContent: string;
-    colSpanValue: number
 };
 
-const DataNotFound: FC<DataNotFoundProps> = ({ notFoundContent, colSpanValue }) => {
+const DataNotFound: FC<DataNotFoundProps> = ({ notFoundContent }) => {
     return (
-        <tr>
-            <td colSpan={colSpanValue}>
-                <Text style={{ textAlign: customStyles.alignment.center }}>
-                    {notFoundContent}
-                </Text>
-            </td>
-        </tr>
+        <div
+            style={{
+                width: '100%',
+                // backgroundColor: "yellow"
+            }}
+        >
+            <Text
+                style={{
+                    textAlign: customStyles.alignment.center,
+                    fontSize: '22px',
+                    fontWeight: 500,
+                    padding: '10px',
+                }}
+            >
+                {notFoundContent}
+            </Text>
+        </div>
     );
 };
 

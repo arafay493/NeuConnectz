@@ -17,13 +17,27 @@ import { ResHandler } from "@/types/api-types";
 // Note: Action function to fetch list all group codes...!
 const fetchListAllGroupCodes = createAsyncThunk(
     "group/fetchListAllGroupCodes",
-    async (authToken: string, { dispatch }) => {
+    async (
+        { authToken, lastCount, skipRecords }:
+            {
+                authToken: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
         // console.log("Auth token: ", authToken);
+        // console.log("Last count: ", lastCount);
+        // console.log("Skip records: ", skipRecords);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
                 headers: {
                     "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_LIST_GROUP_CODES,
                     "Auth-Token": authToken
@@ -33,12 +47,15 @@ const fetchListAllGroupCodes = createAsyncThunk(
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_GROUP_CODES(data?.data));
+                dispatch(FETCH_ALL_GROUP_CODES({
+                    groupCodesData: data?.data?.data,
+                    groupCodesCount: data?.data?.totalCount
+                }));
             };
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all list group codes api integration: ', error);
+            console.log('Error occured in fetch all list group codes api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:

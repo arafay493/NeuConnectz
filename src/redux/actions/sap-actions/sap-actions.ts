@@ -11,7 +11,8 @@ import {
     CHECK_SAP_CONFIG_EXIST,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
     FETCH_ALL_ITR_IT_TRS,
-    FETCH_ALL_GRNS
+    FETCH_ALL_GRNS,
+    FETCH_ALL_VENDOR_CODES
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 
 // Note: Action function to add SAP configuration...!
@@ -169,23 +170,24 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
 const fetchAll_GRNS = createAsyncThunk(
     "sap/fetchAll_GRNS",
     async (
-        { token, sapStatus, handleLoading }:
+        { token, handleLoading, apiUrl }:
             {
                 token: string,
-                sapStatus: string,
                 handleLoading: () => void,
+                apiUrl: string
             },
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
         // console.log("Sap Status: ", sapStatus);
+        // console.log("Api Url: ", apiUrl);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
                 headers: {
-                    "Api-Url": `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${sapStatus}`,
+                    "Api-Url": apiUrl,
                     "Auth-Token": token
                 }
             });
@@ -364,6 +366,42 @@ const exportDataToCsvFile = createAsyncThunk(
     }
 );
 
+// Note: Action function fetch all vendor codes...!
+const fetchAllVendorCodes = createAsyncThunk(
+    "sap/fetchAllVendorCodes",
+    async (token: string, { dispatch }) => {
+        // console.log("Auth token: ", token);
+
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                headers: {
+                    "Api-Url": process.env.NEXT_PUBLIC_VENDOR_CODE_LIST,
+                    "Auth-Token": token
+                }
+            });
+            // console.log("Response in sap action: ", response);
+            const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_VENDOR_CODES(data?.data?.data));
+            };
+        }
+
+        catch (error: any) {
+            console.log('Error occured in fetch all vendor codes data api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     postRequestToSAP,
@@ -371,5 +409,6 @@ export {
     fetchAll_GRNS,
     checkSAPConfigExist,
     getSAPData,
-    exportDataToCsvFile
+    exportDataToCsvFile,
+    fetchAllVendorCodes
 };

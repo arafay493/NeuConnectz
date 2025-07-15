@@ -14,6 +14,7 @@ export const GET = async (req: NextRequest) => {
 
         // Note: Fetching the params from the request...!
         const { searchParams } = req.nextUrl;
+        // console.log('Search params: ', searchParams);
         const params: Record<string, string> = {};
         searchParams.forEach((value, key) => {
             params[key] = value;

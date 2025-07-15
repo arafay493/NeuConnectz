@@ -100,14 +100,14 @@ const ReconciliationScreen = () => {
         value: wh.whsCode,
         label: wh.whsName,
       }));
-      console.log("Warehouses options: ", selectWarehouseOptions);
+      // console.log("Warehouses options: ", selectWarehouseOptions);
       selectWarehouseOptions && setWarehousesOptions(selectWarehouseOptions);
     };
   }, [wareHousesList]);
 
   // Note: Mounted hook...!
   useEffect(() => {
-    authenticatedUser && dispatch(fetchAllWareHouses(authenticatedUser?.token as string));
+    authenticatedUser && dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }));
   }, []);
 
   return (
@@ -210,67 +210,65 @@ const ReconciliationScreen = () => {
       }
 
       {/* Inventory Transfer & Receipt */}
-      <Grid style={{ display: (inventoryTransferItems.length > 0 && transferReceiptItems.length > 0) ? ('block') : ('none') }}>
+      <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper withBorder p="md" radius="md">
-            <Group justify="space-between" mb="sm">
-              <Title order={5}>Inventory Transfer</Title>
-              {/* <Group gap="xs">
-                <IconSearch size={18} />
-                <IconTable size={18} />
-              </Group> */}
-            </Group>
+          {
+            (inventoryTransferItems.length > 0) &&
+            <Paper withBorder p="md" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Title order={5}>Inventory Transfer</Title>
+              </Group>
 
-            <Table striped highlightOnHover withTableBorder>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Item Code</Table.Th>
-                  <Table.Th>Item Name</Table.Th>
-                  <Table.Th>Quantity</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {inventoryTransferItems?.map((item, index) => (
-                  <Table.Tr key={index}>
-                    <Table.Td>{item.itemCode}</Table.Td>
-                    <Table.Td>{item.itemName}</Table.Td>
-                    <Table.Td>{item.quantity}</Table.Td>
+              <Table striped highlightOnHover withTableBorder>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Item Code</Table.Th>
+                    <Table.Th>Item Name</Table.Th>
+                    <Table.Th>Quantity</Table.Th>
                   </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </Paper>
+                </Table.Thead>
+                <Table.Tbody>
+                  {inventoryTransferItems?.map((item, index) => (
+                    <Table.Tr key={index}>
+                      <Table.Td>{item.itemCode}</Table.Td>
+                      <Table.Td>{item.itemName}</Table.Td>
+                      <Table.Td>{item.quantity}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Paper>
+          }
         </Grid.Col>
 
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper withBorder p="md" radius="md">
-            <Group justify="space-between" mb="sm">
-              <Title order={5}>Transfer Receipt</Title>
-              {/* <Group gap="xs">
-                <IconSearch size={18} />
-                <IconTable size={18} />
-              </Group> */}
-            </Group>
+          {
+            (transferReceiptItems.length > 0) &&
+            <Paper withBorder p="md" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Title order={5}>Transfer Receipt</Title>
+              </Group>
 
-            <Table striped highlightOnHover withTableBorder>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>Item Code</Table.Th>
-                  <Table.Th>Item Name</Table.Th>
-                  <Table.Th>Quantity</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {transferReceiptItems?.map((item, index) => (
-                  <Table.Tr key={index}>
-                    <Table.Td>{item.itemCode}</Table.Td>
-                    <Table.Td>{item.itemName}</Table.Td>
-                    <Table.Td>{item.quantity}</Table.Td>
+              <Table striped highlightOnHover withTableBorder>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Item Code</Table.Th>
+                    <Table.Th>Item Name</Table.Th>
+                    <Table.Th>Quantity</Table.Th>
                   </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </Paper>
+                </Table.Thead>
+                <Table.Tbody>
+                  {transferReceiptItems?.map((item, index) => (
+                    <Table.Tr key={index}>
+                      <Table.Td>{item.itemCode}</Table.Td>
+                      <Table.Td>{item.itemName}</Table.Td>
+                      <Table.Td>{item.quantity}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Paper>
+          }
         </Grid.Col>
       </Grid>
 

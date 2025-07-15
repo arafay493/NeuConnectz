@@ -120,7 +120,7 @@ const AddUserScreen = () => {
                 loading: false
             });
             showNotificationToast("User Created", "User created successfully", customStyles.colors._408CCE);
-            dispatch(fetchAllUsers(token));
+            dispatch(fetchAllUsers({ authToken: token }));
             clearAllStates();
             router.push(routes.usersList);
             return;
