@@ -13,7 +13,8 @@ const customStyles: CustomStyles = {
         _909090: "#909090",
         _1B59F8: "#1B59F8",
         _4A4A4A: "#4A4A4A",
-        _F5F7FA : "#F5F7FA"
+        _F5F7FA: "#F5F7FA",
+        _ECECEC: "#ECECEC",
     },
 
     deviceSize: {
