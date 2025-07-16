@@ -61,30 +61,23 @@ const AssignWareHouse = () => {
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { warehousesListByUserId, warehouseErrorState, totalWarehousesCount } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+  const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
 
-  const wareHousesList = useAppSelector(({ wareHouseStates }) => { return wareHouseStates.wareHousesList })
+  const wareHousesListData = useAppSelector(({ wareHouseStates }) => { return wareHousesList.data })
     ?.filter((whData: WareHouseDataType) =>
       whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
     );
 
-  // console.log("User: ", authenticatedUser);
-  // console.log('Users list: ', usersList);
-  // console.log('WareHouses list: ', wareHousesList);
-  // console.log('WareHouses list by user id: ', warehousesListByUserId);
-  console.log('Total warehouses count: ', totalWarehousesCount);
 
   // const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
   //   whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
   // );
 
   // Note: Required variables...!
-  const totalPages = Math.ceil(totalWarehousesCount / itemsPerPage);
+  const totalPages = Math.ceil(wareHousesList.totalCount / itemsPerPage);
   // const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   const isAllSelected = access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.allow) || false;
   const isIndeterminate = access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.allow) && !isAllSelected;
-
-  // console.log('Is all selected: ', isAllSelected);
 
   const handleNewPage = (newPage: number) => {
     setPage(newPage);
@@ -142,7 +135,7 @@ const AssignWareHouse = () => {
     // Initialize access state for selected user if not already present
     setAccess((prev) => ({
       ...prev,
-      [value]: wareHousesList.map((wh: WareHouseDataType) => ({
+      [value]: wareHousesListData.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
         receiver: false
@@ -195,7 +188,6 @@ const AssignWareHouse = () => {
 
   // Note: Assign warehouse to user api response handler...!
   const handleResponse = (response: any): void => {
-    // console.log("Assign warehouse to user api response: ", response);
 
     if (response && response.status == 201) {
       // Note: Stop loading...!
@@ -232,7 +224,6 @@ const AssignWareHouse = () => {
       .map((eachItem: AccessWareHouseDataType) => {
         return eachItem.whsCode;
       });
-    // console.log('Normal warehouses: ', normalWareHouse);
 
     const receiverWareHouse = access[selectedUser]
       .filter((item: AccessWareHouseDataType) => {
@@ -241,7 +232,6 @@ const AssignWareHouse = () => {
       .map((eachItem: AccessWareHouseDataType) => {
         return eachItem.whsCode;
       });
-    // console.log('Receiver warehouses: ', receiverWareHouse);
 
     const wareHouseDataObj: WareHouseDataObj = {
       userId: selectedUser as string,
@@ -288,7 +278,6 @@ const AssignWareHouse = () => {
         value: user.userId
       }));
       targetData && setUsersData(targetData as any);
-      // console.log('Target user data: ', targetData);
     };
   }, [usersList]);
 
@@ -307,7 +296,7 @@ const AssignWareHouse = () => {
     if (!selectedUser) return;
 
     if (warehousesListByUserId.length > 0) {
-      const updatedAccess = wareHousesList.map((wh: WareHouseDataType) => {
+      const updatedAccess = wareHousesListData.map((wh: WareHouseDataType) => {
         const existing = warehousesListByUserId.find(
           (item) => item.whsCode === wh.whsCode
         );
@@ -324,7 +313,7 @@ const AssignWareHouse = () => {
       }));
     } else {
       // 💡 Clear access for selected user when no data is returned
-      const resetAccess = wareHousesList.map((wh: WareHouseDataType) => ({
+      const resetAccess = wareHousesListData.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
         receiver: false,
@@ -335,7 +324,7 @@ const AssignWareHouse = () => {
         [selectedUser]: resetAccess,
       }));
     }
-  }, [selectedUser, warehousesListByUserId, wareHousesList]);
+  }, [selectedUser, warehousesListByUserId, wareHousesListData]);
 
   return (
     <div>
@@ -416,7 +405,7 @@ const AssignWareHouse = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}
-          disabled={wareHousesList?.length == 0}
+          disabled={wareHousesListData?.length == 0}
         >
           Assign Warehouse
         </Button>
@@ -500,7 +489,7 @@ const AssignWareHouse = () => {
 
               <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
-                  wareHousesList?.map((item: WareHouseDataType) => (
+                  wareHousesListData?.map((item: WareHouseDataType) => (
                     <tr
                       key={item?.id}
                       style={{
@@ -534,12 +523,12 @@ const AssignWareHouse = () => {
             </Table>
 
             {/* Note: If no data found */}
-            {wareHousesList?.length < 1 && (<DataNotFound notFoundContent={warehouseErrorState || "No warehouse found."} />)}
+            {wareHousesListData?.length < 1 && (<DataNotFound notFoundContent={warehouseErrorState || "No warehouse found."} />)}
           </Box>
         </ScrollArea>
 
         {
-          wareHousesList?.length > 0 &&
+          wareHousesListData?.length > 0 &&
           <Flex
             justify={customStyles.alignment.spaceBetween}
             align={customStyles.alignment.center}

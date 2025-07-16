@@ -26,10 +26,6 @@ const fetchAllWareHouses = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Auth token: ", authToken);
-        console.log("Last count: ", lastCount);
-        console.log("Skip records: ", skipRecords);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -43,19 +39,14 @@ const fetchAllWareHouses = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES({
-                    warehouses: data?.data?.data,
-                    warehousesCount: data?.data?.totalCount
-                }));
+                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
             };
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all warehouses api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -74,9 +65,6 @@ const fetchWarehousesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", authToken);
-        // console.log("User id: ", userId);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -87,7 +75,6 @@ const fetchWarehousesListByUserId = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -96,7 +83,6 @@ const fetchWarehousesListByUserId = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetchcing warehouses list by user id api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -123,9 +109,6 @@ const assignWareHouseToUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Token in warehouse action: ", token);
-        // console.log("Assign warehouse to user data in warehouse action: ", wareHouseData);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -136,7 +119,6 @@ const assignWareHouseToUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -145,7 +127,6 @@ const assignWareHouseToUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in assign warehouse to user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;

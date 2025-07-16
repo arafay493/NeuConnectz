@@ -53,7 +53,6 @@ export interface WareHouseStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
-    totalWarehousesCount: number;
     warehouseErrorState: string
 };
 
