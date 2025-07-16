@@ -12,31 +12,26 @@ import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashb
 const statsData = [
     {
         label: 'ITR Posted',
-        value: '6,260',
         color: '#FA5A7D',
         pendingOrIntegrated: "totalItrIntegrated"
     },
     {
         label: 'ITR Unposted',
-        value: 0,
         color: '#FF947A',
         pendingOrIntegrated: "totalItrPending"
     },
     {
         label: 'IT Posted',
-        value: '5,420',
         color: '#3CD755',
         pendingOrIntegrated: "totalItIntegrated"
     },
     {
         label: 'IT Unposted',
-        value: 167,
         color: '#4E7CF4',
         pendingOrIntegrated: "totalItPending"
     },
     {
         label: 'TR Posted',
-        value: '26,295',
         color: '#B97FF6',
         pendingOrIntegrated: "totalTrIntegrated"
     },
@@ -46,6 +41,17 @@ const statsData = [
         color: '#5BB0FF',
         pendingOrIntegrated: "totalTrPending"
     },
+
+    {
+        label: 'GRN Posted',
+        color: '#4E7CF4',
+        pendingOrIntegrated: "totalGrnIntegrated"
+    },
+    {
+        label: 'GRN Unposted',
+        color: '#3CD755',
+        pendingOrIntegrated: "totalGrnPending"
+    },
 ];
 
 const DashboardCards = () => {
@@ -54,14 +60,15 @@ const DashboardCards = () => {
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    // console.log("Dashboard Stats: ", dashboardAnalyticsData);
+    console.log("Dashboard Stats: ", dashboardAnalyticsData);
 
     // Note: Function to show stats values...!
     const getStatsValue = (penAndIntValue: string) => {
         // console.log("Pending and Integrated value: ", penAndIntValue);
-        const { transferStatistics } = dashboardAnalyticsData || {};
-        // const statsValue = transferStatistics ? transferStatistics[penAndIntValue] : 0;
-        const statsValue = transferStatistics ? transferStatistics[penAndIntValue as keyof typeof transferStatistics] : 0;
+        const mergeObj = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+        // console.log('Merge Obj: ', mergeObj);
+        const statsObj = mergeObj || {};
+        const statsValue = statsObj ? statsObj[penAndIntValue as keyof typeof statsObj] : 0;
         return statsValue;
     };
 

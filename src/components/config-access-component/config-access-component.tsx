@@ -14,15 +14,19 @@ const ConfigAccessComponent = () => {
                 p="md"
                 bg="gray.0"
             >
-                <Stack gap={4}>
+                <Stack gap={0}>
                     <Title
                         order={3}
-                        style={{ color: customStyles.colors._4D4D4D }}
+                        style={{
+                            color: customStyles.colors._4D4D4D,
+                            fontSize: "24px",
+                            fontWeight: 700
+                        }}
                     >
                         Configuration
                     </Title>
 
-                    <Text size="sm" c="dimmed">
+                    <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
                         Customizable Integration
                     </Text>
                 </Stack>

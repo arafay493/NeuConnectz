@@ -23,7 +23,8 @@ const authenticatedRoutes: String[] = [
     "/add-user",
     "/configuration",
     "/integration-monitor",
-    "/edit"
+    "/edit",
+    "/grn-movement"
 ];
 
 // Note: Defining all routes...!
@@ -44,7 +45,8 @@ const routes: Routes = {
     addUser: "/add-user",
     configuration: "/configuration",
     integrationMonitor: "/integration-monitor",
-    editUser: (uid: string) => `/edit/${uid}`
+    editUser: (uid: string) => `/edit/${uid}`,
+    grnMovement: "/grn-movement",
 };
 
 // Note: Defining drawer routes...!
@@ -58,6 +60,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconListCheck size={20} />,
         label: "stock movement",
         route: routes.stockMovement,
+    },
+    {
+        icon: <IconListCheck size={20} />,
+        label: "GRN movement",
+        route: routes.grnMovement
     },
     {
         icon: <IconListCheck size={20} />,

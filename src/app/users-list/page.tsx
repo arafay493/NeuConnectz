@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -26,6 +26,16 @@ import { exportToCSV } from '@/constants/export-to-csv';
 
 const UsersListScreen = () => {
 
+  // Note: Handeling states here...!
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+  });
+
+  // Derived values for backend
+  const skipRecord = pagination.pageIndex * pagination.pageSize;
+  const lastCount = pagination.pageSize;
+
   // Note: Handle routing...!
   const router = useRouter();
 
@@ -34,7 +44,7 @@ const UsersListScreen = () => {
 
   // Note: fetching data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-  const { usersList } = useAppSelector(({ userStates }) => userStates);
+  const { usersList, totalUsersCount } = useAppSelector(({ userStates }) => userStates);
   // console.log('Users: ', usersList);
 
   // Note: Handle to go to edit user screen...!
@@ -147,21 +157,20 @@ const UsersListScreen = () => {
     },
   ], []);
 
-  // Note: This hook will run when the component mounts...!
+  // Note: This hook will run when lastCount and skipRecord state will update...!
   useEffect(() => {
     if (authenticatedUser) {
-      dispatch(fetchAllUsers(authenticatedUser?.token));
+      dispatch(fetchAllUsers({
+        authToken: authenticatedUser?.token,
+        LastCount: lastCount,
+        skipRecord: skipRecord
+      }));
     };
-  }, []);
+  }, [lastCount, skipRecord]);
 
   return (
     <div>
       <Group justify="space-between" align="flex-start" p="md" bg="gray.0">
-        {/* <Stack gap={4}>
-          <Title order={3} style={{ color: customStyles.colors._4D4D4D }}>User List</Title>
-          <Text size="sm" c="dimmed">List of Users</Text>
-        </Stack> */}
-
         <Stack gap={0}>
           <Title
             order={3}
@@ -209,31 +218,21 @@ const UsersListScreen = () => {
             <MantineReactTable
               columns={columns}
               data={usersList}
-              // globalFilterFn="includesString"
-              // renderTopToolbarCustomActions={
-              //   ({ table }) => (
-              //     <>
-              //       <Group gap="lg" pr="md">
-              //         <TextInput
-              //           placeholder="Search..."
-              //           leftSection={<IconSearch size={16} />}
-              //           value={table.getState().globalFilter as string ?? ''}
-              //           onChange={(e) => table.setGlobalFilter(e.currentTarget.value)}
-              //           size="xs"
-              //         />
-              //         <Group gap={6} align="center">
-              //           <IconFilter size={16} />
-              //           <Text size="sm" c="dimmed">Use filters above the columns</Text>
-              //         </Group>
-              //       </Group>
-              //     </>
-              //   )
-              // }
+              rowCount={totalUsersCount}
+              manualPagination
+              state={{ pagination }}
+              onPaginationChange={(updater) => {
+                const next =
+                  typeof updater === 'function'
+                    ? updater(pagination)
+                    : updater;
 
-              enableColumnFilters={true}
-              enablePagination={true}
-              enableSorting={true}
-              enableGlobalFilter={true}
+                setPagination(next);
+              }}
+              enableColumnFilters
+              enablePagination
+              enableSorting
+              enableGlobalFilter
               enableRowSelection={false}
               enableColumnActions={false}
               enableFullScreenToggle={false}
@@ -255,7 +254,6 @@ const UsersListScreen = () => {
               mantineTableBodyRowProps={{
                 style: {
                   transition: "background 0.2s",
-                  // backgroundColor : "yellow",
                 },
               }}
               mantineTableHeadCellProps={{
@@ -284,7 +282,7 @@ const UsersListScreen = () => {
               }}
               icons={{
                 IconSearch: (props: any) => (
-                  <IconSearch {...props} style={{}} />
+                  <IconSearch {...props} />
                 ),
               }}
               renderEmptyRowsFallback={() => (

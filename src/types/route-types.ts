@@ -19,7 +19,8 @@ export type Routes = {
     addUser: string;
     configuration: string;
     integrationMonitor: string;
-    editUser: (uid: string) => string
+    editUser: (uid: string) => string,
+    grnMovement: string
 };
 
 export type DrawerRoute = {

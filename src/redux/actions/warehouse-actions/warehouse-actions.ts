@@ -17,23 +17,40 @@ import { ResHandler } from "@/types/api-types";
 // Note: Action function to fetch all warehouses...!
 const fetchAllWareHouses = createAsyncThunk(
     "warehouse/fetchAllWareHouses",
-    async (authToken: string, { dispatch }) => {
-        // console.log("Auth token: ", authToken);
+    async (
+        { authToken, lastCount, skipRecords }:
+            {
+                authToken: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        console.log("Auth token: ", authToken);
+        console.log("Last count: ", lastCount);
+        console.log("Skip records: ", skipRecords);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
                 headers: {
                     "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_WAREHOUSES,
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in warehouse action: ", response);
+            console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
+                dispatch(FETCH_ALL_WAREHOUSES({
+                    warehouses: data?.data?.data,
+                    warehousesCount: data?.data?.totalCount
+                }));
             };
         }
 

@@ -45,12 +45,15 @@ const AssignWareHouse = () => {
 
   // Note: Handeling states here...!
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [usersData, setUsersData] = useState([]);
   const [access, setAccess] = useState<Record<string, AccessWareHouseDataType[]>>({});
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const lastCount = itemsPerPage;
+  const skipRecords = (page - 1) * itemsPerPage;
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -58,24 +61,34 @@ const AssignWareHouse = () => {
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
-  const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+  const { warehousesListByUserId, warehouseErrorState, totalWarehousesCount } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+
+  const wareHousesList = useAppSelector(({ wareHouseStates }) => { return wareHouseStates.wareHousesList })
+    ?.filter((whData: WareHouseDataType) =>
+      whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
+    );
+
   // console.log("User: ", authenticatedUser);
   // console.log('Users list: ', usersList);
   // console.log('WareHouses list: ', wareHousesList);
   // console.log('WareHouses list by user id: ', warehousesListByUserId);
+  console.log('Total warehouses count: ', totalWarehousesCount);
 
-  const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
-    whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
-  );
+  // const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
+  //   whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
+  // );
 
   // Note: Required variables...!
-  const totalPages = Math.ceil(filtered?.length / itemsPerPage);
-  const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-
+  const totalPages = Math.ceil(totalWarehousesCount / itemsPerPage);
+  // const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   const isAllSelected = access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.allow) || false;
   const isIndeterminate = access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.allow) && !isAllSelected;
 
   // console.log('Is all selected: ', isAllSelected);
+
+  const handleNewPage = (newPage: number) => {
+    setPage(newPage);
+  };
 
   // Note: Function to clear all states...!
   const clearAllStates = () => {
@@ -188,7 +201,11 @@ const AssignWareHouse = () => {
       // Note: Stop loading...!
       setLoading(false);
       showNotificationToast("Assigned Successfully", "Requested warehouses has been assigned to the requested user", customStyles.colors._408CCE);
-      dispatch(fetchAllWareHouses(authenticatedUser?.token as string));
+      dispatch(fetchAllWareHouses({
+        authToken: authenticatedUser?.token as string,
+        lastCount: lastCount,
+        skipRecords: skipRecords
+      }));
       clearAllStates();
       return;
     };
@@ -245,11 +262,23 @@ const AssignWareHouse = () => {
   // Note: This hook will run once when this component mounts...!
   useEffect(() => {
     if (authenticatedUser) {
-      dispatch(fetchAllWareHouses(authenticatedUser?.token));
-
-      if (usersList.length < 1) dispatch(fetchAllUsers(authenticatedUser?.token));
+      dispatch(fetchAllWareHouses({
+        authToken: authenticatedUser.token,
+        lastCount: lastCount,
+        skipRecords: skipRecords
+      }));
     };
-  }, []);
+  }, [authenticatedUser, skipRecords, lastCount]);
+
+  useEffect(() => {
+    if (authenticatedUser) {
+      if (usersList.length < 1) {
+        dispatch(fetchAllUsers({
+          authToken: authenticatedUser?.token,
+        }));
+      }
+    };
+  }, [authenticatedUser]);
 
   // Note: This hook will run when usersList state update...!
   useEffect(() => {
@@ -387,7 +416,7 @@ const AssignWareHouse = () => {
           leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
           color={customStyles.colors._1B59F8}
           onClick={handleAssignWareHouse}
-          disabled={filtered?.length == 0}
+          disabled={wareHousesList?.length == 0}
         >
           Assign Warehouse
         </Button>
@@ -471,7 +500,7 @@ const AssignWareHouse = () => {
 
               <tbody style={{ textAlign: customStyles.alignment.left }}>
                 {
-                  paginated?.map((item: WareHouseDataType) => (
+                  wareHousesList?.map((item: WareHouseDataType) => (
                     <tr
                       key={item?.id}
                       style={{
@@ -501,42 +530,43 @@ const AssignWareHouse = () => {
                     </tr>
                   ))
                 }
-
-                {/* Note: If no data found */}
-                {
-                  paginated?.length === 0 && (<DataNotFound notFoundContent={warehouseErrorState || "No warehouse found."} colSpanValue={7} />)
-                }
               </tbody>
             </Table>
+
+            {/* Note: If no data found */}
+            {wareHousesList?.length < 1 && (<DataNotFound notFoundContent={warehouseErrorState || "No warehouse found."} />)}
           </Box>
         </ScrollArea>
 
-        <Flex
-          justify={customStyles.alignment.spaceBetween}
-          align={customStyles.alignment.center}
-          mb="md"
-          wrap="wrap"
-          gap="sm"
-        >
-          {/* Note: Pagination section */}
-          <PaginationComponent
-            totalPages={totalPages}
-            pageNum={page}
-            handleNewPage={setPage}
-          />
+        {
+          wareHousesList?.length > 0 &&
+          <Flex
+            justify={customStyles.alignment.spaceBetween}
+            align={customStyles.alignment.center}
+            mb="md"
+            wrap="wrap"
+            gap="sm"
+          >
+            {/* Note: Pagination section */}
+            <PaginationComponent
+              totalPages={totalPages}
+              pageNum={page}
+              handleNewPage={handleNewPage}
+            />
 
-          {/* Note: Rows per page section */}
-          <Select
-            data={["5", "10", "20", "50"]}
-            label="Rows per page"
-            value={itemsPerPage.toString()}
-            onChange={(value) => {
-              setItemsPerPage(Number(value));
-              setPage(1);
-            }}
-            w={120}
-          />
-        </Flex>
+            {/* Note: Rows per page section */}
+            <Select
+              data={["5", "10", "20", "50"]}
+              label="Rows per page"
+              value={itemsPerPage.toString()}
+              onChange={(value) => {
+                setItemsPerPage(Number(value));
+                setPage(1);
+              }}
+              w={120}
+            />
+          </Flex>
+        }
       </Paper>
     </div>
   );

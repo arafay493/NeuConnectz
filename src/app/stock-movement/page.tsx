@@ -24,8 +24,9 @@ import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
 import { exportToCSV } from '@/constants/export-to-csv';
-import { filters, sapStatusOptions, docStatusOptions, apiFilterParams } from '@/constants/filters';
+import { filters, sapStatusOptions, docStatusOptions, apiFilterParams, docStatusOptionsFor_IT_TR } from '@/constants/filters';
 import { exportDataToCsvFile } from '@/redux/actions/sap-actions/sap-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 
 const StockMovementScreen = () => {
 
@@ -50,6 +51,7 @@ const StockMovementScreen = () => {
 
   // Note: Multi-filter state...!
   const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
+  const [warehousesOptions, setWarehousesOptions] = useState([]);
 
   // Note: Redux dispatch and selector hooks...!
   const dispatch = useAppDispatch();
@@ -60,9 +62,10 @@ const StockMovementScreen = () => {
     itData,
     itrErrorState
   } = useAppSelector(({ itrStates }) => { return itrStates });
-  console.log("ITR data in Inventory Transfer Request screen: ", itrData);
-  console.log("TR data in Inventory Transfer Request screen: ", trData);
-  console.log("IT data in Inventory Transfer Request screen: ", itData);
+  const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+  // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
+  // console.log("TR data in Inventory Transfer Request screen: ", trData);
+  // console.log("IT data in Inventory Transfer Request screen: ", itData);
 
   // Note: Required variables...!
   // Note: For ITR...!
@@ -189,28 +192,6 @@ const StockMovementScreen = () => {
     // else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
   };
 
-  // Note: Function to applied filter...!
-  // const handleAppliedFilter = () => {
-  //   const cleanedFilters = Object.entries(appliedFilters)
-  //     .filter(([_, value]) => value) // remove empty
-  //     .reduce((acc, [key, value]) => {
-  //       const paramKey = apiFilterParams[filters.indexOf(key)];
-  //       if (paramKey) acc[paramKey] = value;
-  //       return acc;
-  //     }, {} as Record<string, string>);
-
-  //   const queryString = new URLSearchParams(cleanedFilters).toString();
-
-  //   const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA}?${queryString}`;
-
-  //   dispatch(fetchAll_ITR_Data({
-  //     token: authenticatedUser?.token || '',
-  //     apiUrl: modifiedUrl,
-  //     type: tab,
-  //     handleLoading: () => setLoading(false),
-  //   }));
-  // };
-
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
@@ -221,8 +202,22 @@ const StockMovementScreen = () => {
         type: 'ITR',
         handleLoading: () => setLoading(false)
       }));
+
+      dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token || "" }));
     };
   }, []);
+
+  // Note: This hook will run when wareHousesList state wil update...!
+  useEffect(() => {
+    if (wareHousesList && wareHousesList.length > 0) {
+      const selectWarehouseOptions: any = wareHousesList?.map((wh) => ({
+        value: wh.whsCode,
+        label: wh.whsName,
+      }));
+      // console.log("Warehouses options: ", selectWarehouseOptions);
+      selectWarehouseOptions && setWarehousesOptions(selectWarehouseOptions);
+    };
+  }, [wareHousesList]);
 
   return (
     <div>
@@ -274,7 +269,7 @@ const StockMovementScreen = () => {
             const label = `Select ${filter}`;
 
             if (filter === "SAP Status" || filter === "DOC Status") {
-              const options = filter === "SAP Status" ? sapStatusOptions : docStatusOptions;
+              const options = filter === "SAP Status" ? sapStatusOptions : ((tab == "ITR") ? (docStatusOptions) : (docStatusOptionsFor_IT_TR));
 
               return (
                 <Select
@@ -296,17 +291,20 @@ const StockMovementScreen = () => {
 
             if (filter === "From Warehouse Code" || filter === "To Warehouse Code") {
               return (
-                <TextInput
+                <Select
                   key={filter}
                   label={label}
                   placeholder={label}
-                  value={appliedFilters[filter] || ''}
-                  onChange={(e) =>
+                  data={warehousesOptions}
+                  // value={appliedFilters[filter] || ''}
+                  value={appliedFilters[filter] ? appliedFilters[filter] : null}
+                  onChange={(value) => {
                     setAppliedFilters((prev) => ({
                       ...prev,
-                      [filter]: e.target.value,
-                    }))
-                  }
+                      [filter]: value || '',
+                    }));
+                  }}
+                  searchable
                 />
               );
             }
@@ -326,6 +324,7 @@ const StockMovementScreen = () => {
                   }
                   clearable
                   size="sm"
+                  onKeyDown={(e) => e.preventDefault()}
                   popoverProps={{
                     withinPortal: true,
                     styles: {

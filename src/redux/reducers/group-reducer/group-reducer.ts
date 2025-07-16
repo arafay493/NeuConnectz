@@ -7,6 +7,7 @@ import { GroupStateType } from "@/types/redux-types";
 const initialState: GroupStateType = {
     ListAllGroupCodes: [],
     listGroupCodesByUserId: [],
+    totalGroupCodesCount: 0,
     GroupErrorState: ""
 };
 
@@ -23,7 +24,8 @@ const groupSlice = createSlice({
         FETCH_ALL_GROUP_CODES: (state, action: PayloadAction<any>) => {
             // console.log("Group codes list data in reducer: ", action.payload);
             state.GroupErrorState = "";
-            state.ListAllGroupCodes = action?.payload;
+            state.ListAllGroupCodes = action?.payload.groupCodesData;
+            state.totalGroupCodesCount = action.payload.groupCodesCount
         },
 
         FETCH_GROUP_CODES_BY_USER_ID: (state, action: PayloadAction<any>) => {

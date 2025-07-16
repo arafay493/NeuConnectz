@@ -9,12 +9,31 @@ const filters: string[] = [
     "Doc Date",
 ];
 
+// Note: Filters dropdown data for GRN movement screen...!
+const grnFilters: string[] = [
+    "SAP Status",
+    "DOC Status",
+    "Vendor Code",
+    "Warehouse",
+    "Item Code",
+    "Doc Date",
+];
+
 // Note: API filter params for stock movement screen (ITR Actions)...!
 const apiFilterParams: string[] = [
     "sapStatus",
     "docStatus",
     "fromWarehouseCode",
     "toWarehouseCode",
+    "docDate",
+];
+
+const apiFilterParamsForGRNS: string[] = [
+    "sapStatus",
+    "docStatus",
+    "vendorCode",
+    "whsCode",
+    "itemCode",
     "docDate",
 ];
 
@@ -25,16 +44,33 @@ const sapStatusOptions: string[] = [
     "Integrated",
 ];
 
+// SAP Status options for GRN...!
+const sapStatusOptionsGRN: string[] = [
+    "Pending",
+    "Integrated",
+];
+
 // Doc Status options...!
 const docStatusOptions: string[] = [
     "Open",
-    "Close",
+    "Closed",
     "Pending",
+];
+
+// Doc Status options (IT and TR)...!
+const docStatusOptionsFor_IT_TR: string[] = [
+    "Completed",
+    "Pending",
+    "Drafted"
 ];
 
 export {
     filters,
+    grnFilters,
     apiFilterParams,
     sapStatusOptions,
-    docStatusOptions
+    docStatusOptions,
+    docStatusOptionsFor_IT_TR,
+    sapStatusOptionsGRN,
+    apiFilterParamsForGRNS
 };

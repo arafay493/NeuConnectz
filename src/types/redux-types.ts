@@ -28,7 +28,8 @@ export interface UserStateType {
         updatedDate: string,
         isActive: boolean
     }[];
-    usersErrorState: string
+    totalUsersCount: number;
+    usersErrorState: string;
 };
 
 
@@ -52,6 +53,7 @@ export interface WareHouseStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    totalWarehousesCount: number;
     warehouseErrorState: string
 };
 
@@ -93,6 +95,7 @@ export interface GroupStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
+    totalGroupCodesCount: number;
     GroupErrorState: string
 };
 
@@ -121,16 +124,24 @@ export interface SAPStateType {
         isActive: boolean,
         isArchived: boolean,
         itemCode: string,
+        itemName: string,
         sapStatus: string,
         updatedBy: string
         updatedDate: string
         userName: string,
+        erpDocEntry: string | number,
+        erpDocLine: string | number,
         vendorCode: string,
         vendorReference: string,
         whsCode: string,
     }[];
     sapErrorState: string;
-    isSAPConfigExist: boolean
+    isSAPConfigExist: boolean,
+    vendorCodeList: {
+        cardCode: string,
+        cardName: string,
+        id: string,
+    }[]
 };
 
 export interface RolesStateType {

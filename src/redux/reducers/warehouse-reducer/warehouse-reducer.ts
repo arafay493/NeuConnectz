@@ -10,6 +10,7 @@ const initialState: WareHouseStateType = {
         totalCount: 0
     },
     warehousesListByUserId: [],
+    totalWarehousesCount: 0,
     warehouseErrorState: ""
 };
 
@@ -29,7 +30,8 @@ const wareHouseSlice = createSlice({
         FETCH_ALL_WAREHOUSES: (state, action: PayloadAction<any>) => {
             // console.log("Warehouses list data in reducer: ", action.payload);
             state.warehouseErrorState = "";
-            state.wareHousesList = action?.payload;
+            state.wareHousesList = action?.payload?.warehouses;
+            state.totalWarehousesCount = action?.payload?.warehousesCount;
         },
 
         FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {

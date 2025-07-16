@@ -6,6 +6,7 @@ import { UserStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: UserStateType = {
     usersList: [],
+    totalUsersCount: 0,
     usersErrorState: ""
 };
 
@@ -21,7 +22,8 @@ const userSlice = createSlice({
         FETCH_ALL_USERS: (state, action: PayloadAction<any>) => {
             // console.log("Users list data in user reducer: ", action.payload);
             state.usersErrorState = ""
-            state.usersList = action?.payload;
+            state.usersList = action?.payload?.users;
+            state.totalUsersCount = action?.payload?.count;
         },
 
         CLEAR_ALL_USER_STATES: (state) => {

@@ -48,6 +48,8 @@ const grnsHeaders: string[] =
         "Warehouse",
         "Vendor",
         "User Name",
+        "ERP Doc Entry",
+        "ERP Line ID",
         "SAP Status",
         "Doc Status",
         "Doc Date"
@@ -251,6 +253,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     dataStatus: "Pending",
                     handleLoading: () => setLoading(false)
                 }));
+                dispatch(fetchDashboardAnalytics(authenticatedUser?.token as string,)); // For data updation purpose...!
             }
 
             else if (!response?.data?.data?.success) {
@@ -300,8 +303,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "IT") {
 
             const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-            const itrPendingVal: any = statsData[totalPendingValue as keyof typeof statsData];
-            // console.log('X:', itrPendingVal)
+            // console.log('Stats: ', statsData);
+            const itrPendingVal = statsData['totalItrPending']
+            // console.log('ITR Pending Val:', itrPendingVal)
 
             if (itrPendingVal != undefined && itrPendingVal > 0) {
                 disableLoader();
@@ -310,7 +314,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             }
 
             else if (itrPendingVal == 0) {
-                // console.log('Hello');
                 dispatch(postRequestToSAP({
                     token: authenticatedUser?.token as string,
                     type: "Post to IT",
@@ -360,8 +363,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (headerBtnType == "GRN") {
             dispatch(fetchAll_GRNS({
                 token: authenticatedUser?.token || "",
-                sapStatus: status,
-                handleLoading: () => setLoading(false)
+                // sapStatus: status,
+                handleLoading: () => setLoading(false),
+                apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${status}`
             }));
         };
     };
@@ -392,8 +396,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
         dispatch(fetchAll_GRNS({
             token: authenticatedUser?.token || "",
-            sapStatus: statusColor,
-            handleLoading: () => setLoading(false)
+            // sapStatus: statusColor,
+            handleLoading: () => setLoading(false),
+            apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`
         }));
     };
 
@@ -577,77 +582,80 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                         <Table.Tbody>
                             {
-                                (paginatedData?.length > 0)
-                                    ?
-                                    (
-                                        paginatedData?.map((row: any, index) => (
-                                            headerBtnType === "GRN"
-                                                ? (
-                                                    <Table.Tr key={row.id}>
-                                                        <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                        <Table.Td>{headerBtnType}</Table.Td>
-                                                        <Table.Td>{row.docNum}</Table.Td>
-                                                        <Table.Td>{row.itemCode}</Table.Td>
-                                                        <Table.Td>{row.whsCode}</Table.Td>
-                                                        <Table.Td>{row.vendorCode}</Table.Td>
-                                                        <Table.Td>{row.userName}</Table.Td>
-                                                        <Table.Td>{row.sapStatus}</Table.Td>
-                                                        <Table.Td>{row.docStatus}</Table.Td>
-                                                        <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                                    </Table.Tr>
-                                                )
-                                                :
-                                                (
-                                                    <Table.Tr key={row.id}>
-                                                        <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                        <Table.Td>{row.type}</Table.Td>
-                                                        <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                                        <Table.Td>{row.itemCode}</Table.Td>
-                                                        <Table.Td>{row.fromWarehouse}</Table.Td>
-                                                        <Table.Td>{row.toWarehouse}</Table.Td>
-                                                        <Table.Td>{row.userName}</Table.Td>
-                                                        <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                                        <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                                        <Table.Td>{row.status}</Table.Td>
-                                                        <Table.Td>{row.docStatus}</Table.Td>
-                                                        <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                                    </Table.Tr>
-                                                )
-                                        ))
-                                    )
-                                    :
-                                    (<DataNotFound notFoundContent={sapErrorState || "No data found."} colSpanValue={9} />)
+                                paginatedData?.map((row: any, index) => (
+                                    headerBtnType === "GRN"
+                                        ? (
+                                            <Table.Tr key={row.id}>
+                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                <Table.Td>{headerBtnType}</Table.Td>
+                                                <Table.Td>{row.docNum}</Table.Td>
+                                                <Table.Td>{row.itemCode}</Table.Td>
+                                                <Table.Td>{row.whsCode}</Table.Td>
+                                                <Table.Td>{row.vendorCode}</Table.Td>
+                                                <Table.Td>{row.userName}</Table.Td>
+
+                                                <Table.Td>{(row.erpDocEntry) ? (row.erpDocEntry) : ("-")}</Table.Td>
+                                                <Table.Td>{(row.erpDocLine) ? (row.erpDocLine) : ("-")}</Table.Td>
+
+                                                <Table.Td>{row.sapStatus}</Table.Td>
+                                                <Table.Td>{row.docStatus}</Table.Td>
+                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                            </Table.Tr>
+                                        )
+                                        :
+                                        (
+                                            <Table.Tr key={row.id}>
+                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                                <Table.Td>{row.type}</Table.Td>
+                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                                <Table.Td>{row.itemCode}</Table.Td>
+                                                <Table.Td>{row.fromWarehouse}</Table.Td>
+                                                <Table.Td>{row.toWarehouse}</Table.Td>
+                                                <Table.Td>{row.userName}</Table.Td>
+                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                                <Table.Td>{row.status}</Table.Td>
+                                                <Table.Td>{row.docStatus}</Table.Td>
+                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                            </Table.Tr>
+                                        )
+                                ))
                             }
                         </Table.Tbody>
                     </Table>
+
+                    {paginatedData.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
                 </ScrollArea>
 
-                <Flex
-                    justify={customStyles.alignment.spaceBetween}
-                    align={customStyles.alignment.center}
-                    mb="md"
-                    wrap="wrap"
-                    gap="sm"
-                >
-                    {/* Note: Pagination section */}
-                    <PaginationComponent
-                        totalPages={totalPages}
-                        pageNum={activePage}
-                        handleNewPage={setPage}
-                    />
+                {
+                    paginatedData.length > 0 &&
+                    <Flex
+                        justify={customStyles.alignment.spaceBetween}
+                        align={customStyles.alignment.center}
+                        mb="md"
+                        wrap="wrap"
+                        gap="sm"
+                    >
+                        {/* Note: Pagination section */}
+                        <PaginationComponent
+                            totalPages={totalPages}
+                            pageNum={activePage}
+                            handleNewPage={setPage}
+                        />
 
-                    {/* Note: Rows per page section */}
-                    <Select
-                        data={["5", "10", "20", "50"]}
-                        label="Rows per page"
-                        value={itemsPerPage.toString()}
-                        onChange={(value) => {
-                            setItemsPerPage(Number(value));
-                            setPage(1);
-                        }}
-                        w={120}
-                    />
-                </Flex>
+                        {/* Note: Rows per page section */}
+                        <Select
+                            data={["5", "10", "20", "50"]}
+                            label="Rows per page"
+                            value={itemsPerPage.toString()}
+                            onChange={(value) => {
+                                setItemsPerPage(Number(value));
+                                setPage(1);
+                            }}
+                            w={120}
+                        />
+                    </Flex>
+                }
             </Card>
         </>
     );

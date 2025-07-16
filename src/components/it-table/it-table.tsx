@@ -56,32 +56,28 @@ const IT_TableCom = (props: any) => {
 
                 <Table.Tbody>
                     {
-                        (paginatedData.length > 0)
-                            ?
-                            (
-                                paginatedData
-                                    .map((row: IT_DataType, index: number) => (
-                                        <Table.Tr key={row.id}>
-                                            <Table.Td> {(activePage - 1) * itemsPerPage + index + 1} </Table.Td>
-                                            <Table.Td>{row.docNum}</Table.Td>
-                                            <Table.Td>{row.itrDocNum}</Table.Td>
-                                            <Table.Td>{row.fromWarehouseId}</Table.Td>
-                                            <Table.Td>{row.toWarehouseId}</Table.Td>
-                                            <Table.Td>{row.docStatus}</Table.Td>
-                                            <Table.Td>{row.itemCode}</Table.Td>
-                                            <Table.Td>{row.itemName}</Table.Td>
-                                            <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : "-"}</Table.Td>
-                                            <Table.Td>{row.erpObjectType != null ? row.erpObjectType : "-"}</Table.Td>
-                                            <Table.Td>{row.erpDocLine != null ? row.erpDocLine : "-"}</Table.Td>
-                                            <Table.Td>{row.sapStatus}</Table.Td>
-                                        </Table.Tr>
-                                    ))
-                            )
-                            :
-                            (<DataNotFound notFoundContent={itrErrorState || "No IT data found."} colSpanValue={12} />)
+                        paginatedData
+                            .map((row: IT_DataType, index: number) => (
+                                <Table.Tr key={row.id}>
+                                    <Table.Td> {(activePage - 1) * itemsPerPage + index + 1} </Table.Td>
+                                    <Table.Td>{row.docNum}</Table.Td>
+                                    <Table.Td>{row.itrDocNum}</Table.Td>
+                                    <Table.Td>{row.fromWarehouseId}</Table.Td>
+                                    <Table.Td>{row.toWarehouseId}</Table.Td>
+                                    <Table.Td>{row.docStatus}</Table.Td>
+                                    <Table.Td>{row.itemCode}</Table.Td>
+                                    <Table.Td>{row.itemName}</Table.Td>
+                                    <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : "-"}</Table.Td>
+                                    <Table.Td>{row.erpObjectType != null ? row.erpObjectType : "-"}</Table.Td>
+                                    <Table.Td>{row.erpDocLine != null ? row.erpDocLine : "-"}</Table.Td>
+                                    <Table.Td>{row.sapStatus}</Table.Td>
+                                </Table.Tr>
+                            ))
                     }
                 </Table.Tbody>
             </Table>
+
+            {paginatedData.length < 1 && <DataNotFound notFoundContent={itrErrorState || "No IT data found."} />}
 
             <Flex
                 justify={customStyles.alignment.spaceBetween}

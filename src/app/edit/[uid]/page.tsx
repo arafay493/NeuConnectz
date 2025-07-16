@@ -107,7 +107,7 @@ const EditUserScreen = () => {
 
     if (response?.status === 201) {
       showNotificationToast("Status Updated", "User status changed successfully", customStyles.colors._408CCE);
-      dispatch(fetchAllUsers(authenticatedUser?.token || ""));
+      dispatch(fetchAllUsers({ authToken: authenticatedUser?.token || "" }));
       router.push(routes.usersList);
     }
 
