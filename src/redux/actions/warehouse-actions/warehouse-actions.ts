@@ -26,9 +26,9 @@ const fetchAllWareHouses = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("Auth token: ", authToken);
-        console.log("Last count: ", lastCount);
-        console.log("Skip records: ", skipRecords);
+        // console.log("Auth token: ", authToken);
+        // console.log("Last count: ", lastCount);
+        // console.log("Skip records: ", skipRecords);
 
         try {
             const response = await axios({
@@ -43,7 +43,7 @@ const fetchAllWareHouses = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            console.log("Response in warehouse action: ", response);
+            // console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 200) {

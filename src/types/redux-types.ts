@@ -134,7 +134,17 @@ export interface SAPStateType {
         cardCode: string,
         cardName: string,
         id: string,
-    }[]
+    }[],
+    sapStagingDataCounts: {
+        warehouseTotal: number,
+        groupCodeTotal: number,
+        stockMasterTotal: number,
+        stockBarcodeTotal: number,
+        stockWarehouseTotal: number,
+        binLocationTotal: number,
+        vendorMasterTotal: number
+    } | null;
+    totalGRNS_DataCounts: number
 };
 
 export interface RolesStateType {

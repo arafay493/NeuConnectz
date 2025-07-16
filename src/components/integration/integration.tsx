@@ -100,14 +100,242 @@ interface IntegrationComponentProps {
     disableLoader: () => void,
 };
 
+type GRNTableProps = {
+    type: "Pending" | "Integrated";
+};
+
+// Note: GRN_Table_Component...!
+const GRN_Table_Component: React.FC<GRNTableProps> = ({ type }) => {
+    console.log('Type: ', type);
+
+    // Note: States...!
+    const [loading, setLoading] = useState(false);
+    const [activePage, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
+    // Note: Required variables...!
+    const lastCount = itemsPerPage;
+    const skipRecords = (activePage - 1) * itemsPerPage;
+
+    // Note: Handeling redux here...!
+    const dispatch = useAppDispatch();
+
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { list_GRNS_Data, totalGRNS_DataCounts, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log("list_GRNS_Data: ", list_GRNS_Data);
+    // console.log("Total GRNS counts: ", totalGRNS_DataCounts);
+
+    const totalPages = Math.ceil(totalGRNS_DataCounts / itemsPerPage);
+
+    const handleNewPage = (newPage: number) => {
+        setPage(newPage);
+    };
+
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setLoading(true);
+            dispatch(fetchAll_GRNS({
+                token: authenticatedUser?.token || "",
+                handleLoading: () => setLoading(false),
+                apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${type}` || "",
+                lastCount: lastCount,
+                skipRecords: skipRecords
+            }));
+        };
+    }, [authenticatedUser, skipRecords, lastCount]);
+
+    return (
+        <>
+            {loading && <Loader loadingState={loading} />}
+
+            <ScrollArea type="auto">
+                <Table
+                    highlightOnHover
+                    striped
+                    withTableBorder
+                >
+                    <Table.Thead>
+                        <Table.Tr>{grnsHeaders.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
+                    </Table.Thead>
+
+                    <Table.Tbody>
+                        {
+                            list_GRNS_Data?.map((row: any, index) => (
+                                <Table.Tr key={row.id}>
+                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                    <Table.Td> GRN </Table.Td>
+                                    <Table.Td>{row.docNum}</Table.Td>
+                                    <Table.Td>{row.itemCode}</Table.Td>
+                                    <Table.Td>{row.whsCode}</Table.Td>
+                                    <Table.Td>{row.vendorCode}</Table.Td>
+                                    <Table.Td>{row.userName}</Table.Td>
+                                    <Table.Td>{(row.erpDocEntry) ? (row.erpDocEntry) : ("-")}</Table.Td>
+                                    <Table.Td>{(row.erpDocLine) ? (row.erpDocLine) : ("-")}</Table.Td>
+                                    <Table.Td>{row.sapStatus}</Table.Td>
+                                    <Table.Td>{row.docStatus}</Table.Td>
+                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                </Table.Tr>
+                            ))
+                        }
+                    </Table.Tbody>
+                </Table>
+
+                {list_GRNS_Data.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
+            </ScrollArea>
+
+            {
+                list_GRNS_Data.length > 0 &&
+                <Flex
+                    justify={customStyles.alignment.spaceBetween}
+                    align={customStyles.alignment.center}
+                    mb="md"
+                    wrap="wrap"
+                    gap="sm"
+                >
+                    {/* Note: Pagination section */}
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        pageNum={activePage}
+                        handleNewPage={handleNewPage}
+                    />
+
+                    {/* Note: Rows per page section */}
+                    <Select
+                        data={["5", "10", "20", "50"]}
+                        label="Rows per page"
+                        value={itemsPerPage.toString()}
+                        onChange={(value) => {
+                            setItemsPerPage(Number(value));
+                            setPage(1);
+                        }}
+                        w={120}
+                    />
+                </Flex>
+            }
+        </>
+    );
+};
+
+// Note: Stock_Movement_Table_Component...!
+const Stock_Movement_Table_Component = () => {
+
+    // Note: States...!
+    const [loading, setLoading] = useState(false);
+    const [activePage, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+
+    // Note: Required variables...!
+    const lastCount = itemsPerPage;
+    const skipRecords = (activePage - 1) * itemsPerPage;
+
+    // Note: Handeling redux here...!
+    const dispatch = useAppDispatch();
+
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const {
+        listAll_ITR_IT_TRS,
+        sapErrorState,
+        totalGRNS_DataCounts
+    } = useAppSelector(({ sapStates }) => { return sapStates });
+
+    // const totalPages = Math.ceil(totalGRNS_DataCounts / itemsPerPage);
+
+    // const handleNewPage = (newPage: number) => {
+    //     setPage(newPage);
+    // };
+
+    // useEffect(() => {
+    //     if (authenticatedUser?.token) {
+    //         setLoading(true);
+    //         dispatch(fetchAll_GRNS({
+    //             token: authenticatedUser?.token || "",
+    //             handleLoading: () => setLoading(false),
+    //             apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA || "",
+    //             lastCount: lastCount,
+    //             skipRecords: skipRecords
+    //         }));
+    //     };
+    // }, [authenticatedUser, skipRecords, lastCount]);
+
+    return (
+        <>
+            {loading && <Loader loadingState={loading} />}
+
+            <ScrollArea type="auto">
+                <Table
+                    highlightOnHover
+                    striped
+                    withTableBorder
+                >
+                    <Table.Thead>
+                        <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
+                    </Table.Thead>
+
+                    <Table.Tbody>
+                        {
+                            listAll_ITR_IT_TRS?.map((row: any, index) => (
+                                <Table.Tr key={row.id}>
+                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
+                                    <Table.Td>{row.type}</Table.Td>
+                                    <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
+                                    <Table.Td>{row.itemCode}</Table.Td>
+                                    <Table.Td>{row.fromWarehouse}</Table.Td>
+                                    <Table.Td>{row.toWarehouse}</Table.Td>
+                                    <Table.Td>{row.userName}</Table.Td>
+                                    <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
+                                    <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
+                                    <Table.Td>{row.status}</Table.Td>
+                                    <Table.Td>{row.docStatus}</Table.Td>
+                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
+                                </Table.Tr>
+                            ))
+                        }
+                    </Table.Tbody>
+                </Table>
+
+                {listAll_ITR_IT_TRS.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
+            </ScrollArea>
+
+            {/* {
+                listAll_ITR_IT_TRS.length > 0 &&
+                <Flex
+                    justify={customStyles.alignment.spaceBetween}
+                    align={customStyles.alignment.center}
+                    mb="md"
+                    wrap="wrap"
+                    gap="sm"
+                >
+
+                    <PaginationComponent
+                        totalPages={totalPages}
+                        pageNum={activePage}
+                        handleNewPage={handleNewPage}
+                    />
+
+                    <Select
+                        data={["5", "10", "20", "50"]}
+                        label="Rows per page"
+                        value={itemsPerPage.toString()}
+                        onChange={(value) => {
+                            setItemsPerPage(Number(value));
+                            setPage(1);
+                        }}
+                        w={120}
+                    />
+                </Flex>
+            } */}
+        </>
+    );
+};
+
 const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { enableLoader, disableLoader } = props;
     // console.log("Props of Integration Component: ", props);
 
     // Note: Handeling states here...!
-    const [activePage, setPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
-    const [statusColor, setStatusColor] = useState("Pending");
+    // const [statusColor, setStatusColor] = useState("Pending");
+    const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
+
     const [selectedType, setSelectedType] = useState("");
     const [loading, setLoading] = useState(false);
     const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
@@ -117,20 +345,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const {
-        listAll_ITR_IT_TRS,
-        list_GRNS_Data,
-        sapErrorState,
-    } = useAppSelector(({ sapStates }) => { return sapStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    // console.log("listAll_ITR_IT_TRS: ", listAll_ITR_IT_TRS);
-    // console.log("list_GRNS_Data: ", list_GRNS_Data);
     // console.log("Dashboard Analytics Data: ", dashboardAnalyticsData);
-
-    // Note: Required variables...!
-    const targetTableData = headerBtnType === "GRN" ? list_GRNS_Data : listAll_ITR_IT_TRS;
-    const totalPages = Math.ceil(targetTableData.length / itemsPerPage);
-    const paginatedData = targetTableData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
 
     // Note: Status dropdown handler...!
     const dropDownHandler = (val: string): void => {
@@ -363,9 +579,10 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (headerBtnType == "GRN") {
             dispatch(fetchAll_GRNS({
                 token: authenticatedUser?.token || "",
-                // sapStatus: status,
                 handleLoading: () => setLoading(false),
-                apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${status}`
+                apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${status}`,
+                lastCount: 5,
+                skipRecords: 0
             }));
         };
     };
@@ -376,7 +593,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         // Note: Enable loader...!
         setLoading(true);
         setHeaderBtnType("Stock Movement");
-        // setStatusColor("Pending");
 
         const token = authenticatedUser?.token || "";
         dispatch(fetchAllITR_IT_TRS({
@@ -388,17 +604,18 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Functio to fetch GRNS data...!
     const viewGrnsData = () => {
+        // console.log('statusColor: ', statusColor);
 
         // Note: Enable loader...!
         setLoading(true);
         setHeaderBtnType("GRN");
-        // setStatusColor("Pending");
 
         dispatch(fetchAll_GRNS({
             token: authenticatedUser?.token || "",
-            // sapStatus: statusColor,
             handleLoading: () => setLoading(false),
-            apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`
+            apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`,
+            lastCount: 5,
+            skipRecords: 0
         }));
     };
 
@@ -561,102 +778,11 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     </Group>
                 </Group>
 
-
-                {loading && <Loader loadingState={loading} />}
-
-                <ScrollArea type="auto">
-                    <Table
-                        highlightOnHover
-                        striped
-                        withTableBorder
-                    >
-                        <Table.Thead>
-                            {
-                                (headerBtnType === "GRN")
-                                    ?
-                                    (<Table.Tr>{grnsHeaders.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>)
-                                    :
-                                    (<Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>)
-                            }
-                        </Table.Thead>
-
-                        <Table.Tbody>
-                            {
-                                paginatedData?.map((row: any, index) => (
-                                    headerBtnType === "GRN"
-                                        ? (
-                                            <Table.Tr key={row.id}>
-                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                <Table.Td>{headerBtnType}</Table.Td>
-                                                <Table.Td>{row.docNum}</Table.Td>
-                                                <Table.Td>{row.itemCode}</Table.Td>
-                                                <Table.Td>{row.whsCode}</Table.Td>
-                                                <Table.Td>{row.vendorCode}</Table.Td>
-                                                <Table.Td>{row.userName}</Table.Td>
-
-                                                <Table.Td>{(row.erpDocEntry) ? (row.erpDocEntry) : ("-")}</Table.Td>
-                                                <Table.Td>{(row.erpDocLine) ? (row.erpDocLine) : ("-")}</Table.Td>
-
-                                                <Table.Td>{row.sapStatus}</Table.Td>
-                                                <Table.Td>{row.docStatus}</Table.Td>
-                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                            </Table.Tr>
-                                        )
-                                        :
-                                        (
-                                            <Table.Tr key={row.id}>
-                                                <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                                <Table.Td>{row.type}</Table.Td>
-                                                <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                                <Table.Td>{row.itemCode}</Table.Td>
-                                                <Table.Td>{row.fromWarehouse}</Table.Td>
-                                                <Table.Td>{row.toWarehouse}</Table.Td>
-                                                <Table.Td>{row.userName}</Table.Td>
-                                                <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                                <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                                <Table.Td>{row.status}</Table.Td>
-                                                <Table.Td>{row.docStatus}</Table.Td>
-                                                <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                            </Table.Tr>
-                                        )
-                                ))
-                            }
-                        </Table.Tbody>
-                    </Table>
-
-                    {paginatedData.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
-                </ScrollArea>
-
-                {
-                    paginatedData.length > 0 &&
-                    <Flex
-                        justify={customStyles.alignment.spaceBetween}
-                        align={customStyles.alignment.center}
-                        mb="md"
-                        wrap="wrap"
-                        gap="sm"
-                    >
-                        {/* Note: Pagination section */}
-                        <PaginationComponent
-                            totalPages={totalPages}
-                            pageNum={activePage}
-                            handleNewPage={setPage}
-                        />
-
-                        {/* Note: Rows per page section */}
-                        <Select
-                            data={["5", "10", "20", "50"]}
-                            label="Rows per page"
-                            value={itemsPerPage.toString()}
-                            onChange={(value) => {
-                                setItemsPerPage(Number(value));
-                                setPage(1);
-                            }}
-                            w={120}
-                        />
-                    </Flex>
-                }
             </Card>
+
+            {
+                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component />)
+            }
         </>
     );
 };
