@@ -1,0 +1,36 @@
+:root {
+    --white: #fff;
+    --black: #000;
+    --red: red;
+    --green: green;
+    --_408CCE: #408CCE;
+    --_4D4D4D: #4D4D4D;
+    --_909090: #909090;
+    --_1B59F8: #1B59F8;
+    --_4A4A4A: #4A4A4A;
+    --_F5F7FA: #F5F7FA;
+}
+
+.filledButton {
+    background-color: var(--_1B59F8);
+    color: var(--white);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+.filledButton:hover {
+    background-color: var(--white);
+    border: 1px solid var(--_1B59F8);
+    color: var(--_1B59F8);
+}
+
+.outlineButton {
+    color: var(--_1B59F8);
+    border: 1px solid var(--_1B59F8);
+    background-color: var(--white);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+.outlineButton:hover {
+    background-color: var(--_1B59F8);
+    color: var(--white);
+}
