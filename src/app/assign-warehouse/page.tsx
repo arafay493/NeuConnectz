@@ -133,9 +133,11 @@ const AssignWareHouse = () => {
     };
 
     // Initialize access state for selected user if not already present
+    // Use wareHousesList.data directly to avoid dependency issues
+    const allWarehouses = wareHousesList.data || [];
     setAccess((prev) => ({
       ...prev,
-      [value]: wareHousesListData.map((wh: WareHouseDataType) => ({
+      [value]: allWarehouses.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
         receiver: false
@@ -262,7 +264,7 @@ const AssignWareHouse = () => {
 
   useEffect(() => {
     if (authenticatedUser) {
-      if (usersList.length < 1) {
+      if (usersList.users.length < 1) {
         dispatch(fetchAllUsers({
           authToken: authenticatedUser?.token,
         }));
@@ -272,14 +274,14 @@ const AssignWareHouse = () => {
 
   // Note: This hook will run when usersList state update...!
   useEffect(() => {
-    if (usersList) {
-      const targetData = [...usersList].map((user: UserType) => ({
+    if (usersList.users) {
+      const targetData = [...usersList.users].map((user: UserType) => ({
         label: user.userName,
         value: user.userId
       }));
       targetData && setUsersData(targetData as any);
     };
-  }, [usersList]);
+  }, [usersList.users]);
 
   // Note: This hook will run when selectedUser changes...!
   useEffect(() => {
@@ -295,8 +297,11 @@ const AssignWareHouse = () => {
   useEffect(() => {
     if (!selectedUser) return;
 
+    // Get the warehouse data directly from redux to avoid dependency issues
+    const allWarehouses = wareHousesList.data || [];
+
     if (warehousesListByUserId.length > 0) {
-      const updatedAccess = wareHousesListData.map((wh: WareHouseDataType) => {
+      const updatedAccess = allWarehouses.map((wh: WareHouseDataType) => {
         const existing = warehousesListByUserId.find(
           (item) => item.whsCode === wh.whsCode
         );
@@ -313,7 +318,7 @@ const AssignWareHouse = () => {
       }));
     } else {
       // 💡 Clear access for selected user when no data is returned
-      const resetAccess = wareHousesListData.map((wh: WareHouseDataType) => ({
+      const resetAccess = allWarehouses.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
         receiver: false,
@@ -324,7 +329,7 @@ const AssignWareHouse = () => {
         [selectedUser]: resetAccess,
       }));
     }
-  }, [selectedUser, warehousesListByUserId, wareHousesListData]);
+  }, [selectedUser, warehousesListByUserId, wareHousesList.data]);
 
   return (
     <div>
@@ -401,9 +406,11 @@ const AssignWareHouse = () => {
         </Flex>
 
         <Button
-          mt={{ base: "md", sm: 0 }}
-          leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
-          color={customStyles.colors._1B59F8}
+          variant='transparent'
+          className='filledButton'
+          radius={8}
+          size='md'
+          leftSection={<IconBuildingWarehouse size={24} />}
           onClick={handleAssignWareHouse}
           disabled={wareHousesListData?.length == 0}
         >

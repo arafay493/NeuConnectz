@@ -5,8 +5,10 @@ import { UserStateType } from "@/types/redux-types";
 
 // Note: Reducer states...!
 const initialState: UserStateType = {
-    usersList: [],
-    totalUsersCount: 0,
+    usersList: {
+        users: [],
+        totalCount: 0
+    },
     usersErrorState: ""
 };
 
@@ -15,19 +17,24 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA: (state) => {
-            state.usersList = [];
+            state.usersList = {
+                users: [],
+                totalCount: 0
+            };
             state.usersErrorState = "You are not authorized to access this data!";
         },
 
         FETCH_ALL_USERS: (state, action: PayloadAction<any>) => {
             // console.log("Users list data in user reducer: ", action.payload);
             state.usersErrorState = ""
-            state.usersList = action?.payload?.users;
-            state.totalUsersCount = action?.payload?.count;
+            state.usersList = action?.payload;
         },
 
         CLEAR_ALL_USER_STATES: (state) => {
-            state.usersList = [];
+            state.usersList = {
+                users: [],
+                totalCount: 0
+            };
             state.usersErrorState = ""
         },
     }

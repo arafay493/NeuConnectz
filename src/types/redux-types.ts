@@ -16,23 +16,25 @@ export interface AuthStateType {
 // Note: User reducer state types...!
 export interface UserStateType {
     usersList: {
-        userId: string,
-        userName: string,
-        email: string,
-        phone: string,
-        department: string,
-        role: string,
-        createdBy: string,
-        updatedBy: string,
-        createdDate: string,
-        updatedDate: string,
-        isActive: boolean
-    }[];
-    totalUsersCount: number;
+        users: Array<UserListProps>,
+        totalCount: number,
+    };
     usersErrorState: string;
 };
 
-
+export interface UserListProps {
+    userId: string,
+    userName: string,
+    email: string,
+    phone: string,
+    department: string,
+    role: string,
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean
+}
 
 // Note: Ware House reducer state types...!
 export interface WareHouseStateType {
