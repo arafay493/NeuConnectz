@@ -100,13 +100,13 @@ interface IntegrationComponentProps {
     disableLoader: () => void,
 };
 
-type GRNTableProps = {
+type TableProps = {
     type: "Pending" | "Integrated";
 };
 
 // Note: GRN_Table_Component...!
-const GRN_Table_Component: React.FC<GRNTableProps> = ({ type }) => {
-    console.log('Type: ', type);
+const GRN_Table_Component: React.FC<TableProps> = ({ type }) => {
+    // console.log('Type: ', type);
 
     // Note: States...!
     const [loading, setLoading] = useState(false);
@@ -217,7 +217,7 @@ const GRN_Table_Component: React.FC<GRNTableProps> = ({ type }) => {
 };
 
 // Note: Stock_Movement_Table_Component...!
-const Stock_Movement_Table_Component = () => {
+const Stock_Movement_Table_Component: React.FC<TableProps> = ({ type }) => {
 
     // Note: States...!
     const [loading, setLoading] = useState(false);
@@ -232,30 +232,26 @@ const Stock_Movement_Table_Component = () => {
     const dispatch = useAppDispatch();
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const {
-        listAll_ITR_IT_TRS,
-        sapErrorState,
-        totalGRNS_DataCounts
-    } = useAppSelector(({ sapStates }) => { return sapStates });
+    const { listAll_ITR_IT_TRS, sapErrorState, listAll_ITR_IT_TRS_Count } = useAppSelector(({ sapStates }) => { return sapStates });
 
-    // const totalPages = Math.ceil(totalGRNS_DataCounts / itemsPerPage);
+    const totalPages = Math.ceil(listAll_ITR_IT_TRS_Count / itemsPerPage);
 
-    // const handleNewPage = (newPage: number) => {
-    //     setPage(newPage);
-    // };
+    const handleNewPage = (newPage: number) => {
+        setPage(newPage);
+    };
 
-    // useEffect(() => {
-    //     if (authenticatedUser?.token) {
-    //         setLoading(true);
-    //         dispatch(fetchAll_GRNS({
-    //             token: authenticatedUser?.token || "",
-    //             handleLoading: () => setLoading(false),
-    //             apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA || "",
-    //             lastCount: lastCount,
-    //             skipRecords: skipRecords
-    //         }));
-    //     };
-    // }, [authenticatedUser, skipRecords, lastCount]);
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setLoading(true);
+            dispatch(fetchAllITR_IT_TRS({
+                token: authenticatedUser?.token || "",
+                dataStatus: type,
+                handleLoading: () => setLoading(false),
+                lastCount: lastCount,
+                skipRecords: skipRecords
+            }));
+        };
+    }, [authenticatedUser, skipRecords, lastCount]);
 
     return (
         <>
@@ -296,7 +292,7 @@ const Stock_Movement_Table_Component = () => {
                 {listAll_ITR_IT_TRS.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
             </ScrollArea>
 
-            {/* {
+            {
                 listAll_ITR_IT_TRS.length > 0 &&
                 <Flex
                     justify={customStyles.alignment.spaceBetween}
@@ -323,7 +319,7 @@ const Stock_Movement_Table_Component = () => {
                         w={120}
                     />
                 </Flex>
-            } */}
+            }
         </>
     );
 };
@@ -333,9 +329,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // console.log("Props of Integration Component: ", props);
 
     // Note: Handeling states here...!
-    // const [statusColor, setStatusColor] = useState("Pending");
     const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
-
     const [selectedType, setSelectedType] = useState("");
     const [loading, setLoading] = useState(false);
     const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
@@ -464,12 +458,27 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
                 showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
-                dispatch(fetchAllITR_IT_TRS({
-                    token: authenticatedUser?.token as string,
-                    dataStatus: "Pending",
-                    handleLoading: () => setLoading(false)
-                }));
                 dispatch(fetchDashboardAnalytics(authenticatedUser?.token as string,)); // For data updation purpose...!
+
+                if (headerBtnType == "Stock Movement") {
+                    dispatch(fetchAllITR_IT_TRS({
+                        token: authenticatedUser?.token as string,
+                        dataStatus: statusColor,
+                        handleLoading: () => setLoading(false),
+                        lastCount: 5,
+                        skipRecords: 0
+                    }));
+                }
+
+                else if (headerBtnType == "GRN") {
+                    dispatch(fetchAll_GRNS({
+                        token: authenticatedUser?.token || "",
+                        handleLoading: () => setLoading(false),
+                        apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`,
+                        lastCount: 5,
+                        skipRecords: 0
+                    }));
+                }
             }
 
             else if (!response?.data?.data?.success) {
@@ -571,7 +580,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token || "",
                 dataStatus: status,
-                handleLoading: () => setLoading(false)
+                handleLoading: () => setLoading(false),
+                lastCount: 5,
+                skipRecords: 0
             }));
             return;
         };
@@ -598,7 +609,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         dispatch(fetchAllITR_IT_TRS({
             token,
             dataStatus: statusColor,
-            handleLoading: () => setLoading(false)
+            handleLoading: () => setLoading(false),
+            lastCount: 5,
+            skipRecords: 0
         }));
     };
 
@@ -623,11 +636,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     useEffect(() => {
         if (authenticatedUser) {
             const token: string = authenticatedUser?.token
-            dispatch(fetchAllITR_IT_TRS({
-                token,
-                dataStatus: "Pending",
-                handleLoading: () => setLoading(false)
-            }));
             dispatch(fetchDashboardAnalytics(token));
         };
     }, []);
@@ -781,7 +789,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             </Card>
 
             {
-                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component />)
+                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component type={statusColor} />)
             }
         </>
     );

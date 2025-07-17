@@ -116,39 +116,48 @@ const postRequestToSAP = createAsyncThunk(
 const fetchAllITR_IT_TRS = createAsyncThunk(
     "sap/fetchAllITR_IT_TRS",
     async (
-        { token, dataStatus, handleLoading, type }:
+        { token, dataStatus, handleLoading, type, lastCount, skipRecords }:
             {
                 token: string,
                 dataStatus: string,
                 handleLoading: () => void,
-                type?: "ITR" | "TR" | "IT"
+                type?: "ITR" | "TR" | "IT",
+                lastCount?: number,
+                skipRecords?: number
             },
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
-        // console.log("Status: ", dataStatus);
-        // console.log("Type: ", type);
+        console.log("Status: ", dataStatus);
+        console.log("Type: ", type);
+        console.log("Last count: ", lastCount);
+        console.log("Skip records: ", skipRecords);
 
         const apiUrl = !type ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
             `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
-        // console.log("Api url: ", apiUrl);
+        console.log("Api url: ", apiUrl);
 
         try {
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
                 headers: {
                     "Api-Url": apiUrl,
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
+            console.log("Response in sap action: ", response);
             const { status } = response;
-            // console.log("Api res: ", response);
+            console.log("Api res: ", response);
 
             if (status == 200) {
                 dispatch(FETCH_ALL_ITR_IT_TRS({
                     listData: response?.data?.data?.data,
+                    listCount: response?.data?.data?.totalRecords
                 }));
                 handleLoading(); // Disable loading state...!
             };
@@ -182,9 +191,9 @@ const fetchAll_GRNS = createAsyncThunk(
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
-        console.log("Api Url: ", apiUrl);
-        console.log("Last Count: ", lastCount);
-        console.log("Skip Records: ", skipRecords);
+        // console.log("Api Url: ", apiUrl);
+        // console.log("Last Count: ", lastCount);
+        // console.log("Skip Records: ", skipRecords);
 
         try {
             const response = await axios({
@@ -199,7 +208,7 @@ const fetchAll_GRNS = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in sap action: ", response);
+            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) {

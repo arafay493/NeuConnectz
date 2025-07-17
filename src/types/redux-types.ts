@@ -150,7 +150,8 @@ export interface SAPStateType {
         binLocationTotal: number,
         vendorMasterTotal: number
     } | null;
-    totalGRNS_DataCounts: number
+    totalGRNS_DataCounts: number;
+    listAll_ITR_IT_TRS_Count: number;
 };
 
 export interface RolesStateType {
@@ -237,7 +238,10 @@ export interface ITRStateType {
         updatedDate: string,
         isActive: boolean,
     }[]
-    itrErrorState: string
+    itrErrorState: string,
+    itrDataCount: number,
+    itDataCount: number,
+    trDataCount: number,
 };
 
 export interface ITR_DataType {
