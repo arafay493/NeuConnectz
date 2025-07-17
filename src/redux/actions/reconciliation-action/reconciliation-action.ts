@@ -38,6 +38,7 @@ const fetchReconciliationData = createAsyncThunk(
         }
 
         catch (error: any) {
+            // console.log('Error occurred in fetch all warehouses api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -127,7 +128,7 @@ const fetchReconciliationData = createAsyncThunk(
 //         }
 
 //         catch (error: any) {
-//             // console.log('Error occurred in assign warehouse to user api integration: ', error);
+//             // console.log('Error occured in assign warehouse to user api integration: ', error);
 //             resHandler(error?.response);
 
 //             const { status, data } = error?.response;

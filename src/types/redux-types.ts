@@ -32,21 +32,14 @@ export interface UserStateType {
     usersErrorState: string;
 };
 
+
+
 // Note: Ware House reducer state types...!
 export interface WareHouseStateType {
     wareHousesList: {
-        id: string,
-        whsCode: string,
-        whsName: string,
-        isReceiver: boolean,
-        binActivat: string,
-        createdBy: string,
-        updatedBy: string,
-        createdDate: string,
-        updatedDate: string,
-        isActive: boolean,
-        isArchived: boolean
-    }[];
+        data: Array<WarehousesListData>
+        totalCount: number
+    };
     warehousesListByUserId: {
         id: string,
         whsCode: string,
@@ -60,8 +53,21 @@ export interface WareHouseStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
-    totalWarehousesCount: number;
     warehouseErrorState: string
+};
+
+export interface WarehousesListData {
+    id: string,
+    whsCode: string,
+    whsName: string,
+    isReceiver: boolean,
+    binActivat: string,
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean,
+    isArchived: boolean
 };
 
 // Note: Group reducer state types...!
@@ -336,17 +342,32 @@ export interface DashboardStateType {
     } | null;
 }
 
-// Note: Reconsiliation reducer state types...!
-export interface ReconsiliationStateType {
-    reconsiliationErrorState: string,
-    inventoryTransferItems: {
-        itemCode: string,
-        itemName: string,
-        quantity: 5
-    }[],
-    transferReceiptItems: {
-        itemCode: string,
-        itemName: string,
-        quantity: 5
-    }[],
+// Note: Reconciliation Types
+export interface InventoryTransferItems {
+    itemCode: string;
+    itemName: string;
+    quantity: number;
+}
+
+export interface TransferReceiptItems {
+    itemCode: string;
+    itemName: string;
+    quantity: number;
+}
+
+
+export interface ItTrStateProps {
+    inventoryTransferItems: Array<InventoryTransferItems>;
+    transferReceiptItems: Array<TransferReceiptItems>;
+    reconciliationErrorState: string;
+}
+
+// Note: Type definition for Inventory Transfer data
+export interface QuantityDifferenceData {
+    itemCode: string;
+    itemName: string;
+    totalITQuantity: number;
+    totalTRQuantity: number;
+    quantityDifference: number;
+    action: string;
 }

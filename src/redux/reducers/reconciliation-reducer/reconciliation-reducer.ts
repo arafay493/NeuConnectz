@@ -1,43 +1,50 @@
-/***** Note: ReconciliationReducer *****/
+/***** Note: WareHouseReducer *****/
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ReconsiliationStateType } from "@/types/redux-types";
+import { ItTrStateProps } from "@/types/redux-types";
 
 // Note: Reducer states...!
-const initialState: ReconsiliationStateType = {
-    reconsiliationErrorState: "",
+const initialState: ItTrStateProps = {
     inventoryTransferItems: [],
-    transferReceiptItems: []
+    transferReceiptItems: [],
+    reconciliationErrorState: ''
 };
 
-const ReconciliationReducer = createSlice({
-    name: "Reconciliation",
+const reconciliationSlice = createSlice({
+    name: "reconciliation",
     initialState,
     reducers: {
-        FETCH_IT_AND_TR_DATA: (state, action: PayloadAction<any>) => {
-            console.log("fetch IT and TR data in reconciliation reducer: ", action.payload);
-            state.inventoryTransferItems = action?.payload?.inventoryTransferItems;
-            state.transferReceiptItems = action?.payload?.transferReceiptItems;
-        },
-
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA: (state) => {
             state.inventoryTransferItems = [];
             state.transferReceiptItems = [];
-            state.reconsiliationErrorState = "You are not authorized to access this data!";
+            state.reconciliationErrorState = "You are not authorized to access this data!";
         },
 
-        CLEAR_ALL_ITR_STATES: (state) => {
-            state.reconsiliationErrorState = "";
-            state.inventoryTransferItems = [];
-            state.transferReceiptItems = [];
+        FETCH_RECONCILIATION_DATA: (state, action: PayloadAction<any>) => {
+            state.reconciliationErrorState = "";
+            state.inventoryTransferItems = action?.payload.inventoryTransferItems;
+            state.transferReceiptItems = action?.payload.transferReceiptItems;
         },
+
+        // FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {
+        //     // console.log("Warehouses list by user id data in reducer: ", action.payload);
+        //     state.warehouseErrorState = "";
+        //     state.warehousesListByUserId = [];
+        //     state.warehousesListByUserId = action?.payload;
+        // },
+
+        // CLEAR_ALL_WAREHOUSE_STATES: (state) => {
+        //     state.wareHousesList = [];
+        //     state.warehousesListByUserId = [];
+        //     state.warehouseErrorState = "";
+        // },
     }
 });
 
 export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA,
-        CLEAR_ALL_ITR_STATES,
-        FETCH_IT_AND_TR_DATA
-    } = ReconciliationReducer.actions;
-export default ReconciliationReducer.reducer;
+        FETCH_RECONCILIATION_DATA,
+    } = reconciliationSlice.actions;
+
+export default reconciliationSlice.reducer;

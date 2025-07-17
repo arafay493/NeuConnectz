@@ -126,15 +126,15 @@ const GRNMovementScreen = () => {
 
     // Note: This hook will run when wareHousesList state wil update...!
     useEffect(() => {
-        if (wareHousesList && wareHousesList.length > 0) {
-            const selectWarehouseOptions: any = wareHousesList?.map((wh) => ({
+        if (wareHousesList.data && wareHousesList.data.length > 0) {
+            const selectWarehouseOptions: any = wareHousesList?.data.map((wh) => ({
                 value: wh.whsCode,
                 label: wh.whsName,
             }));
             // console.log("Warehouses options: ", selectWarehouseOptions);
             selectWarehouseOptions && setWarehousesOptions(selectWarehouseOptions);
         };
-    }, [wareHousesList]);
+    }, [wareHousesList.data]);
 
     // Note: This hook will run when vendorCodeList state wil update...!
     useEffect(() => {
