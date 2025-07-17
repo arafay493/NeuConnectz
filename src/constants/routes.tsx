@@ -1,7 +1,19 @@
 // Note: All autheenticated and non-authenticated routes are defined here...!
 
-import { IconListCheck } from "@tabler/icons-react";
+import {
+    IconListCheck,
+    IconStack3Filled,
+    IconFileInvoiceFilled,
+    IconTextScan2,
+    IconUsersGroup,
+    IconBuildingWarehouse,
+    IconSettingsCog,
+    IconPresentationFilled,
+    IconPresentationAnalyticsFilled,
+    IconLayoutDashboardFilled
+} from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
+import { customStyles } from "@/styles/custom-theme";
 
 // Note: Unauthenticated routes...!
 const unAuthenticatedRoutes: String[] = ["/login"];
@@ -52,22 +64,22 @@ const routes: Routes = {
 // Note: Defining drawer routes...!
 const drawerRoutes: DrawerRoute[] = [
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconLayoutDashboardFilled fill="currentColor" color='currentColor' size={24} />,
         label: "dashboard",
         route: routes.dashboard,
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
         label: "stock movement",
         route: routes.stockMovement,
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
         label: "GRN movement",
         route: routes.grnMovement
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
         label: "reconciliation",
         route: routes.reconciliation,
     },
@@ -97,27 +109,27 @@ const drawerRoutes: DrawerRoute[] = [
     //     route: routes.trPostedDocuments,
     // },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconUsersGroup color='currentColor' size={24} />,
         label: "users list",
         route: routes.usersList,
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconUsersGroup color='currentColor' size={24} />,
         label: "assign group",
         route: routes.assignGroup,
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconBuildingWarehouse color='currentColor' size={24} />,
         label: "assign warehouse",
         route: routes.assignWareHouse,
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconSettingsCog color='currentColor' size={24} />,
         label: "configuration",
         route: routes.configuration
     },
     {
-        icon: <IconListCheck size={20} />,
+        icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
         label: "integration monitor",
         route: routes.integrationMonitor
     },

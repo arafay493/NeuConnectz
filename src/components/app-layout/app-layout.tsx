@@ -9,34 +9,27 @@ import {
   memo,
 } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import {
   AppShell,
   AppShellHeader,
-  AppShellNavbar,
   AppShellMain,
-  AppShellSection,
-  Burger,
   Group,
-  NavLink,
-  TextInput,
-  Menu,
   Avatar,
+  Text,
+  ActionIcon,
+  Stack,
 } from '@mantine/core';
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
-  IconChevronDown,
-  IconSearch,
-  IconUser,
-  IconLogout,
+  IconBell,
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { DrawerRoute } from "@/types/route-types";
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
-import { localAssets } from '@/lib/file-paths/file-paths';;
-import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import CollapsedNavbar from './collapsed-navbar';
+import ExpandedNavbar from './expanded-navbar';
 
 const AppLayOut = ({ children }: { children: ReactNode }) => {
 
@@ -45,11 +38,11 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   const isLargeScreen = useMediaQuery('(min-width: 1660px)');
   const [opened, { toggle }] = useDisclosure(true);
 
-  // Note: Handeling states here...!
+  // Note: Handling states here...!
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
-  // Note: Handeling redux here...!
+  // Note: Handling redux here...!
   const dispatch = useAppDispatch();
 
   // Note: Fetch user data from redux...!
@@ -72,155 +65,91 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
     setActiveTab(activeRouteIndex >= 0 ? activeRouteIndex : -1);
   }, [pathName]);
 
-  // Note: Link component for navigation...!
-  const renderNavLink = (item: DrawerRoute, index: number) => (
-    <Link
-      key={drawerRoutes[index]?.label}
-      href={item.route}
-      passHref
-      style={{
-        textDecoration: customStyles.textDecoration.none,
-        color: activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A,
-        width: customStyles.sizeWidthAndHeight.fullWidth,
-        borderRadius: customStyles.size.size_5,
-        boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
-        textTransform: customStyles.textTransformation.capitalize,
-      }}
-    >
-      <NavLink
-        component="a"
-        leftSection={item?.icon}
-        label={collapsed ? null : item?.label}
-        variant="light"
-        px={collapsed ? customStyles.deviceSize.sm : customStyles.deviceSize.md}
-        py={customStyles.deviceSize.sm}
-        color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A}
-        active={activeTab === index}
-        onClick={() => setActiveTab(index)}
-        styles={{
-          label: { fontSize: 14, fontWeight: 500 },
-          root: { justifyContent: collapsed ? customStyles.alignment.center : customStyles.elementDirection.flexStart, width: customStyles.sizeWidthAndHeight.fullWidth },
-        }}
-      />
-    </Link>
-  );
-
   return (
     <AppShell
       padding={customStyles.deviceSize.md}
-      withBorder
-      header={{ height: 60 }}
+      header={{ height: 80 }}
       navbar={{
-        width: collapsed ? 80 : 270,
+        width: collapsed ? 120 : 300,
         breakpoint: customStyles.deviceSize.sm,
-        collapsed: { mobile: !opened, desktop: collapsed },
+        collapsed: { mobile: !opened },
       }}
     >
-      {/* Note: Navbar section */}
+      {/* Note: Navbar section */} // ! completed
       <AppShellHeader
-        withBorder
-        style={{ display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none' }}
+        ml={collapsed ? 120 : 300}
+        px={24}
+        style={{
+          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+          // transition: 'margin-left 0.3s ease', // ✨ smooth movement
+        }}
       >
-        <Group h={customStyles.sizeWidthAndHeight.fullWidth} px={customStyles.deviceSize.md} justify={customStyles.alignment.spaceBetween}>
-          <Group style={{ width: 'auto' }}>
-            <Burger
-              opened={isMobile ? opened : !collapsed}
-              onClick={isMobile ? toggle : () => setCollapsed(!collapsed)}
-              size={customStyles.deviceSize.sm}
-              color={customStyles.colors._1B59F8}
+        <Group h='100%' align='center' justify='end'>
+          <ActionIcon
+            variant="light"
+            color="yellow"
+            size="xl"
+            radius={8}
+            // onClick={onEdit}
+            style={{
+              '&:hover': {
+                backgroundColor: '#e7f5ff'
+              }
+            }}
+          >
+            <IconBell size={24} />
+          </ActionIcon>
+          <Group gap="md" align="center">
+            <Avatar
+              title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}
+              name={authenticatedUser?.name}
+              size={48}
+              color='initials'
             />
-
-            <Image
-              src={localAssets.newLogo}
-              alt="Z_Connect Logo"
-              title="Z_Connect"
-              width={120}
-              style={{ height: "auto" }}
-            />
+            {/* <Image
+              style={{ borderRadius: '50%' }}
+              src={localAssets.userIcon}
+              height={24}
+              width={24}
+              alt='User Avatar'
+            /> */}
+            <Stack gap={0}>
+              <Text size="sm" fw={500} c={customStyles.colors._4A4A4A}>
+                {authenticatedUser?.name?.charAt(0).toUpperCase()}{authenticatedUser?.name?.slice(1).toLowerCase()}
+              </Text>
+              <Text size="xs" c={customStyles.colors._909090}>
+                {authenticatedUser?.userType === 'SuperAdmin' ? 'Super Admin' : 'Admin'}
+              </Text>
+            </Stack>
           </Group>
-
-          <Menu shadow={customStyles.deviceSize.md} width={200} position="bottom-end">
-            <Menu.Target>
-              <Group style={{ cursor: 'pointer' }}>
-                <Avatar
-                  color="cyan"
-                  radius={customStyles.deviceSize.xl}
-                  title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}
-                >
-                  {authenticatedUser?.name?.charAt(0).toUpperCase()}
-                </Avatar>
-                <IconChevronDown size="1rem" />
-              </Group>
-            </Menu.Target>
-
-            <Menu.Dropdown>
-              <Menu.Label>Settings</Menu.Label>
-
-              <Menu.Item component={Link} href="#">
-                <IconUser size="1rem" style={{ marginRight: 8 }} /> Account
-              </Menu.Item>
-
-              <Menu.Item color={customStyles.colors.red} onClick={() => logout("Log Out Success", "You have logged out successfully")}>
-                <IconLogout size="1rem" style={{ marginRight: 8 }} />
-                Logout
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
         </Group>
       </AppShellHeader>
 
-      {/* Note: Drawer section */}
-      <AppShellNavbar
-        p={customStyles.deviceSize.xs}
-        withBorder
-        style={{
-          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
-          overflow: 'scroll'
-        }}
-      >
-        <AppShellSection grow>
-          <Group align={customStyles.elementDirection.flexStart} style={{ flexDirection: customStyles.elementDirection.column }}>
-            {drawerRoutes.slice(0).map((item, index) => renderNavLink(item, index))}
-          </Group>
-        </AppShellSection>
-
-        {/* Note: logout section */}
-        <Group align={customStyles.alignment.center} style={{ marginTop: '15px', paddingBottom: 20 }}>
-          <Link
-            href="#"
-            passHref
-            style={{
-              textDecoration: customStyles.textDecoration.none,
-              color: customStyles.colors._4A4A4A,
-              width: customStyles.sizeWidthAndHeight.fullWidth,
-              borderRadius: customStyles.size.size_5,
-              boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.1)',
-              textTransform: customStyles.textTransformation.capitalize
-            }}
-          >
-            <NavLink
-              component="a"
-              leftSection={<IconLogout size={20} />}
-              label="logout"
-              variant="light"
-              px={collapsed ? customStyles.deviceSize.sm : customStyles.deviceSize.md}
-              py={customStyles.deviceSize.sm}
-              color={customStyles.colors._4A4A4A}
-              onClick={() => logout("Log Out Success", "You have logged out successfully")}
-              styles={{
-                label: { fontSize: 14, fontWeight: 500 },
-                root: { justifyContent: collapsed ? customStyles.alignment.center : customStyles.elementDirection.flexStart, width: customStyles.sizeWidthAndHeight.fullWidth },
-              }}
-            />
-          </Link>
-        </Group>
-      </AppShellNavbar>
+      {/* Note: Navbar section */}
+      {collapsed ? (
+        <CollapsedNavbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setCollapsed={setCollapsed}
+          toggle={toggle}
+        />
+      ) : (
+        <ExpandedNavbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          setCollapsed={setCollapsed}
+          toggle={toggle}
+        />
+      )}
 
       {/* Note: Components section */}
-      <AppShellMain style={{ backgroundColor: customStyles.colors._F5F7FA }}>
+      <AppShellMain style={{
+        backgroundColor: customStyles.colors._F5F7FA,
+        transition: 'margin-left 0.3s ease', // ✨ optional if needed
+      }}>
         {children}
       </AppShellMain>
-    </AppShell>
+    </AppShell >
   );
 };
 
