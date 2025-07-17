@@ -12,7 +12,7 @@ import sapReducer from "./sap-reducer/sap-reducer";
 import rolesReducer from "./roles-reducer/roles-reducer";
 import itrReducer from "./itr-reducer/itr-reducer";
 import DashboardReducer from "./dashboard-reducer/dashboard-reducer";
-import ReconciliationReducer from "./reconciliation-reducer/reconciliation-reducer";
+import reconciliationReducer from '@/redux/reducers/reconciliation-reducer/reconciliation-reducer';
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -30,7 +30,7 @@ const rootReducer = combineReducers({
     sapStates: sapReducer,
     rolesStates: rolesReducer,
     itrStates: itrReducer,
-    reconciliationStates: ReconciliationReducer
+    reconciliationStates: reconciliationReducer,
 });
 
 export default persistReducer(persistConfig, rootReducer);

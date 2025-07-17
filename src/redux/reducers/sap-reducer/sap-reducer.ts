@@ -10,6 +10,8 @@ const initialState: SAPStateType = {
     sapErrorState: "",
     isSAPConfigExist: false,
     vendorCodeList: [],
+    sapStagingDataCounts: null,
+    totalGRNS_DataCounts: 0
 };
 
 const SAPReducer = createSlice({
@@ -41,11 +43,17 @@ const SAPReducer = createSlice({
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
             state.list_GRNS_Data = action?.payload?.grnsData;
+            state.totalGRNS_DataCounts = action?.payload?.totalGRNSCount
         },
 
         FETCH_ALL_VENDOR_CODES: (state, action: PayloadAction<any>) => {
             // console.log("Vendor code list data in sap reducer: ", action?.payload);
             state.vendorCodeList = action?.payload;
+        },
+
+        GET_SAP_STAGING_DATA_COUNTS: (state, action: PayloadAction<any>) => {
+            // console.log("Sap staging counts in sap reducer: ", action?.payload);
+            state.sapStagingDataCounts = action?.payload;
         },
 
         CLEAR_ALL_SAP_STATES: (state) => {
@@ -54,6 +62,7 @@ const SAPReducer = createSlice({
             state.sapErrorState = "";
             state.isSAPConfigExist = false;
             state.vendorCodeList = [];
+            state.sapStagingDataCounts = null;
         },
     }
 });
@@ -65,6 +74,7 @@ export const
         FETCH_ALL_ITR_IT_TRS,
         FETCH_ALL_GRNS,
         CLEAR_ALL_SAP_STATES,
-        FETCH_ALL_VENDOR_CODES
+        FETCH_ALL_VENDOR_CODES,
+        GET_SAP_STAGING_DATA_COUNTS
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

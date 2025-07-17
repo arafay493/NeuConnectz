@@ -6,6 +6,7 @@ import ProductImage from "@/assets/images/product-image.gif";
 import UserIcon from "@/assets/images/user.png";
 import NewLogo from "@/assets/images/new-logo.svg";
 import WhiteLogo from "@/assets/images/white-logo.svg";
+import ReconciliationNotFoundImage from "@/assets/images/reconciliation-not-found.svg";
 import ConfigAccessLogo from "@/assets/images/configuration-logo.svg";
 import Logo_sm from "@/assets/images/Logo_sm.png";
 
@@ -16,9 +17,10 @@ const localAssets: { [key: string]: StaticImageData } = {
     productImage: ProductImage,
     userIcon: UserIcon,
     whiteLogo: WhiteLogo,
-    configAccessLogo: ConfigAccessLogo,
     logo_sm: Logo_sm,
-    logo_sm_new: Logo_sm
+    logo_sm_new: Logo_sm,
+    reconciliationNotFoundImage: ReconciliationNotFoundImage,
+    configAccessLogo: ConfigAccessLogo
 };
 
 export { localAssets };

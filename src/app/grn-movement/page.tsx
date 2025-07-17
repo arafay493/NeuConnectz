@@ -6,7 +6,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     Text,
     Group,
-    SegmentedControl,
     Title,
     Stack,
     Button,
@@ -21,11 +20,6 @@ import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '@/components/loader/loader';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAll_ITR_Data } from '@/redux/actions/itr-actions/itr-actions';
-import ITR_TableCom from '@/components/itr-table/itr-table';
-import TR_TableCom from '@/components/tr-table/tr-table';
-import IT_TableCom from '@/components/it-table/it-table';
-import { exportToCSV } from '@/constants/export-to-csv';
 import { grnFilters, sapStatusOptionsGRN, docStatusOptions, apiFilterParamsForGRNS } from '@/constants/filters';
 import { exportDataToCsvFile, fetchAll_GRNS, fetchAllVendorCodes } from '@/redux/actions/sap-actions/sap-actions';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
@@ -58,7 +52,8 @@ const GRNMovementScreen = () => {
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    // Note: Filters states...!
+    const lastCount = itemsPerPage;
+    const skipRecords = (activePage - 1) * itemsPerPage;
 
     // Note: Multi-filter state...!
     const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
@@ -69,98 +64,61 @@ const GRNMovementScreen = () => {
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-    const { list_GRNS_Data, sapErrorState, vendorCodeList } = useAppSelector(({ sapStates }) => { return sapStates });
+    const {
+        list_GRNS_Data,
+        sapErrorState,
+        vendorCodeList,
+        totalGRNS_DataCounts
+    } = useAppSelector(({ sapStates }) => { return sapStates });
     // console.log("list_GRNS_Data: ", list_GRNS_Data);
     // console.log("vendorCodeList: ", vendorCodeList);
     // console.log("wareHousesList: ", wareHousesList);
+    // console.log("Total GRNS counts: ", totalGRNS_DataCounts);
 
     // Note: Required variables...!
-    const totalPages = Math.ceil(list_GRNS_Data.length / itemsPerPage);
-    const paginatedData = list_GRNS_Data.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+    const totalPages = Math.ceil(totalGRNS_DataCounts / itemsPerPage);
+    // const paginatedData = list_GRNS_Data.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+
+    const handleNewPage = (newPage: number) => {
+        setPage(newPage);
+    };
 
     // Note: Export to CSV handler...!
-    // const handleExportToCSV = () => {
-    //     // console.log('Tab: ', tab);
+    const handleExportToCSV = () => {
+        const isFiltersApplied = Object.keys(appliedFilters);
 
-    //     const isFiltersApplied = Object.keys(appliedFilters);
+        if (isFiltersApplied.length < 1) {
+            dispatch(exportDataToCsvFile({
+                token: authenticatedUser?.token || "",
+                apiUrl: process.env.NEXT_PUBLIC_EXPORT_GRN_TO_EXCEL as string,
+                type: 'GRN',
+            }));
+        }
 
-    //     if (isFiltersApplied.length < 1) {
-    //         if (tab === 'ITR') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL as string,
-    //                 type: 'ITR',
-    //             }));
-    //         }
+        else if (isFiltersApplied.length > 0) {
+            const cleanedFilters = Object.entries(appliedFilters)
+                .filter(([_, value]) => value && value.trim() !== '')
+                .reduce((acc, [key, value]) => {
+                    console.log('Key: ', key);
+                    const paramKey = apiFilterParamsForGRNS[grnFilters.indexOf(key)];
+                    if (paramKey) acc[paramKey] = value;
+                    return acc;
+                }, {} as Record<string, string>);
 
-    //         if (tab === 'IT') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL as string,
-    //                 type: 'IT',
-    //             }));
-    //         }
+            const queryString = new URLSearchParams(cleanedFilters).toString();
+            const modifiedUrl = `${process.env.NEXT_PUBLIC_EXPORT_GRN_TO_EXCEL}?${queryString}`;
 
-    //         if (tab === 'TR') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL as string,
-    //                 type: 'TR',
-    //             }));
-    //         }
-    //     }
-
-    //     else if (isFiltersApplied.length > 0) {
-    //         const cleanedFilters = Object.entries(appliedFilters)
-    //             .filter(([_, value]) => value && value.trim() !== '')
-    //             .reduce((acc, [key, value]) => {
-    //                 const paramKey = apiFilterParams[filters.indexOf(key)];
-    //                 if (paramKey) acc[paramKey] = value;
-    //                 return acc;
-    //             }, {} as Record<string, string>);
-
-    //         const queryString = new URLSearchParams(cleanedFilters).toString();
-
-    //         if (tab === 'ITR') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL}?${queryString}` as string,
-    //                 type: 'ITR',
-    //             }));
-    //         }
-
-    //         if (tab === 'IT') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_IT_TO_EXCEL}?${queryString}` as string,
-    //                 type: 'IT',
-    //             }));
-    //         }
-
-    //         if (tab === 'TR') {
-    //             dispatch(exportDataToCsvFile({
-    //                 token: authenticatedUser?.token || "",
-    //                 apiUrl: `${process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL}?${queryString}` as string,
-    //                 type: 'TR',
-    //             }));
-    //         }
-    //     }
-
-    //     // const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-    //     // if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
-    //     // else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
-    //     // else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
-    // };
+            dispatch(exportDataToCsvFile({
+                token: authenticatedUser?.token || "",
+                apiUrl: modifiedUrl,
+                type: 'GRN',
+            }));
+        }
+    };
 
     // Note: Mounted effect to fetch ITR data initially...!
     useEffect(() => {
         if (authenticatedUser) {
-            setLoading(true);
-            dispatch(fetchAll_GRNS({
-                token: authenticatedUser?.token || "",
-                handleLoading: () => setLoading(false),
-                apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=Pending`
-            }));
             dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token || "" }));
             dispatch(fetchAllVendorCodes(authenticatedUser?.token || ""));
         };
@@ -168,15 +126,15 @@ const GRNMovementScreen = () => {
 
     // Note: This hook will run when wareHousesList state wil update...!
     useEffect(() => {
-        if (wareHousesList && wareHousesList.length > 0) {
-            const selectWarehouseOptions: any = wareHousesList?.map((wh) => ({
+        if (wareHousesList.data && wareHousesList.data.length > 0) {
+            const selectWarehouseOptions: any = wareHousesList?.data.map((wh) => ({
                 value: wh.whsCode,
                 label: wh.whsName,
             }));
             // console.log("Warehouses options: ", selectWarehouseOptions);
             selectWarehouseOptions && setWarehousesOptions(selectWarehouseOptions);
         };
-    }, [wareHousesList]);
+    }, [wareHousesList.data]);
 
     // Note: This hook will run when vendorCodeList state wil update...!
     useEffect(() => {
@@ -189,11 +147,18 @@ const GRNMovementScreen = () => {
         };
     }, [vendorCodeList]);
 
-    // useEffect(() => {
-    //     if (appliedFilters) {
-    //         console.log('Applied filters: ', appliedFilters);
-    //     };
-    // }, [appliedFilters]);
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setLoading(true);
+            dispatch(fetchAll_GRNS({
+                token: authenticatedUser?.token || "",
+                handleLoading: () => setLoading(false),
+                apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA || "",
+                lastCount: lastCount,
+                skipRecords: skipRecords
+            }));
+        };
+    }, [authenticatedUser, skipRecords, lastCount]);
 
     return (
         <div>
@@ -229,7 +194,7 @@ const GRNMovementScreen = () => {
                 <Button
                     leftSection={<IconFileTypeCsv size={20} color={customStyles.colors.white} />}
                     color={customStyles.colors._1B59F8}
-                // onClick={handleExportToCSV}
+                    onClick={handleExportToCSV}
                 >
                     Export to CSV
                 </Button>
@@ -366,7 +331,7 @@ const GRNMovementScreen = () => {
                         const cleanedFilters = Object.entries(appliedFilters)
                             .filter(([_, value]) => value && value.trim() !== '')
                             .reduce((acc, [key, value]) => {
-                                console.log('Key: ', key);
+                                // console.log('Key: ', key);
                                 const paramKey = apiFilterParamsForGRNS[grnFilters.indexOf(key)];
                                 if (paramKey) acc[paramKey] = value;
                                 return acc;
@@ -374,7 +339,7 @@ const GRNMovementScreen = () => {
 
                         const queryString = new URLSearchParams(cleanedFilters).toString();
                         const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?${queryString}`;
-                        console.log('Modified URL:', modifiedUrl);
+                        // console.log('Modified URL:', modifiedUrl);
 
                         setLoading(true);
                         dispatch(fetchAll_GRNS({
@@ -398,7 +363,9 @@ const GRNMovementScreen = () => {
                         dispatch(fetchAll_GRNS({
                             token: authenticatedUser?.token || "",
                             handleLoading: () => setLoading(false),
-                            apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=Pending`
+                            apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA || "",
+                            lastCount: lastCount,
+                            skipRecords: skipRecords
                         }));
                     }}
                 >
@@ -420,7 +387,7 @@ const GRNMovementScreen = () => {
 
                         <Table.Tbody>
                             {
-                                paginatedData?.map((row: any, index) => {
+                                list_GRNS_Data?.map((row: any, index) => {
                                     return (
                                         <Table.Tr key={row.id}>
                                             <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
@@ -444,11 +411,11 @@ const GRNMovementScreen = () => {
                     </Table>
 
                     {/* Note: If no data found */}
-                    {paginatedData.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
+                    {list_GRNS_Data.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
                 </ScrollArea>
 
                 {
-                    paginatedData.length > 0 &&
+                    list_GRNS_Data.length > 0 &&
                     <Flex
                         justify={customStyles.alignment.spaceBetween}
                         align={customStyles.alignment.center}
@@ -461,7 +428,7 @@ const GRNMovementScreen = () => {
                         <PaginationComponent
                             totalPages={totalPages}
                             pageNum={activePage}
-                            handleNewPage={setPage}
+                            handleNewPage={handleNewPage}
                         />
 
                         {/* Note: Rows per page section */}

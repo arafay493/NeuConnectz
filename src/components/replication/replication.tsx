@@ -2,36 +2,40 @@
 
 "use client";
 
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { Card, Text, Progress, Grid, Group, Box, Stack, Button, ThemeIcon, SimpleGrid } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { getSAPData } from '@/redux/actions/sap-actions/sap-actions';
+import { getSAPData, handleGetSapStagingDataCounts } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
 import { IconChartBar } from '@tabler/icons-react';
 
-const data = [
-    { label: "Warehouse", value: "6,260" },
-    { label: "Group Code", value: "0" },
-    { label: "Stock Master", value: "5,420" },
-    { label: "Stock Barcode", value: "3,255" },
-    { label: "Stock Warehouse", value: 0, count: "0/60" },
-    { label: "Bin Location", value: "5,420" },
-    { label: "Vendor Master", value: "26,560" },
-    { label: "Unit of Measure", value: "3,255" },
-];
+// const data = [
+//     { label: "Warehouse", dynamicLabel: "warehouseTotal" },
+//     { label: "Group Code", dynamicLabel: "groupCodeTotal" },
+//     { label: "Stock Master", dynamicLabel: "stockMasterTotal" },
+//     { label: "Stock Barcode", dynamicLabel: "stockBarcodeTotal" },
+//     { label: "Stock Warehouse", dynamicLabel: "stockWarehouseTotal" },
+//     { label: "Bin Location", dynamicLabel: "binLocationTotal" },
+//     { label: "Vendor Master", dynamicLabel: "vendorMasterTotal" },
+// ];
+
+const data = ["Warehouse", "Group Code", "Stock Master", "Stock Barcode", "Stock Warehouse", "Bin Location", "Vendor Master"];
 
 const ReplicationComponent = () => {
 
     // Note: Handeling states here...!
     const [loading, setLoading] = useState(false);
+    const [replicationStats, setReplicationStats] = useState([]);
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { sapStagingDataCounts } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log("Sap Staging Data Counts in component: ", sapStagingDataCounts);
 
     // Note: Get SAP data api response handler...!
     const handleResponse = (response: any): void => {
@@ -58,6 +62,25 @@ const ReplicationComponent = () => {
             resHandler: handleResponse
         }));
     };
+
+    // Note: This hook will run when component mounts...!
+    useEffect(() => {
+        if (authenticatedUser) {
+            dispatch(handleGetSapStagingDataCounts(authenticatedUser?.token));
+        };
+    }, []);
+
+    // Note: This hook will run when sapStagingDataCounts state update...!
+    useEffect(() => {
+        if (sapStagingDataCounts) {
+            const statsArray: any = Object.entries(sapStagingDataCounts).map(([key, value]) => ({
+                label: key,
+                value,
+            }));
+            console.log('Replication stats: ', statsArray);
+            statsArray && setReplicationStats(statsArray);
+        };
+    }, [sapStagingDataCounts]);
 
     return (
         <Card withBorder radius="md" p="lg" shadow="sm">
@@ -107,6 +130,7 @@ const ReplicationComponent = () => {
                         Progress of inventory sync with SAP.
                     </Text>
                 </div>
+
                 <Text size="xs" color="dimmed">
                     Last sync at 1 hr 20 min ago
                 </Text>
@@ -128,7 +152,7 @@ const ReplicationComponent = () => {
 
             {/* <Grid gutter="sm"> */}
             <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
-                {data.map((stat) => (
+                {replicationStats.map((stat: any, index: number) => (
                     <Card
                         key={stat.label}
                         shadow="sm"
@@ -146,10 +170,11 @@ const ReplicationComponent = () => {
                                         color: customStyles.colors._4D4D4D,
                                         height: '24px',
                                         lineHeight: '24px',
+                                        textTransform: "capitalize"
                                     }}
                                     mb={'10px'}
                                 >
-                                    {stat.label}
+                                    {data[index]}
                                 </Text>
 
                                 <ThemeIcon size={40} radius="xl" color="blue">
@@ -163,6 +188,7 @@ const ReplicationComponent = () => {
                         </Group>
                     </Card>
                 ))}
+
             </SimpleGrid>
             {/* </Grid> */}
         </Card>
