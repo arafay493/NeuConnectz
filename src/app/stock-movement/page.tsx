@@ -23,7 +23,6 @@ import { fetchAll_ITR_Data } from '@/redux/actions/itr-actions/itr-actions';
 import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
-import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions, apiFilterParams, docStatusOptionsFor_IT_TR } from '@/constants/filters';
 import { exportDataToCsvFile } from '@/redux/actions/sap-actions/sap-actions';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
@@ -36,83 +35,57 @@ const StockMovementScreen = () => {
   // Note: Handeling states here...!
   const [tab, setTab] = useState<'ITR' | 'IT' | 'TR'>('ITR');
   const [loading, setLoading] = useState(false);
-  const [activePage, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  // Note: For TR...!
-  const [activePage_TR, setPage_TR] = useState(1);
-  const [itemsPerPage_TR, setItemsPerPage_TR] = useState(10);
-
-  // Note: For IT...!
-  const [activePage_IT, setPage_IT] = useState(1);
-  const [itemsPerPage_IT, setItemsPerPage_IT] = useState(10);
-
-  // Note: Filters states...!
-
-  // Note: Multi-filter state...!
   const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
   const [warehousesOptions, setWarehousesOptions] = useState([]);
+  const [finalApiUrl, setFinalApiUrl] = useState("");
 
   // Note: Redux dispatch and selector hooks...!
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-  const {
-    itrData,
-    trData,
-    itData,
-    itrErrorState
-  } = useAppSelector(({ itrStates }) => { return itrStates });
   const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-  // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
-  // console.log("TR data in Inventory Transfer Request screen: ", trData);
-  // console.log("IT data in Inventory Transfer Request screen: ", itData);
-
-  // Note: Required variables...!
-  // Note: For ITR...!
-  const totalPages = Math.ceil(itrData.length / itemsPerPage);
-  const paginatedData = itrData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
-
-  // Note: For TR...!
-  const totalPages_TR = Math.ceil(trData.length / itemsPerPage_TR);
-  const paginatedData_TR = trData.slice((activePage_TR - 1) * itemsPerPage_TR, activePage_TR * itemsPerPage_TR);
-
-  // Note: For IT...!
-  const totalPages_IT = Math.ceil(itData.length / itemsPerPage_IT);
-  const paginatedData_IT = itData.slice((activePage_IT - 1) * itemsPerPage_IT, activePage_IT * itemsPerPage_IT);
 
   // Note: Teb onchange handler...!
   const handleTabChange = (value: 'ITR' | 'IT' | 'TR') => {
     // console.log("Tab value: ", value);
     setTab(value);
-    setLoading(true);
+    // setLoading(true);
     setAppliedFilters({});
 
     if (value === 'ITR') {
+      setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '');
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
         type: 'ITR',
         handleLoading: () => setLoading(false),
+        lastCount: 10,
+        skipRecords: 0
       }));
       return;
     };
 
     if (value === 'TR') {
+      setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '');
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
         type: 'TR',
-        handleLoading: () => setLoading(false)
+        handleLoading: () => setLoading(false),
+        lastCount: 10,
+        skipRecords: 0
       }));
       return;
     };
 
     if (value === 'IT') {
+      setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '');
       dispatch(fetchAll_ITR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
         type: 'IT',
-        handleLoading: () => setLoading(false)
+        handleLoading: () => setLoading(false),
+        lastCount: 10,
+        skipRecords: 0
       }));
       return;
     };
@@ -185,24 +158,11 @@ const StockMovementScreen = () => {
         }));
       }
     }
-
-    // const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-    // if (tab === 'ITR') exportToCSV(paginatedData, `${rightNow} - Inventory Transfer Request.csv`);
-    // else if (tab === 'TR') exportToCSV(paginatedData_TR, `${rightNow} - Transfer Request.csv`);
-    // else if (tab === 'IT') exportToCSV(paginatedData_IT, `${rightNow} - Inventory Transfer.csv`);
   };
 
   // Note: Mounted effect to fetch ITR data initially...!
   useEffect(() => {
     if (authenticatedUser) {
-      setLoading(true);
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: 'ITR',
-        handleLoading: () => setLoading(false)
-      }));
-
       dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token || "" }));
     };
   }, []);
@@ -364,16 +324,52 @@ const StockMovementScreen = () => {
                 return acc;
               }, {} as Record<string, string>);
 
-            const queryString = new URLSearchParams(cleanedFilters).toString();
-            const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA}?${queryString}`;
-
             setLoading(true);
-            dispatch(fetchAll_ITR_Data({
-              token: authenticatedUser?.token || '',
-              apiUrl: modifiedUrl,
-              type: tab,
-              handleLoading: () => setLoading(false)
-            }));
+
+            if (tab === 'ITR') {
+              const queryString = new URLSearchParams(cleanedFilters).toString();
+              const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA}?${queryString}`;
+              setFinalApiUrl(modifiedUrl);
+
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: modifiedUrl,
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
+
+            if (tab === 'IT') {
+              const queryString = new URLSearchParams(cleanedFilters).toString();
+              const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA}?${queryString}`;
+              setFinalApiUrl(modifiedUrl);
+
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: modifiedUrl,
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
+
+            if (tab === 'TR') {
+              const queryString = new URLSearchParams(cleanedFilters).toString();
+              const modifiedUrl = `${process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA}?${queryString}`;
+              setFinalApiUrl(modifiedUrl);
+
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: modifiedUrl,
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
           }}
           disabled={Object.values(appliedFilters).every(v => !v || v.trim() === '')}
         >
@@ -387,12 +383,42 @@ const StockMovementScreen = () => {
           onClick={() => {
             setAppliedFilters({});
             setLoading(true);
-            dispatch(fetchAll_ITR_Data({
-              token: authenticatedUser?.token || '',
-              apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-              type: tab,
-              handleLoading: () => setLoading(false)
-            }));
+
+            if (tab === 'ITR') {
+              setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || "");
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
+
+            if (tab === 'IT') {
+              setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || "");
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
+
+            if (tab === 'TR') {
+              setFinalApiUrl(process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || "");
+              dispatch(fetchAll_ITR_Data({
+                token: authenticatedUser?.token || '',
+                apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
+                type: tab,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0
+              }));
+            }
           }}
         >
           Clear All
@@ -440,49 +466,13 @@ const StockMovementScreen = () => {
         <ScrollArea type='auto'>
 
           {/* Note: ITR data table */}
-          {
-            tab === 'ITR' && (
-              <ITR_TableCom
-                paginatedData={paginatedData}
-                totalPages={totalPages}
-                activePage={activePage}
-                setPage={setPage}
-                itemsPerPage={itemsPerPage}
-                setItemsPerPage={setItemsPerPage}
-                itrErrorState={itrErrorState}
-              />
-            )
-          }
+          {tab === 'ITR' && (<ITR_TableCom apiUrl={finalApiUrl || process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA as string} />)}
 
           {/* Note: TR data table */}
-          {
-            tab === 'TR' && (
-              <TR_TableCom
-                paginatedData={paginatedData_TR}
-                totalPages={totalPages_TR}
-                activePage={activePage_TR}
-                setPage={setPage_TR}
-                itemsPerPage={itemsPerPage_TR}
-                setItemsPerPage={setItemsPerPage_TR}
-                itrErrorState={itrErrorState}
-              />
-            )
-          }
+          {tab === 'TR' && (<TR_TableCom apiUrl={finalApiUrl || process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA as string} />)}
 
           {/* Note: IT data table */}
-          {
-            tab === 'IT' && (
-              <IT_TableCom
-                paginatedData={paginatedData_IT}
-                totalPages={totalPages_IT}
-                activePage={activePage_IT}
-                setPage={setPage_IT}
-                itemsPerPage={itemsPerPage_IT}
-                setItemsPerPage={setItemsPerPage_IT}
-                itrErrorState={itrErrorState}
-              />
-            )
-          }
+          {tab === 'IT' && (<IT_TableCom apiUrl={finalApiUrl || process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA as string} />)}
         </ScrollArea>
       </div>
     </div>

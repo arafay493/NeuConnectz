@@ -17,7 +17,7 @@ import { apiFilterParams } from "@/constants/filters";
 const fetchAll_ITR_Data = createAsyncThunk(
     "itr/fetchAll_ITR_Data",
     async (
-        { token, apiUrl, type, handleLoading, filterIndex, appliedFilter }:
+        { token, apiUrl, type, handleLoading, filterIndex, appliedFilter, lastCount, skipRecords }:
             {
                 token: string,
                 apiUrl: string,
@@ -25,14 +25,18 @@ const fetchAll_ITR_Data = createAsyncThunk(
                 handleLoading: () => void,
                 filterIndex?: number,
                 appliedFilter?: string | null,
+                lastCount?: number,
+                skipRecords?: number
             },
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
-        // console.log("API URL: ", apiUrl);
-        // console.log("Type: ", type);
+        console.log("API URL: ", apiUrl);
+        console.log("Type: ", type);
         // console.log("Filter Index: ", filterIndex);
         // console.log("Applied Filter: ", appliedFilter);
+        console.log("Last Count: ", lastCount);
+        console.log("Skip Records: ", skipRecords);
 
         const modifiedApiUrl = (filterIndex != undefined && appliedFilter != undefined) ?
             (`${apiUrl}?${apiFilterParams[filterIndex || 0]}=${appliedFilter || ''}`) :
@@ -43,24 +47,38 @@ const fetchAll_ITR_Data = createAsyncThunk(
             const response = await axios({
                 method: API_METHODS.GET,
                 url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
                 headers: {
                     "Api-Url": modifiedApiUrl,
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in ITR action: ", response);
+            console.log("Response in ITR action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
                 handleLoading(); // Note: Stop loading...!
-                if (type === 'ITR') dispatch(FETCH_ALL_ITR_DATA(data?.data?.data));
+                if (type === 'ITR') {
+                    dispatch(FETCH_ALL_ITR_DATA({
+                        itrData: data?.data?.data,
+                        itrDataCount: data?.data?.totalRecords
+                    }))
+                }
                 else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA(data?.data?.data));
-                else if (type === 'IT') dispatch(FETCH_ALL_IT_DATA(data?.data?.data));
+                else if (type === 'IT') {
+                    dispatch(FETCH_ALL_IT_DATA({
+                        itData: data?.data?.data,
+                        itDataCount: data?.data?.totalRecords
+                    }));
+                }
             };
         }
 
         catch (error: any) {
-            // console.log(`Error occured in fetch all ${type} data integration:`, error);
+            console.log(`Error occured in fetch all ${type} data integration:`, error);
             const { status, data } = error?.response;
 
             // 401:
