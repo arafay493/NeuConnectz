@@ -56,7 +56,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            console.log("Response in ITR action: ", response);
+            // console.log("Response in ITR action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -67,7 +67,14 @@ const fetchAll_ITR_Data = createAsyncThunk(
                         itrDataCount: data?.data?.totalRecords
                     }))
                 }
-                else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA(data?.data?.data));
+                else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA({
+                    trData: data?.data?.data,
+                    trDataCount: data?.data?.totalRecords
+                }));
+                else if (type === 'IT') dispatch(FETCH_ALL_IT_DATA({
+                    itData: data?.data?.data,
+                    itDataCount: data?.data?.totalRecords
+                }));
                 else if (type === 'IT') {
                     dispatch(FETCH_ALL_IT_DATA({
                         itData: data?.data?.data,

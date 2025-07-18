@@ -26,7 +26,7 @@ const ITRReducer = createSlice({
         },
 
         FETCH_ALL_ITR_DATA: (state, action: PayloadAction<any>) => {
-            console.log("ITR data in ITR reducer: ", action.payload);
+            // console.log("ITR data in ITR reducer: ", action.payload);
             state.itrErrorState = "";
             state.itrData = [];
             state.trData = [];
@@ -38,13 +38,15 @@ const ITRReducer = createSlice({
         FETCH_ALL_TR_DATA: (state, action: PayloadAction<any>) => {
             // console.log("TR data in ITR reducer: ", action.payload);
             state.itrErrorState = "";
+            state.trData = []
             state.itrData = [];
             state.itData = [];
-            state.trData = action?.payload;
+            state.trData = action?.payload?.trData;
+            state.trDataCount = action?.payload?.trDataCount
         },
 
         FETCH_ALL_IT_DATA: (state, action: PayloadAction<any>) => {
-            console.log("IT data in ITR reducer: ", action.payload);
+            // console.log("IT data in ITR reducer: ", action.payload);
             state.itrErrorState = "";
             state.itData = [];
             state.itrData = [];
