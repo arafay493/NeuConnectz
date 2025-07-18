@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import NextImage from 'next/image';
 import {
-    AppShellNavbar,
     Group,
     NavLink,
     ActionIcon,
@@ -22,19 +21,19 @@ import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
 import { localAssets } from '@/lib/file-paths/file-paths';
 
-interface CollapsedNavbarProps {
+interface HtmlCollapsedNavbarProps {
     activeTab: number;
     setActiveTab: (index: number) => void;
     setCollapsed: (collapsed: boolean) => void;
     toggle: () => void;
 }
 
-const CollapsedNavbar = ({
+const HtmlCollapsedNavbar = ({
     activeTab,
     setActiveTab,
     setCollapsed,
     toggle
-}: CollapsedNavbarProps) => {
+}: HtmlCollapsedNavbarProps) => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
 
@@ -84,33 +83,29 @@ const CollapsedNavbar = ({
     );
 
     return (
-        <AppShellNavbar
-            w={isMobile ? '0' : '120px'}
-            bg={customStyles.colors.white}
-            h='100%'
-            pos='fixed'
-            top='0'
-            left='0'
-            zIndex={1000}
-            style={{
-                transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
-                opacity: 1,
-                transform: 'translateX(0)',
-                overflow: 'hidden',
-            }}
-        >
-            <Stack h='100%' gap={0} style={{ transition: 'all 0.3s ease' }}>
+        <aside style={{
+            width: isMobile ? '0' : '120px',
+            backgroundColor: customStyles.colors.white,
+            height: '100%',
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            zIndex: 1000,
+            transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+            display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+            opacity: 1,
+            transform: 'translateX(0)',
+            overflow: 'hidden',
+        }}>
+            <Stack h='100%' gap={0}>
+                {/* Header Section */}
                 <Group
                     h={80}
-                    justify="space-between"
+                    justify="center"
                     align="center"
                     px={customStyles.deviceSize.sm}
                     py={customStyles.deviceSize.sm}
-                    style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                    }}
+                    style={{ cursor: 'pointer' }}
                     wrap='nowrap'
                 >
                     <Image
@@ -119,11 +114,6 @@ const CollapsedNavbar = ({
                         component={NextImage}
                         h={25}
                         w='auto'
-                        style={{
-                            transition: 'all 0.3s ease',
-                            opacity: 1,
-                            transform: 'scale(1)'
-                        }}
                     />
                     <ActionIcon
                         variant="filled"
@@ -131,34 +121,47 @@ const CollapsedNavbar = ({
                         size={25}
                         onClick={isMobile ? toggle : () => setCollapsed(false)}
                         style={{
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            transform: 'rotate(0deg)',
+                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            opacity: 1,
+                            transform: 'scale(1)',
                             '&:hover': {
                                 backgroundColor: '#e7f5ff',
-                                transform: 'scale(1.1)'
+                                transform: 'scale(1.1)',
                             }
                         }}
                     >
                         <IconChevronRight size={20} />
                     </ActionIcon>
                 </Group>
-                <Divider mx={26} style={{ transition: 'all 0.3s ease' }} />
+
+                <Divider mx={26} style={{
+                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    opacity: 1,
+                    transform: 'translateX(0)',
+                }} />
+
+                {/* Navigation Section */}
                 <Stack
                     flex={1}
                     justify='space-around'
                     px={customStyles.deviceSize.sm}
                     style={{ transition: 'all 0.3s ease' }}
                 >
-                    <Stack
-                        gap={customStyles.deviceSize.md}
-                        style={{
-                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                            opacity: 1,
-                            transform: 'translateX(0)',
-                        }}
-                    >
-                        {drawerRoutes.map((item, index) => renderNavLink(item, index))}
-                    </Stack>
+                    {/* Navigation Links */}
+                    <nav>
+                        <Stack
+                            gap={customStyles.deviceSize.md}
+                            style={{
+                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                opacity: 1,
+                                transform: 'translateX(0)',
+                            }}
+                        >
+                            {drawerRoutes.map((item, index) => renderNavLink(item, index))}
+                        </Stack>
+                    </nav>
+
+                    {/* Logout Section */}
                     <NavLink
                         component="a"
                         leftSection={<IconLogout size={24} />}
@@ -197,8 +200,8 @@ const CollapsedNavbar = ({
                     />
                 </Stack>
             </Stack>
-        </AppShellNavbar>
+        </aside>
     );
 };
 
-export default CollapsedNavbar;
+export default HtmlCollapsedNavbar;
