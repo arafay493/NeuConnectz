@@ -191,7 +191,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                     </Group>
 
                     <Group gap="md" align="center">
-                        <ActionIcon
+                        {/* <ActionIcon
                             variant="light"
                             color="yellow"
                             size="xl"
@@ -203,7 +203,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                             }}
                         >
                             <IconBell size={24} />
-                        </ActionIcon>
+                        </ActionIcon> */}
                         <Group gap="md" align="center">
                             <Avatar
                                 title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}

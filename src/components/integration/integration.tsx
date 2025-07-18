@@ -717,7 +717,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 >
                     <Button
                         variant="transparent"
-                        className="filledButton"
+                        className={headerBtnType === 'Stock Movement' ? 'filledButton' : 'outlineButton'}
                         radius={8}
                         size="md"
                         w={200}
@@ -728,7 +728,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                     <Button
                         variant="transparent"
-                        className="outlineButton"
+                        className={headerBtnType === 'GRN' ? 'filledButton' : 'outlineButton'}
                         radius={8}
                         size="md"
                         w={200}
@@ -757,7 +757,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     <Group gap="xs">
                         <Button
                             variant='transparent'
-                            className='filledButton'
+                            className={statusColor === 'Pending' ? 'filledButton' : 'outlineButton'}
                             radius={8}
                             size='md'
                             w={200}
@@ -768,7 +768,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                         <Button
                             variant='transparent'
-                            className='outlineButton'
+                            className={statusColor === 'Integrated' ? 'filledButton' : 'outlineButton'}
                             radius={8}
                             size='md'
                             w={200}

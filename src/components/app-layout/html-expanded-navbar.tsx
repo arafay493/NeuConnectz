@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import NextImage from 'next/image';
 import {
     Group,
@@ -36,13 +36,21 @@ const HtmlExpandedNavbar = ({
 }: HtmlExpandedNavbarProps) => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
+    const router = useRouter();
+
+    // Note: Handle navigation...!
+    const handleNavigation = (route: string, index: number) => {
+        setActiveTab(index);
+        router.push(route);
+        if (isMobile) {
+            toggle(); // Close mobile menu after navigation
+        }
+    };
 
     // Note: Link component for navigation...!
     const renderNavLink = (item: DrawerRoute, index: number) => (
         <NavLink
-            href={item.route}
             key={index}
-            component="a"
             leftSection={item?.icon}
             label={item?.label}
             variant="light"
@@ -50,7 +58,7 @@ const HtmlExpandedNavbar = ({
             py={customStyles.deviceSize.sm}
             color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
             active={activeTab === index}
-            onClick={() => setActiveTab(index)}
+            onClick={() => handleNavigation(item.route, index)}
             w='100%'
             style={{
                 textTransform: 'capitalize',
@@ -60,6 +68,7 @@ const HtmlExpandedNavbar = ({
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 margin: '0',
+                cursor: 'pointer',
             }}
             styles={{
                 label: {
@@ -85,8 +94,9 @@ const HtmlExpandedNavbar = ({
             display: 'flex',
             flexDirection: 'column',
             transition: 'width 0.3s ease',
+            overflow: 'hidden',
         }}>
-            <Stack h='100%' gap={0}>
+            <Stack h='100%' gap={0} style={{ overflow: 'hidden' }}>
                 {/* Header Section */}
                 <Group
                     h={80}
@@ -123,12 +133,23 @@ const HtmlExpandedNavbar = ({
 
                 {/* Navigation Section */}
                 <Stack
+                    className='scroll-bar'
                     flex={1}
-                    justify='space-around'
+                    my={32}
+                    justify='space-between'
                     px={customStyles.deviceSize.sm}
+                    style={{
+                        overflow: 'hidden',
+                        minHeight: 0,
+                        flex: 1,
+                        overflowY: 'auto',
+                    }}
                 >
                     {/* Navigation Links */}
-                    <nav>
+                    <nav style={{
+                        paddingTop: customStyles.deviceSize.md,
+                        paddingBottom: customStyles.deviceSize.md,
+                    }}>
                         <Stack
                             gap={customStyles.deviceSize.md}
                             style={{
