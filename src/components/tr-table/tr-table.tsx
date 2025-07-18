@@ -36,7 +36,7 @@ type ApiProp = {
 };
 
 const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
-    console.log("API URL in TR Table: ", apiUrl);
+    // console.log("API URL in TR Table: ", apiUrl);
 
     // Note: States...!
     const [loading, setLoading] = useState(false);
@@ -52,8 +52,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { trData, trDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
-    console.log("list TR Data: ", trData);
-    console.log("Total TR counts: ", trDataCount);
+    // console.log("list TR Data: ", trData);
+    // console.log("Total TR counts: ", trDataCount);
 
     const totalPages = Math.ceil(trDataCount / itemsPerPage);
 

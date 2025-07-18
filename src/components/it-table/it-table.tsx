@@ -36,7 +36,7 @@ type ApiProp = {
 };
 
 const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
-    console.log("API URL in IT Table: ", apiUrl);
+    // console.log("API URL in IT Table: ", apiUrl);
 
     // Note: States...!
     const [loading, setLoading] = useState(false);

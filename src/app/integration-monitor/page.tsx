@@ -49,7 +49,7 @@ const IntegrationMonitor = () => {
                     </Title>
 
                     <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
-                        Track the status of your data syncs between NeuConnectz and SAP in real time.
+                        Data auto-syncs every 15 mins. To sync manually, Click the Sync All button anytime.
                     </Text>
                 </Stack>
 
