@@ -663,9 +663,12 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                 </Text>
 
                                 <Button
+                                    variant="transparent"
+                                    className={handleDisable(item.pendingValue, item.integratedValue) ? 'outlineDisabledButton' : 'outlineButton'}
+                                    radius={8}
+                                    size="md"
                                     fullWidth
                                     mt="md"
-                                    variant="outline"
                                     onClick={() => handleRequestToSap(item.label, item.pendingValue)}
                                     disabled={handleDisable(item.pendingValue, item.integratedValue)}
                                     color={customStyles.colors._1B59F8}
@@ -705,25 +708,28 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     }}
                 >
                     <Button
-                        variant="outline"
+                        variant="transparent"
+                        className="filledButton"
+                        radius={8}
+                        size="md"
+                        w={200}
                         onClick={viewStockMovementData}
-                        style={{
-                            width: 200,
-                            color: headerBtnType === "Stock Movement" ? customStyles.colors.white : undefined,
-                            backgroundColor: headerBtnType === "Stock Movement" ? customStyles.colors._1B59F8 : undefined,
-                        }}
                     >
                         Stock Movement
                     </Button>
 
                     <Button
-                        variant="outline"
+                        variant="transparent"
+                        className="outlineButton"
+                        radius={8}
+                        size="md"
+                        w={200}
                         onClick={viewGrnsData}
-                        style={{
-                            width: 200,
-                            color: headerBtnType === "GRN" ? customStyles.colors.white : undefined,
-                            backgroundColor: headerBtnType === "GRN" ? customStyles.colors._1B59F8 : undefined,
-                        }}
+                    // style={{
+                    //     width: 200,
+                    //     color: headerBtnType === "GRN" ? customStyles.colors.white : undefined,
+                    //     backgroundColor: headerBtnType === "GRN" ? customStyles.colors._1B59F8 : undefined,
+                    // }}
                     >
                         GRN
                     </Button>
@@ -742,25 +748,23 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 >
                     <Group gap="xs">
                         <Button
-                            variant="outline"
+                            variant='transparent'
+                            className='filledButton'
+                            radius={8}
+                            size='md'
+                            w={200}
                             onClick={() => handleStatusChange("Pending")}
-                            style={{
-                                width: 200,
-                                color: statusColor === "Pending" ? customStyles.colors.white : undefined,
-                                backgroundColor: statusColor === "Pending" ? customStyles.colors._1B59F8 : undefined,
-                            }}
                         >
                             Pending
                         </Button>
 
                         <Button
-                            variant="outline"
+                            variant='transparent'
+                            className='outlineButton'
+                            radius={8}
+                            size='md'
+                            w={200}
                             onClick={() => handleStatusChange("Integrated")}
-                            style={{
-                                width: 200,
-                                color: statusColor === "Integrated" ? customStyles.colors.white : undefined,
-                                backgroundColor: statusColor === "Integrated" ? customStyles.colors._1B59F8 : undefined,
-                            }}
                         >
                             Success
                         </Button>

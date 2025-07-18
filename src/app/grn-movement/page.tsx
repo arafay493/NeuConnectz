@@ -192,8 +192,11 @@ const GRNMovementScreen = () => {
                 </Stack>
 
                 <Button
-                    leftSection={<IconFileTypeCsv size={20} color={customStyles.colors.white} />}
-                    color={customStyles.colors._1B59F8}
+                    variant='transparent'
+                    className='filledButton'
+                    radius={8}
+                    size='md'
+                    leftSection={<IconFileTypeCsv size={24} />}
                     onClick={handleExportToCSV}
                 >
                     Export to CSV

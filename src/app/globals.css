@@ -17,6 +17,12 @@
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
 }
 
+.filledDisabledButton {
+    background-color: var(--_909090);
+    color: var(--white);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
 .filledButton:hover {
     background-color: var(--white);
     border: 1px solid var(--_1B59F8);
@@ -27,6 +33,13 @@
     color: var(--_1B59F8);
     border: 1px solid var(--_1B59F8);
     background-color: var(--white);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+.outlineDisabledButton {
+    color: var(--white);
+    border: 1px solid var(--_4A4A4A);
+    background-color: var(--_909090);
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
 }
 

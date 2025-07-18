@@ -21,10 +21,6 @@ const fetchAllUsers = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", authToken);
-        // console.log("Last count: ", LastCount);
-        // console.log("Skip record: ", skipRecord);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -38,19 +34,14 @@ const fetchAllUsers = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_USERS({
-                    users: data?.data?.users,
-                    count: data?.data?.totalCount
-                }));
+                dispatch(FETCH_ALL_USERS(data?.data));
             };
         }
 
         catch (error: any) {
-            // console.log('Error occured in fetch all users api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -74,9 +65,6 @@ const addUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Token in user action: ", token);
-        // console.log("Add user data in user action: ", userData);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -87,7 +75,6 @@ const addUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -96,7 +83,6 @@ const addUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in add user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -121,9 +107,6 @@ const updateUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Token in user action: ", token);
-        // console.log("Status data in user action: ", editUserData);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -134,7 +117,6 @@ const updateUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
@@ -143,7 +125,6 @@ const updateUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in update user api integration: ', error);
             resHandler(error?.response);
 
             const { status, data } = error?.response;

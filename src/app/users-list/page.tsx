@@ -44,7 +44,7 @@ const UsersListScreen = () => {
 
   // Note: fetching data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-  const { usersList, totalUsersCount } = useAppSelector(({ userStates }) => userStates);
+  const { usersList } = useAppSelector(({ userStates }) => userStates);
   // console.log('Users: ', usersList);
 
   // Note: Handle to go to edit user screen...!
@@ -147,7 +147,7 @@ const UsersListScreen = () => {
       ),
       Cell: ({ cell, row }) => (
         <Button
-          leftSection={<IconEdit size={20} color="white" />}
+          leftSection={<IconEdit size={20} />}
           color={customStyles.colors._1B59F8}
           onClick={() => goToUpdateUserScreen(row.original.userId)}
         >
@@ -188,28 +188,32 @@ const UsersListScreen = () => {
           </Text>
         </Stack>
 
-        <div>
+        <Group>
           <Button
-            leftSection={<IconUserPlus size={16} color="white" />}
-            color={customStyles.colors._1B59F8}
+            variant='transparent'
+            className='filledButton'
+            radius={8}
+            size='md'
+            leftSection={<IconUserPlus size={24} />}
             onClick={() => router.push(routes.addUser)}
-            style={{ marginRight: '10px', width: '180px' }}
           >
             Add User
           </Button>
 
           <Button
-            leftSection={<IconFileTypeCsv size={20} color="white" />}
-            color={customStyles.colors._1B59F8}
+            variant='transparent'
+            className='filledButton'
+            radius={8}
+            size='md'
+            leftSection={<IconFileTypeCsv size={24} />}
             onClick={() => {
               const rightNow = `${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}`;
-              exportToCSV(usersList, `${rightNow} - Users_List.csv`)
+              exportToCSV(usersList.users, `${rightNow} - Users_List.csv`)
             }}
-            style={{ marginRight: '10px', width: '180px' }}
           >
             Export to CSV
           </Button>
-        </div>
+        </Group>
       </Group>
 
       <Paper p="lg" radius="md" shadow="md" withBorder>
@@ -217,8 +221,8 @@ const UsersListScreen = () => {
           <Box style={{ minWidth: "800px" }}>
             <MantineReactTable
               columns={columns}
-              data={usersList}
-              rowCount={totalUsersCount}
+              data={usersList.users}
+              rowCount={usersList.totalCount}
               manualPagination
               state={{ pagination }}
               onPaginationChange={(updater) => {

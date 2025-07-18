@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation';
 import NextImage from 'next/image';
 import {
-    AppShellNavbar,
     Group,
     NavLink,
     ActionIcon,
@@ -14,7 +13,7 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
     IconLogout,
-    IconChevronRight
+    IconChevronLeft
 } from '@tabler/icons-react';
 import { DrawerRoute } from "@/types/route-types";
 import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
@@ -22,19 +21,19 @@ import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
 import { localAssets } from '@/lib/file-paths/file-paths';
 
-interface CollapsedNavbarProps {
+interface HtmlExpandedNavbarProps {
     activeTab: number;
     setActiveTab: (index: number) => void;
     setCollapsed: (collapsed: boolean) => void;
     toggle: () => void;
 }
 
-const CollapsedNavbar = ({
+const HtmlExpandedNavbar = ({
     activeTab,
     setActiveTab,
     setCollapsed,
     toggle
-}: CollapsedNavbarProps) => {
+}: HtmlExpandedNavbarProps) => {
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
 
@@ -45,160 +44,143 @@ const CollapsedNavbar = ({
             key={index}
             component="a"
             leftSection={item?.icon}
-            label={null}
+            label={item?.label}
             variant="light"
-            px={customStyles.deviceSize.sm}
+            px={customStyles.deviceSize.md}
             py={customStyles.deviceSize.sm}
             color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
             active={activeTab === index}
             onClick={() => setActiveTab(index)}
-            w='fit-content'
+            w='100%'
             style={{
                 textTransform: 'capitalize',
                 borderRadius: '10px',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'all 0.3s ease',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto',
-                opacity: 1,
-                transform: 'scale(1)',
-                '&:hover': {
-                    transform: 'scale(1.1)',
-                }
+                justifyContent: 'flex-start',
+                margin: '0',
             }}
             styles={{
                 label: {
                     fontSize: 16,
                     fontWeight: 500,
-                    transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                    opacity: 1,
                 },
                 root: {
-                    justifyContent: 'center',
-                    width: 'fit-content',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    transition: 'all 0.3s ease',
                 },
             }}
         />
     );
 
     return (
-        <AppShellNavbar
-            w={isMobile ? '0' : '120px'}
-            bg={customStyles.colors.white}
-            h='100%'
-            pos='fixed'
-            top='0'
-            left='0'
-            zIndex={1000}
-            style={{
-                transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
-                opacity: 1,
-                transform: 'translateX(0)',
-                overflow: 'hidden',
-            }}
-        >
-            <Stack h='100%' gap={0} style={{ transition: 'all 0.3s ease' }}>
+        <aside style={{
+            width: isMobile ? '100%' : '300px',
+            backgroundColor: customStyles.colors.white,
+            height: '100%',
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            zIndex: 1000,
+            transition: 'width 0.3s ease',
+            display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+        }}>
+            <Stack h='100%' gap={0}>
+                {/* Header Section */}
                 <Group
                     h={80}
                     justify="space-between"
                     align="center"
                     px={customStyles.deviceSize.sm}
                     py={customStyles.deviceSize.sm}
-                    style={{
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                    }}
+                    style={{ cursor: 'pointer' }}
                     wrap='nowrap'
                 >
                     <Image
-                        src={localAssets.logo_sm}
+                        src={localAssets.newLogo}
                         alt="Logo"
                         component={NextImage}
                         h={25}
                         w='auto'
-                        style={{
-                            transition: 'all 0.3s ease',
-                            opacity: 1,
-                            transform: 'scale(1)'
-                        }}
                     />
                     <ActionIcon
                         variant="filled"
                         color={customStyles.colors._1B59F8}
                         size={25}
-                        onClick={isMobile ? toggle : () => setCollapsed(false)}
+                        onClick={isMobile ? toggle : () => setCollapsed(true)}
                         style={{
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            transform: 'rotate(0deg)',
                             '&:hover': {
-                                backgroundColor: '#e7f5ff',
-                                transform: 'scale(1.1)'
+                                backgroundColor: '#e7f5ff'
                             }
                         }}
                     >
-                        <IconChevronRight size={20} />
+                        <IconChevronLeft size={20} />
                     </ActionIcon>
                 </Group>
-                <Divider mx={26} style={{ transition: 'all 0.3s ease' }} />
+
+                <Divider mx={26} />
+
+                {/* Navigation Section */}
                 <Stack
                     flex={1}
                     justify='space-around'
                     px={customStyles.deviceSize.sm}
-                    style={{ transition: 'all 0.3s ease' }}
                 >
-                    <Stack
-                        gap={customStyles.deviceSize.md}
-                        style={{
-                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                            opacity: 1,
-                            transform: 'translateX(0)',
-                        }}
-                    >
-                        {drawerRoutes.map((item, index) => renderNavLink(item, index))}
-                    </Stack>
+                    {/* Navigation Links */}
+                    <nav>
+                        <Stack
+                            gap={customStyles.deviceSize.md}
+                            style={{
+                                transition: 'all 0.3s ease',
+                            }}
+                        >
+                            {drawerRoutes.map((item, index) => renderNavLink(item, index))}
+                        </Stack>
+                    </nav>
+
+                    {/* Logout Section */}
                     <NavLink
                         component="a"
                         leftSection={<IconLogout size={24} />}
-                        label={null}
+                        label='Logout'
                         variant="light"
-                        px={customStyles.deviceSize.sm}
+                        px={customStyles.deviceSize.md}
                         py={customStyles.deviceSize.sm}
                         bg='#ED1C241A'
                         color='#ED1C24'
                         active
                         onClick={() => logout("Log Out Success", "You have logged out successfully")}
-                        w='fit-content'
+                        w='100%'
                         style={{
                             borderRadius: '10px',
-                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                            transition: 'all 0.3s ease',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: '0 auto',
-                            opacity: 1,
-                            transform: 'scale(1)',
+                            justifyContent: 'flex-start',
+                            margin: '0',
                         }}
                         styles={{
                             label: {
                                 fontSize: 16,
                                 fontWeight: 500,
-                                transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: 0,
+                                transition: 'opacity 0.3s ease',
+                                opacity: 1,
                             },
                             root: {
-                                justifyContent: 'center',
-                                width: 'fit-content',
-                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                justifyContent: 'flex-start',
+                                width: '100%',
+                                transition: 'all 0.3s ease',
                             },
                         }}
                     />
                 </Stack>
             </Stack>
-        </AppShellNavbar>
+        </aside>
     );
 };
 
-export default CollapsedNavbar;
+export default HtmlExpandedNavbar;

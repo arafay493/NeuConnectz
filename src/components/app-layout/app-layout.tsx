@@ -23,6 +23,7 @@ import {
 import { useDisclosure, useMediaQuery } from '@mantine/hooks';
 import {
   IconBell,
+  IconMenu2,
 } from '@tabler/icons-react';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
@@ -72,55 +73,66 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
       navbar={{
         width: collapsed ? 120 : 300,
         breakpoint: customStyles.deviceSize.sm,
-        collapsed: { mobile: !opened },
+        collapsed: { mobile: !opened, desktop: collapsed },
       }}
     >
-      {/* Note: Navbar section */} // ! completed
+      {/* Note: Navbar section */}
       <AppShellHeader
-        ml={collapsed ? 120 : 300}
+        ml={isMobile ? 0 : (collapsed ? 120 : 300)}
         px={24}
         style={{
           display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
-          // transition: 'margin-left 0.3s ease', // ✨ smooth movement
         }}
       >
-        <Group h='100%' align='center' justify='end'>
-          <ActionIcon
-            variant="light"
-            color="yellow"
-            size="xl"
-            radius={8}
-            // onClick={onEdit}
-            style={{
-              '&:hover': {
-                backgroundColor: '#e7f5ff'
-              }
-            }}
-          >
-            <IconBell size={24} />
-          </ActionIcon>
+        <Group h='100%' align='center' justify={isMobile ? 'space-between' : 'end'}>
+          {/* Hamburger menu for mobile */}
+          {isMobile && (
+            <ActionIcon
+              variant="light"
+              color="blue"
+              size="xl"
+              radius={8}
+              onClick={toggle}
+              style={{
+                '&:hover': {
+                  backgroundColor: '#e7f5ff'
+                }
+              }}
+            >
+              <IconMenu2 size={24} />
+            </ActionIcon>
+          )}
+
           <Group gap="md" align="center">
-            <Avatar
-              title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}
-              name={authenticatedUser?.name}
-              size={48}
-              color='initials'
-            />
-            {/* <Image
-              style={{ borderRadius: '50%' }}
-              src={localAssets.userIcon}
-              height={24}
-              width={24}
-              alt='User Avatar'
-            /> */}
-            <Stack gap={0}>
-              <Text size="sm" fw={500} c={customStyles.colors._4A4A4A}>
-                {authenticatedUser?.name?.charAt(0).toUpperCase()}{authenticatedUser?.name?.slice(1).toLowerCase()}
-              </Text>
-              <Text size="xs" c={customStyles.colors._909090}>
-                {authenticatedUser?.userType === 'SuperAdmin' ? 'Super Admin' : 'Admin'}
-              </Text>
-            </Stack>
+            <ActionIcon
+              variant="light"
+              color="yellow"
+              size="xl"
+              radius={8}
+              style={{
+                '&:hover': {
+                  backgroundColor: '#e7f5ff'
+                }
+              }}
+            >
+              <IconBell size={24} />
+            </ActionIcon>
+            <Group gap="md" align="center">
+              <Avatar
+                title={`${authenticatedUser?.name?.charAt(0).toUpperCase()}${authenticatedUser?.name?.slice(1).toLowerCase()}`}
+                name={authenticatedUser?.name}
+                size={48}
+                color='initials'
+              />
+              <Stack gap={0}>
+                <Text size="sm" fw={500} c={customStyles.colors._4A4A4A}>
+                  {authenticatedUser?.name?.charAt(0).toUpperCase()}{authenticatedUser?.name?.slice(1).toLowerCase()}
+                </Text>
+                <Text size="xs" c={customStyles.colors._909090}>
+                  {authenticatedUser?.userType === 'SuperAdmin' ? 'Super Admin' : 'Admin'}
+                </Text>
+              </Stack>
+            </Group>
           </Group>
         </Group>
       </AppShellHeader>

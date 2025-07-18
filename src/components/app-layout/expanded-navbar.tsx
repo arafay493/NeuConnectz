@@ -80,7 +80,7 @@ const ExpandedNavbar = ({
 
     return (
         <AppShellNavbar
-            w={300}
+            w={isMobile ? '100%' : '300px'}
             bg={customStyles.colors.white}
             h='100%'
             pos='fixed'
@@ -125,7 +125,7 @@ const ExpandedNavbar = ({
                 </Group>
                 <Divider mx={26} />
                 <Stack
-                    h='100%'
+                    flex={1}
                     justify='space-around'
                     px={customStyles.deviceSize.sm}
                 >

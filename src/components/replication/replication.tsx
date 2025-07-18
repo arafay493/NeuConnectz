@@ -9,7 +9,7 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { getSAPData, handleGetSapStagingDataCounts } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
-import { IconChartBar } from '@tabler/icons-react';
+import { IconChartBar, IconChevronRight } from '@tabler/icons-react';
 
 // const data = [
 //     { label: "Warehouse", dynamicLabel: "warehouseTotal" },
@@ -90,31 +90,41 @@ const ReplicationComponent = () => {
 
             <Group grow gap="md" wrap="wrap">
                 <Button
-                    color={customStyles.colors._1B59F8}
+                    rightSection={<IconChevronRight size={22} />}
+                    size='md'
+                    className='outlineButton'
                     onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA)}
                 >
                     Fetch Items
                 </Button>
                 <Button
-                    color={customStyles.colors._1B59F8}
+                    rightSection={<IconChevronRight size={22} />}
+                    size='md'
+                    className='outlineButton'
                     onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA)}
                 >
                     Fetch Vendors
                 </Button>
                 <Button
-                    color={customStyles.colors._1B59F8}
+                    rightSection={<IconChevronRight size={22} />}
+                    size='md'
+                    className='outlineButton'
                     onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA)}
                 >
-                    Fetch Barcodes
+                    Fetch Barcode
                 </Button>
                 <Button
-                    color={customStyles.colors._1B59F8}
+                    rightSection={<IconChevronRight size={22} />}
+                    size='md'
+                    className='outlineButton'
                     onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA)}
                 >
                     Fetch Warehouses
                 </Button>
                 <Button
-                    color={customStyles.colors._1B59F8}
+                    rightSection={<IconChevronRight size={22} />}
+                    size='md'
+                    className='outlineButton'
                     onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA)}
                 >
                     Fetch Item Groups

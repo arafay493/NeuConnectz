@@ -176,7 +176,7 @@ const AssignGroup = () => {
 
   useEffect(() => {
     if (authenticatedUser) {
-      if (usersList.length < 1) {
+      if (usersList.users.length < 1) {
         dispatch(fetchAllUsers({
           authToken: authenticatedUser?.token,
         }));
@@ -186,14 +186,14 @@ const AssignGroup = () => {
 
   // Note: This hook will run when usersList changes...!
   useEffect(() => {
-    if (usersList?.length > 0) {
-      const targetData = usersList.map((user: UserType) => ({
+    if (usersList.users?.length > 0) {
+      const targetData = usersList.users.map((user: UserType) => ({
         label: user.userName,
         value: user.userId
       }));
       setUsersData(targetData);
     };
-  }, [usersList]);
+  }, [usersList.users]);
 
   // Note: This hook will run when selectedUser changes...!
   useEffect(() => {
@@ -285,9 +285,11 @@ const AssignGroup = () => {
         </Flex>
 
         <Button
-          mt={{ base: "md", sm: 0 }}
-          leftSection={<IconBuildingWarehouse size={14} color={customStyles.colors.white} />}
-          color={customStyles.colors._1B59F8}
+          variant='transparent'
+          className='filledButton'
+          radius={8}
+          size='md'
+          leftSection={<IconBuildingWarehouse size={24} />}
           onClick={handleAssignGroup}
           disabled={ListAllGroupCodes.length === 0}
         >

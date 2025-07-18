@@ -62,7 +62,7 @@ const EditUserScreen = () => {
   const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
   const { usersList } = useAppSelector(({ userStates }) => userStates);
   const token = authenticatedUser?.token as string;
-  // console.log('Users: ', usersList);
+  // console.log('Users: ', usersList.users);
   // console.log("User: ", authenticatedUser);
   // console.log("Roles: ", listRoles);
 
@@ -150,8 +150,8 @@ const EditUserScreen = () => {
 
   // Note: This hook will isActiveUser state...!
   useEffect(() => {
-    if (usersList.length > 0 && authenticatedUser && uid) {
-      const targetUser = [...usersList].find((item) => { return item?.userId == uid });
+    if (usersList.users.length > 0 && authenticatedUser && uid) {
+      const targetUser = [...usersList.users].find((item) => { return item?.userId == uid });
       // console.log("Target user: ", targetUser);
 
       console.log('Uid: ', uid);
@@ -169,7 +169,7 @@ const EditUserScreen = () => {
       });
       setIsUserActiveState(targetUser?.isActive || false);
     };
-  }, [usersList]);
+  }, [usersList.users]);
 
   return (
     <Container

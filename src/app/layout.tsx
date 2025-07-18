@@ -32,6 +32,7 @@ import LoginScreen from './login/page';
 import AppLayOut from '@/components/app-layout/app-layout';
 import { customStyles } from '@/styles/custom-theme';
 import '@/app/globals.css'; // Import global styles
+import HtmlAppLayout from '@/components/app-layout/html-app-layout';
 
 // Note: Internet not connected component...!
 const InternetNotConnected = () => {
@@ -119,9 +120,9 @@ const RootLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
                   (<LoginScreen />)
                   :
                   (
-                    <AppLayOut>
+                    <HtmlAppLayout>
                       {children}
-                    </AppLayOut>
+                    </HtmlAppLayout>
                   )
               }
             </MantinreUiProvider>

@@ -254,7 +254,10 @@ const StockMovementScreen = () => {
         </Stack>
 
         <Button
-          leftSection={<IconFileTypeCsv size={20} color={customStyles.colors.white} />}
+          className='filledButton'
+          radius={8}
+          size='md'
+          leftSection={<IconFileTypeCsv size={24} />}
           color={customStyles.colors._1B59F8}
           onClick={handleExportToCSV}
         >
