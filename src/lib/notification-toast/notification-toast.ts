@@ -15,6 +15,7 @@ const showNotificationToast = (
         autoClose: 3000,
         styles: (theme) => ({
             root: {
+
                 backgroundColor: bgColor,
                 border: `1px solid ${customStyles.colors.white}`,
                 boxShadow: '0 4px 10px rgba(0, 0, 0, 0.15)'

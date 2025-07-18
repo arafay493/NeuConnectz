@@ -37,9 +37,9 @@
 }
 
 .outlineDisabledButton {
-    color: var(--white);
+    color: var(--_4D4D4D);
     border: 1px solid var(--_4A4A4A);
-    background-color: var(--_909090);
+    background-color: var(--white);
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
 }
 

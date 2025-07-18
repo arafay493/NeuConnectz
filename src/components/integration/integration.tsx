@@ -733,11 +733,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         size="md"
                         w={200}
                         onClick={viewGrnsData}
-                    // style={{
-                    //     width: 200,
-                    //     color: headerBtnType === "GRN" ? customStyles.colors.white : undefined,
-                    //     backgroundColor: headerBtnType === "GRN" ? customStyles.colors._1B59F8 : undefined,
-                    // }}
                     >
                         GRN
                     </Button>

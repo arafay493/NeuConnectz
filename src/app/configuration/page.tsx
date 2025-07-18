@@ -184,7 +184,6 @@ const Configuration = () => {
                 justify={customStyles.alignment.spaceBetween}
                 align="flex-start"
                 p="md"
-                bg="gray.0"
             >
                 <Stack gap={0}>
                     <Title

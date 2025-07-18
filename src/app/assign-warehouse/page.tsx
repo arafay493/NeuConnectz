@@ -342,7 +342,6 @@ const AssignWareHouse = () => {
         justify={customStyles.alignment.spaceBetween}
         align="flex-start"
         p="md"
-        bg="gray.0"
       >
         <Stack gap={0}>
           <Title
@@ -424,6 +423,7 @@ const AssignWareHouse = () => {
         radius="md"
         shadow="md"
         withBorder
+        mt={16}
       >
         <ScrollArea
           type="auto"

@@ -16,6 +16,7 @@ import ReconciliationQuantityDifferenceTable from './ReconciliationQuantityDiffe
 import TransferReceiptTable from './transfer-receipt-table/transfer-receipt-table';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import NextImage from 'next/image';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
 
 const ReconciliationComponent = () => {
     // Note: Reconciliation Filter Bar States
@@ -33,6 +34,10 @@ const ReconciliationComponent = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const handleGetReconciliationData = () => {
+        if (toWarehouse === fromWarehouse) {
+            showNotificationToast('Cannot Reconcile', 'From and To Warehouses cannot be the same.', customStyles.colors.red);
+        }
+
         dispatch(fetchReconciliationData({
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
