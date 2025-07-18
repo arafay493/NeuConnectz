@@ -190,7 +190,6 @@ const StockMovementScreen = () => {
         justify={customStyles.alignment.spaceBetween}
         align="flex-start"
         p="md"
-        bg="gray.0"
         style={{
           // backgroundColor :"yellow",
           alignItems: "center"

@@ -171,7 +171,6 @@ const GRNMovementScreen = () => {
                 justify={customStyles.alignment.spaceBetween}
                 align="flex-start"
                 p="md"
-                bg="gray.0"
                 style={{ alignItems: "center" }}
             >
                 <Stack gap={4}>

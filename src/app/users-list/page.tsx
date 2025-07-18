@@ -170,7 +170,7 @@ const UsersListScreen = () => {
 
   return (
     <div>
-      <Group justify="space-between" align="flex-start" p="md" bg="gray.0">
+      <Group justify="space-between" align="flex-start" p="md">
         <Stack gap={0}>
           <Title
             order={3}

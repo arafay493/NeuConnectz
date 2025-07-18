@@ -157,7 +157,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                     // borderBottom: `1px solid ${customStyles.colors._909090}`,
                     position: 'sticky',
                     top: 0,
-                    zIndex: 999,
+                    // zIndex: 999,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',

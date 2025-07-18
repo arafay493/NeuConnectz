@@ -10,6 +10,9 @@ import {
     Text,
     Title,
     Stack,
+    Tabs,
+    TabsList,
+    TabsTab,
 } from '@mantine/core';
 import { IconCheckbox } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
@@ -34,7 +37,6 @@ const IntegrationMonitor = () => {
                 justify={customStyles.alignment.spaceBetween}
                 align="flex-start"
                 p="md"
-                bg="gray.0"
             >
                 <Stack gap={0}>
                     <Title
@@ -62,7 +64,28 @@ const IntegrationMonitor = () => {
             </Group>
 
             <div style={{ padding: 10 }}>
-                <SegmentedControl
+                <Tabs defaultValue="integration" value={tab} onChange={(value) => setTab(value as 'integration' | 'replication')}>
+                    <Tabs.List mb={32} justify='center' grow>
+                        <Tabs.Tab size={32} color={tab === 'integration' ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D} value="integration">
+                            Integration
+                        </Tabs.Tab>
+                        <Tabs.Tab size={32} color={tab === 'replication' ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D} value="replication">
+                            Replication
+                        </Tabs.Tab>
+                    </Tabs.List>
+
+                    <Tabs.Panel value="integration">
+                        <IntegrationComponent
+                            enableLoader={() => setLoading(true)}
+                            disableLoader={() => setLoading(false)}
+                        />
+                    </Tabs.Panel>
+
+                    <Tabs.Panel value="replication">
+                        <ReplicationComponent />
+                    </Tabs.Panel>
+                </Tabs>
+                {/* <SegmentedControl
                     fullWidth
                     data={[{ label: 'Integration', value: 'integration' }, { label: 'Replication', value: 'replication' }]}
                     value={tab}
@@ -73,15 +96,10 @@ const IntegrationMonitor = () => {
                 {
                     tab === 'replication'
                         ?
-                        (<ReplicationComponent />)
                         :
                         (
-                            <IntegrationComponent
-                                enableLoader={() => setLoading(true)}
-                                disableLoader={() => setLoading(false)}
-                            />
                         )
-                }
+                } */}
             </div>
         </div>
     );

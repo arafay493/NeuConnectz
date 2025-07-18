@@ -101,7 +101,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
             {/* Button */}
             <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 'content'}>
                 <Button
-                    className='outlineButton'
+                    className={!fromWarehouse || !toWarehouse || !selectDate ? 'outlineDisabledButton' : 'outlineButton'}
                     leftSection={<IconDatabaseImport size={24} />}
                     variant="transparent"
                     size="md"
@@ -109,6 +109,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     fullWidth={isSmallScreen}
                     style={{ marginTop: isSmallScreen ? '8px' : '0' }}
                     onClick={() => handleGetData()}
+                    disabled={!fromWarehouse || !toWarehouse || !selectDate}
                 >
                     Get Data
                 </Button>

@@ -222,7 +222,7 @@ const AssignGroup = () => {
     <div>
       <Loader loadingState={loading} />
 
-      <Group justify={customStyles.alignment.spaceBetween} align="flex-start" p="md" bg="gray.0">
+      <Group justify={customStyles.alignment.spaceBetween} align="flex-start" p="md">
         <Stack gap={0}>
           <Title
             order={3}
@@ -297,7 +297,7 @@ const AssignGroup = () => {
         </Button>
       </Group>
 
-      <Paper p="lg" radius="md" shadow="md" withBorder>
+      <Paper mt={16} p="lg" radius="md" shadow="md" withBorder>
         <ScrollArea type="auto" style={{ maxWidth: customStyles.sizeWidthAndHeight.fullWidth }}>
           <Box style={{ minWidth: "800px" }}>
             <Table
