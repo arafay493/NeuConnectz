@@ -82,12 +82,9 @@ const HtmlExpandedNavbar = ({
             width: isMobile ? '100%' : '300px',
             backgroundColor: customStyles.colors.white,
             height: '100%',
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
             transition: 'width 0.3s ease',
-            display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
         }}>
             <Stack h='100%' gap={0}>
                 {/* Header Section */}

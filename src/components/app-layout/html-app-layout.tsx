@@ -116,7 +116,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 position: 'fixed',
                 top: 0,
                 left: 0,
-                height: '100vh',
+                bottom: 0,
                 width: collapsed ? (isMobile ? '0' : '120px') : (isMobile ? '100%' : '300px'),
                 backgroundColor: customStyles.colors.white,
                 zIndex: 1000,
@@ -225,10 +225,11 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
 
                 {/* Main Content */}
                 <main style={{
-                    // flex: 1,
+                    flex: 1,
                     padding: 34,
                     backgroundColor: customStyles.colors._F5F7FA,
-                    overflow: 'auto',
+                    overflowY: 'auto',
+                    minHeight: 'calc(100vh - 80px)',
                 }}>
                     {children}
                 </main>
