@@ -109,7 +109,10 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
             display: 'flex',
             minHeight: '100vh',
             backgroundColor: customStyles.colors.white,
-            fontFamily: 'inherit'
+            fontFamily: 'inherit',
+            overflow: 'hidden', // Prevent horizontal scroll
+            width: '100%',
+            maxWidth: '100vw'
         }}>
             {/* Sidebar Navigation */}
             <nav style={{
@@ -122,7 +125,8 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 zIndex: 1000,
                 transition: 'width 0.3s ease',
                 overflow: 'hidden',
-                boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+                boxShadow: isMobile && !collapsed ? 'none' : '2px 0 8px rgba(0,0,0,0.1)',
+                transform: isMobile && collapsed ? 'translateX(-100%)' : 'translateX(0)',
             }}>
                 {collapsed ? (
                     <HtmlCollapsedNavbar
@@ -149,6 +153,9 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: '100vh',
+                width: isMobile ? '100%' : `calc(100% - ${collapsed ? '120px' : '300px'})`,
+                maxWidth: '100%',
+                overflow: 'hidden'
             }}>
                 {/* Header */}
                 <header style={{
@@ -161,7 +168,9 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    padding: 30,
+                    padding: isMobile ? '0 16px' : '0 30px',
+                    width: '100%',
+                    boxSizing: 'border-box'
                 }}>
                     <Group gap={customStyles.deviceSize.md}>
                         {isMobile && (
@@ -226,10 +235,13 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 {/* Main Content */}
                 <main style={{
                     flex: 1,
-                    padding: 34,
+                    padding: isMobile ? '16px' : '34px',
                     backgroundColor: customStyles.colors._F5F7FA,
                     overflowY: 'auto',
+                    overflowX: 'hidden',
                     minHeight: 'calc(100vh - 80px)',
+                    width: '100%',
+                    boxSizing: 'border-box'
                 }}>
                     {children}
                 </main>
