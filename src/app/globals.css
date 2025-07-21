@@ -2,7 +2,7 @@
     --white: #fff;
     --black: #000;
     --red: red;
-    --green: green;
+    --green: #3cd856;
     --_408CCE: #408CCE;
     --_4D4D4D: #4D4D4D;
     --_909090: #909090;
@@ -48,6 +48,19 @@
     background-color: var(--_1B59F8);
     color: var(--white);
 }
+
+.completedButton {
+    color: var(--white);
+    border: 1px solid var(--green);
+    background-color: var(--green);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+/* .completedButton:hover {
+    background-color: var(--white);
+    border: 1px solid var(--green);
+    color: var(--green);
+} */
 
 /* custom Scroll Bar */
 .scroll-bar {

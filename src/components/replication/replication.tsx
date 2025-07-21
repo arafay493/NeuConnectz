@@ -9,7 +9,7 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { getSAPData, handleGetSapStagingDataCounts } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
-import { IconChartBar, IconChevronRight } from '@tabler/icons-react';
+import { IconChartBar, IconChevronRight, IconCheck } from '@tabler/icons-react';
 
 // const data = [
 //     { label: "Warehouse", dynamicLabel: "warehouseTotal" },
@@ -28,6 +28,7 @@ const ReplicationComponent = () => {
     // Note: Handeling states here...!
     const [loading, setLoading] = useState(false);
     const [replicationStats, setReplicationStats] = useState([]);
+    const [currentStep, setCurrentStep] = useState(0); // Track which button should be enabled
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -45,13 +46,21 @@ const ReplicationComponent = () => {
             //     // Note: Stop loading...!
             setLoading(false);
             showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
+
+            // Move to next step after successful response
+            setCurrentStep(prev => prev + 1);
             return;
         }
     };
 
     // Note: Get SAP data handler...!
-    const getSAPDataHandler = (params: string | undefined) => {
+    const getSAPDataHandler = (params: string | undefined, stepIndex: number) => {
         // console.log("Params: ", params);
+
+        // Only proceed if this is the current step
+        if (stepIndex !== currentStep) {
+            return;
+        }
 
         // Enablde loader...!
         setLoading(true);
@@ -70,7 +79,26 @@ const ReplicationComponent = () => {
         };
     }, []);
 
-    // Note: This hook will run when sapStagingDataCounts state update...!
+    // Note: Helper function to get button style and icon based on step status
+    const getButtonProps = (stepIndex: number) => {
+        const isCompleted = stepIndex < currentStep;
+        const isActive = stepIndex === currentStep;
+        const isPending = stepIndex > currentStep;
+
+        return {
+            disabled: !isActive || loading,
+            className: isActive ? 'outlineButton' : (isCompleted ? 'completedButton' : 'outlineDisabledButton'),
+            rightSection: isCompleted ? <IconCheck size={22} /> : <IconChevronRight size={22} />
+        };
+    };
+
+    // Note: Reset all steps to start over
+    const resetSteps = () => {
+        setCurrentStep(0);
+    };
+
+    // Note: Calculate progress percentage
+    const progressPercentage = (currentStep / 5) * 100;
     useEffect(() => {
         if (sapStagingDataCounts) {
             const statsArray: any = Object.entries(sapStagingDataCounts).map(([key, value]) => ({
@@ -90,46 +118,54 @@ const ReplicationComponent = () => {
 
             <Group grow gap="md" wrap="wrap">
                 <Button
-                    rightSection={<IconChevronRight size={22} />}
+                    {...getButtonProps(0)}
                     size='md'
-                    className='outlineButton'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA)}
-                >
-                    Fetch Items
-                </Button>
-                <Button
-                    rightSection={<IconChevronRight size={22} />}
-                    size='md'
-                    className='outlineButton'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA)}
-                >
-                    Fetch Vendors
-                </Button>
-                <Button
-                    rightSection={<IconChevronRight size={22} />}
-                    size='md'
-                    className='outlineButton'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA)}
-                >
-                    Fetch Barcode
-                </Button>
-                <Button
-                    rightSection={<IconChevronRight size={22} />}
-                    size='md'
-                    className='outlineButton'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA)}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA, 0)}
                 >
                     Fetch Warehouses
                 </Button>
                 <Button
-                    rightSection={<IconChevronRight size={22} />}
+                    {...getButtonProps(1)}
                     size='md'
-                    className='outlineButton'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA)}
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA, 1)}
                 >
                     Fetch Item Groups
                 </Button>
+                <Button
+                    {...getButtonProps(2)}
+                    size='md'
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA, 2)}
+                >
+                    Fetch Items
+                </Button>
+                <Button
+                    {...getButtonProps(3)}
+                    size='md'
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA, 3)}
+                >
+                    Fetch Barcode
+                </Button>
+                <Button
+                    {...getButtonProps(4)}
+                    size='md'
+                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA, 4)}
+                >
+                    Fetch Vendors
+                </Button>
             </Group>
+
+            {/* Reset button when all steps are completed */}
+            {/* {currentStep >= 5 && (
+                <Group justify="center" mt="md">
+                    <Button
+                        variant="light"
+                        onClick={resetSteps}
+                        disabled={loading}
+                    >
+                        Reset Process
+                    </Button>
+                </Group>
+            )} */}
 
             <Group justify="space-between" mb="md" mt="md">
                 <div>
@@ -152,11 +188,11 @@ const ReplicationComponent = () => {
                 padding: '15px'
             }}>
                 <Text size="sm" style={{ fontWeight: 500 }} mb={4}>
-                    Overall Syncing Status
+                    Overall Syncing Status ({currentStep}/5 steps completed)
                 </Text>
-                <Progress value={20} radius="xl" />
+                <Progress animated color={customStyles.colors._1B59F8} value={progressPercentage} radius="xl" />
                 <Text size="xs" mt={4}>
-                    20%
+                    {Math.round(progressPercentage)}%
                 </Text>
             </Box>
 
