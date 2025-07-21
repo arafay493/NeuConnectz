@@ -13,7 +13,8 @@ import {
     Select,
     TextInput,
     Table,
-    Flex
+    Flex,
+    Box
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconFileTypeCsv } from "@tabler/icons-react";
@@ -161,7 +162,7 @@ const GRNMovementScreen = () => {
     }, [authenticatedUser, skipRecords, lastCount]);
 
     return (
-        <div>
+        <Box>
 
             {/* Note: Loading component */}
             <Loader loadingState={loading} />
@@ -447,7 +448,7 @@ const GRNMovementScreen = () => {
                     </Flex>
                 }
             </div>
-        </div>
+        </Box>
     );
 };
 

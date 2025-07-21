@@ -219,7 +219,7 @@ const AssignGroup = () => {
 
 
   return (
-    <div>
+    <Box>
       <Loader loadingState={loading} />
 
       <Group justify={customStyles.alignment.spaceBetween} align="flex-start" p="md">
@@ -380,7 +380,7 @@ const AssignGroup = () => {
           </Flex>
         }
       </Paper>
-    </div>
+    </Box>
   );
 };
 

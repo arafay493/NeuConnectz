@@ -14,6 +14,7 @@ import {
     TextInput,
     PasswordInput,
     Grid,
+    Box,
 } from "@mantine/core";
 import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -174,7 +175,7 @@ const Configuration = () => {
     if (isSAPConfigExist) return <ConfigAccessComponent />
 
     return (
-        <div>
+        <Box>
 
             {/* Note: Loading Component */}
             <Loader loadingState={formData.loading} />
@@ -317,7 +318,7 @@ const Configuration = () => {
                     </Grid>
                 </Paper>
             </div>
-        </div>
+        </Box>
     );
 };
 
