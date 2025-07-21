@@ -16,6 +16,7 @@ const customStyles: CustomStyles = {
         _F5F7FA: "#F5F7FA",
         _ECECEC: "#ECECEC",
         _F8F9FA: "#F8F9FA",
+        _E1E7EC: "#E1E7EC",
         _1B59F81A: "#1B59F81A",
         evenTableColor: "#E1E7EC80",
         tableRowBorderColor: "#E1E7EC",

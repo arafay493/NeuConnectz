@@ -60,6 +60,7 @@ const HtmlCollapsedNavbar = ({
             active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
             w='fit-content'
+            title={item.label}
             style={{
                 textTransform: 'capitalize',
                 borderRadius: '10px',
@@ -131,7 +132,7 @@ const HtmlCollapsedNavbar = ({
                             opacity: 1,
                             transform: 'scale(1)',
                             '&:hover': {
-                                backgroundColor: '#e7f5ff',
+                                backgroundColor: customStyles.colors._E1E7EC,
                                 transform: 'scale(1.1)',
                             }
                         }}

@@ -14,6 +14,7 @@ export interface CustomStyles {
         _F5F7FA: string;
         _ECECEC: string;
         _F8F9FA: String;
+        _E1E7EC: string;
         _1B59F81A: string;
         evenTableColor: string;
         tableRowBorderColor: string;
