@@ -332,7 +332,7 @@ const AssignWareHouse = () => {
   }, [selectedUser, warehousesListByUserId, wareHousesList.data]);
 
   return (
-    <div>
+    <Box>
 
       {/* Note: Loading Component */}
       <Loader loadingState={loading} />
@@ -564,7 +564,7 @@ const AssignWareHouse = () => {
           </Flex>
         }
       </Paper>
-    </div>
+    </Box>
   );
 };
 

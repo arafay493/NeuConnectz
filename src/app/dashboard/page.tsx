@@ -14,13 +14,12 @@ import { customStyles } from '@/styles/custom-theme';
 
 const DashboardScreen = () => {
   return (
-    <div>
-
+    <Box>
       {/* Note: Dashboard cards component */}
       <DashboardsCards />
 
       {/* Note: Progress bar component */}
-      <div style={{ padding: '15px 0px' }} >
+      <Box style={{ padding: '15px 0px' }} >
         <SimpleGrid
           cols={{ base: 1, sm: 2, md: 2 }}
           spacing={customStyles.deviceSize.lg}
@@ -41,7 +40,7 @@ const DashboardScreen = () => {
             color={customStyles.colors._1B59F8}
           />
         </SimpleGrid>
-      </div>
+      </Box>
 
       {/* Note: Bar chart component */}
       <BarChart />
@@ -61,7 +60,7 @@ const DashboardScreen = () => {
           <DonutChart />
         </SimpleGrid>
       </Box>
-    </div>
+    </Box>
   );
 };
 

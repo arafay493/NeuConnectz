@@ -169,7 +169,7 @@ const UsersListScreen = () => {
   }, [lastCount, skipRecord]);
 
   return (
-    <div>
+    <Box>
       <Group justify="space-between" align="flex-start" p="md">
         <Stack gap={0}>
           <Title
@@ -307,7 +307,7 @@ const UsersListScreen = () => {
           </Box>
         </ScrollArea>
       </Paper>
-    </div >
+    </Box>
   );
 };
 

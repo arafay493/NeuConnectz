@@ -139,7 +139,7 @@ const ReconciliationComponent = () => {
         handleCalculateQuantityDifference();
     }, [handleCalculateQuantityDifference])
     return (
-        <Box p={8}>
+        <Box>
             <Title order={2} mb={8} c={customStyles.colors._4D4D4D}>Reconciliation</Title>
             <Text c={customStyles.colors._909090}>Match Inventory Transfers to Transfer Receipts for accurate stock and quantity tracking.</Text>
 

@@ -13,6 +13,7 @@ import {
     Tabs,
     TabsList,
     TabsTab,
+    Box,
 } from '@mantine/core';
 import { IconCheckbox } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
@@ -27,7 +28,7 @@ const IntegrationMonitor = () => {
     const [loading, setLoading] = useState(false);
 
     return (
-        <div>
+        <Box>
 
             {/* Note: Loading component */}
             <Loader loadingState={loading} />
@@ -63,7 +64,7 @@ const IntegrationMonitor = () => {
                 </Button> */}
             </Group>
 
-            <div style={{ padding: 10 }}>
+            <Box style={{ padding: 10 }}>
                 <Tabs defaultValue="integration" value={tab} onChange={(value) => setTab(value as 'integration' | 'replication')}>
                     <Tabs.List mb={32} justify='center' grow>
                         <Tabs.Tab size={32} color={tab === 'integration' ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D} value="integration">
@@ -85,23 +86,8 @@ const IntegrationMonitor = () => {
                         <ReplicationComponent />
                     </Tabs.Panel>
                 </Tabs>
-                {/* <SegmentedControl
-                    fullWidth
-                    data={[{ label: 'Integration', value: 'integration' }, { label: 'Replication', value: 'replication' }]}
-                    value={tab}
-                    onChange={(value) => setTab(value as 'integration' | 'replication')}
-                    mb="lg"
-                />
-
-                {
-                    tab === 'replication'
-                        ?
-                        :
-                        (
-                        )
-                } */}
-            </div>
-        </div>
+            </Box>
+        </Box>
     );
 };
 

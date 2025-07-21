@@ -12,7 +12,8 @@ import {
   Button,
   ScrollArea,
   Select,
-  TextInput
+  TextInput,
+  Box
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconFileTypeCsv } from "@tabler/icons-react";
@@ -180,7 +181,7 @@ const StockMovementScreen = () => {
   }, [wareHousesList.data]);
 
   return (
-    <div>
+    <Box>
 
       {/* Note: Loading component */}
       <Loader loadingState={loading} />
@@ -474,7 +475,7 @@ const StockMovementScreen = () => {
           {tab === 'IT' && (<IT_TableCom apiUrl={finalApiUrl || process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA as string} />)}
         </ScrollArea>
       </div>
-    </div>
+    </Box>
   );
 };
 
