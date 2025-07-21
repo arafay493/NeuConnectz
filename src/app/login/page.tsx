@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useMediaQuery } from '@mantine/hooks';
-import { TextInput, PasswordInput, Button, Box, Paper, Text, Group } from '@mantine/core';
+import { TextInput, PasswordInput, Button, Box, Paper, Text, Group, Title, Stack } from '@mantine/core';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { setCookie } from "cookies-next";
 import { useAppDispatch } from '@/redux/store';
@@ -86,6 +86,7 @@ const LoginScreen = () => {
 
     return (
         <Box
+            bg={String(customStyles.colors._F8F9FA)}
             style={{
                 display: customStyles.elementDirection.displayFlex,
                 flexDirection: isMobile ? customStyles.elementDirection.column : customStyles.elementDirection.row,
@@ -149,28 +150,34 @@ const LoginScreen = () => {
 
                 {/* Note: Login form container */}
                 <Paper
+
+                    shadow='md'
+                    radius='xl'
+                    p='xl'
                     style={{
-                        width: customStyles.sizeWidthAndHeight.fullWidth,
+                        display: customStyles.elementDirection.displayFlex,
+                        flexDirection: customStyles.elementDirection.column,
+                        justifyContent: customStyles.alignment.center,
+                        alignItems: customStyles.alignment.center,
+                        width: '37.5rem',
+                        height: '31.25rem',
                         maxWidth: customStyles.size.size_500,
                         padding: customStyles.size.size_40,
-                        borderRadius: customStyles.size.size_8,
-                        boxShadow: '10px 10px 15px rgba(0, 0, 0, 0.1)',
                     }}
                 >
 
                     {/* Note: Sign in heading */}
-                    <Text
-                        size={customStyles.deviceSize.xl}
+                    <Title
+                        order={2}
+                        c={customStyles.colors._4D4D4D}
+                        mb={4}
                         style={{
                             textAlign: customStyles.alignment.center,
-                            fontWeight: 600,
-                            color: customStyles.colors._4D4D4D,
                             textTransform: customStyles.textTransformation.capitalize,
-                            marginBottom: customStyles.size.size_10,
                         }}
                     >
                         log in
-                    </Text>
+                    </Title>
 
                     {/* Note: Greeting heading */}
                     <Text
@@ -184,46 +191,63 @@ const LoginScreen = () => {
                         Welcome to NeuConnectz
                     </Text>
 
-                    <div>
+                    <Stack
+                        align="center"
+                        style={{
+                            width: '100%',
+                            alignItems: customStyles.alignment.center,
+                        }}
+                    >
                         {/* Note: Email input field */}
                         <TextInput
+                            w="100%"
+                            maw={400}
+                            miw={250}
+                            size='md'
+                            radius={8}
                             label="Email"
                             placeholder="Enter your email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            style={{ marginBottom: customStyles.size.size_15 }}
                             labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
                         />
 
                         {/* Note: Password input field */}
                         <PasswordInput
+                            w="100%"
+                            maw={400}
+                            miw={250}
+                            size='md'
+                            radius={8}
                             label="Password"
                             placeholder="Enter your password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            style={{ marginBottom: customStyles.size.size_25 }}
                             labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
                             visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
                         />
 
                         {/* Note: Log in button */}
-                        <Group
+                        <Button
+                            mt={32}
+                            variant='transparent'
+                            size='md'
+                            radius={8}
+                            className='filledButton'
+                            w="100%"
+                            maw={400}
+                            miw={250}
                             style={{
+                                textTransform: customStyles.textTransformation.capitalize,
                                 marginBottom: customStyles.size.size_15,
-                                justifyContent: customStyles.alignment.spaceBetween,
                             }}
+                            onClick={handleLogin}
                         >
-                            <Button
-                                fullWidth
-                                style={{ textTransform: customStyles.textTransformation.capitalize }}
-                                onClick={handleLogin}
-                            >
-                                log in
-                            </Button>
-                        </Group>
-                    </div>
+                            log in
+                        </Button>
+                    </Stack>
                 </Paper>
             </Box>
         </Box>
