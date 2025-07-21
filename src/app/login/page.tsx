@@ -150,8 +150,7 @@ const LoginScreen = () => {
 
                 {/* Note: Login form container */}
                 <Paper
-
-                    shadow='md'
+                    // shadow='md'
                     radius='xl'
                     p='xl'
                     style={{
@@ -163,6 +162,7 @@ const LoginScreen = () => {
                         height: '31.25rem',
                         maxWidth: customStyles.size.size_500,
                         padding: customStyles.size.size_40,
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                     }}
                 >
 
@@ -235,15 +235,15 @@ const LoginScreen = () => {
                             variant='transparent'
                             size='md'
                             radius={8}
-                            className='filledButton'
+                            className={!email || !password || loading ? 'filledDisabledButton' : 'filledButton'}
                             w="100%"
                             maw={400}
                             miw={250}
                             style={{
                                 textTransform: customStyles.textTransformation.capitalize,
-                                marginBottom: customStyles.size.size_15,
                             }}
                             onClick={handleLogin}
+                            disabled={!email || !password || loading}
                         >
                             log in
                         </Button>

@@ -65,22 +65,22 @@ const routes: Routes = {
 const drawerRoutes: DrawerRoute[] = [
     {
         icon: <IconLayoutDashboardFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "dashboard",
+        label: "Dashboard",
         route: routes.dashboard,
     },
     {
         icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
-        label: "stock movement",
+        label: "Stock Movement",
         route: routes.stockMovement,
     },
     {
         icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "GRN movement",
+        label: "GRN Movement",
         route: routes.grnMovement
     },
     {
         icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
-        label: "reconciliation",
+        label: "Reconciliation",
         route: routes.reconciliation,
     },
     // {
@@ -110,27 +110,27 @@ const drawerRoutes: DrawerRoute[] = [
     // },
     {
         icon: <IconUsersGroup color='currentColor' size={24} />,
-        label: "users list",
+        label: "Users List",
         route: routes.usersList,
     },
     {
         icon: <IconUsersGroup color='currentColor' size={24} />,
-        label: "assign group",
+        label: "Assign Group",
         route: routes.assignGroup,
     },
     {
         icon: <IconBuildingWarehouse color='currentColor' size={24} />,
-        label: "assign warehouse",
+        label: "Assign Warehouse",
         route: routes.assignWareHouse,
     },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,
-        label: "configuration",
+        label: "Configuration",
         route: routes.configuration
     },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "integration monitor",
+        label: "Integration Monitor",
         route: routes.integrationMonitor
     },
 ];
