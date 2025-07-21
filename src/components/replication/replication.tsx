@@ -3,13 +3,13 @@
 "use client";
 
 import React, { memo, useState, useEffect } from 'react';
-import { Card, Text, Progress, Grid, Group, Box, Stack, Button, ThemeIcon, SimpleGrid } from "@mantine/core";
+import { Card, Text, Progress, Grid, Group, Box, Stack, Button, ThemeIcon, SimpleGrid, Title } from "@mantine/core";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { getSAPData, handleGetSapStagingDataCounts } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
-import Loader from '../loader/loader';
-import { IconChartBar, IconChevronRight, IconCheck } from '@tabler/icons-react';
+import { IconChartBar, IconChevronRight, IconCheck, IconRefresh } from '@tabler/icons-react';
+import { useMediaQuery } from '@mantine/hooks';
 
 // const data = [
 //     { label: "Warehouse", dynamicLabel: "warehouseTotal" },
@@ -24,9 +24,9 @@ import { IconChartBar, IconChevronRight, IconCheck } from '@tabler/icons-react';
 const data = ["Warehouse", "Group Code", "Stock Master", "Stock Barcode", "Stock Warehouse", "Bin Location", "Vendor Master"];
 
 const ReplicationComponent = () => {
+    const isMobile = useMediaQuery('(max-width: 768px)');
 
     // Note: Handeling states here...!
-    const [loading, setLoading] = useState(false);
     const [replicationStats, setReplicationStats] = useState([]);
     const [currentStep, setCurrentStep] = useState(0); // Track which button should be enabled
 
@@ -43,27 +43,19 @@ const ReplicationComponent = () => {
         // console.log("Get SAP data api response: ", response);
 
         if (response && response.statusCode == 200) {
-            //     // Note: Stop loading...!
-            setLoading(false);
             showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
 
-            // Move to next step after successful response
-            setCurrentStep(prev => prev + 1);
+            handleSyncAll()
             return;
         }
     };
 
     // Note: Get SAP data handler...!
     const getSAPDataHandler = (params: string | undefined, stepIndex: number) => {
-        // console.log("Params: ", params);
-
         // Only proceed if this is the current step
         if (stepIndex !== currentStep) {
             return;
         }
-
-        // Enablde loader...!
-        setLoading(true);
 
         params && dispatch(getSAPData({
             token: authenticatedUser?.token || "",
@@ -72,30 +64,73 @@ const ReplicationComponent = () => {
         }));
     };
 
+    // Note: Sync all data sequentially
+    // const handleSyncAll = () => {
+    //     const API_URLS = [
+    //         process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA,
+    //         process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA,
+    //         process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA,
+    //         process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA,
+    //         process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA
+    //     ];
+
+    //     if (currentStep >= API_URLS.length) {
+    //         showNotificationToast("Info", "All data has been synced", customStyles.colors._408CCE);
+    //         return;
+    //     }
+
+    //     const currentApiUrl = API_URLS[currentStep];
+    //     // console.log("current step: ", currentStep);
+
+    //     if (currentApiUrl && currentStep < 5) {
+    //         dispatch(getSAPData({
+    //             token: authenticatedUser?.token || "",
+    //             apiUrl: currentApiUrl,
+    //             resHandler: handleResponse
+    //         }));
+    //     }
+
+    //     console.log("current step after increment: ", currentStep);
+    //     setCurrentStep(prevStep => prevStep + 1);
+    //     console.log("current step after increment: ", currentStep);
+    // };
+    const handleSyncAll = () => {
+        const API_URLS = [
+            process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA,
+            process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA,
+            process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA,
+            process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA,
+            process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA
+        ];
+
+        setCurrentStep(prevStep => {
+            const nextStep = prevStep + 1;
+
+            if (prevStep >= API_URLS.length) {
+                showNotificationToast("Info", "All data has been synced", customStyles.colors._408CCE);
+                return prevStep;
+            }
+
+            const currentApiUrl = API_URLS[prevStep];
+
+            if (currentApiUrl) {
+                dispatch(getSAPData({
+                    token: authenticatedUser?.token || "",
+                    apiUrl: currentApiUrl,
+                    resHandler: handleResponse
+                }));
+            }
+
+            return nextStep;
+        });
+    };
+
     // Note: This hook will run when component mounts...!
     useEffect(() => {
         if (authenticatedUser) {
             dispatch(handleGetSapStagingDataCounts(authenticatedUser?.token));
         };
     }, []);
-
-    // Note: Helper function to get button style and icon based on step status
-    const getButtonProps = (stepIndex: number) => {
-        const isCompleted = stepIndex < currentStep;
-        const isActive = stepIndex === currentStep;
-        const isPending = stepIndex > currentStep;
-
-        return {
-            disabled: !isActive || loading,
-            className: isActive ? 'outlineButton' : (isCompleted ? 'completedButton' : 'outlineDisabledButton'),
-            rightSection: isCompleted ? <IconCheck size={22} /> : <IconChevronRight size={22} />
-        };
-    };
-
-    // Note: Reset all steps to start over
-    const resetSteps = () => {
-        setCurrentStep(0);
-    };
 
     // Note: Calculate progress percentage
     const progressPercentage = (currentStep / 5) * 100;
@@ -111,12 +146,9 @@ const ReplicationComponent = () => {
     }, [sapStagingDataCounts]);
 
     return (
-        <Card withBorder radius="md" p="lg" shadow="sm">
+        <Card radius={16} p={24}>
 
-            {/* Note: Loader component */}
-            {loading && <Loader loadingState={loading} />}
-
-            <Group grow gap="md" wrap="wrap">
+            {/* <Group grow gap="md" wrap="wrap">
                 <Button
                     {...getButtonProps(0)}
                     size='md'
@@ -152,49 +184,54 @@ const ReplicationComponent = () => {
                 >
                     Fetch Vendors
                 </Button>
-            </Group>
+            </Group> */}
 
-            {/* Reset button when all steps are completed */}
-            {/* {currentStep >= 5 && (
-                <Group justify="center" mt="md">
-                    <Button
-                        variant="light"
-                        onClick={resetSteps}
-                        disabled={loading}
-                    >
-                        Reset Process
-                    </Button>
-                </Group>
-            )} */}
-
-            <Group justify="space-between" mb="md" mt="md">
+            <Group justify="space-between" align='flex-start' mb={24}>
                 <div>
-                    <Text size="lg" style={{ fontWeight: 600 }}>
+                    <Title order={3} size="lg" mb={6} c={customStyles.colors._4D4D4D}>
                         Replication
-                    </Text>
-                    <Text size="sm" color="dimmed">
+                    </Title>
+                    <Text size="sm" c={customStyles.colors._909090}>
                         Progress of inventory sync with SAP.
                     </Text>
                 </div>
 
-                <Text size="xs" color="dimmed">
+                <Text size="sm" c={customStyles.colors._909090}>
                     Last sync at 1 hr 20 min ago
                 </Text>
             </Group>
 
-            <Box mb="lg" style={{
-                border: "1px solid lightgray",
-                borderRadius: 10,
-                padding: '15px'
-            }}>
-                <Text size="sm" style={{ fontWeight: 500 }} mb={4}>
-                    Overall Syncing Status ({currentStep}/5 steps completed)
-                </Text>
-                <Progress animated color={customStyles.colors._1B59F8} value={progressPercentage} radius="xl" />
-                <Text size="xs" mt={4}>
-                    {Math.round(progressPercentage)}%
-                </Text>
-            </Box>
+            <Group mb="lg"
+                style={{
+                    border: `1px solid ${customStyles.colors._E1E7EC}`,
+                    borderRadius: 16,
+                    padding: '16px'
+                }}
+            >
+                <Stack flex={1} gap={0}>
+                    <Group justify='space-between' align='flex-start' mb={24}>
+                        <Text size="md" c={customStyles.colors._4D4D4D} fw={600}>
+                            Overall Syncing Status ({currentStep}/5 steps completed)
+                        </Text>
+                        <Text size="md" c={customStyles.colors._4D4D4D} fw={600}>
+                            {Math.round(progressPercentage)}%
+                        </Text>
+                    </Group>
+                    <Progress animated color={customStyles.colors._1B59F8} value={progressPercentage} radius="xl" />
+                </Stack>
+                <Button
+                    radius={8}
+                    w={isMobile ? '100%' : 200}
+                    variant="transparent"
+                    className={currentStep === 5 ? 'completedButton' : 'outlineButton'}
+                    size="md"
+                    leftSection={currentStep === 5 ? <IconCheck size={22} /> : <IconRefresh size={22} />}
+                    onClick={handleSyncAll}
+                    disabled={currentStep >= 5}
+                >
+                    {currentStep >= 5 ? 'Sync Complete' : 'Sync All'}
+                </Button>
+            </Group>
 
             {/* <Grid gutter="sm"> */}
             <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
