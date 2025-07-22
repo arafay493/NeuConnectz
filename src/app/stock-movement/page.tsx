@@ -49,7 +49,6 @@ const StockMovementScreen = () => {
   const handleTabChange = (value: 'ITR' | 'IT' | 'TR') => {
     // console.log("Tab value: ", value);
     setTab(value);
-    // setLoading(true);
     setAppliedFilters({});
 
     if (value === 'ITR') {

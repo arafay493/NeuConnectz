@@ -100,8 +100,15 @@ interface IntegrationComponentProps {
     disableLoader: () => void,
 };
 
+// GRN Table Props...!
 type TableProps = {
     type: "Pending" | "Integrated";
+};
+
+// Stock Movement Table Props...!
+type SMTableProps = {
+    type: "Pending" | "Integrated";
+    sapType?: "ITR" | "IT" | "TR"
 };
 
 // Note: GRN_Table_Component...!
@@ -217,14 +224,15 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type }) => {
 };
 
 // Note: Stock_Movement_Table_Component...!
-const Stock_Movement_Table_Component: React.FC<TableProps> = ({ type }) => {
+const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType }) => {
+    // console.log('Sap Type: ', sapType);
 
-    // Note: States...!
+    // Note: Handeling states here...!
     const [loading, setLoading] = useState(false);
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
 
-    // Note: Required variables...!
+    // Note: Required variables for pagination...!
     const lastCount = itemsPerPage;
     const skipRecords = (activePage - 1) * itemsPerPage;
 
@@ -233,7 +241,6 @@ const Stock_Movement_Table_Component: React.FC<TableProps> = ({ type }) => {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listAll_ITR_IT_TRS, sapErrorState, listAll_ITR_IT_TRS_Count } = useAppSelector(({ sapStates }) => { return sapStates });
-
     const totalPages = Math.ceil(listAll_ITR_IT_TRS_Count / itemsPerPage);
 
     const handleNewPage = (newPage: number) => {
@@ -242,11 +249,12 @@ const Stock_Movement_Table_Component: React.FC<TableProps> = ({ type }) => {
 
     useEffect(() => {
         if (authenticatedUser?.token) {
-            setLoading(true);
+            setLoading(true); // Note: Enable loading...!
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token || "",
                 dataStatus: type,
                 handleLoading: () => setLoading(false),
+                type: sapType != undefined ? sapType : undefined,
                 lastCount: lastCount,
                 skipRecords: skipRecords
             }));
@@ -351,7 +359,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token as string,
                 dataStatus: statusColor as "Pending" | "Integrated",
-                handleLoading: () => setLoading(false)
+                handleLoading: () => setLoading(false),
+                lastCount: 5,
+                skipRecords: 0
             }));
         }
 
@@ -363,7 +373,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 token: authenticatedUser?.token as string,
                 dataStatus: statusColor as "Pending" | "Integrated",
                 handleLoading: () => setLoading(false),
-                type: val as "ITR" | "TR" | "IT"
+                type: val as "ITR" | "TR" | "IT",
+                lastCount: 5,
+                skipRecords: 0
             }));
         };
     };
@@ -788,7 +800,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             </Card>
 
             {
-                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component type={statusColor} />)
+                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component type={statusColor} sapType={selectedType as "ITR" | "IT" | "TR"} />)
             }
         </>
     );
