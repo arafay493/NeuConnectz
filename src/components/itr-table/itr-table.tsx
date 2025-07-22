@@ -51,12 +51,13 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
+    // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { itrData, itrDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
     // console.log("list ITR Data: ", itrData);
     // console.log("Total ITR counts: ", itrDataCount);
 
-    const totalPages = Math.ceil(itrDataCount / itemsPerPage);
+    const totalPages: number = Math.ceil(itrDataCount / itemsPerPage);
 
     const handleNewPage = (newPage: number) => {
         setPage(newPage);
@@ -67,7 +68,6 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             setLoading(true);
             dispatch(fetchAll_ITR_Data({
                 token: authenticatedUser?.token || '',
-                // apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
                 apiUrl: apiUrl,
                 type: 'ITR',
                 handleLoading: () => setLoading(false),
