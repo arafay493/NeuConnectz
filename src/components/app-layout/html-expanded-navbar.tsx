@@ -60,6 +60,7 @@ const HtmlExpandedNavbar = ({
             active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
             w='100%'
+            title={item?.label}
             style={{
                 textTransform: 'capitalize',
                 borderRadius: '10px',

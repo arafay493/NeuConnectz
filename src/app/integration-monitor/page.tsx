@@ -15,11 +15,12 @@ import {
     TabsTab,
     Box,
 } from '@mantine/core';
-import { IconCheckbox } from "@tabler/icons-react";
+import { IconCheckbox, IconRefresh } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import IntegrationComponent from '@/components/integration/integration';
 import ReplicationComponent from '@/components/replication/replication';
 import Loader from '@/components/loader/loader';
+import { useMediaQuery } from '@mantine/hooks';
 
 const IntegrationMonitor = () => {
 
@@ -37,15 +38,12 @@ const IntegrationMonitor = () => {
             <Group
                 justify={customStyles.alignment.spaceBetween}
                 align="flex-start"
-                p="md"
             >
-                <Stack gap={0}>
+                <Stack gap={0} mb={24}>
                     <Title
-                        order={3}
+                        order={2}
                         style={{
                             color: customStyles.colors._4D4D4D,
-                            fontSize: "24px",
-                            fontWeight: 700
                         }}
                     >
                         Integration Monitor
@@ -55,16 +53,9 @@ const IntegrationMonitor = () => {
                         Data auto-syncs every 15 mins. To sync manually, Click the Sync All button anytime.
                     </Text>
                 </Stack>
-
-                {/* <Button
-                    leftSection={<IconCheckbox size={14} color={customStyles.colors.white} />}
-                    color={customStyles.colors._1B59F8}
-                >
-                    Post All
-                </Button> */}
             </Group>
 
-            <Box style={{ padding: 10 }}>
+            <Box>
                 <Tabs defaultValue="integration" value={tab} onChange={(value) => setTab(value as 'integration' | 'replication')}>
                     <Tabs.List mb={32} justify='center' grow>
                         <Tabs.Tab size={32} color={tab === 'integration' ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D} value="integration">
