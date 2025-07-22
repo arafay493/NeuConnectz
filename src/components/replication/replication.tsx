@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { getSAPData, handleGetSapStagingDataCounts } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
-import { IconChartBar, IconChevronRight, IconCheck, IconRefresh } from '@tabler/icons-react';
+import { IconChartBar, IconRefresh, IconBuildingWarehouse, IconFileCode, IconPackage, IconFileBarcode, IconLibrary, IconUserCircle, IconStack2 } from '@tabler/icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 
 // const data = [
@@ -23,12 +23,23 @@ import { useMediaQuery } from '@mantine/hooks';
 
 const data = ["Warehouse", "Group Code", "Stock Master", "Stock Barcode", "Stock Warehouse", "Bin Location", "Vendor Master"];
 
+// Note: Icon mapping for each data type
+const iconMapping = {
+    "Warehouse": IconBuildingWarehouse,
+    "Group Code": IconFileCode,
+    "Stock Master": IconPackage,
+    "Stock Barcode": IconFileBarcode,
+    "Stock Warehouse": IconStack2,
+    "Bin Location": IconLibrary,
+    "Vendor Master": IconUserCircle
+};
+
 const ReplicationComponent = () => {
     const isMobile = useMediaQuery('(max-width: 768px)');
 
     // Note: Handeling states here...!
     const [replicationStats, setReplicationStats] = useState([]);
-    const [currentStep, setCurrentStep] = useState(0); // Track which button should be enabled
+    const [currentStep, setCurrentStep] = useState(0);
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -50,50 +61,7 @@ const ReplicationComponent = () => {
         }
     };
 
-    // Note: Get SAP data handler...!
-    const getSAPDataHandler = (params: string | undefined, stepIndex: number) => {
-        // Only proceed if this is the current step
-        if (stepIndex !== currentStep) {
-            return;
-        }
-
-        params && dispatch(getSAPData({
-            token: authenticatedUser?.token || "",
-            apiUrl: params,
-            resHandler: handleResponse
-        }));
-    };
-
-    // Note: Sync all data sequentially
-    // const handleSyncAll = () => {
-    //     const API_URLS = [
-    //         process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA,
-    //         process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA,
-    //         process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA,
-    //         process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA,
-    //         process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA
-    //     ];
-
-    //     if (currentStep >= API_URLS.length) {
-    //         showNotificationToast("Info", "All data has been synced", customStyles.colors._408CCE);
-    //         return;
-    //     }
-
-    //     const currentApiUrl = API_URLS[currentStep];
-    //     // console.log("current step: ", currentStep);
-
-    //     if (currentApiUrl && currentStep < 5) {
-    //         dispatch(getSAPData({
-    //             token: authenticatedUser?.token || "",
-    //             apiUrl: currentApiUrl,
-    //             resHandler: handleResponse
-    //         }));
-    //     }
-
-    //     console.log("current step after increment: ", currentStep);
-    //     setCurrentStep(prevStep => prevStep + 1);
-    //     console.log("current step after increment: ", currentStep);
-    // };
+    // Note: Handle Sync All button click...!
     const handleSyncAll = () => {
         const API_URLS = [
             process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA,
@@ -136,56 +104,18 @@ const ReplicationComponent = () => {
     const progressPercentage = (currentStep / 5) * 100;
     useEffect(() => {
         if (sapStagingDataCounts) {
-            const statsArray: any = Object.entries(sapStagingDataCounts).map(([key, value]) => ({
+            const statsArray: any = Object.entries(sapStagingDataCounts).map(([key, value], index) => ({
                 label: key,
                 value,
+                displayLabel: data[index],
+                icon: iconMapping[data[index] as keyof typeof iconMapping] || IconChartBar
             }));
-            console.log('Replication stats: ', statsArray);
             statsArray && setReplicationStats(statsArray);
         };
     }, [sapStagingDataCounts]);
 
     return (
-        <Card radius={16} p={24}>
-
-            {/* <Group grow gap="md" wrap="wrap">
-                <Button
-                    {...getButtonProps(0)}
-                    size='md'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_WAREHOUSES_MASTER_DATA, 0)}
-                >
-                    Fetch Warehouses
-                </Button>
-                <Button
-                    {...getButtonProps(1)}
-                    size='md'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_GROUP_MASTER_DATA, 1)}
-                >
-                    Fetch Item Groups
-                </Button>
-                <Button
-                    {...getButtonProps(2)}
-                    size='md'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEMS_MASTER_DATA, 2)}
-                >
-                    Fetch Items
-                </Button>
-                <Button
-                    {...getButtonProps(3)}
-                    size='md'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_ITEM_BARCODES_MASTER_DATA, 3)}
-                >
-                    Fetch Barcode
-                </Button>
-                <Button
-                    {...getButtonProps(4)}
-                    size='md'
-                    onClick={() => getSAPDataHandler(process.env.NEXT_PUBLIC_FETCH_VENDOR_MASTER_DATA, 4)}
-                >
-                    Fetch Vendors
-                </Button>
-            </Group> */}
-
+        <Card h={600} radius={16} p={24}>
             <Group justify="space-between" align='flex-start' mb={24}>
                 <div>
                     <Title order={3} size="lg" mb={6} c={customStyles.colors._4D4D4D}>
@@ -201,7 +131,8 @@ const ReplicationComponent = () => {
                 </Text>
             </Group>
 
-            <Group mb="lg"
+            <Group
+                mb={24}
                 style={{
                     border: `1px solid ${customStyles.colors._E1E7EC}`,
                     borderRadius: 16,
@@ -211,7 +142,7 @@ const ReplicationComponent = () => {
                 <Stack flex={1} gap={0}>
                     <Group justify='space-between' align='flex-start' mb={24}>
                         <Text size="md" c={customStyles.colors._4D4D4D} fw={600}>
-                            Overall Syncing Status ({currentStep}/5 steps completed)
+                            Overall Syncing Status ({currentStep}/5 completed)
                         </Text>
                         <Text size="md" c={customStyles.colors._4D4D4D} fw={600}>
                             {Math.round(progressPercentage)}%
@@ -223,55 +154,56 @@ const ReplicationComponent = () => {
                     radius={8}
                     w={isMobile ? '100%' : 200}
                     variant="transparent"
-                    className={currentStep === 5 ? 'completedButton' : 'outlineButton'}
+                    className={'outlineButton'}
                     size="md"
-                    leftSection={currentStep === 5 ? <IconCheck size={22} /> : <IconRefresh size={22} />}
+                    leftSection={<IconRefresh size={22} />}
                     onClick={handleSyncAll}
                     disabled={currentStep >= 5}
                 >
-                    {currentStep >= 5 ? 'Sync Complete' : 'Sync All'}
+                    Sync All
                 </Button>
             </Group>
 
             {/* <Grid gutter="sm"> */}
             <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg">
-                {replicationStats.map((stat: any, index: number) => (
-                    <Card
-                        key={stat.label}
-                        shadow="sm"
-                        padding="lg"
-                        radius="md"
-                        withBorder
-                    >
-                        <Group justify="space-between" align="flex-end">
-                            <div>
-                                <Text
-                                    c="dimmed"
-                                    style={{
-                                        fontWeight: 500,
-                                        fontSize: '16px',
-                                        color: customStyles.colors._4D4D4D,
-                                        height: '24px',
-                                        lineHeight: '24px',
-                                        textTransform: "capitalize"
-                                    }}
-                                    mb={'10px'}
-                                >
-                                    {data[index]}
+                {replicationStats.map((stat: any, index: number) => {
+                    const IconComponent = stat.icon;
+                    return (
+                        <Card
+                            key={stat.label}
+                            bg={customStyles.colors.white}
+                            padding={16}
+                            radius={16}
+                            style={{
+                                border: `1px solid ${customStyles.colors._E1E7EC}`,
+                            }}
+                        >
+                            <Group justify="space-between" gap={0} wrap='nowrap' align="flex-end">
+                                <div>
+                                    <Text
+                                        size='md'
+                                        c={customStyles.colors._4D4D4D}
+                                        fw={600}
+                                        mb={20}
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
+                                        {stat.displayLabel || data[index]}
+                                    </Text>
+
+                                    <ThemeIcon size={40} radius="xl" color={customStyles.colors._1B59F8}>
+                                        <IconComponent size={24} />
+                                    </ThemeIcon>
+                                </div>
+
+                                <Text size="xl" fw={700}>
+                                    {stat.value}
                                 </Text>
-
-                                <ThemeIcon size={40} radius="xl" color="blue">
-                                    <IconChartBar size={24} />
-                                </ThemeIcon>
-                            </div>
-
-                            <Text size="xl" fw={700}>
-                                {stat.value}
-                            </Text>
-                        </Group>
-                    </Card>
-                ))}
-
+                            </Group>
+                        </Card>
+                    );
+                })}
             </SimpleGrid>
             {/* </Grid> */}
         </Card>
