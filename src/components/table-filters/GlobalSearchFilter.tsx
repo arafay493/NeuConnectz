@@ -2,14 +2,14 @@ import { Box, TextInput } from "@mantine/core";
 import { Dispatch, FC, SetStateAction } from "react";
 
 interface GlobalSearchFilterProps {
-    columnFilters: string;
-    setColumnFilters: Dispatch<SetStateAction<string>>;
+    filters: string;
+    setFilters: Dispatch<SetStateAction<string>>;
     isSearchInputVisible: boolean;
 }
 
 export const GlobalSearchFilter: FC<GlobalSearchFilterProps> = ({
-    columnFilters,
-    setColumnFilters,
+    filters,
+    setFilters,
     isSearchInputVisible,
 }) => {
 
@@ -28,8 +28,8 @@ export const GlobalSearchFilter: FC<GlobalSearchFilterProps> = ({
         >
             <TextInput
                 size='xs'
-                value={columnFilters}
-                onChange={(event) => setColumnFilters(event.currentTarget.value)}
+                value={filters}
+                onChange={(event) => setFilters(event.currentTarget.value)}
                 placeholder="Search..."
                 style={{
                     width: '150px',
