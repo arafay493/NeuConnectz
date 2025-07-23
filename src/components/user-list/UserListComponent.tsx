@@ -2,12 +2,14 @@
 
 import { customStyles } from '@/styles/custom-theme';
 import { UserListProps } from '@/types/redux-types';
-import { ActionIcon, Box, Button, Grid, Group, Stack, Text, Title } from '@mantine/core';
-import { IconArrowsUpDown, IconBorderCorners, IconColumns, IconFilter, IconSearch, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
-import { FC, useMemo, useState } from 'react';
+import { ActionIcon, Box, Button, Grid, Group, Select, Stack, TableThead, Text, Title } from '@mantine/core';
+import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconSearch, IconUserPlus } from '@tabler/icons-react';
+import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 
 interface UserListComponentProps {
     // data: Array<UserListProps>;
@@ -16,9 +18,30 @@ interface UserListComponentProps {
 const UserListComponent: FC<UserListComponentProps> = ({
     // data
 }) => {
-    // const [data] = useState(() => generateQuantityDifferenceData());
+    // Note: State for pagination
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10, // Adjusted to a more reasonable default
+    });
+
+    const dispatch = useAppDispatch();
+
+    // Note: State for Authentication
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
+
+    // Note: State for Users List
+    const { usersList: {
+        users: data,
+        totalCount
+    } } = useAppSelector(({ userStates }) => userStates);
+
+    // Pagination values for Api call
+    const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const lastCount = pagination.pageSize;
+
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -47,37 +70,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
     };
 
-    const data: Array<UserListProps> = useMemo(() => {
-        return [
-            {
-                userId: '1',
-                userName: 'John Doe',
-                email: 'john.doe@example.com',
-                phone: '123-456-7890',
-                department: 'Engineering',
-                role: 'Developer',
-                createdBy: 'admin',
-                updatedBy: 'admin',
-                createdDate: new Date().toISOString(),
-                updatedDate: new Date().toISOString(),
-                isActive: true
-            },
-            {
-                userId: '2',
-                userName: 'Jane Smith',
-                email: 'jane.smith@example.com',
-                phone: '987-654-3210',
-                department: 'Marketing',
-                role: 'Manager',
-                createdBy: 'admin',
-                updatedBy: 'admin',
-                createdDate: new Date().toISOString(),
-                updatedDate: new Date().toISOString(),
-                isActive: true
-            }
-        ];
-    }, []);
-
     // Note: Column definitions for the table
     const columns = useMemo<ColumnDef<UserListProps>[]>(
         () => [
@@ -86,10 +78,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 header: 'S.No',
                 cell: ({ row }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + 1}
+                        {row.index + skipRecord + 1}
                     </Text>
                 ),
-                size: calculateColumnWidth('S.No', ['999'], 80, 120), // Assuming max 999 records
+                size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
                 accessorKey: 'userName',
@@ -155,21 +147,49 @@ const UserListComponent: FC<UserListComponentProps> = ({
         [data] // Add data as dependency to recalculate when data changes
     );
 
-
-
     const table = useReactTable({
-        data,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        // Keep client-side filtering and sorting since API doesn't support them yet
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: setGlobalFilter,
+        // Remove getPaginationRowModel for server-side pagination
+        onPaginationChange: setPagination,
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
+            pagination,
         },
     });
+
+    const numbersArray = useMemo<number[]>(() => {
+        return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
+    }, [table.getPageCount()]);
+
+    useEffect(() => {
+        if (authenticatedUser) {
+            setIsLoading(true);
+
+            dispatch(fetchAllUsers({
+                authToken: authenticatedUser?.token,
+                LastCount: lastCount,
+                skipRecord: skipRecord
+            })).finally(() => {
+                setIsLoading(false);
+            });
+        };
+    }, [lastCount, skipRecord, authenticatedUser, dispatch]);
+
+    // Additional effect to handle pagination state changes
+    useEffect(() => {
+        // This will trigger the above effect when pagination changes
+        // The dependency on pagination state will automatically trigger API calls
+    }, [pagination]);
 
     return (
         <Box p={8}>
@@ -210,139 +230,233 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 </Group>
 
                 {/* Table */}
-                <Box style={{
-                    width: '100%',
-                    borderRadius: '8px',
-                    minHeight: '600px',
-                    maxHeight: '600px',
-                    overflow: 'auto',
-                    border: `1px solid ${customStyles.colors.tableRowBorderColor}`,
-                    backgroundColor: 'white'
-                }}>
-                    {/* Sticky Header */}
-                    <Box style={{
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 10,
-                        backgroundColor: customStyles.colors.white,
-                        borderBottom: `2px solid ${customStyles.colors.tableRowBorderColor}`
+                <Box
+                    w="100%"
+                    h={700}
+                    style={{
+                        overflowX: 'auto',
+                        overflowY: 'auto',
+                    }}
+                >
+                    <table style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        minWidth: 'max-content'
                     }}>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <Grid key={headerGroup.id} gutter="sm" style={{
-                                width: 'max-content',
-                                minWidth: '100%'
-                            }}>
-                                {headerGroup.headers.map((header, index) => (
-                                    <Box
-                                        key={header.id}
-                                        style={{
+                        <thead>
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th key={header.id} style={{
+                                            cursor: 'pointer',
+                                            textAlign: 'left',
+                                            padding: '0 16px 24px 16px',
+                                            borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                            width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
-                                            cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                                            padding: '16px 12px',
-                                            borderRight: index < headerGroup.headers.length - 1 ? `1px solid ${customStyles.colors.tableRowBorderColor}` : 'none',
-                                            backgroundColor: '#f8f9fa'
-                                        }}
-                                    >
-                                        <Group gap="xs" wrap="nowrap" onClick={header.column.getToggleSortingHandler()}>
-                                            <Text
-                                                size="md"
-                                                c={customStyles.colors._4D4D4D}
-                                                style={{
-                                                    whiteSpace: 'nowrap',
-                                                    cursor: 'pointer',
-                                                }}
-                                                fw={600}
+                                            maxWidth: `${header.getSize()}px`,
+                                        }}>
+                                            <Group
+                                                wrap="nowrap"
+                                                gap={6}
+                                                onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                            </Text>
-                                            {header.column.getCanSort() && (
-                                                <ActionIcon
-                                                    variant="subtle"
-                                                    size="xs"
-                                                    c={customStyles.colors._4D4D4D}
+                                                <Text fw={600} c={customStyles.colors._4D4D4D}>
+                                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                                </Text>
+                                                {header.column.getCanSort() && (
+                                                    <ActionIcon
+                                                        variant="subtle"
+                                                        size="xs"
+                                                        c={customStyles.colors._4D4D4D}
+                                                        style={{
+                                                            cursor: 'pointer',
+                                                        }}
+                                                        ml={4}
+                                                    >
+                                                        <IconArrowsUpDown size={16} />
+                                                    </ActionIcon>
+                                                )}
+                                            </Group>
+                                            {/* Note: Table Filter Input */}
+                                            {
+                                                header.column.getCanFilter() && (
+                                                    <TableColumnsFilter
+                                                        areTableFiltersVisible={areTableFiltersVisible}
+                                                        placeholder={header.column.columnDef.header as string}
+                                                        value={header.column.getFilterValue() as string ?? ''}
+                                                        setValue={value => header.column.setFilterValue(value)}
+                                                    />
+                                                )
+                                            }
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                // Loading skeleton
+                                Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                    <tr key={`loading-${index}`} style={{
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                    }}>
+                                        {columns.map((_, colIndex) => (
+                                            <td key={`loading-cell-${colIndex}`} style={{
+                                                textAlign: 'left',
+                                                padding: '16px',
+                                            }}>
+                                                <Box
+                                                    h={20}
+                                                    bg={customStyles.colors._E1E7EC || '#F0F0F0'}
                                                     style={{
-                                                        cursor: 'pointer',
+                                                        borderRadius: '4px',
+                                                        animation: 'pulse 1.5s ease-in-out infinite'
                                                     }}
-                                                    ml={4}
-                                                >
-                                                    <IconArrowsUpDown size={16} />
-                                                </ActionIcon>
-                                            )}
-                                        </Group>
-                                        {/* Note: Table Filter Input */}
-                                        {
-                                            header.column.getCanFilter() && (
-                                                <TableColumnsFilter
-                                                    areTableFiltersVisible={areTableFiltersVisible}
-                                                    placeholder={header.column.columnDef.header as string}
-                                                    value={header.column.getFilterValue() as string ?? ''}
-                                                    setValue={value => header.column.setFilterValue(value)}
                                                 />
-                                            )}
-                                    </Box>
-                                ))}
-                            </Grid>
-                        ))}
-                    </Box>
-
-                    {/* Scrollable Body */}
-                    {
-                        data.length === 0 ? (
-                            <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
-                                <Text c={customStyles.colors._909090} size="lg">No data available</Text>
-                            </Group>
-                        ) : (
-                            <Box
-                                style={{
-                                    minWidth: '100%',
-                                    maxHeight: '600px',
-                                    overflowY: 'auto',
-                                    backgroundColor: 'white'
-                                }}>
-                                {table.getRowModel().rows.map((row, rowIndex) => (
-                                    <Grid key={row.id} gutter="sm" style={{
-                                        width: 'max-content',
-                                        minWidth: '100%',
-                                        backgroundColor: rowIndex % 2 === 0 ? 'white' : customStyles.colors.evenTableColor,
-                                        borderBottom: `1px solid ${customStyles.colors.tableRowBorderColor}`,
-                                        minHeight: '48px',
-                                        transition: 'background-color 0.2s ease',
-                                    }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.backgroundColor = '#f0f7ff';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.backgroundColor = rowIndex % 2 === 0 ? 'white' : customStyles.colors.evenTableColor;
-                                        }}
-                                    >
-                                        {row.getVisibleCells().map((cell, cellIndex) => (
-                                            <Box
-                                                key={cell.id}
-                                                style={{
-                                                    minWidth: `${cell.column.getSize()}px`,
-                                                    padding: '16px 12px',
-                                                    borderRight: cellIndex < row.getVisibleCells().length - 1 ? `1px solid ${customStyles.colors.tableRowBorderColor}` : 'none',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: ['action'].includes(cell.column.id) ? 'center' : 'flex-start',
-                                                    height: '48px'
-                                                }}
-                                            >
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </Box>
+                                            </td>
                                         ))}
-                                    </Grid>
-                                ))}
-                            </Box>
-                        )}
+                                    </tr>
+                                ))
+                            ) : table.getRowModel().rows.length > 0 ? (
+                                table.getRowModel().rows.map(row => (
+                                    <tr key={row.id} style={{
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                    }}>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} style={{
+                                                textAlign: 'left',
+                                                padding: '16px',
+                                                width: `${cell.column.getSize()}px`,
+                                                minWidth: `${cell.column.getSize()}px`,
+                                                maxWidth: `${cell.column.getSize()}px`,
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'
+                                            }}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={columns.length} style={{
+                                        textAlign: 'center',
+                                        padding: '32px 16px',
+                                        borderBottom: 'none'
+                                    }}>
+                                        <Text c={customStyles.colors._909090}>No data available</Text>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
                 </Box>
+
             </Stack>
-        </Box>
+
+            {/* Pagination */}
+            <Box
+                mt={12}
+                bg={customStyles.colors.white}
+                style={{ borderRadius: '16px', padding: "12px 24px" }}
+            >
+                <Group justify="space-between" align="center">
+                    {/* Left side - Page navigation */}
+                    <Group justify="flex-start" align="center" gap="xs">
+                        <ActionIcon
+                            className={!table.getCanPreviousPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <IconChevronLeft size={18} />
+                        </ActionIcon>
+
+                        <Group gap="xs" align="center">
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={numbersArray.map(num => ({ value: String(num), label: String(num) }))}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                max={table.getPageCount()}
+                                value={String(table.getState().pagination.pageIndex + 1)}
+                                onChange={value => {
+                                    const page = value ? Number(value) - 1 : 0
+                                    table.setPageIndex(page)
+                                }}
+                            />
+                        </Group>
+
+                        <ActionIcon
+                            className={!table.getCanNextPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <IconChevronRight size={18} />
+                        </ActionIcon>
+                        <Text size="md" c={customStyles.colors._4D4D4D}>
+                            / {table.getPageCount()} pages
+                        </Text>
+                    </Group>
+
+                    {/* Right side - Page size selector and info */}
+                    <Group gap="md" align="center">
+                        <Group gap="xs" align="center">
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                Show
+                            </Text>
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={[
+                                    { value: '5', label: '5' },
+                                    { value: '10', label: '10' },
+                                    { value: '20', label: '20' },
+                                    { value: '50', label: '50' },
+                                    { value: '100', label: '100' }
+                                ]}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                value={String(pagination.pageSize)}
+                                onChange={value => {
+                                    const newPageSize = value ? Number(value) : 10;
+                                    table.setPageSize(newPageSize);
+                                }}
+                            />
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                per page
+                            </Text>
+                        </Group>
+
+                        <Text size="sm" c={customStyles.colors._909090}>
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalCount)} of {totalCount} entries
+                        </Text>
+                    </Group>
+                </Group>
+            </Box>
+        </Box >
     )
 }
 
