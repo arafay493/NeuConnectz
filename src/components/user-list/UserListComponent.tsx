@@ -3,8 +3,8 @@
 import { customStyles } from '@/styles/custom-theme';
 import { UserListProps } from '@/types/redux-types';
 import { ActionIcon, Box, Button, Grid, Group, Select, Stack, TableThead, Text, Title } from '@mantine/core';
-import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconSearch, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
+import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable, ColumnFiltersState } from '@tanstack/react-table';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
@@ -41,6 +41,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
 
     // Note: State for Table Filters
@@ -91,7 +92,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Username', data.map(item => item.userName), 150, 300),
+                size: calculateColumnWidth('Username', data.map(item => item.userName), 150, 400),
             },
             {
                 accessorKey: 'email',
@@ -101,7 +102,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Email', data.map(item => item.email), 180, 350),
+                size: calculateColumnWidth('Email', data.map(item => item.email), 180, 450),
             },
             {
                 accessorKey: 'department',
@@ -141,11 +142,47 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as boolean === true ? 'Active' : 'Inactive'}
                     </Text>
                 ),
+                filterFn: (row, columnId, value) => {
+                    if (!value) return true;
+                    const isActive = row.getValue(columnId) as boolean;
+                    const displayText = isActive ? 'Active' : 'Inactive';
+                    return displayText.toLowerCase().includes(value.toLowerCase());
+                },
                 size: calculateColumnWidth('Status', ['Active', 'Inactive'], 100, 130),
             }
         ],
         [data] // Add data as dependency to recalculate when data changes
     );
+
+    // Custom global filter function to handle Status column properly
+    const globalFilterFn = (row: any, columnId: string, value: string) => {
+        if (!value) return true;
+
+        // Get the search value in lowercase for case-insensitive search
+        const searchValue = value.toLowerCase();
+
+        // Get the cell value
+        const cellValue = row.getValue(columnId);
+
+        // Special handling for isActive (Status) column
+        if (columnId === 'isActive') {
+            const displayText = cellValue === true ? 'Active' : 'Inactive';
+            return displayText.toLowerCase().includes(searchValue);
+        }
+
+        // Handle S.No column (computed value)
+        if (columnId === 'serialNumber') {
+            const serialNumber = row.index + skipRecord + 1;
+            return String(serialNumber).includes(value);
+        }
+
+        // Handle other columns (convert to string and search)
+        if (cellValue != null) {
+            return String(cellValue).toLowerCase().includes(searchValue);
+        }
+
+        return false;
+    };
 
     const table = useReactTable({
         data: data,
@@ -156,6 +193,14 @@ const UserListComponent: FC<UserListComponentProps> = ({
         getSortedRowModel: getSortedRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        globalFilterFn: (row, columnId, value) => {
+            // Get all column IDs to search across
+            const columnIds = ['serialNumber', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+
+            // Search across all columns
+            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+        },
         // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
@@ -163,6 +208,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
         state: {
             sorting,
             globalFilter,
+            columnFilters,
             pagination,
         },
     });
@@ -218,12 +264,19 @@ const UserListComponent: FC<UserListComponentProps> = ({
                     </Group> */}
                     <Group gap="xs">
                         <GlobalSearchFilter
-                            columnFilters={globalFilter}
-                            setColumnFilters={setGlobalFilter}
+                            filters={globalFilter}
+                            setFilters={setGlobalFilter}
                             isSearchInputVisible={isSearchInputVisible}
                         />
-                        <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
-                        <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />
+                        {
+                            !isSearchInputVisible ?
+                                <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
+                        }
+                        {
+                            !areTableFiltersVisible ?
+                                <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} /> : <IconFilterOff cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />
+
+                        }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
                     </Group>
@@ -329,7 +382,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                                 padding: '16px',
                                                 width: `${cell.column.getSize()}px`,
                                                 minWidth: `${cell.column.getSize()}px`,
-                                                maxWidth: `${cell.column.getSize()}px`,
+                                                maxWidth: 'max-content',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap'
