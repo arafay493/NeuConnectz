@@ -40,6 +40,7 @@ import DataNotFound from '@/components/data-not-found/data-not-found';
 import Loader from '@/components/loader/loader';
 import PaginationComponent from '@/components/pagination/pagination';
 import { customStyles } from '@/styles/custom-theme';
+import AssignWarehouseComponent from '@/components/assign-warehouse/AssignWarehouseComponent';
 
 const AssignWareHouse = () => {
 
@@ -63,10 +64,15 @@ const AssignWareHouse = () => {
   const { usersList } = useAppSelector(({ userStates }) => { return userStates });
   const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
 
+  // console.log('warehouse list: ', wareHousesList)
+
   const wareHousesListData = useAppSelector(({ wareHouseStates }) => { return wareHousesList.data })
     ?.filter((whData: WareHouseDataType) =>
       whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
     );
+
+  console.log('warehouse list data: ', wareHousesListData);
+  console.log('warehousesListByUserId: ', warehousesListByUserId);
 
 
   // const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
@@ -140,7 +146,7 @@ const AssignWareHouse = () => {
       [value]: allWarehouses.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
-        receiver: false
+        receive: false
       }))
     }));
 
@@ -161,7 +167,7 @@ const AssignWareHouse = () => {
   };
 
   // Note: Handle checkbox...!
-  const toggleCheckbox = (whsCode: string, field: 'allow' | 'receiver') => {
+  const toggleCheckbox = (whsCode: string, field: 'allow' | 'receive') => {
     if (!selectedUser) return;
 
     setAccess((prev) => {
@@ -175,8 +181,8 @@ const AssignWareHouse = () => {
               field === "allow"
                 ? !entry.allow
                 : entry.allow
-                  ? !entry.receiver
-                  : entry.receiver
+                  ? !entry.receive
+                  : entry.receive
           }
           : entry
       );
@@ -221,7 +227,7 @@ const AssignWareHouse = () => {
     // Note: For normal warehouses...!
     const normalWareHouse = access[selectedUser]
       .filter((item: AccessWareHouseDataType) => {
-        return item.allow && !item.receiver;
+        return item.allow && !item.receive;
       })
       .map((eachItem: AccessWareHouseDataType) => {
         return eachItem.whsCode;
@@ -229,7 +235,7 @@ const AssignWareHouse = () => {
 
     const receiverWareHouse = access[selectedUser]
       .filter((item: AccessWareHouseDataType) => {
-        return item.allow && item.receiver;
+        return item.allow && item.receive;
       })
       .map((eachItem: AccessWareHouseDataType) => {
         return eachItem.whsCode;
@@ -240,6 +246,8 @@ const AssignWareHouse = () => {
       normalWarehouseCodes: normalWareHouse,
       receiverWarehouseCodes: receiverWareHouse
     };
+
+    console.log("wareHouseDataObj: ", wareHouseDataObj);
 
     // Note: Enable loading...!
     setLoading(true);
@@ -308,7 +316,7 @@ const AssignWareHouse = () => {
         return {
           whsCode: wh.whsCode,
           allow: !!existing,
-          receiver: existing?.isReceiver || false,
+          receive: existing?.isReceiver || false,
         };
       });
 
@@ -321,7 +329,7 @@ const AssignWareHouse = () => {
       const resetAccess = allWarehouses.map((wh: WareHouseDataType) => ({
         whsCode: wh.whsCode,
         allow: false,
-        receiver: false,
+        receive: false,
       }));
 
       setAccess((prev) => ({
@@ -332,6 +340,7 @@ const AssignWareHouse = () => {
   }, [selectedUser, warehousesListByUserId, wareHousesList.data]);
 
   return (
+    // <AssignWarehouseComponent />
     <Box>
 
       {/* Note: Loading Component */}
@@ -466,8 +475,8 @@ const AssignWareHouse = () => {
                   <th>
                     <Checkbox
                       disabled={!selectedUser}
-                      checked={access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receiver) || false}
-                      indeterminate={access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.receiver) && !access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receiver)}
+                      checked={access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receive) || false}
+                      indeterminate={access[selectedUser!]?.some((a: AccessWareHouseDataType) => a.receive) && !access[selectedUser!]?.every((a: AccessWareHouseDataType) => a.receive)}
                       onChange={() => {
                         if (!selectedUser) return;
 
@@ -476,14 +485,14 @@ const AssignWareHouse = () => {
 
                           const allReceiversChecked = current
                             .filter((item) => item.allow)
-                            .every((item) => item.receiver);
+                            .every((item) => item.receive);
 
                           // If all allowed ones are already receiver, we uncheck them; otherwise, check them
                           return {
                             ...prev,
                             [selectedUser]: current.map((item) => ({
                               ...item,
-                              receiver: item.allow ? !allReceiversChecked : item.receiver, // Only toggle if `allow` is true
+                              receiver: item.allow ? !allReceiversChecked : item.receive, // Only toggle if `allow` is true
                             })),
                           };
                         });
@@ -516,8 +525,8 @@ const AssignWareHouse = () => {
                       <td>
                         <Checkbox
                           label="Receiver"
-                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.receiver || false}
-                          onChange={() => toggleCheckbox(item.whsCode, 'receiver')}
+                          checked={access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.receive || false}
+                          onChange={() => toggleCheckbox(item.whsCode, 'receive')}
                           disabled={
                             !access[selectedUser!]?.find((a: AccessWareHouseDataType) => a.whsCode === item.whsCode)?.allow || !selectedUser
                           }

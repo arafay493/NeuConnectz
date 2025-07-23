@@ -104,6 +104,15 @@
     border: 1px solid var(--_1B59F8);
 }
 
+.show-scroll-bar-overflow {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.show-scroll-bar-overflow:hover {
+    overflow-y: auto;
+}
+
 /* Loading animation for table skeleton */
 @keyframes pulse {
     0% {
