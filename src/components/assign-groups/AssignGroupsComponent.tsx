@@ -1,3 +1,5 @@
+'use client';
+
 import { useAppDispatch, useAppSelector } from "@/redux/store"
 import { customStyles } from "@/styles/custom-theme"
 import { ActionIcon, Box, Button, Checkbox, Group, Select, Stack, Text, TextInput, Title } from "@mantine/core"
@@ -41,7 +43,7 @@ const AssignGroupsComponent = () => {
     const { ListAllGroupCodes: {
         groups,
         totalCount: groupsTotalCount
-    }, listGroupCodesByUserId, GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
+    }, listGroupCodesByUserId } = useAppSelector(({ groupStates }) => groupStates);
 
     // Transform users data for Select component
     const activeUsersData = users
