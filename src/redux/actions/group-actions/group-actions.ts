@@ -11,7 +11,7 @@ import {
 }
     from "@/redux/reducers/group-reducer/group-reducer";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { AssignGrouptoUserDataType } from "@/types/modules/group-types/group-types";
+import { AssignGroupToUserDataType } from "@/types/modules/group-types/group-types";
 import { ResHandler } from "@/types/api-types";
 
 // Note: Action function to fetch list all group codes...!
@@ -26,10 +26,6 @@ const fetchListAllGroupCodes = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", authToken);
-        // console.log("Last count: ", lastCount);
-        // console.log("Skip records: ", skipRecords);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -43,19 +39,17 @@ const fetchListAllGroupCodes = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in group action: ", response);
+
             const { status, data } = response;
 
+            const { data: groupData, totalCount } = data?.data
+
             if (status == 200) {
-                dispatch(FETCH_ALL_GROUP_CODES({
-                    groupCodesData: data?.data?.data,
-                    groupCodesCount: data?.data?.totalCount
-                }));
+                dispatch(FETCH_ALL_GROUP_CODES({ groups: groupData, totalCount }));
             };
         }
 
         catch (error: any) {
-            console.log('Error occured in fetch all list group codes api integration: ', error);
             const { status, data } = error?.response;
 
             // 401:
@@ -74,9 +68,6 @@ const fetchGroupCodesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", authToken);
-        // console.log("User id: ", userId);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -87,16 +78,13 @@ const fetchGroupCodesListByUserId = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in group action: ", response);
+
             const { status, data } = response;
 
             if (status == 200) {
                 dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
             };
-        }
-
-        catch (error: any) {
-            // console.log('Error occured in fetc group codes list by user id api integration: ', error);
+        } catch (error: any) {
             const { status, data } = error?.response;
 
             // 401:
@@ -117,15 +105,12 @@ const assignGroupToUser = createAsyncThunk(
     async (
         { addGroupToUserData, token, resHandler }:
             {
-                addGroupToUserData: AssignGrouptoUserDataType,
+                addGroupToUserData: AssignGroupToUserDataType,
                 token: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
-        // console.log("Token in group action: ", token);
-        // console.log("Assign group to user data in group action: ", addGroupToUserData);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -136,16 +121,13 @@ const assignGroupToUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in group action: ", response);
+
             const { status, data } = response;
 
             if (status == 201) {
                 resHandler(response);
             };
-        }
-
-        catch (error: any) {
-            // console.log('Error occured in assign group to user api integration: ', error);
+        } catch (error: any) {
             resHandler(error?.response);
 
             const { status, data } = error?.response;

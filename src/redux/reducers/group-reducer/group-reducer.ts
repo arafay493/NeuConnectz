@@ -5,9 +5,11 @@ import { GroupStateType } from "@/types/redux-types";
 
 // Note: Reducer states...!
 const initialState: GroupStateType = {
-    ListAllGroupCodes: [],
+    ListAllGroupCodes: {
+        groups: [],
+        totalCount: 0
+    },
     listGroupCodesByUserId: [],
-    totalGroupCodesCount: 0,
     GroupErrorState: ""
 };
 
@@ -16,27 +18,30 @@ const groupSlice = createSlice({
     initialState,
     reducers: {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA: (state) => {
-            state.ListAllGroupCodes = [];
+            state.ListAllGroupCodes = {
+                groups: [],
+                totalCount: 0
+            };
             state.listGroupCodesByUserId = [];
             state.GroupErrorState = "You are not authorized to access this data!";
         },
 
         FETCH_ALL_GROUP_CODES: (state, action: PayloadAction<any>) => {
-            // console.log("Group codes list data in reducer: ", action.payload);
             state.GroupErrorState = "";
-            state.ListAllGroupCodes = action?.payload.groupCodesData;
-            state.totalGroupCodesCount = action.payload.groupCodesCount
+            state.ListAllGroupCodes = action?.payload;
         },
 
         FETCH_GROUP_CODES_BY_USER_ID: (state, action: PayloadAction<any>) => {
-            // console.log("Group codes list by user id data in reducer: ", action.payload);
             state.GroupErrorState = "";
             state.listGroupCodesByUserId = [];
             state.listGroupCodesByUserId = action?.payload;
         },
 
         CLEAR_ALL_GROUP_STATES: (state) => {
-            state.ListAllGroupCodes = [];
+            state.ListAllGroupCodes = {
+                groups: [],
+                totalCount: 0
+            };
             state.listGroupCodesByUserId = [];
             state.GroupErrorState = "";
         },

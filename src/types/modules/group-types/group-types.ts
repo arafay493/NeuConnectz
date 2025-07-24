@@ -12,7 +12,7 @@ export interface GroupCodeDataType {
     isArchived: boolean
 };
 
-export interface AssignGrouptoUserDataType {
+export interface AssignGroupToUserDataType {
     userId: string,
     groupCodes: (string | number)[]
 };

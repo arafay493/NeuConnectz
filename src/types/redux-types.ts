@@ -75,16 +75,9 @@ export interface WarehousesListData {
 // Note: Group reducer state types...!
 export interface GroupStateType {
     ListAllGroupCodes: {
-        id: string,
-        groupCode: number | string,
-        groupName: string,
-        createdBy: string,
-        updatedBy: string,
-        createdDate: string,
-        updatedDate: string,
-        isActive: boolean,
-        isArchived: boolean
-    }[];
+        groups: Array<ListAllGroupCodesProps>,
+        totalCount: number
+    };
     listGroupCodesByUserId: {
         id: string,
         groupCode: number | string,
@@ -96,9 +89,20 @@ export interface GroupStateType {
         isActive: boolean,
         isArchived: boolean
     }[];
-    totalGroupCodesCount: number;
     GroupErrorState: string
 };
+
+export interface ListAllGroupCodesProps {
+    id: string,
+    groupCode: number | string,
+    groupName: string,
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean,
+    isArchived: boolean
+}
 
 export interface SAPStateType {
     listAll_ITR_IT_TRS: {

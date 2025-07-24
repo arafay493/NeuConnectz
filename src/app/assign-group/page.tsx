@@ -32,7 +32,7 @@ import {
   from '@/redux/actions/group-actions/group-actions';
 import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { UserType } from '@/types/modules/user-types/user-types';
-import { GroupCodeDataType, AssignGrouptoUserDataType } from '@/types/modules/group-types/group-types';
+import { GroupCodeDataType, AssignGroupToUserDataType } from '@/types/modules/group-types/group-types';
 import { customStyles } from '@/styles/custom-theme';
 import DataNotFound from '@/components/data-not-found/data-not-found';
 
@@ -56,9 +56,12 @@ const AssignGroup = () => {
   // Note: Fetching data from redux here...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
-  const { listGroupCodesByUserId, GroupErrorState, totalGroupCodesCount } = useAppSelector(({ groupStates }) => groupStates);
+  const { listGroupCodesByUserId, GroupErrorState, ListAllGroupCodes: {
+    groups,
+    totalCount
+  } } = useAppSelector(({ groupStates }) => groupStates);
 
-  const ListAllGroupCodes = useAppSelector(({ groupStates }) => groupStates.ListAllGroupCodes)
+  const ListAllGroupCodes = groups
     ?.filter((user: GroupCodeDataType) =>
       user?.groupName?.toLowerCase().includes(search?.toLowerCase())
     );
@@ -73,7 +76,7 @@ const AssignGroup = () => {
   // console.log('Filtered: ', filtered);
 
   // Note: Required variables...!
-  const totalPages = Math.ceil(totalGroupCodesCount / itemsPerPage);
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
   // const paginated = [...ListAllGroupCodes].slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
 
@@ -150,7 +153,7 @@ const AssignGroup = () => {
       return;
     };
 
-    const obj: AssignGrouptoUserDataType = {
+    const obj: AssignGroupToUserDataType = {
       userId: selectedUser,
       groupCodes: checkedGroups
     };
