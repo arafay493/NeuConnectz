@@ -3,7 +3,7 @@
 export type AccessWareHouseDataType = {
     whsCode: string;
     allow: boolean;
-    receiver: boolean;
+    receive: boolean;
 };
 
 export interface WareHouseDataType {

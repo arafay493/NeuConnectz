@@ -684,7 +684,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
                                 <Button
                                     variant="transparent"
-                                    className={handleDisable(item.pendingValue, item.integratedValue) ? 'outlineDisabledButton' : 'outlineButton'}
+                                    className={handleDisable(item.pendingValue, item.integratedValue) ? 'filledDisabledButton' : 'outlineButton'}
                                     radius={8}
                                     size="md"
                                     fullWidth
@@ -700,7 +700,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                                         },
                                     }}
                                 >
-                                    Post
+                                    {handleDisable(item.pendingValue, item.integratedValue) ? 'Posted' : 'Post'}
                                 </Button>
                             </Card>
                         </Grid.Col>
