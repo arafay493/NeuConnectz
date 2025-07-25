@@ -2,34 +2,29 @@
 
 'use client';
 
-import {
-    ReactNode,
-    useState,
-    useEffect,
-    memo,
-} from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import NextImage from 'next/image';
-import {
-    Group,
-    Avatar,
-    Text,
-    ActionIcon,
-    Stack,
-} from '@mantine/core';
-import { useDisclosure, useMediaQuery } from '@mantine/hooks';
-import {
-    IconBell,
-    IconMenu2,
-} from '@tabler/icons-react';
+import { authenticatedRoutes, drawerRoutes, routes } from '@/constants/routes';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { routes, drawerRoutes, authenticatedRoutes } from '@/constants/routes';
 import { customStyles } from '@/styles/custom-theme';
-import { localAssets } from '@/lib/file-paths/file-paths';
+import {
+    ActionIcon,
+    Avatar,
+    Group,
+    Stack,
+    Text,
+} from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import {
+    IconMenu2
+} from '@tabler/icons-react';
+import { usePathname, useRouter } from 'next/navigation';
+import {
+    memo,
+    ReactNode,
+    useEffect,
+    useState,
+} from 'react';
 import HtmlCollapsedNavbar from './html-collapsed-navbar';
 import HtmlExpandedNavbar from './html-expanded-navbar';
-import ExpandedNavbar from './expanded-navbar';
-import CollapsedNavbar from './collapsed-navbar';
 
 const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
 

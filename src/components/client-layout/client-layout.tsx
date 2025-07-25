@@ -1,22 +1,22 @@
 'use client';
 
-import React, { ReactNode, useState, useEffect } from 'react';
 import { getCookie } from "cookies-next";
+import { ReactNode, useEffect, useState } from 'react';
 
 // Note: Redux Integration...!
+import { persistor, store } from "@/redux/store";
 import { Provider } from "react-redux";
 import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from "@/redux/store";
 
 // Note: Mantine UI Integration...!
-import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-provider";
+import MantineUiProvider from "@/components/mantine-ui-provider/mantine-ui-provider";
 
 // Note: Custom hook to monitor network status...!
 import { useNetworkStatus } from "@/hooks/userNetworkStatus";
 
-import nextDynamic from 'next/dynamic';
-import { customStyles } from '@/styles/custom-theme';
 import HtmlAppLayout from '@/components/app-layout/html-app-layout';
+import { customStyles } from '@/styles/custom-theme';
+import nextDynamic from 'next/dynamic';
 
 // Dynamically import Lottie to prevent SSR issues
 const Lottie = nextDynamic(() => import('lottie-react'), { ssr: false });
@@ -110,13 +110,13 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
     return (
         <Provider store={store}>
             <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
-                <MantinreUiProvider>
+                <MantineUiProvider>
                     {cookieValue === "" ? (
                         <LoginScreen />
                     ) : (
                         <HtmlAppLayout>{children}</HtmlAppLayout>
                     )}
-                </MantinreUiProvider>
+                </MantineUiProvider>
             </PersistGate>
         </Provider>
     );
