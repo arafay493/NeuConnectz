@@ -2,25 +2,32 @@
 
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Text, Center } from '@mantine/core';
-import Lottie from 'lottie-react';
-import NotFoundAnimation from "../assets/lottie/not-found-animation.json";
+import nextDynamic from 'next/dynamic';
 import { customStyles } from '@/styles/custom-theme';
 import { routes } from '@/constants/routes';
 
-const PageNotFound = () => {
+// Dynamically import Lottie to prevent SSR issues
+const Lottie = nextDynamic(() => import('lottie-react'), { ssr: false });
 
+const PageNotFound = () => {
   // Note: Handeling router here...!
   const router = useRouter();
+  const [animationData, setAnimationData] = useState<any>(null);
 
   // Note: This hook will run only once when the component mounts...!
   useEffect(() => {
+    // Dynamically import the animation data on client side only
+    import("../assets/lottie/not-found-animation.json").then((data) => {
+      setAnimationData(data.default);
+    });
+
     setTimeout(() => {
       router.push(routes.root);
     }, 3000);
-  }, []);
+  }, [router]);
 
   return (
     <Center
@@ -31,14 +38,16 @@ const PageNotFound = () => {
       }}
     >
       <Container style={{ textAlign: customStyles.alignment.center }}>
-        <Lottie
-          animationData={NotFoundAnimation}
-          loop={true}
-          style={{
-            width: 400,
-            height: 400
-          }}
-        />
+        {animationData && (
+          <Lottie
+            animationData={animationData}
+            loop={true}
+            style={{
+              width: 400,
+              height: 400
+            }}
+          />
+        )}
         <Text
           size={customStyles.deviceSize.xl}
           style={{ fontWeight: 600 }}
