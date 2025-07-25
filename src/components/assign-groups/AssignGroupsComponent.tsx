@@ -349,14 +349,14 @@ const AssignGroupsComponent = () => {
                 c={customStyles.colors._4D4D4D}
                 size={isSmallScreen ? 'h3' : 'h2'}
             >
-                Assign Warehouse
+                Assign Groups
             </Title>
             <Text
                 mb={isSmallScreen ? 16 : 24}
                 c={customStyles.colors._909090}
                 size={isSmallScreen ? 'sm' : 'md'}
             >
-                Select user & assign single or multiple warehouse to user
+                Select assign Groups to user
             </Text>
 
             {/* Search Bar */}
@@ -399,9 +399,9 @@ const AssignGroupsComponent = () => {
                         w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
                         maw={isSmallScreen ? '100%' : 350}
                     >
-                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Search Warehouse Name:</Text>
+                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Search Group Name:</Text>
                         <TextInput
-                            placeholder="Search by warehouse"
+                            placeholder="Search by Group"
                             leftSection={<IconSearch size={isSmallScreen ? 16 : 18} />}
                             //   value={search}
                             //   onChange={(e) => {
@@ -425,7 +425,7 @@ const AssignGroupsComponent = () => {
                     w={isSmallScreen ? '100%' : 'auto'}
                     mt={isSmallScreen ? 16 : 0}
                 >
-                    {isSmallScreen ? 'Assign' : 'Assign Warehouse'}
+                    {isSmallScreen ? 'Assign' : 'Assign Groups'}
                 </Button>
             </Group>
 
@@ -435,10 +435,10 @@ const AssignGroupsComponent = () => {
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Warehouse List
+                            Group List
                         </Title>
                         <Text c={customStyles.colors._909090}>
-                            Select user to assign warehouse
+                            Select user to assign group
                         </Text>
                     </Stack>
                     <Group gap="xs">
