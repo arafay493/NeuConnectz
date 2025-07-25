@@ -105,41 +105,8 @@ export interface ListAllGroupCodesProps {
 }
 
 export interface SAPStateType {
-    listAll_ITR_IT_TRS: {
-        id: string,
-        type: string,
-        docNumber: string | null,
-        itemCode: string,
-        fromWarehouse: string,
-        toWarehouse: string,
-        userName: string,
-        erpDocEntry: string | null,
-        erpLineID: string | null,
-        updatedDate: string,
-        status: string,
-        docStatus: string
-    }[];
-    list_GRNS_Data: {
-        createdBy: string,
-        createdDate: string,
-        docNum: string | number,
-        docStatus: string,
-        grnNumber: string | number,
-        id: string,
-        isActive: boolean,
-        isArchived: boolean,
-        itemCode: string,
-        itemName: string,
-        sapStatus: string,
-        updatedBy: string
-        updatedDate: string
-        userName: string,
-        erpDocEntry: string | number,
-        erpDocLine: string | number,
-        vendorCode: string,
-        vendorReference: string,
-        whsCode: string,
-    }[];
+    listAll_ITR_IT_TRS: Array<IT_TR_ITR_Props>;
+    list_GRNS_Data: Array<GRN_Props>;
     sapErrorState: string;
     isSAPConfigExist: boolean,
     vendorCodeList: {
@@ -159,6 +126,43 @@ export interface SAPStateType {
     totalGRNS_DataCounts: number;
     listAll_ITR_IT_TRS_Count: number;
 };
+
+export interface GRN_Props {
+    createdBy: string;
+    createdDate: string;
+    docNum: string | number;
+    docStatus: string;
+    grnNumber: string | number;
+    id: string;
+    isActive: boolean;
+    isArchived: boolean;
+    itemCode: string;
+    itemName: string;
+    sapStatus: string;
+    updatedBy: string
+    updatedDate: string
+    userName: string;
+    erpDocEntry: string | number;
+    erpDocLine: string | number;
+    vendorCode: string;
+    vendorReference: string;
+    whsCode: string;
+}
+
+export interface IT_TR_ITR_Props {
+    id: string;
+    type: string;
+    docNumber: string | null;
+    itemCode: string;
+    fromWarehouse: string;
+    toWarehouse: string;
+    userName: string;
+    erpDocEntry: string | null;
+    erpLineID: string | null;
+    updatedDate: string;
+    status: string;
+    docStatus: string;
+}
 
 export interface RolesStateType {
     listRoles: {

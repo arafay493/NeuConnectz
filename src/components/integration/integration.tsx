@@ -1,6 +1,6 @@
 // Note: Integration component...!
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import {
     Button,
     Card,
@@ -13,8 +13,12 @@ import {
     Flex,
     Select,
     ScrollArea,
+    Stack,
+    Box,
+    ActionIcon,
+    Checkbox,
 } from '@mantine/core';
-import { IconChartBar } from "@tabler/icons-react";
+import { IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { postRequestToSAP, fetchAllITR_IT_TRS, fetchAll_GRNS } from '@/redux/actions/sap-actions/sap-actions';
 import PaginationComponent from '../pagination/pagination';
@@ -23,6 +27,10 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '../loader/loader';
 import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashboard-actions';
+import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { IT_TR_ITR_Props, GRN_Props } from '@/types/redux-types';
 
 const headers: string[] =
     [
@@ -103,138 +111,503 @@ interface IntegrationComponentProps {
 // GRN Table Props...!
 type TableProps = {
     type: "Pending" | "Integrated";
+    areTableFiltersVisible: boolean;
+    isLoading?: boolean;
 };
 
 // Stock Movement Table Props...!
 type SMTableProps = {
     type: "Pending" | "Integrated";
-    sapType?: "ITR" | "IT" | "TR"
+    sapType?: "ITR" | "IT" | "TR";
+    areTableFiltersVisible: boolean;
+    isLoading?: boolean;
+};
+
+// Note: Utility function to calculate optimal column width
+const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
+    // Calculate width based on header text (approximate 8px per character)
+    const headerWidth = headerText.length * 8 + 40; // +40 for padding
+
+    // Calculate width based on longest sample value
+    const maxValueLength = sampleValues.reduce((max, value) => {
+        return Math.max(max, String(value).length);
+    }, 0);
+    const valueWidth = maxValueLength * 8 + 40; // +40 for padding
+
+    // Return the larger of header or content width, within min/max bounds
+    return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
 };
 
 // Note: GRN_Table_Component...!
-const GRN_Table_Component: React.FC<TableProps> = ({ type }) => {
-    // console.log('Type: ', type);
-
-    // Note: States...!
+const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisible }) => {
+    // Note: Handeling states here...!
     const [loading, setLoading] = useState(false);
-    const [activePage, setPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
-
-    // Note: Required variables...!
-    const lastCount = itemsPerPage;
-    const skipRecords = (activePage - 1) * itemsPerPage;
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { list_GRNS_Data, totalGRNS_DataCounts, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("list_GRNS_Data: ", list_GRNS_Data);
-    // console.log("Total GRNS counts: ", totalGRNS_DataCounts);
 
-    const totalPages = Math.ceil(totalGRNS_DataCounts / itemsPerPage);
+    // Note: State for Filters
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleNewPage = (newPage: number) => {
-        setPage(newPage);
+    // Note: State for pagination
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+
+    // Pagination values for Api call
+    const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const lastCount = pagination.pageSize;
+
+    // Note: Columns Data for GRN Table
+    const columns = useMemo<ColumnDef<GRN_Props>[]>(
+        () => [
+            {
+                header: 'S.No',
+                cell: ({ row }) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {row.index + skipRecord + 1}
+                    </Text>
+                ),
+                size: calculateColumnWidth('S.No', ['99999'], 80, 120),
+            },
+            {
+                header: 'Type',
+                cell: () => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        GRN
+                    </Text>
+                ),
+                size: calculateColumnWidth('Type', ['GRN'], 80, 120),
+            },
+            {
+                accessorKey: 'docNum',
+                header: 'Number',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Number', list_GRNS_Data.map(item => String(item.docNum)), 120, 200),
+            },
+            {
+                accessorKey: 'itemCode',
+                header: 'Item Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Item Code', list_GRNS_Data.map(item => item.itemCode), 150, 250),
+            },
+            {
+                accessorKey: 'whsCode',
+                header: 'Warehouse',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Warehouse', list_GRNS_Data.map(item => item.whsCode), 120, 200),
+            },
+            {
+                accessorKey: 'vendorCode',
+                header: 'Vendor',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Vendor', list_GRNS_Data.map(item => item.vendorCode), 120, 200),
+            },
+            {
+                accessorKey: 'userName',
+                header: 'User Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('User Name', list_GRNS_Data.map(item => item.userName), 150, 250),
+            },
+            {
+                accessorKey: 'erpDocEntry',
+                header: 'ERP Doc Entry',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                size: calculateColumnWidth('ERP Doc Entry', list_GRNS_Data.map(item => item.erpDocEntry ? String(item.erpDocEntry) : '-'), 140, 220),
+            },
+            {
+                accessorKey: 'erpDocLine',
+                header: 'ERP Line ID',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                size: calculateColumnWidth('ERP Line ID', list_GRNS_Data.map(item => item.erpDocLine ? String(item.erpDocLine) : '-'), 130, 200),
+            },
+            {
+                accessorKey: 'sapStatus',
+                header: 'SAP Status',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('SAP Status', list_GRNS_Data.map(item => item.sapStatus), 120, 180),
+            },
+            {
+                accessorKey: 'docStatus',
+                header: 'Doc Status',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Doc Status', list_GRNS_Data.map(item => item.docStatus), 120, 180),
+            },
+            {
+                accessorKey: 'updatedDate',
+                header: 'Doc Date',
+                cell: ({ getValue }) => {
+                    const date = new Date(getValue() as string);
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {`${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
+            },
+        ],
+        [skipRecord, list_GRNS_Data]
+    );
+
+    // Custom global filter function to handle columns properly
+    const globalFilterFn = (row: any, columnId: string, value: string) => {
+        if (!value) return true;
+
+        // Get the search value in lowercase for case-insensitive search
+        const searchValue = value.toLowerCase();
+
+        // Get the cell value
+        const cellValue = row.getValue(columnId);
+
+        // Handle S.No column (computed value)
+        if (columnId === 'serialNumber') {
+            const serialNumber = row.index + skipRecord + 1;
+            return String(serialNumber).includes(value);
+        }
+
+        // Handle updatedDate column (formatted date)
+        if (columnId === 'updatedDate') {
+            const date = new Date(cellValue as string);
+            const formattedDate = `${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`;
+            return formattedDate.toLowerCase().includes(searchValue);
+        }
+
+        // Handle other columns (convert to string and search)
+        if (cellValue != null) {
+            return String(cellValue).toLowerCase().includes(searchValue);
+        }
+
+        return false;
     };
+
+    // Note: Table Definition
+    const table = useReactTable({
+        data: list_GRNS_Data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        globalFilterFn: (row, columnId, value) => {
+            // Get all column IDs to search across
+            const columnIds = ['docNum', 'itemCode', 'whsCode', 'vendorCode', 'userName', 'erpDocEntry', 'erpDocLine', 'sapStatus', 'docStatus', 'updatedDate'];
+
+            // Search across all columns
+            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+        },
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        pageCount: Math.ceil(totalGRNS_DataCounts / pagination.pageSize),
+        state: {
+            sorting,
+            globalFilter,
+            columnFilters,
+            pagination,
+        },
+    });
+
+    const numbersArray = useMemo<number[]>(() => {
+        return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
+    }, [table.getPageCount()]);
 
     useEffect(() => {
         if (authenticatedUser?.token) {
-            setLoading(true);
+            setIsLoading(true);
             dispatch(fetchAll_GRNS({
                 token: authenticatedUser?.token || "",
-                handleLoading: () => setLoading(false),
+                handleLoading: () => setIsLoading(false),
                 apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${type}` || "",
                 lastCount: lastCount,
-                skipRecords: skipRecords
+                skipRecords: skipRecord
             }));
         };
-    }, [authenticatedUser, skipRecords, lastCount]);
+    }, [authenticatedUser, skipRecord, lastCount, type]);
 
     return (
         <>
-            {loading && <Loader loadingState={loading} />}
-
-            <ScrollArea type="auto">
-                <Table
-                    highlightOnHover
-                    striped
-                    withTableBorder
-                >
-                    <Table.Thead>
-                        <Table.Tr>{grnsHeaders.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
-                    </Table.Thead>
-
-                    <Table.Tbody>
-                        {
-                            list_GRNS_Data?.map((row: any, index) => (
-                                <Table.Tr key={row.id}>
-                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                    <Table.Td> GRN </Table.Td>
-                                    <Table.Td>{row.docNum}</Table.Td>
-                                    <Table.Td>{row.itemCode}</Table.Td>
-                                    <Table.Td>{row.whsCode}</Table.Td>
-                                    <Table.Td>{row.vendorCode}</Table.Td>
-                                    <Table.Td>{row.userName}</Table.Td>
-                                    <Table.Td>{(row.erpDocEntry) ? (row.erpDocEntry) : ("-")}</Table.Td>
-                                    <Table.Td>{(row.erpDocLine) ? (row.erpDocLine) : ("-")}</Table.Td>
-                                    <Table.Td>{row.sapStatus}</Table.Td>
-                                    <Table.Td>{row.docStatus}</Table.Td>
-                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                </Table.Tr>
+            <Box
+                className="show-scroll-bar-overflow"
+                w="100%"
+                h={700}
+                style={{
+                    overflowX: 'auto',
+                }}
+            >
+                <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    minWidth: 'max-content'
+                }}>
+                    <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id} style={{
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        padding: '0 16px 24px 16px',
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                        width: `${header.getSize()}px`,
+                                        minWidth: `${header.getSize()}px`,
+                                        maxWidth: 'max-content',
+                                    }}>
+                                        <Group
+                                            wrap="nowrap"
+                                            gap={6}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}>
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                            </Text>
+                                            {header.column.getCanSort() && (
+                                                <ActionIcon
+                                                    variant="subtle"
+                                                    size="xs"
+                                                    c={customStyles.colors._4D4D4D}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    ml={4}
+                                                >
+                                                    <IconArrowsUpDown size={16} />
+                                                </ActionIcon>
+                                            )}
+                                        </Group>
+                                        {/* Note: Table Filter Input */}
+                                        {
+                                            header.column.getCanFilter() && (
+                                                <TableColumnsFilter
+                                                    areTableFiltersVisible={areTableFiltersVisible}
+                                                    placeholder={header.column.columnDef.header as string}
+                                                    value={header.column.getFilterValue() as string ?? ''}
+                                                    setValue={value => header.column.setFilterValue(value)}
+                                                />
+                                            )
+                                        }
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            // Loading skeleton
+                            Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                <tr key={`loading-${index}`} style={{
+                                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                }}>
+                                    {columns.map((_, colIndex) => (
+                                        <td key={`loading-cell-${colIndex}`} style={{
+                                            textAlign: 'left',
+                                            padding: '16px',
+                                        }}>
+                                            <Box
+                                                h={20}
+                                                bg={customStyles.colors._E1E7EC || '#F0F0F0'}
+                                                style={{
+                                                    borderRadius: '4px',
+                                                    animation: 'pulse 1.5s ease-in-out infinite'
+                                                }}
+                                            />
+                                        </td>
+                                    ))}
+                                </tr>
                             ))
-                        }
-                    </Table.Tbody>
-                </Table>
+                        ) : table.getRowModel().rows.length > 0 ? (
+                            table.getRowModel().rows.map(row => (
+                                <tr key={row.id} style={{
+                                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                }}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <td key={cell.id} style={{
+                                            textAlign: 'left',
+                                            padding: '16px',
+                                            width: `${cell.column.getSize()}px`,
+                                            minWidth: `${cell.column.getSize()}px`,
+                                            maxWidth: 'max-content',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns.length} style={{
+                                    textAlign: 'center',
+                                    padding: '32px 16px',
+                                    borderBottom: 'none'
+                                }}>
+                                    <Text c={customStyles.colors._909090}>
+                                        {sapErrorState || "No data available"}
+                                    </Text>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </Box>
 
-                {list_GRNS_Data.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
-            </ScrollArea>
+            {/* Pagination */}
+            <Box
+                mt={12}
+                bg={customStyles.colors.white}
+                style={{ borderRadius: '16px', padding: "12px 24px" }}
+            >
+                <Group justify="space-between" align="center">
+                    {/* Left side - Page navigation */}
+                    <Group justify="flex-start" align="center" gap="xs">
+                        <ActionIcon
+                            className={!table.getCanPreviousPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <IconChevronLeft size={18} />
+                        </ActionIcon>
 
-            {
-                list_GRNS_Data.length > 0 &&
-                <Flex
-                    justify={customStyles.alignment.spaceBetween}
-                    align={customStyles.alignment.center}
-                    mb="md"
-                    wrap="wrap"
-                    gap="sm"
-                >
-                    {/* Note: Pagination section */}
-                    <PaginationComponent
-                        totalPages={totalPages}
-                        pageNum={activePage}
-                        handleNewPage={handleNewPage}
-                    />
+                        <Group gap="xs" align="center">
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={numbersArray.map(num => ({ value: String(num), label: String(num) }))}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                max={table.getPageCount()}
+                                value={String(table.getState().pagination.pageIndex + 1)}
+                                onChange={value => {
+                                    const page = value ? Number(value) - 1 : 0
+                                    table.setPageIndex(page)
+                                }}
+                            />
+                        </Group>
 
-                    {/* Note: Rows per page section */}
-                    <Select
-                        data={["5", "10", "20", "50"]}
-                        label="Rows per page"
-                        value={itemsPerPage.toString()}
-                        onChange={(value) => {
-                            setItemsPerPage(Number(value));
-                            setPage(1);
-                        }}
-                        w={120}
-                    />
-                </Flex>
-            }
+                        <ActionIcon
+                            className={!table.getCanNextPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <IconChevronRight size={18} />
+                        </ActionIcon>
+                        <Text size="md" c={customStyles.colors._4D4D4D}>
+                            / {table.getPageCount()} pages
+                        </Text>
+                    </Group>
+
+                    {/* Right side - Page size selector and info */}
+                    <Group gap="md" align="center">
+                        <Group gap="xs" align="center">
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                Show
+                            </Text>
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={[
+                                    { value: '5', label: '5' },
+                                    { value: '10', label: '10' },
+                                    { value: '20', label: '20' },
+                                    { value: '50', label: '50' },
+                                    { value: '100', label: '100' }
+                                ]}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                value={String(pagination.pageSize)}
+                                onChange={value => {
+                                    const newPageSize = value ? Number(value) : 10;
+                                    table.setPageSize(newPageSize);
+                                }}
+                            />
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                per page
+                            </Text>
+                        </Group>
+
+                        <Text size="sm" c={customStyles.colors._909090}>
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalGRNS_DataCounts)} of {totalGRNS_DataCounts} entries
+                        </Text>
+                    </Group>
+                </Group>
+            </Box>
         </>
     );
 };
 
 // Note: Stock_Movement_Table_Component...!
-const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType }) => {
-    // console.log('Sap Type: ', sapType);
+const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType, areTableFiltersVisible, isLoading }) => {
 
     // Note: Handeling states here...!
     const [loading, setLoading] = useState(false);
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
-
-    // Note: Required variables for pagination...!
-    const lastCount = itemsPerPage;
-    const skipRecords = (activePage - 1) * itemsPerPage;
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -247,6 +620,213 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType 
         setPage(newPage);
     };
 
+    // Note: State for Filters
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+    // Note: State for pagination
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10, // Adjusted to a more reasonable default
+    });
+
+    // Pagination values for Api call
+    const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const lastCount = pagination.pageSize;
+
+    // Note: Columns Data for Stock Movement Table
+    const columns = useMemo<ColumnDef<IT_TR_ITR_Props>[]>(
+        () => [
+            {
+                header: 'S.No',
+                cell: ({ row }) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {row.index + skipRecord + 1}
+                    </Text>
+                ),
+                size: calculateColumnWidth('S.No', ['99999'], 80, 120),
+            },
+            {
+                accessorKey: 'type',
+                header: 'Type',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Type', listAll_ITR_IT_TRS.map(item => item.type), 80, 120),
+            },
+            {
+                accessorKey: 'docNumber',
+                header: 'Number',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Number', listAll_ITR_IT_TRS.map(item => item.docNumber ? String(item.docNumber) : '-'), 120, 200),
+            },
+            {
+                accessorKey: 'itemCode',
+                header: 'Item Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Item Code', listAll_ITR_IT_TRS.map(item => item.itemCode), 150, 250),
+            },
+            {
+                accessorKey: 'fromWarehouse',
+                header: 'From Warehouse',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('From Warehouse', listAll_ITR_IT_TRS.map(item => item.fromWarehouse), 150, 250),
+            },
+            {
+                accessorKey: 'toWarehouse',
+                header: 'To Warehouse',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('To Warehouse', listAll_ITR_IT_TRS.map(item => item.toWarehouse), 150, 250),
+            },
+            {
+                accessorKey: 'userName',
+                header: 'User Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('User Name', listAll_ITR_IT_TRS.map(item => item.userName), 150, 250),
+            },
+            {
+                accessorKey: 'erpDocEntry',
+                header: 'ERP Doc Entry',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                size: calculateColumnWidth('ERP Doc Entry', listAll_ITR_IT_TRS.map(item => item.erpDocEntry ? String(item.erpDocEntry) : '-'), 140, 220),
+            },
+            {
+                accessorKey: 'erpLineID',
+                header: 'ERP Line ID',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                size: calculateColumnWidth('ERP Line ID', listAll_ITR_IT_TRS.map(item => item.erpLineID ? String(item.erpLineID) : '-'), 130, 200),
+            },
+            {
+                accessorKey: 'status',
+                header: 'SAP Status',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('SAP Status', listAll_ITR_IT_TRS.map(item => item.status), 120, 180),
+            },
+            {
+                accessorKey: 'docStatus',
+                header: 'Doc Status',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Doc Status', listAll_ITR_IT_TRS.map(item => item.docStatus), 120, 180),
+            },
+            {
+                accessorKey: 'updatedDate',
+                header: 'Doc Date',
+                cell: ({ getValue }) => {
+                    const date = new Date(getValue() as string);
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {`${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
+            },
+        ],
+        [skipRecord, listAll_ITR_IT_TRS]
+    );
+
+    // Custom global filter function to handle columns properly
+    const globalFilterFn = (row: any, columnId: string, value: string) => {
+        if (!value) return true;
+
+        // Get the search value in lowercase for case-insensitive search
+        const searchValue = value.toLowerCase();
+
+        // Get the cell value
+        const cellValue = row.getValue(columnId);
+
+        // Handle S.No column (computed value)
+        if (columnId === 'serialNumber') {
+            const serialNumber = row.index + skipRecord + 1;
+            return String(serialNumber).includes(value);
+        }
+
+        // Handle updatedDate column (formatted date)
+        if (columnId === 'updatedDate') {
+            const date = new Date(cellValue as string);
+            const formattedDate = `${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`;
+            return formattedDate.toLowerCase().includes(searchValue);
+        }
+
+        // Handle other columns (convert to string and search)
+        if (cellValue != null) {
+            return String(cellValue).toLowerCase().includes(searchValue);
+        }
+
+        return false;
+    };
+
+    // Note: Table Definition
+    const table = useReactTable({
+        data: listAll_ITR_IT_TRS,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        globalFilterFn: (row, columnId, value) => {
+            // Get all column IDs to search across
+            const columnIds = ['type', 'docNumber', 'itemCode', 'fromWarehouse', 'toWarehouse', 'userName', 'erpDocEntry', 'erpLineID', 'status', 'docStatus', 'updatedDate'];
+
+            // Search across all columns
+            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+        },
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        pageCount: Math.ceil(listAll_ITR_IT_TRS_Count / pagination.pageSize),
+        state: {
+            sorting,
+            globalFilter,
+            columnFilters,
+            pagination,
+        },
+    });
+
+    const numbersArray = useMemo<number[]>(() => {
+        return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
+    }, [table.getPageCount()]);
+
     useEffect(() => {
         if (authenticatedUser?.token) {
             setLoading(true); // Note: Enable loading...!
@@ -256,85 +836,247 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType 
                 handleLoading: () => setLoading(false),
                 type: sapType != undefined ? sapType : undefined,
                 lastCount: lastCount,
-                skipRecords: skipRecords
+                skipRecords: skipRecord
             }));
         };
-    }, [authenticatedUser, skipRecords, lastCount]);
+    }, [authenticatedUser, skipRecord, lastCount, type, sapType]);
 
     return (
         <>
-            {loading && <Loader loadingState={loading} />}
-
-            <ScrollArea type="auto">
-                <Table
-                    highlightOnHover
-                    striped
-                    withTableBorder
-                >
-                    <Table.Thead>
-                        <Table.Tr>{headers.map(h => <Table.Th key={h}>{h}</Table.Th>)}</Table.Tr>
-                    </Table.Thead>
-
-                    <Table.Tbody>
-                        {
-                            listAll_ITR_IT_TRS?.map((row: any, index) => (
-                                <Table.Tr key={row.id}>
-                                    <Table.Td>{(activePage - 1) * itemsPerPage + index + 1}</Table.Td>
-                                    <Table.Td>{row.type}</Table.Td>
-                                    <Table.Td>{row.docNumber ? row.docNumber : '-'}</Table.Td>
-                                    <Table.Td>{row.itemCode}</Table.Td>
-                                    <Table.Td>{row.fromWarehouse}</Table.Td>
-                                    <Table.Td>{row.toWarehouse}</Table.Td>
-                                    <Table.Td>{row.userName}</Table.Td>
-                                    <Table.Td>{row.erpDocEntry != null ? row.erpDocEntry : '-'}</Table.Td>
-                                    <Table.Td>{row.erpLineID != null ? row.erpLineID : '-'}</Table.Td>
-                                    <Table.Td>{row.status}</Table.Td>
-                                    <Table.Td>{row.docStatus}</Table.Td>
-                                    <Table.Td>{`${new Date(row.updatedDate).toLocaleTimeString()} - ${new Date(row.updatedDate).toLocaleDateString()}`}</Table.Td>
-                                </Table.Tr>
+            <Box
+                className="show-scroll-bar-overflow"
+                w="100%"
+                h={700}
+                style={{
+                    overflowX: 'auto',
+                    // overflowY: 'auto',
+                }
+                }
+            >
+                <table style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    minWidth: 'max-content'
+                }}>
+                    <thead                        >
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr
+                                key={headerGroup.id}
+                            >
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id} style={{
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        padding: '0 16px 24px 16px',
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                        width: `${header.getSize()}px`,
+                                        minWidth: `${header.getSize()}px`,
+                                        maxWidth: 'max-content',
+                                    }}>
+                                        <Group
+                                            wrap="nowrap"
+                                            gap={6}
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}>
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                            </Text>
+                                            {header.column.getCanSort() && (
+                                                <ActionIcon
+                                                    variant="subtle"
+                                                    size="xs"
+                                                    c={customStyles.colors._4D4D4D}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    ml={4}
+                                                >
+                                                    <IconArrowsUpDown size={16} />
+                                                </ActionIcon>
+                                            )}
+                                        </Group>
+                                        {/* Note: Table Filter Input */}
+                                        {
+                                            header.column.getCanFilter() && (
+                                                <TableColumnsFilter
+                                                    areTableFiltersVisible={areTableFiltersVisible}
+                                                    placeholder={header.column.columnDef.header as string}
+                                                    value={header.column.getFilterValue() as string ?? ''}
+                                                    setValue={value => header.column.setFilterValue(value)}
+                                                />
+                                            )
+                                        }
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            // Loading skeleton
+                            Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                <tr key={`loading-${index}`} style={{
+                                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                }}>
+                                    {columns.map((_, colIndex) => (
+                                        <td key={`loading-cell-${colIndex}`} style={{
+                                            textAlign: 'left',
+                                            padding: '16px',
+                                        }}>
+                                            <Box
+                                                h={20}
+                                                bg={customStyles.colors._E1E7EC || '#F0F0F0'}
+                                                style={{
+                                                    borderRadius: '4px',
+                                                    animation: 'pulse 1.5s ease-in-out infinite'
+                                                }}
+                                            />
+                                        </td>
+                                    ))}
+                                </tr>
                             ))
-                        }
-                    </Table.Tbody>
-                </Table>
+                        ) : table.getRowModel().rows.length > 0 ? (
+                            table.getRowModel().rows.map(row => (
+                                <tr key={row.id} style={{
+                                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                }}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <td key={cell.id} style={{
+                                            textAlign: 'left',
+                                            padding: '16px',
+                                            width: `${cell.column.getSize()}px`,
+                                            minWidth: `${cell.column.getSize()}px`,
+                                            maxWidth: 'max-content',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns.length} style={{
+                                    textAlign: 'center',
+                                    padding: '32px 16px',
+                                    borderBottom: 'none'
+                                }}>
+                                    <Text c={customStyles.colors._909090}>No data available</Text>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </Box >
 
-                {listAll_ITR_IT_TRS.length < 1 && <DataNotFound notFoundContent={sapErrorState || "No data found."} />}
-            </ScrollArea>
+            {/* Pagination */}
+            <Box
+                mt={12}
+                bg={customStyles.colors.white}
+                style={{ borderRadius: '16px', padding: "12px 24px" }}
+            >
+                <Group justify="space-between" align="center">
+                    {/* Left side - Page navigation */}
+                    <Group justify="flex-start" align="center" gap="xs">
+                        <ActionIcon
+                            className={!table.getCanPreviousPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <IconChevronLeft size={18} />
+                        </ActionIcon>
 
-            {
-                listAll_ITR_IT_TRS.length > 0 &&
-                <Flex
-                    justify={customStyles.alignment.spaceBetween}
-                    align={customStyles.alignment.center}
-                    mb="md"
-                    wrap="wrap"
-                    gap="sm"
-                >
+                        <Group gap="xs" align="center">
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={numbersArray.map(num => ({ value: String(num), label: String(num) }))}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                max={table.getPageCount()}
+                                value={String(table.getState().pagination.pageIndex + 1)}
+                                onChange={value => {
+                                    const page = value ? Number(value) - 1 : 0
+                                    table.setPageIndex(page)
+                                }}
+                            />
+                        </Group>
 
-                    <PaginationComponent
-                        totalPages={totalPages}
-                        pageNum={activePage}
-                        handleNewPage={handleNewPage}
-                    />
+                        <ActionIcon
+                            className={!table.getCanNextPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
+                            variant="transparent"
+                            size="lg"
+                            h={36}
+                            w={36}
+                            radius={8}
+                            c={customStyles.colors._909090}
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <IconChevronRight size={18} />
+                        </ActionIcon>
+                        <Text size="md" c={customStyles.colors._4D4D4D}>
+                            / {table.getPageCount()} pages
+                        </Text>
+                    </Group>
 
-                    <Select
-                        data={["5", "10", "20", "50"]}
-                        label="Rows per page"
-                        value={itemsPerPage.toString()}
-                        onChange={(value) => {
-                            setItemsPerPage(Number(value));
-                            setPage(1);
-                        }}
-                        w={120}
-                    />
-                </Flex>
-            }
+                    {/* Right side - Page size selector and info */}
+                    <Group gap="md" align="center">
+                        <Group gap="xs" align="center">
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                Show
+                            </Text>
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={[
+                                    { value: '5', label: '5' },
+                                    { value: '10', label: '10' },
+                                    { value: '20', label: '20' },
+                                    { value: '50', label: '50' },
+                                    { value: '100', label: '100' }
+                                ]}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                    }
+                                }}
+                                value={String(pagination.pageSize)}
+                                onChange={value => {
+                                    const newPageSize = value ? Number(value) : 10;
+                                    table.setPageSize(newPageSize);
+                                }}
+                            />
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                per page
+                            </Text>
+                        </Group>
+
+                        <Text size="sm" c={customStyles.colors._909090}>
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, listAll_ITR_IT_TRS_Count)} of {listAll_ITR_IT_TRS_Count} entries
+                        </Text>
+                    </Group>
+                </Group>
+            </Box>
         </>
     );
 };
 
 const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { enableLoader, disableLoader } = props;
-    // console.log("Props of Integration Component: ", props);
 
     // Note: Handeling states here...!
     const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
@@ -342,20 +1084,31 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const [loading, setLoading] = useState(false);
     const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
 
+    // Note: State for Table Filters and Search
+    const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
+    const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
+    const [globalFilter, setGlobalFilter] = useState('');
+
+    const handleSearchInputVisibility = () => {
+        setIsSearchInputVisible(!isSearchInputVisible);
+    };
+
+    const handleTableFiltersVisibility = () => {
+        setAreTableFiltersVisible(!areTableFiltersVisible);
+    };
+
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    // console.log("Dashboard Analytics Data: ", dashboardAnalyticsData);
 
     // Note: Status dropdown handler...!
     const dropDownHandler = (val: string): void => {
 
         if (val === null) {
             setSelectedType("");
-            // console.log('Clear button clicked!');
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token as string,
                 dataStatus: statusColor as "Pending" | "Integrated",
@@ -367,7 +1120,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
         else {
             setLoading(true);
-            // console.log("Selected type: ", val);
             setSelectedType(val);
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token as string,
@@ -382,22 +1134,16 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Function to shoe pending and integrated values...!
     const showPendingAndIntegratedValues = (sapType: string, value: string) => {
-        // console.log('SAP Type: ', sapType);
-        // console.log("Value: ", value);
 
         if (sapType === "ITR" || sapType === "IT" || sapType === "TR") {
             const { transferStatistics } = dashboardAnalyticsData || {};
-            // console.log("Transfer Statistics: ", transferStatistics);
             const pendingValue = transferStatistics ? transferStatistics[value as keyof typeof transferStatistics] : 0;
-            // console.log("Pending Value: ", pendingValue);
             return pendingValue;
         }
 
         if (sapType === "GRN") {
             const { grnStatistics } = dashboardAnalyticsData || {};
-            // console.log("GRN Statistics: ", grnStatistics);
             const pendingValue = grnStatistics ? grnStatistics[value as keyof typeof grnStatistics] : 0;
-            // console.log("Pending Value: ", pendingValue);
             return pendingValue;
         };
 
@@ -406,11 +1152,9 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Function to show time / minutes...!
     const showTime = (dateVal: string) => {
-        // console.log("Date Value: ", dateVal);
 
         const { lastIntegrationDates } = dashboardAnalyticsData || {};
         const lastIntegrationDateValue = lastIntegrationDates ? lastIntegrationDates[dateVal as keyof typeof lastIntegrationDates] : 0;
-        // console.log("Last Integration Date Value: ", lastIntegrationDateValue);
 
         if (!lastIntegrationDateValue) return "No data";
 
@@ -418,13 +1162,11 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         const end = new Date();
 
         const diffInMs = end.getTime() - start.getTime();
-        // console.log(start , end , diffInMs);
 
         const totalSeconds = Math.floor(diffInMs / 1000);
         const totalMinutes = Math.floor(diffInMs / (1000 * 60));
         const totalHours = Math.floor(diffInMs / (1000 * 60 * 60));
         const totalDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
-        // console.log('Days: ', totalDays);
 
         if (totalSeconds < 60) return "just now";
         if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes > 1 ? "s" : ""} ago`;
@@ -438,23 +1180,17 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (totalMonths < 12) return `${totalMonths} month${totalMonths > 1 ? "s" : ""} ago`;
 
         const totalYears = Math.floor(totalDays / 365);
-        // console.log('Total Years:', totalYears);
 
         if (totalYears == 1) return `1 year ago`;
         else return `Long time ago`;
 
-        // return `${totalYears} year${totalYears > 1 ? "s" : ""} ago`;
     };
 
     // Note: Handle disable values...!
     const handleDisable = (pendingVal: string, integratedVal: string) => {
-        // console.log("Pending value: ", pendingVal);
-        // console.log("Integrated value: ", integratedVal);
 
         const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-        // console.log("Stats: ", statsData);
 
-        // const isPendingVal0 = statsData[pendingVal];
         const isPendingVal0 = statsData[pendingVal as keyof typeof statsData];
         if (isPendingVal0 == 0) return true;
         return false;
@@ -462,7 +1198,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Post request to SAP api response: ", response);
 
         // Note: Stop loading...!
         disableLoader();
@@ -511,8 +1246,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string, totalPendingValue: string) => {
-        // console.log("Request Data: ", reqData);
-        // console.log("Total pending Value: ", totalPendingValue);
 
         // Note: Enable loader...!
         enableLoader();
@@ -540,9 +1273,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         if (reqData == "IT") {
 
             const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-            // console.log('Stats: ', statsData);
             const itrPendingVal = statsData['totalItrPending']
-            // console.log('ITR Pending Val:', itrPendingVal)
 
             if (itrPendingVal != undefined && itrPendingVal > 0) {
                 disableLoader();
@@ -580,7 +1311,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: handle change status...!
     const handleStatusChange = (status: "Pending" | "Integrated") => {
-        // console.log("Status: ", status);
         setStatusColor(status);
         setLoading(true);
 
@@ -629,7 +1359,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
     // Note: Functio to fetch GRNS data...!
     const viewGrnsData = () => {
-        // console.log('statusColor: ', statusColor);
 
         // Note: Enable loader...!
         setLoading(true);
@@ -652,8 +1381,22 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
     }, []);
 
+
+    // Note: List of IT TR and ITR API Call
+    useEffect(() => {
+        if (authenticatedUser) {
+            dispatch(fetchAllITR_IT_TRS({
+                token: authenticatedUser?.token,
+                dataStatus: statusColor,
+                handleLoading: () => setLoading(false),
+                lastCount: 10,
+                skipRecords: 0,
+            }))
+        }
+    }, [])
+
     return (
-        <>
+        <Box>
             <Grid grow>
                 {
                     cardsData.map((item) => (
@@ -707,102 +1450,90 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                     ))
                 }
             </Grid>
-
-            <Card mt="xl" withBorder>
-                <Title order={5}>
-                    Pending & Success Data
-                </Title>
-                <Text size="sm" c="dimmed" mb="sm">
-                    Track inventory transfers that are pending or successfully synced with SAP.
-                </Text>
-
-                <Group
-                    pt={5}
-                    pb={5}
-                    justify={customStyles.alignment.left}
-                    mb="sm"
-                    gap="sm"
-                    style={{
-                        display: "flex",
-                        alignItems: customStyles.alignment.center,
-                    }}
-                >
-                    <Button
-                        variant="transparent"
-                        className={headerBtnType === 'Stock Movement' ? 'filledButton' : 'outlineButton'}
-                        radius={8}
-                        size="md"
-                        w={200}
-                        onClick={viewStockMovementData}
+            <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
+                <Group justify='space-between'>
+                    <Group
+                        pt={5}
+                        pb={5}
+                        justify={customStyles.alignment.left}
+                        mb="sm"
+                        gap="sm"
+                        style={{
+                            display: "flex",
+                            alignItems: customStyles.alignment.center,
+                        }}
                     >
-                        Stock Movement
-                    </Button>
+                        <Button
+                            variant="transparent"
+                            className={headerBtnType === 'Stock Movement' ? 'filledButton' : 'outlineButton'}
+                            radius={8}
+                            size="md"
+                            w={200}
+                            onClick={viewStockMovementData}
+                        >
+                            Stock Movement
+                        </Button>
 
-                    <Button
-                        variant="transparent"
-                        className={headerBtnType === 'GRN' ? 'filledButton' : 'outlineButton'}
-                        radius={8}
-                        size="md"
+                        <Button
+                            variant="transparent"
+                            className={headerBtnType === 'GRN' ? 'filledButton' : 'outlineButton'}
+                            radius={8}
+                            size="md"
+                            w={200}
+                            onClick={viewGrnsData}
+                        >
+                            GRN
+                        </Button>
+                    </Group>
+                    <Select
+                        data={[{ label: 'Pending', value: 'Pending' }, { label: 'Success', value: 'Integrated' }]}
+                        rightSection={<IconChevronDown size={18} />}
+                        defaultValue='Success'
+                        placeholder="Select Status"
+                        value={statusColor}
+                        onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}
+                        clearable
                         w={200}
-                        onClick={viewGrnsData}
-                    >
-                        GRN
-                    </Button>
+                        size='md'
+                    />
                 </Group>
-
-                <Group
-                    pt={5}
-                    pb={5}
-                    justify={customStyles.alignment.spaceBetween}
-                    mb="sm"
-                    gap="sm"
-                    style={{
-                        display: "flex",
-                        alignItems: customStyles.alignment.center,
-                    }}
-                >
+                <Group my={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+                    <Stack gap={0}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                            Group List
+                        </Title>
+                        <Text c={customStyles.colors._909090}>
+                            Select user to assign group
+                        </Text>
+                    </Stack>
                     <Group gap="xs">
-                        <Button
-                            variant='transparent'
-                            className={statusColor === 'Pending' ? 'filledButton' : 'outlineButton'}
-                            radius={8}
-                            size='md'
-                            w={200}
-                            onClick={() => handleStatusChange("Pending")}
-                        >
-                            Pending
-                        </Button>
-
-                        <Button
-                            variant='transparent'
-                            className={statusColor === 'Integrated' ? 'filledButton' : 'outlineButton'}
-                            radius={8}
-                            size='md'
-                            w={200}
-                            onClick={() => handleStatusChange("Integrated")}
-                        >
-                            Success
-                        </Button>
-                    </Group>
-
-                    <Group style={{ display: headerBtnType == "GRN" ? "none" : "block" }}>
-                        <Select
-                            data={types}
-                            placeholder="Filters"
-                            value={selectedType}
-                            onChange={(value) => dropDownHandler(value as string)}
-                            clearable
-                            w={200}
+                        <GlobalSearchFilter
+                            filters={globalFilter}
+                            setFilters={setGlobalFilter}
+                            isSearchInputVisible={isSearchInputVisible}
                         />
+                        {
+                            !isSearchInputVisible ?
+                                <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
+                        }
+                        {
+                            !areTableFiltersVisible ?
+                                <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} /> : <IconFilterOff cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />
+
+                        }
+                        <IconColumns cursor="pointer" size={24} />
+                        <IconBorderCorners cursor="pointer" size={24} />
                     </Group>
                 </Group>
 
-            </Card>
+                {
+                    headerBtnType == "GRN" ?
+                        <GRN_Table_Component type={statusColor} areTableFiltersVisible={areTableFiltersVisible} isLoading={loading} />
+                        : <Stock_Movement_Table_Component type={statusColor} sapType={selectedType as "ITR" | "IT" | "TR"} areTableFiltersVisible={areTableFiltersVisible} isLoading={loading} />
+                }
+            </Stack>
 
-            {
-                headerBtnType == "GRN" ? (<GRN_Table_Component type={statusColor} />) : (<Stock_Movement_Table_Component type={statusColor} sapType={selectedType as "ITR" | "IT" | "TR"} />)
-            }
-        </>
+        </Box>
     );
 };
 
