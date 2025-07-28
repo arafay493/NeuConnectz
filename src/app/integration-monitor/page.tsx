@@ -2,25 +2,19 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import IntegrationComponent from '@/components/integration/integration';
+import Loader from '@/components/loader/loader';
+import ReplicationComponent from '@/components/replication/replication';
+import { customStyles } from '@/styles/custom-theme';
 import {
-    Button,
+    Box,
     Group,
-    SegmentedControl,
-    Text,
-    Title,
     Stack,
     Tabs,
-    TabsList,
-    TabsTab,
-    Box,
+    Text,
+    Title
 } from '@mantine/core';
-import { IconCheckbox, IconRefresh } from "@tabler/icons-react";
-import { customStyles } from '@/styles/custom-theme';
-import IntegrationComponent from '@/components/integration/integration';
-import ReplicationComponent from '@/components/replication/replication';
-import Loader from '@/components/loader/loader';
-import { useMediaQuery } from '@mantine/hooks';
+import { useState } from 'react';
 
 const IntegrationMonitor = () => {
 
@@ -45,6 +39,7 @@ const IntegrationMonitor = () => {
                         style={{
                             color: customStyles.colors._4D4D4D,
                         }}
+                        mb={8}
                     >
                         Integration Monitor
                     </Title>

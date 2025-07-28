@@ -1,18 +1,20 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from "@/redux/store"
-import { customStyles } from "@/styles/custom-theme"
-import { ActionIcon, Box, Button, Checkbox, Group, Select, Stack, Text, TextInput, Title } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
-import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter"
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { TableColumnsFilter } from "../table-filters/TableColumnsFilter"
-import { AssignGroupToUserDataType, GroupCodeDataType } from "@/types/modules/group-types/group-types"
-import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions"
-import { assignGroupToUser, fetchGroupCodesListByUserId, fetchListAllGroupCodes } from "@/redux/actions/group-actions/group-actions"
-import showNotificationToast from "@/lib/notification-toast/notification-toast"
+import { localAssets } from "@/lib/file-paths/file-paths";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { assignGroupToUser, fetchGroupCodesListByUserId, fetchListAllGroupCodes } from "@/redux/actions/group-actions/group-actions";
+import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { customStyles } from "@/styles/custom-theme";
+import { AssignGroupToUserDataType, GroupCodeDataType } from "@/types/modules/group-types/group-types";
+import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
+import NextImage from 'next/image';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
+import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 
 const AssignGroupsComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -176,16 +178,18 @@ const AssignGroupsComponent = () => {
                             label='Allow access'
                             radius="xl"
                             disabled={!selectedUser} // Disable when no user is selected
+                            w={200}
                             styles={
                                 {
                                     root: {
                                         padding: '10px 16px',
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`,
+                                        border: isChecked ? `1px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._E1E7EC}`,
+                                        background: isChecked ? customStyles.colors._1B59F81A : '',
                                         borderRadius: '6px',
                                         opacity: !selectedUser ? 0.5 : 1 // Add visual feedback when disabled
                                     },
                                     label: {
-                                        color: customStyles.colors._909090,
+                                        color: isChecked ? customStyles.colors._1B59F8 : customStyles.colors._909090,
                                     }
                                 }
                             }
@@ -383,6 +387,7 @@ const AssignGroupsComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select User</Text>
                         <Select
                             placeholder="Select User"
+                            rightSection={<IconChevronDown size={18} />}
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
@@ -393,8 +398,8 @@ const AssignGroupsComponent = () => {
                         />
                     </Stack>
 
-                    {/* Note: Search by warehouse name secion */}
-                    <Stack
+                    {/* Note: Search by warehouse name section */}
+                    {/* <Stack
                         gap={4}
                         w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
                         maw={isSmallScreen ? '100%' : 350}
@@ -412,7 +417,7 @@ const AssignGroupsComponent = () => {
                             size={isSmallScreen ? 'sm' : 'md'}
                             radius={8}
                         />
-                    </Stack>
+                    </Stack> */}
                 </Group>
                 <Button
                     variant='transparent'
@@ -487,6 +492,7 @@ const AssignGroupsComponent = () => {
                                             textAlign: 'left',
                                             padding: '0 16px 24px 16px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                            verticalAlign: 'top',
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
                                             maxWidth: 'max-content',
@@ -561,10 +567,11 @@ const AssignGroupsComponent = () => {
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} style={{
                                                 textAlign: 'left',
-                                                padding: '16px',
+                                                padding: '10px',
                                                 width: `${cell.column.getSize()}px`,
                                                 minWidth: `${cell.column.getSize()}px`,
                                                 maxWidth: 'max-content',
+                                                verticalAlign: 'middle',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap'
@@ -581,7 +588,10 @@ const AssignGroupsComponent = () => {
                                         padding: '32px 16px',
                                         borderBottom: 'none'
                                     }}>
-                                        <Text c={customStyles.colors._909090}>No data available</Text>
+                                        <Stack justify="center" align="center">
+                                            <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                            <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                        </Stack>
                                     </td>
                                 </tr>
                             )}
