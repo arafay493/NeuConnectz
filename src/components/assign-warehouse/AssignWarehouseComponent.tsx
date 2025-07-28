@@ -1,19 +1,22 @@
 'use client'
 
+import { localAssets } from "@/lib/file-paths/file-paths"
+import showNotificationToast from "@/lib/notification-toast/notification-toast"
 import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions"
+import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserId } from "@/redux/actions/warehouse-actions/warehouse-actions"
+import { CLEAR_ALL_WAREHOUSE_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer"
 import { useAppDispatch, useAppSelector } from "@/redux/store"
 import { customStyles } from "@/styles/custom-theme"
-import { ActionIcon, Box, Button, Checkbox, Group, Select, Stack, Text, TextInput, Title } from "@mantine/core"
+import { AccessWareHouseDataType } from "@/types/modules/warehouse-types/warehouse-types"
+import { WarehousesListData } from "@/types/redux-types"
+import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
-import { useEffect, useMemo, useState, useCallback } from "react"
-import { TableColumnsFilter } from "../table-filters/TableColumnsFilter"
+import NextImage from 'next/image'
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter"
-import { AccessWareHouseDataType } from "@/types/modules/warehouse-types/warehouse-types"
-import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserId } from "@/redux/actions/warehouse-actions/warehouse-actions"
-import { WarehousesListData } from "@/types/redux-types"
-import showNotificationToast from "@/lib/notification-toast/notification-toast"
+import { TableColumnsFilter } from "../table-filters/TableColumnsFilter"
 
 const AssignWarehouseComponent = () => {
     // Note: media query for responsive design
@@ -168,17 +171,19 @@ const AssignWarehouseComponent = () => {
                             color={customStyles.colors._1B59F8}
                             label='Allow access'
                             radius="xl"
+                            w={200}
                             disabled={!selectedUser} // Disable when no user is selected
                             styles={
                                 {
                                     root: {
                                         padding: '10px 16px',
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`,
+                                        border: isChecked ? `1px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._E1E7EC}`,
+                                        background: isChecked ? customStyles.colors._1B59F81A : '',
                                         borderRadius: '6px',
                                         opacity: !selectedUser ? 0.5 : 1 // Add visual feedback when disabled
                                     },
                                     label: {
-                                        color: customStyles.colors._909090,
+                                        color: isChecked ? customStyles.colors._1B59F8 : customStyles.colors._909090,
                                     }
                                 }
                             }
@@ -205,26 +210,19 @@ const AssignWarehouseComponent = () => {
                             color={customStyles.colors._1B59F8}
                             label='Allow access'
                             radius="xl"
+                            w={200}
                             disabled={isDisabled}
                             styles={
                                 {
                                     root: {
                                         padding: '10px 16px',
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`,
+                                        border: isChecked ? `1px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._E1E7EC}`,
+                                        background: isChecked ? customStyles.colors._1B59F81A : '',
                                         borderRadius: '6px',
                                         opacity: isDisabled ? 0.5 : 1 // Add visual feedback when disabled
                                     },
-                                    input: {
-                                        borderRadius: '50%',
-                                        '&:checked': {
-                                            borderRadius: '50%'
-                                        }
-                                    },
-                                    inner: {
-                                        borderRadius: '50%'
-                                    },
                                     label: {
-                                        color: customStyles.colors._909090,
+                                        color: isChecked ? customStyles.colors._1B59F8 : customStyles.colors._909090,
                                     }
                                 }
                             }
@@ -331,7 +329,26 @@ const AssignWarehouseComponent = () => {
     // Reset warehouse permissions when user changes
     useEffect(() => {
         setWarehousePermissions([]);
-    }, [selectedUser]);
+        // Also clear the Redux state for warehousesListByUserId when user changes
+        if (selectedUser === null) {
+            dispatch(CLEAR_ALL_WAREHOUSE_STATES());
+        }
+    }, [selectedUser, dispatch]);
+
+    // Reset warehouse permissions on component mount/unmount to ensure clean state
+    useEffect(() => {
+        // Reset on mount if no user is selected
+        if (!selectedUser) {
+            setWarehousePermissions([]);
+        }
+
+        // Cleanup function to reset permissions when component unmounts
+        return () => {
+            setWarehousePermissions([]);
+            // Also clear Redux state on component unmount
+            dispatch(CLEAR_ALL_WAREHOUSE_STATES());
+        };
+    }, [dispatch]);
 
     // Transform users data for Select component
     const activeUsersData = users
@@ -365,6 +382,9 @@ const AssignWarehouseComponent = () => {
             });
 
             setWarehousePermissions(newPermissions);
+        } else {
+            // Clear permissions if warehousesListByUserId is empty or null
+            setWarehousePermissions([]);
         }
     }, [warehousesListByUserId]);
 
@@ -446,6 +466,7 @@ const AssignWarehouseComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select User</Text>
                         <Select
                             placeholder="Select User"
+                            rightSection={<IconChevronDown size={18} />}
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
@@ -457,7 +478,7 @@ const AssignWarehouseComponent = () => {
                     </Stack>
 
                     {/* Note: Search by warehouse name secion */}
-                    <Stack
+                    {/* <Stack
                         gap={4}
                         w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
                         maw={isSmallScreen ? '100%' : 350}
@@ -475,7 +496,7 @@ const AssignWarehouseComponent = () => {
                             size={isSmallScreen ? 'sm' : 'md'}
                             radius={8}
                         />
-                    </Stack>
+                    </Stack> */}
                 </Group>
                 <Button
                     variant='transparent'
@@ -548,9 +569,10 @@ const AssignWarehouseComponent = () => {
                                             cursor: 'pointer',
                                             textAlign: 'left',
                                             padding: '0 16px 24px 16px',
-                                            borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
-                                            width: `${header.getSize()}px`,
-                                            minWidth: `${header.getSize()}px`,
+                                            borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'} `,
+                                            verticalAlign: 'top',
+                                            width: `${header.getSize()} px`,
+                                            minWidth: `${header.getSize()} px`,
                                             maxWidth: 'max-content',
                                         }}>
                                             <Group
@@ -595,11 +617,11 @@ const AssignWarehouseComponent = () => {
                             {isLoading ? (
                                 // Loading skeleton
                                 Array.from({ length: pagination.pageSize }).map((_, index) => (
-                                    <tr key={`loading-${index}`} style={{
-                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                    <tr key={`loading - ${index} `} style={{
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'} `,
                                     }}>
                                         {columns.map((_, colIndex) => (
-                                            <td key={`loading-cell-${colIndex}`} style={{
+                                            <td key={`loading - cell - ${colIndex} `} style={{
                                                 textAlign: 'left',
                                                 padding: '16px',
                                             }}>
@@ -618,15 +640,16 @@ const AssignWarehouseComponent = () => {
                             ) : table.getRowModel().rows.length > 0 ? (
                                 table.getRowModel().rows.map(row => (
                                     <tr key={row.id} style={{
-                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'} `,
                                     }}>
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} style={{
                                                 textAlign: 'left',
-                                                padding: '16px',
-                                                width: `${cell.column.getSize()}px`,
-                                                minWidth: `${cell.column.getSize()}px`,
+                                                padding: '10px',
+                                                width: `${cell.column.getSize()} px`,
+                                                minWidth: `${cell.column.getSize()} px`,
                                                 maxWidth: 'max-content',
+                                                verticalAlign: 'middle',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap'
@@ -643,7 +666,10 @@ const AssignWarehouseComponent = () => {
                                         padding: '32px 16px',
                                         borderBottom: 'none'
                                     }}>
-                                        <Text c={customStyles.colors._909090}>No data available</Text>
+                                        <Stack justify="center" align="center">
+                                            <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                            <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                        </Stack>
                                     </td>
                                 </tr>
                             )}
@@ -685,7 +711,7 @@ const AssignWarehouseComponent = () => {
                                 data={numbersArray.map(num => ({ value: String(num), label: String(num) }))}
                                 styles={{
                                     input: {
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                        border: `1px solid ${customStyles.colors._E1E7EC} `
                                     }
                                 }}
                                 max={table.getPageCount()}
@@ -734,7 +760,7 @@ const AssignWarehouseComponent = () => {
                                 ]}
                                 styles={{
                                     input: {
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`
+                                        border: `1px solid ${customStyles.colors._E1E7EC} `
                                     }
                                 }}
                                 value={String(pagination.pageSize)}

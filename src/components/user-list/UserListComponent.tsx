@@ -1,15 +1,19 @@
 'use client';
 
+import { routes } from '@/constants/routes';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { UserListProps } from '@/types/redux-types';
-import { ActionIcon, Box, Button, Grid, Group, Select, Stack, TableThead, Text, Title } from '@mantine/core';
-import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable, ColumnFiltersState } from '@tanstack/react-table';
+import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
+import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import NextImage from 'next/image';
+import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 
 interface UserListComponentProps {
     // data: Array<UserListProps>;
@@ -23,6 +27,9 @@ const UserListComponent: FC<UserListComponentProps> = ({
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
+
+    // Note: Router for switch page
+    const route = useRouter()
 
     const dispatch = useAppDispatch();
 
@@ -55,6 +62,13 @@ const UserListComponent: FC<UserListComponentProps> = ({
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
+
+    // Note: Function to Edit any User
+    const handleEditUser = (userId: string) => {
+        route.push(routes.editUser(userId));
+    }
+
+    console.log("fetched Data: ", data)
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -137,18 +151,61 @@ const UserListComponent: FC<UserListComponentProps> = ({
             {
                 accessorKey: 'isActive',
                 header: 'Status',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as boolean === true ? 'Active' : 'Inactive'}
-                    </Text>
-                ),
+                cell: ({ getValue }) => {
+                    const isActive = getValue() as boolean === true;
+
+                    return (
+                        <Badge
+                            // fullWidth
+                            leftSection={<IconPointFilled size={18} />}
+                            variant='light'
+                            size='lg'
+                            color={isActive ? customStyles.colors.green : customStyles.colors._909090}
+                            styles={{
+                                root: {
+                                    minWidth: 'fit-content',
+                                    width: 'max-content',
+                                },
+                                label: {
+                                    textTransform: 'capitalize',
+                                    fontWeight: '500',
+                                    fontSize: '1rem',
+                                    whiteSpace: 'nowrap'
+                                }
+                            }}
+                        >
+                            {isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                    )
+                },
                 filterFn: (row, columnId, value) => {
                     if (!value) return true;
                     const isActive = row.getValue(columnId) as boolean;
                     const displayText = isActive ? 'Active' : 'Inactive';
                     return displayText.toLowerCase().includes(value.toLowerCase());
                 },
-                size: calculateColumnWidth('Status', ['Active', 'Inactive'], 100, 130),
+                size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
+            },
+            {
+                accessorKey: 'userId',
+                header: 'Action',
+                cell: ({ getValue }) => {
+                    const userId = getValue() as string;
+                    return (
+                        <ActionIcon
+                            variant="light"
+                            size="lg"
+                            c={customStyles.colors._1B59F8}
+                            style={{
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => handleEditUser(userId)}
+                        >
+                            <IconEdit />
+                        </ActionIcon>
+                    )
+                },
+                size: calculateColumnWidth('Action', ['Edit'], 100, 120)
             }
         ],
         [data] // Add data as dependency to recalculate when data changes
@@ -308,10 +365,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
                                             maxWidth: `${header.getSize()}px`,
+                                            verticalAlign: 'top',
                                         }}>
                                             <Group
                                                 wrap="nowrap"
-                                                gap={6}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
@@ -379,13 +436,14 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} style={{
                                                 textAlign: 'left',
-                                                padding: '16px',
+                                                padding: '12px',
                                                 width: `${cell.column.getSize()}px`,
                                                 minWidth: `${cell.column.getSize()}px`,
-                                                maxWidth: 'max-content',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap'
+                                                maxWidth: cell.column.id === 'isActive' ? 'fit-content' : 'max-content',
+                                                overflow: cell.column.id === 'isActive' ? 'visible' : 'hidden',
+                                                textOverflow: cell.column.id === 'isActive' ? 'initial' : 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                verticalAlign: 'middle',
                                             }}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
@@ -399,7 +457,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                         padding: '32px 16px',
                                         borderBottom: 'none'
                                     }}>
-                                        <Text c={customStyles.colors._909090}>No data available</Text>
+                                        <Stack justify="center" align="center">
+                                            <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                            <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                        </Stack>
                                     </td>
                                 </tr>
                             )}

@@ -9,6 +9,7 @@ import WhiteLogo from "@/assets/images/white-logo.svg";
 import ReconciliationNotFoundImage from "@/assets/images/reconciliation-not-found.svg";
 import ConfigAccessLogo from "@/assets/images/configuration-logo.svg";
 import Logo_sm from "@/assets/images/Logo_sm.png";
+import DataNotFound from "@/assets/images/Data_Not_Found.svg";
 
 // Note: Local assets...!
 const localAssets: { [key: string]: StaticImageData } = {
@@ -20,7 +21,8 @@ const localAssets: { [key: string]: StaticImageData } = {
     logo_sm: Logo_sm,
     logo_sm_new: Logo_sm,
     reconciliationNotFoundImage: ReconciliationNotFoundImage,
-    configAccessLogo: ConfigAccessLogo
+    configAccessLogo: ConfigAccessLogo,
+    dataNotFound: DataNotFound
 };
 
 export { localAssets };

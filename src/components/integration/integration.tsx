@@ -1,36 +1,32 @@
 // Note: Integration component...!
 
-import React, { useState, useEffect, memo, useMemo } from 'react';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashboard-actions';
+import { fetchAll_GRNS, fetchAllITR_IT_TRS, postRequestToSAP } from '@/redux/actions/sap-actions/sap-actions';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { customStyles } from '@/styles/custom-theme';
+import { GRN_Props, IT_TR_ITR_Props } from '@/types/redux-types';
 import {
+    ActionIcon,
+    Box,
     Button,
     Card,
     Grid,
     Group,
-    Table,
-    Text,
-    Title,
-    ThemeIcon,
-    Flex,
+    Image,
     Select,
-    ScrollArea,
     Stack,
-    Box,
-    ActionIcon,
-    Checkbox,
+    Text,
+    ThemeIcon,
+    Title
 } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { postRequestToSAP, fetchAllITR_IT_TRS, fetchAll_GRNS } from '@/redux/actions/sap-actions/sap-actions';
-import PaginationComponent from '../pagination/pagination';
-import DataNotFound from '../data-not-found/data-not-found';
-import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { customStyles } from '@/styles/custom-theme';
-import Loader from '../loader/loader';
-import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashboard-actions';
-import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import NextImage from 'next/image';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { IT_TR_ITR_Props, GRN_Props } from '@/types/redux-types';
 
 const headers: string[] =
     [
@@ -396,6 +392,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                                         width: `${header.getSize()}px`,
                                         minWidth: `${header.getSize()}px`,
                                         maxWidth: 'max-content',
+                                        verticalAlign: 'top',
                                     }}>
                                         <Group
                                             wrap="nowrap"
@@ -473,7 +470,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                                             maxWidth: 'max-content',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap'
+                                            whiteSpace: 'nowrap',
+                                            verticalAlign: 'middle',
                                         }}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </td>
@@ -487,9 +485,10 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                                     padding: '32px 16px',
                                     borderBottom: 'none'
                                 }}>
-                                    <Text c={customStyles.colors._909090}>
-                                        {sapErrorState || "No data available"}
-                                    </Text>
+                                    <Stack justify="center" align="center">
+                                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                    </Stack>
                                 </td>
                             </tr>
                         )}
@@ -872,6 +871,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                                         width: `${header.getSize()}px`,
                                         minWidth: `${header.getSize()}px`,
                                         maxWidth: 'max-content',
+                                        verticalAlign: 'top',
                                     }}>
                                         <Group
                                             wrap="nowrap"
@@ -947,6 +947,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                                             width: `${cell.column.getSize()}px`,
                                             minWidth: `${cell.column.getSize()}px`,
                                             maxWidth: 'max-content',
+                                            verticalAlign: 'middle',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
                                             whiteSpace: 'nowrap'
@@ -963,7 +964,10 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                                     padding: '32px 16px',
                                     borderBottom: 'none'
                                 }}>
-                                    <Text c={customStyles.colors._909090}>No data available</Text>
+                                    <Stack justify="center" align="center">
+                                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                    </Stack>
                                 </td>
                             </tr>
                         )}
@@ -1104,34 +1108,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
 
-    // Note: Status dropdown handler...!
-    const dropDownHandler = (val: string): void => {
-
-        if (val === null) {
-            setSelectedType("");
-            dispatch(fetchAllITR_IT_TRS({
-                token: authenticatedUser?.token as string,
-                dataStatus: statusColor as "Pending" | "Integrated",
-                handleLoading: () => setLoading(false),
-                lastCount: 5,
-                skipRecords: 0
-            }));
-        }
-
-        else {
-            setLoading(true);
-            setSelectedType(val);
-            dispatch(fetchAllITR_IT_TRS({
-                token: authenticatedUser?.token as string,
-                dataStatus: statusColor as "Pending" | "Integrated",
-                handleLoading: () => setLoading(false),
-                type: val as "ITR" | "TR" | "IT",
-                lastCount: 5,
-                skipRecords: 0
-            }));
-        };
-    };
-
     // Note: Function to shoe pending and integrated values...!
     const showPendingAndIntegratedValues = (sapType: string, value: string) => {
 
@@ -1212,7 +1188,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         token: authenticatedUser?.token as string,
                         dataStatus: statusColor,
                         handleLoading: () => setLoading(false),
-                        lastCount: 5,
+                        lastCount: 10,
                         skipRecords: 0
                     }));
                 }
@@ -1222,7 +1198,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         token: authenticatedUser?.token || "",
                         handleLoading: () => setLoading(false),
                         apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`,
-                        lastCount: 5,
+                        lastCount: 10,
                         skipRecords: 0
                     }));
                 }
@@ -1323,7 +1299,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 token: authenticatedUser?.token || "",
                 dataStatus: status,
                 handleLoading: () => setLoading(false),
-                lastCount: 5,
+                lastCount: 10,
                 skipRecords: 0
             }));
             return;
@@ -1334,7 +1310,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                 token: authenticatedUser?.token || "",
                 handleLoading: () => setLoading(false),
                 apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${status}`,
-                lastCount: 5,
+                lastCount: 10,
                 skipRecords: 0
             }));
         };
@@ -1352,7 +1328,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             token,
             dataStatus: statusColor,
             handleLoading: () => setLoading(false),
-            lastCount: 5,
+            lastCount: 10,
             skipRecords: 0
         }));
     };
@@ -1368,7 +1344,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             token: authenticatedUser?.token || "",
             handleLoading: () => setLoading(false),
             apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${statusColor}`,
-            lastCount: 5,
+            lastCount: 10,
             skipRecords: 0
         }));
     };
@@ -1485,25 +1461,35 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             GRN
                         </Button>
                     </Group>
-                    <Select
-                        data={[{ label: 'Pending', value: 'Pending' }, { label: 'Success', value: 'Integrated' }]}
-                        rightSection={<IconChevronDown size={18} />}
-                        defaultValue='Success'
-                        placeholder="Select Status"
-                        value={statusColor}
-                        onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}
-                        clearable
-                        w={200}
-                        size='md'
-                    />
+                    <Group>
+                        <Text size='md' fw={500}>Select Status</Text>
+                        <Select
+                            data={[{ label: 'Pending', value: 'Pending' }, { label: 'Success', value: 'Integrated' }]}
+                            rightSection={<IconChevronDown size={18} />}
+                            defaultValue='Success'
+                            placeholder="Select Status"
+                            value={statusColor}
+                            onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}
+                            clearable
+                            w={200}
+                            size='md'
+                            fw={500}
+                            styles={{
+                                input: {
+                                    color: customStyles.colors._4D4D4D
+
+                                }
+                            }}
+                        />
+                    </Group>
                 </Group>
                 <Group my={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Group List
+                            Pending & Success Data
                         </Title>
                         <Text c={customStyles.colors._909090}>
-                            Select user to assign group
+                            Track inventory transfers that are pending or successfully synced with SAP.
                         </Text>
                     </Stack>
                     <Group gap="xs">
