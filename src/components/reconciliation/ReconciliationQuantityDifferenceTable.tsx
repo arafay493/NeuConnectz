@@ -1,13 +1,15 @@
 'use client';
 
+import React, { FC, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '@/components/table-filters/TableColumnsFilter';
+import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
 import { QuantityDifferenceData } from '@/types/redux-types';
-import { ActionIcon, Box, Group, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Box, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconColumns, IconFilter, IconSearch } from '@tabler/icons-react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
-import { FC, useMemo, useState } from 'react';
+import NextImage from 'next/image';
 
 interface ReconciliationQuantityDifferenceTableProps {
     data: QuantityDifferenceData[]
@@ -19,6 +21,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
     // const [data] = useState(() => generateQuantityDifferenceData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
+    const [isLoading, setIsLoading] = useState(false)
 
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -32,6 +35,21 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
+    // Utility function to calculate optimal column width
+    const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
+        // Calculate width based on header text (approximate 8px per character)
+        const headerWidth = headerText.length * 8 + 40; // +40 for padding
+
+        // Calculate width based on longest sample value
+        const maxValueLength = sampleValues.reduce((max, value) => {
+            return Math.max(max, String(value).length);
+        }, 0);
+        const valueWidth = maxValueLength * 8 + 40; // +40 for padding
+
+        // Return the larger of header or content width, within min/max bounds
+        return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
+    };
+
     // Note: Column definitions for the table
     const columns = useMemo<ColumnDef<QuantityDifferenceData>[]>(
         () => [
@@ -43,7 +61,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as string}
                     </Text>
                 ),
-                size: 120,
+                size: calculateColumnWidth("Item Code", data.map(item => item.itemCode), 160, 200),
             },
             {
                 accessorKey: 'itemName',
@@ -53,7 +71,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as string}
                     </Text>
                 ),
-                size: 250, // Increased from 150 to 250
+                size: calculateColumnWidth("Item Name", data.map(item => item.itemName), 200, 250),
             },
             {
                 accessorKey: 'totalITQuantity',
@@ -63,7 +81,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as number}
                     </Text>
                 ),
-                size: 120, // Increased from 100 to 120
+                size: calculateColumnWidth("Total IT Quantity", data.map(item => String(item.totalITQuantity)), 200, 220),
             },
             {
                 accessorKey: 'totalTRQuantity',
@@ -73,7 +91,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as number}
                     </Text>
                 ),
-                size: 120, // Increased from 100 to 120
+                size: calculateColumnWidth("Total TR Quantity", data.map(item => String(item.totalTRQuantity)), 200, 220),
             },
             {
                 accessorKey: 'quantityDifference',
@@ -83,7 +101,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as number}
                     </Text>
                 ),
-                size: 120, // Increased from 100 to 120
+                size: calculateColumnWidth("Quantity Difference", data.map(item => String(item.quantityDifference)), 200, 220),
             },
             {
                 accessorKey: 'action',
@@ -151,139 +169,153 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
             </Group>
 
             {/* Table */}
-            <Box style={{
-                width: '100%',
-                borderRadius: '8px',
-                overflow: 'auto'
-            }}>
-                {/* Sticky Header */}
-                <Box style={{
-                    position: 'sticky',
-                    top: 0,
-                    zIndex: 10,
+            <Box
+                w="100%"
+                h={700}
+                style={{
+                    overflowX: 'auto',
+                    overflowY: 'auto',
+                }}
+            >
+                <table style={{
+                    width: '100%',
+                    borderCollapse: 'separate',
+                    borderSpacing: '0',
+                    minWidth: 'max-content'
                 }}>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <Group key={headerGroup.id} gap={0} style={{
-                            width: 'max-content',
-                            minWidth: '100%'
-                        }}>
-                            {headerGroup.headers.map(header => (
-                                <Box
-                                    key={header.id}
-                                    style={{
-                                        flex: '1',
+                    <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id} style={{
+                                        cursor: 'pointer',
+                                        textAlign: 'left',
+                                        padding: '16px',
+                                        // borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                        width: `${header.getSize()}px`,
                                         minWidth: `${header.getSize()}px`,
-                                        cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                                        padding: '16px 0px',
-                                    }}
-                                >
-                                    <Group gap="xs" wrap="nowrap" onClick={header.column.getToggleSortingHandler()}>
-                                        <Text
-                                            size="md"
-                                            c={customStyles.colors._4D4D4D}
-                                            style={{
-                                                whiteSpace: 'nowrap',
-                                                cursor: 'pointer',
-                                                width: ['action'].includes(header.column.id) ? '100%' : 'auto',
-                                                padding: '4px 10px',
-                                            }}
-                                            ta={['action'].includes(header.column.id) ? 'center' : 'left'}
-                                            fw={600}
+                                        maxWidth: 'max-content',
+                                        verticalAlign: 'top',
+                                    }}>
+                                        <Group
+                                            wrap="nowrap"
+                                            onClick={header.column.getToggleSortingHandler()}
                                         >
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </Text>
-                                        {header.column.getCanSort() && (
-                                            <ActionIcon
-                                                variant="subtle"
-                                                size="xs"
-                                                c={customStyles.colors._4D4D4D}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                }}
-                                                ml={4}
-                                            >
-                                                <IconArrowsUpDown size={16} />
-                                            </ActionIcon>
-                                        )}
-                                    </Group>
-                                    {/* Note: Table Filter Input */}
-                                    {
-                                        header.column.getCanFilter() && (
-                                            <TableColumnsFilter
-                                                areTableFiltersVisible={areTableFiltersVisible}
-                                                placeholder={header.column.columnDef.header as string}
-                                                value={header.column.getFilterValue() as string ?? ''}
-                                                setValue={value => header.column.setFilterValue(value)}
-                                            />
-                                        )}
-                                </Box>
-                            ))}
-                        </Group>
-                    ))}
-                </Box>
-
-                {/* Scrollable Body - Limited to 6 rows height */}
-                {
-                    data.length === 0 ? (
-                        <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
-                            <Text c={customStyles.colors._909090} size="lg">No data available</Text>
-                        </Group>
-                    ) : (
-                        <Stack
-                            gap={4}
-                            style={{
-                                width: '100%',
-                                minWidth: '100%',
-                                maxHeight: '360px',
-                                overflowY: 'auto',
-                                backgroundColor: 'white'
-                            }}>
-                            {table.getRowModel().rows.map((row, index) => (
-                                <Group key={row.id} gap={0} style={{
-                                    width: 'max-content',
-                                    minWidth: '100%',
-                                    backgroundColor: index % 2 === 0 ? 'white' : customStyles.colors.evenTableColor,
-                                    border: `1px solid ${customStyles.colors.tableRowBorderColor}`,
-                                    borderRadius: '4px',
-                                    minHeight: '40px',
-                                    transition: 'background-color 0.2s ease',
-                                }}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <Box
-                                            key={cell.id}
-                                            style={{
-                                                flex: '1',
-                                                // minWidth: `${cell.column.getSize()}px`,
-                                                // padding: '4px 10px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: ['action'].includes(cell.column.id) ? 'center' : 'flex-start',
-                                            }}
-                                        >
-                                            <Text
-                                                size="md"
-                                                c={customStyles.colors._4D4D4D}
-                                                style={{
-                                                    cursor: 'pointer',
-                                                    width: ['action'].includes(cell.column.id) ? '100%' : '100%',
-                                                    padding: '4px 10px',
-                                                }}
-                                                ta={['action'].includes(cell.column.id) ? 'center' : 'left'}
-                                                fw={600}
-                                            >
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}>
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
                                             </Text>
-                                        </Box>
+                                            {header.column.getCanSort() && (
+                                                <ActionIcon
+                                                    variant="subtle"
+                                                    size="xs"
+                                                    c={customStyles.colors._4D4D4D}
+                                                    style={{
+                                                        cursor: 'pointer',
+                                                    }}
+                                                    ml={4}
+                                                >
+                                                    <IconArrowsUpDown size={16} />
+                                                </ActionIcon>
+                                            )}
+                                        </Group>
+                                        {/* Note: Table Filter Input */}
+                                        {
+                                            header.column.getCanFilter() && (
+                                                <TableColumnsFilter
+                                                    areTableFiltersVisible={areTableFiltersVisible}
+                                                    placeholder={header.column.columnDef.header as string}
+                                                    value={header.column.getFilterValue() as string ?? ''}
+                                                    setValue={value => header.column.setFilterValue(value)}
+                                                />
+                                            )
+                                        }
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            // Loading skeleton
+                            Array.from({ length: data.length }).map((_, index) => (
+                                <tr key={`loading-${index}`} style={{
+                                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                }}>
+                                    {columns.map((_, colIndex) => (
+                                        <td key={`loading-cell-${colIndex}`} style={{
+                                            textAlign: 'left',
+                                            padding: '16px',
+                                        }}>
+                                            <Box
+                                                h={20}
+                                                bg={customStyles.colors._E1E7EC || '#F0F0F0'}
+                                                style={{
+                                                    borderRadius: '4px',
+                                                    animation: 'pulse 1.5s ease-in-out infinite'
+                                                }}
+                                            />
+                                        </td>
                                     ))}
-                                </Group>
-                            ))}
-                        </Stack>
-                    )}
+                                </tr>
+                            ))
+                        ) : table.getRowModel().rows.length > 0 ? (
+                            table.getRowModel().rows.map((row, index) => (
+                                <React.Fragment key={row.id}>
+                                    <tr style={{
+                                        border: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                        borderRadius: '8px',
+                                    }}>
+                                        {row.getVisibleCells().map((cell, cellIndex) => (
+                                            <td key={cell.id} style={{
+                                                textAlign: 'left',
+                                                padding: '8px 12px',
+                                                width: `${cell.column.getSize()}px`,
+                                                minWidth: `${cell.column.getSize()}px`,
+                                                maxWidth: cell.column.id === 'isActive' ? 'fit-content' : 'max-content',
+                                                overflow: cell.column.id === 'isActive' ? 'visible' : 'hidden',
+                                                textOverflow: cell.column.id === 'isActive' ? 'initial' : 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                verticalAlign: 'middle',
+                                                border: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                                borderLeft: cellIndex === 0 ? `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}` : 'none',
+                                                borderRight: cellIndex === row.getVisibleCells().length - 1 ? `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}` : 'none',
+                                                borderTopLeftRadius: cellIndex === 0 ? '8px' : '0',
+                                                borderBottomLeftRadius: cellIndex === 0 ? '8px' : '0',
+                                                borderTopRightRadius: cellIndex === row.getVisibleCells().length - 1 ? '8px' : '0',
+                                                borderBottomRightRadius: cellIndex === row.getVisibleCells().length - 1 ? '8px' : '0',
+                                            }}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                    {/* Add spacing row between data rows, but not after the last row */}
+                                    {index < table.getRowModel().rows.length - 1 && (
+                                        <tr style={{ height: '6px' }}>
+                                            <td colSpan={columns.length} style={{
+                                                padding: 0,
+                                                border: 'none',
+                                                backgroundColor: 'transparent'
+                                            }}></td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={columns.length} style={{
+                                    textAlign: 'center',
+                                    padding: '32px 16px',
+                                    borderBottom: 'none'
+                                }}>
+                                    <Stack justify="center" align="center">
+                                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                                    </Stack>
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </Box>
         </Stack>
     )
