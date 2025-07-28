@@ -156,7 +156,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
 
                     return (
                         <Badge
-                            // fullWidth
                             leftSection={<IconPointFilled size={18} />}
                             variant='light'
                             size='lg'
@@ -187,7 +186,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
             },
             {
-                accessorKey: 'userId',
+                // accessorKey: 'userId',
                 header: 'Action',
                 cell: ({ getValue }) => {
                     const userId = getValue() as string;
