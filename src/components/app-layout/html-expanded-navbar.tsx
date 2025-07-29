@@ -13,7 +13,8 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
     IconLogout,
-    IconChevronLeft
+    IconChevronLeft,
+    IconLayoutSidebar
 } from '@tabler/icons-react';
 import { DrawerRoute } from "@/types/route-types";
 import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
@@ -50,17 +51,28 @@ const HtmlExpandedNavbar = ({
     // Note: Link component for navigation...!
     const renderNavLink = (item: DrawerRoute, index: number) => (
         <NavLink
+            onMouseEnter={(e) => {
+                if (activeTab !== index) {
+                    e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
+                }
+            }}
+            onMouseLeave={(e) => {
+                if (activeTab !== index) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                }
+            }}
             key={index}
             leftSection={item?.icon}
             label={item?.label}
-            variant="light"
-            px={customStyles.deviceSize.md}
-            py={customStyles.deviceSize.sm}
-            color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+            // variant="light"
+            p="12px 16px"
+            bg={activeTab === index ? customStyles.colors._1B59F81A : ''}
+            c={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
             active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
             w='100%'
             title={item?.label}
+            h={48}
             style={{
                 textTransform: 'capitalize',
                 borderRadius: '10px',
@@ -73,8 +85,8 @@ const HtmlExpandedNavbar = ({
             }}
             styles={{
                 label: {
-                    fontSize: 16,
-                    fontWeight: 500,
+                    fontSize: 14,
+                    fontWeight: 700,
                     transition: 'opacity 0.3s ease',
                     opacity: 1,
                 },
@@ -89,7 +101,7 @@ const HtmlExpandedNavbar = ({
 
     return (
         <aside style={{
-            width: isMobile ? '100%' : '300px',
+            width: isMobile ? '100%' : '230px',
             backgroundColor: customStyles.colors.white,
             height: '100%',
             display: 'flex',
@@ -101,7 +113,7 @@ const HtmlExpandedNavbar = ({
                 {/* Header Section */}
                 <Group
                     h={80}
-                    justify="space-between"
+                    justify={isMobile ? 'space-between' : "center"}
                     align="center"
                     px={customStyles.deviceSize.sm}
                     py={customStyles.deviceSize.sm}
@@ -112,22 +124,26 @@ const HtmlExpandedNavbar = ({
                         src={localAssets.newLogo}
                         alt="Logo"
                         component={NextImage}
-                        h={25}
+                        h={32}
                         w='auto'
                     />
-                    <ActionIcon
-                        variant="filled"
-                        color={customStyles.colors._1B59F8}
-                        size={25}
-                        onClick={isMobile ? toggle : () => setCollapsed(true)}
-                        style={{
-                            '&:hover': {
-                                backgroundColor: '#e7f5ff'
-                            }
-                        }}
-                    >
-                        <IconChevronLeft size={20} />
-                    </ActionIcon>
+                    {
+                        isMobile &&
+                        <ActionIcon
+                            variant="subtle"
+                            color={customStyles.colors._909090}
+                            size="xl"
+                            radius={8}
+                            onClick={isMobile ? toggle : () => setCollapsed(true)}
+                            style={{
+                                '&:hover': {
+                                    backgroundColor: '#e7f5ff'
+                                }
+                            }}
+                        >
+                            <IconLayoutSidebar size={28} />
+                        </ActionIcon>
+                    }
                 </Group>
 
                 <Divider mx={26} />
@@ -184,8 +200,8 @@ const HtmlExpandedNavbar = ({
                         }}
                         styles={{
                             label: {
-                                fontSize: 16,
-                                fontWeight: 500,
+                                fontSize: 14,
+                                fontWeight: 600,
                                 transition: 'opacity 0.3s ease',
                                 opacity: 1,
                             },
