@@ -9,11 +9,13 @@ import {
     Stack,
     Image,
     Divider,
+    Box,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
     IconLogout,
-    IconChevronRight
+    IconChevronRight,
+    IconLayoutSidebar
 } from '@tabler/icons-react';
 import { DrawerRoute } from "@/types/route-types";
 import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
@@ -49,17 +51,9 @@ const HtmlCollapsedNavbar = ({
 
     // Note: Link component for navigation...!
     const renderNavLink = (item: DrawerRoute, index: number) => (
-        <NavLink
+        <Box
             key={index}
-            leftSection={item?.icon}
-            label={null}
-            variant="light"
-            px={customStyles.deviceSize.sm}
-            py={customStyles.deviceSize.sm}
-            color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
-            active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
-            w='fit-content'
             title={item.label}
             style={{
                 textTransform: 'capitalize',
@@ -72,29 +66,31 @@ const HtmlCollapsedNavbar = ({
                 opacity: 1,
                 transform: 'scale(1)',
                 cursor: 'pointer',
-                '&:hover': {
-                    transform: 'scale(1.1)',
+                width: 'fit-content',
+                padding: `12px 16px`,
+                backgroundColor: activeTab === index ? customStyles.colors._1B59F81A : 'transparent',
+                color: activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D,
+            }}
+            onMouseEnter={(e) => {
+                if (activeTab !== index) {
+                    e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
                 }
+                e.currentTarget.style.transform = 'scale(1.05)';
             }}
-            styles={{
-                label: {
-                    fontSize: 16,
-                    fontWeight: 500,
-                    transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    opacity: 0,
-                },
-                root: {
-                    justifyContent: 'center',
-                    width: 'fit-content',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                },
+            onMouseLeave={(e) => {
+                if (activeTab !== index) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                }
+                e.currentTarget.style.transform = 'scale(1)';
             }}
-        />
+        >
+            {item?.icon}
+        </Box>
     );
 
     return (
         <aside style={{
-            width: isMobile ? '0' : '120px',
+            width: isMobile ? '0' : '80px',
             backgroundColor: customStyles.colors.white,
             height: '100%',
             display: 'flex',
@@ -119,29 +115,12 @@ const HtmlCollapsedNavbar = ({
                         src={localAssets.logo_sm}
                         alt="Logo"
                         component={NextImage}
-                        h={25}
+                        h={32}
                         w='auto'
                     />
-                    <ActionIcon
-                        variant="filled"
-                        color={customStyles.colors._1B59F8}
-                        size={25}
-                        onClick={isMobile ? toggle : () => setCollapsed(false)}
-                        style={{
-                            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                            opacity: 1,
-                            transform: 'scale(1)',
-                            '&:hover': {
-                                backgroundColor: customStyles.colors._E1E7EC,
-                                transform: 'scale(1.1)',
-                            }
-                        }}
-                    >
-                        <IconChevronRight size={20} />
-                    </ActionIcon>
                 </Group>
 
-                <Divider mx={26} style={{
+                <Divider mx={18} style={{
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     opacity: 1,
                     transform: 'translateX(0)',
@@ -179,18 +158,9 @@ const HtmlCollapsedNavbar = ({
                     </nav>
 
                     {/* Logout Section */}
-                    <NavLink
-                        component="a"
-                        leftSection={<IconLogout size={24} />}
-                        label={null}
-                        variant="light"
-                        px={customStyles.deviceSize.sm}
-                        py={customStyles.deviceSize.sm}
-                        bg='#ED1C241A'
-                        color='#ED1C24'
-                        active
+                    <div
                         onClick={() => logout("Log Out Success", "You have logged out successfully")}
-                        w='fit-content'
+                        title="Logout"
                         style={{
                             borderRadius: '10px',
                             transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -200,21 +170,23 @@ const HtmlCollapsedNavbar = ({
                             margin: '0 auto',
                             opacity: 1,
                             transform: 'scale(1)',
+                            cursor: 'pointer',
+                            width: 'fit-content',
+                            padding: `12px 16px`,
+                            backgroundColor: '#ED1C241A',
+                            color: '#ED1C24',
                         }}
-                        styles={{
-                            label: {
-                                fontSize: 16,
-                                fontWeight: 500,
-                                transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: 0,
-                            },
-                            root: {
-                                justifyContent: 'center',
-                                width: 'fit-content',
-                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                            },
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#ED1C2430';
+                            e.currentTarget.style.transform = 'scale(1.05)';
                         }}
-                    />
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#ED1C241A';
+                            e.currentTarget.style.transform = 'scale(1)';
+                        }}
+                    >
+                        <IconLogout size={24} />
+                    </div>
                 </Stack>
             </Stack>
         </aside>

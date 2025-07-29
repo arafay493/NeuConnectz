@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
+    IconLayoutSidebar,
     IconMenu2
 } from '@tabler/icons-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -115,7 +116,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 top: 0,
                 left: 0,
                 bottom: 0,
-                width: collapsed ? (isMobile ? '0' : '120px') : (isMobile ? '100%' : '300px'),
+                width: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '100%' : '230px'),
                 backgroundColor: customStyles.colors.white,
                 zIndex: 1000,
                 transition: 'width 0.3s ease',
@@ -143,12 +144,12 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
             {/* Main Content Area */}
             <div style={{
                 flex: 1,
-                marginLeft: collapsed ? (isMobile ? '0' : '120px') : (isMobile ? '0' : '300px'),
+                marginLeft: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '0' : '230px'),
                 transition: 'margin-left 0.3s ease',
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: '100vh',
-                width: isMobile ? '100%' : `calc(100% - ${collapsed ? '120px' : '300px'})`,
+                width: isMobile ? '100%' : `calc(100% - ${collapsed ? '80px' : '230px'})`,
                 maxWidth: '100%',
                 overflow: 'hidden'
             }}>
@@ -156,10 +157,8 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 <header style={{
                     height: '80px',
                     backgroundColor: customStyles.colors.white,
-                    // borderBottom: `1px solid ${customStyles.colors._909090}`,
                     position: 'sticky',
                     top: 0,
-                    // zIndex: 999,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -168,30 +167,20 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                     boxSizing: 'border-box'
                 }}>
                     <Group gap={customStyles.deviceSize.md}>
-                        {isMobile && (
-                            <ActionIcon
-                                variant="light"
-                                color="blue"
-                                size="xl"
-                                radius={8}
-                                onClick={handleToggle}
-                                style={{
-                                    '&:hover': {
-                                        backgroundColor: '#e7f5ff'
-                                    }
-                                }}
-                            >
-                                <IconMenu2 size={24} />
-                            </ActionIcon>
-                        )}
-                        {/* <Text
+                        <ActionIcon
+                            variant="subtle"
+                            color={customStyles.colors._909090}
                             size="xl"
-                            fw={600}
-                            c={customStyles.colors._1B59F8}
-                            style={{ textTransform: 'capitalize' }}
+                            radius={8}
+                            onClick={handleToggle}
+                            style={{
+                                '&:hover': {
+                                    backgroundColor: '#e7f5ff'
+                                }
+                            }}
                         >
-                            {drawerRoutes[activeTab]?.label || 'Dashboard'}
-                        </Text> */}
+                            <IconLayoutSidebar size={28} />
+                        </ActionIcon>
                     </Group>
 
                     <Group gap="md" align="center">
