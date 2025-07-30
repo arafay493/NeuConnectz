@@ -21,7 +21,7 @@ import {
     ThemeIcon,
     Title
 } from '@mantine/core';
-import { IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
@@ -138,6 +138,10 @@ const calculateColumnWidth = (headerText: string, sampleValues: string[], minWid
 const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisible }) => {
     // Note: Handling states here...!
     const [loading, setLoading] = useState(false);
+    const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
+    const handleSearchInputVisibility = () => {
+        setIsSearchInputVisible(!isSearchInputVisible);
+    };
 
     // Note: Handling redux here...!
     const dispatch = useAppDispatch();
@@ -157,20 +161,21 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
         pageSize: 10,
     });
 
-    // Pagination values for Api call
-    const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
-
     // Note: Columns Data for GRN Table
     const columns = useMemo<ColumnDef<GRN_Props>[]>(
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
@@ -286,7 +291,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
         ],
-        [skipRecord, list_GRNS_Data]
+        [list_GRNS_Data]
     );
 
     // Custom global filter function to handle columns properly
@@ -367,14 +372,27 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                 token: authenticatedUser?.token || "",
                 handleLoading: () => setIsLoading(false),
                 apiUrl: `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=${type}` || "",
-                lastCount: lastCount,
-                skipRecords: skipRecord
+                lastCount: 1000,
+                skipRecords: 0
             }));
         };
-    }, [authenticatedUser, skipRecord, lastCount, type]);
+    }, [authenticatedUser, type]);
 
     return (
         <>
+            {/* Global Search Filter for GRN Table */}
+            <Group mb={16}>
+                <GlobalSearchFilter
+                    filters={globalFilter}
+                    setFilters={setGlobalFilter}
+                    isSearchInputVisible={isSearchInputVisible}
+                />
+                {
+                    !isSearchInputVisible ?
+                        <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
+                }
+            </Group>
+
             <Box
                 className="show-scroll-bar-overflow"
                 w="100%"
@@ -420,7 +438,16 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                                                     }}
                                                     ml={4}
                                                 >
-                                                    <IconArrowsUpDown size={16} />
+                                                    {(() => {
+                                                        const sortDirection = header.column.getIsSorted();
+                                                        if (sortDirection === 'asc') {
+                                                            return <IconArrowNarrowUp size={16} />;
+                                                        } else if (sortDirection === 'desc') {
+                                                            return <IconArrowNarrowDown size={16} />;
+                                                        } else {
+                                                            return <IconArrowsUpDown size={16} />;
+                                                        }
+                                                    })()}
                                                 </ActionIcon>
                                             )}
                                         </Group>
@@ -599,7 +626,10 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalGRNS_DataCounts)} of {totalGRNS_DataCounts} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {totalGRNS_DataCounts} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>
@@ -615,6 +645,11 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     const [loading, setLoading] = useState(false);
     const [activePage, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
+
+    const handleSearchInputVisibility = () => {
+        setIsSearchInputVisible(!isSearchInputVisible);
+    };
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
@@ -638,20 +673,21 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
         pageSize: 10, // Adjusted to a more reasonable default
     });
 
-    // Pagination values for Api call
-    const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
-
     // Note: Columns Data for Stock Movement Table
     const columns = useMemo<ColumnDef<IT_TR_ITR_Props>[]>(
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
@@ -768,7 +804,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
         ],
-        [skipRecord, listAll_ITR_IT_TRS]
+        [listAll_ITR_IT_TRS]
     );
 
     // Custom global filter function to handle columns properly
@@ -851,14 +887,27 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 dataStatus: type,
                 handleLoading: () => setLoading(false),
                 type: sapType != undefined ? sapType : undefined,
-                lastCount: lastCount,
-                skipRecords: skipRecord
+                lastCount: 1000,
+                skipRecords: 0
             }));
         };
-    }, [authenticatedUser, skipRecord, lastCount, type, sapType]);
+    }, [authenticatedUser, type, sapType]);
 
     return (
         <>
+            {/* Global Search Filter for Stock Movement Table */}
+            <Group justify='flex-end' mb={16}>
+                <GlobalSearchFilter
+                    filters={globalFilter}
+                    setFilters={setGlobalFilter}
+                    isSearchInputVisible={isSearchInputVisible}
+                />
+                {
+                    !isSearchInputVisible ?
+                        <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
+                }
+            </Group>
+
             <Box
                 className="show-scroll-bar-overflow"
                 w="100%"
@@ -908,7 +957,16 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                                                     }}
                                                     ml={4}
                                                 >
-                                                    <IconArrowsUpDown size={16} />
+                                                    {(() => {
+                                                        const sortDirection = header.column.getIsSorted();
+                                                        if (sortDirection === 'asc') {
+                                                            return <IconArrowNarrowUp size={16} />;
+                                                        } else if (sortDirection === 'desc') {
+                                                            return <IconArrowNarrowDown size={16} />;
+                                                        } else {
+                                                            return <IconArrowsUpDown size={16} />;
+                                                        }
+                                                    })()}
                                                 </ActionIcon>
                                             )}
                                         </Group>
@@ -1087,7 +1145,10 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, listAll_ITR_IT_TRS_Count)} of {listAll_ITR_IT_TRS_Count} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {listAll_ITR_IT_TRS_Count} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>
@@ -1511,7 +1572,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         </Text>
                     </Stack>
                     <Group gap="xs">
-                        <GlobalSearchFilter
+                        {/* <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
                             isSearchInputVisible={isSearchInputVisible}
@@ -1519,7 +1580,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                         {
                             !isSearchInputVisible ?
                                 <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
-                        }
+                        } */}
                         {
                             !areTableFiltersVisible ?
                                 <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} /> : <IconFilterOff cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />

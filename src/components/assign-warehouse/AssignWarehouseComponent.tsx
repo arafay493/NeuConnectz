@@ -11,7 +11,7 @@ import { AccessWareHouseDataType } from "@/types/modules/warehouse-types/warehou
 import { WarehousesListData } from "@/types/redux-types"
 import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
-import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import NextImage from 'next/image'
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -128,11 +128,16 @@ const AssignWarehouseComponent = () => {
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
@@ -602,7 +607,16 @@ const AssignWarehouseComponent = () => {
                                                         }}
                                                         ml={4}
                                                     >
-                                                        <IconArrowsUpDown size={16} />
+                                                        {(() => {
+                                                            const sortDirection = header.column.getIsSorted();
+                                                            if (sortDirection === 'asc') {
+                                                                return <IconArrowNarrowUp size={16} />;
+                                                            } else if (sortDirection === 'desc') {
+                                                                return <IconArrowNarrowDown size={16} />;
+                                                            } else {
+                                                                return <IconArrowsUpDown size={16} />;
+                                                            }
+                                                        })()}
                                                     </ActionIcon>
                                                 )}
                                             </Group>
