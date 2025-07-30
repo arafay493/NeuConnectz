@@ -332,14 +332,14 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             {/* Search Bar */}
             <Group
                 p={isSmallScreen ? 16 : 24}
-                justify={isSmallScreen ? 'flex-start' : customStyles.alignment.spaceBetween}
+                justify={isSmallScreen ? 'flex-start' : customStyles.alignment.right}
                 align={isSmallScreen ? 'stretch' : 'flex-end'}
                 bg={customStyles.colors.white}
                 style={{ borderRadius: '16px' }}
                 wrap="wrap"
                 gap={isSmallScreen ? 16 : 24}
             >
-                <Group
+                {/* <Group
                     w={isSmallScreen ? '100%' : 'auto'}
                     justify={isSmallScreen ? 'center' : 'flex-start'}
                     wrap="wrap"
@@ -362,7 +362,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                             clearable
                         />
                     </Stack>
-                </Group>
+                </Group> */}
                 <Button
                     variant='transparent'
                     className='filledButton'
