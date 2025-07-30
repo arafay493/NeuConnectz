@@ -22,7 +22,7 @@ import {
     Title
 } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
@@ -136,10 +136,10 @@ const calculateColumnWidth = (headerText: string, sampleValues: string[], minWid
 
 // Note: GRN_Table_Component...!
 const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisible }) => {
-    // Note: Handeling states here...!
+    // Note: Handling states here...!
     const [loading, setLoading] = useState(false);
 
-    // Note: Handeling redux here...!
+    // Note: Handling redux here...!
     const dispatch = useAppDispatch();
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
@@ -168,7 +168,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                 header: 'S.No',
                 cell: ({ row }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
+                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
                     </Text>
                 ),
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
@@ -290,7 +290,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
     );
 
     // Custom global filter function to handle columns properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -301,7 +301,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
 
         // Handle S.No column (computed value)
         if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -327,9 +327,18 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
             const columnIds = ['docNum', 'itemCode', 'whsCode', 'vendorCode', 'userName', 'erpDocEntry', 'erpDocLine', 'sapStatus', 'docStatus', 'updatedDate'];
@@ -338,8 +347,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         onPaginationChange: setPagination,
-        manualPagination: true,
-        pageCount: Math.ceil(totalGRNS_DataCounts / pagination.pageSize),
+        manualPagination: false,
         state: {
             sorting,
             globalFilter,
@@ -370,7 +378,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
             <Box
                 className="show-scroll-bar-overflow"
                 w="100%"
-                h={700}
+                mah={700}
                 style={{
                     overflowX: 'auto',
                 }}
@@ -641,7 +649,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 header: 'S.No',
                 cell: ({ row }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
+                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
                     </Text>
                 ),
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
@@ -764,7 +772,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     );
 
     // Custom global filter function to handle columns properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -774,8 +782,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
         const cellValue = row.getValue(columnId);
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+        if (columnId === 'S.No') {
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -801,19 +809,28 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['type', 'docNumber', 'itemCode', 'fromWarehouse', 'toWarehouse', 'userName', 'erpDocEntry', 'erpLineID', 'status', 'docStatus', 'updatedDate'];
+            const columnIds = ['S.No', 'type', 'docNumber', 'itemCode', 'fromWarehouse', 'toWarehouse', 'userName', 'erpDocEntry', 'erpLineID', 'status', 'docStatus', 'updatedDate'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         onPaginationChange: setPagination,
-        manualPagination: true,
-        pageCount: Math.ceil(listAll_ITR_IT_TRS_Count / pagination.pageSize),
+        manualPagination: false,
+        // pageCount: Math.ceil(listAll_ITR_IT_TRS_Count / pagination.pageSize),
         state: {
             sorting,
             globalFilter,
@@ -845,7 +862,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             <Box
                 className="show-scroll-bar-overflow"
                 w="100%"
-                h={700}
+                mah={700}
                 style={{
                     overflowX: 'auto',
                     // overflowY: 'auto',
@@ -1082,7 +1099,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
 const IntegrationComponent = (props: IntegrationComponentProps) => {
     const { enableLoader, disableLoader } = props;
 
-    // Note: Handeling states here...!
+    // Note: Handling states here...!
     const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
     const [selectedType, setSelectedType] = useState("");
     const [loading, setLoading] = useState(false);
@@ -1101,7 +1118,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
-    // Note: Handeling redux here...!
+    // Note: Handling redux here...!
     const dispatch = useAppDispatch();
 
     // Note: Fetch user data from redux...!
@@ -1180,8 +1197,8 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
 
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
-                showNotificationToast("Successfull", response?.data?.data?.message, customStyles.colors._408CCE);
-                dispatch(fetchDashboardAnalytics(authenticatedUser?.token as string,)); // For data updation purpose...!
+                showNotificationToast("Successful", response?.data?.data?.message, customStyles.colors._408CCE);
+                dispatch(fetchDashboardAnalytics(authenticatedUser?.token as string,)); // For data updating purpose...!
 
                 if (headerBtnType == "Stock Movement") {
                     dispatch(fetchAllITR_IT_TRS({
@@ -1333,7 +1350,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         }));
     };
 
-    // Note: Functio to fetch GRNS data...!
+    // Note: Function to fetch GRNS data...!
     const viewGrnsData = () => {
 
         // Note: Enable loader...!
@@ -1468,6 +1485,7 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             rightSection={<IconChevronDown size={18} />}
                             defaultValue='Success'
                             placeholder="Select Status"
+                            rightSectionPointerEvents='none'
                             value={statusColor}
                             onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}
                             clearable

@@ -8,7 +8,7 @@ import { customStyles } from '@/styles/custom-theme';
 import { UserListProps } from '@/types/redux-types';
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -68,8 +68,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
         route.push(routes.editUser(userId));
     }
 
-    console.log("fetched Data: ", data)
-
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
         // Calculate width based on header text (approximate 8px per character)
@@ -93,7 +91,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 header: 'S.No',
                 cell: ({ row }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
+                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
                     </Text>
                 ),
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
@@ -186,7 +184,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
             },
             {
-                // accessorKey: 'userId',
+                accessorKey: 'userId',
                 header: 'Action',
                 cell: ({ getValue }) => {
                     const userId = getValue() as string;
@@ -211,7 +209,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
     );
 
     // Custom global filter function to handle Status column properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -227,8 +225,8 @@ const UserListComponent: FC<UserListComponentProps> = ({
         }
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+        if (columnId === 'S.No') {
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -247,20 +245,29 @@ const UserListComponent: FC<UserListComponentProps> = ({
         // Keep client-side filtering and sorting since API doesn't support them yet
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['serialNumber', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+            const columnIds = ['S.No', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
+        manualPagination: false, // Enable server-side pagination
+        // pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -306,18 +313,20 @@ const UserListComponent: FC<UserListComponentProps> = ({
                     variant="transparent"
                     size="md"
                     radius={8}
+                    onClick={() => route.push('/add-user')}
                 >
                     Add Users
                 </Button>
             </Group>
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
-                <Group justify="end" align="center" style={{ flexShrink: 0 }}>
-                    {/* <Group gap="xs">
-                        <Title order={4} c={customStyles.colors._4D4D4D}>
-                            Quantity Difference
+                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+                    <Stack gap={0}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                            Manage Users
                         </Title>
-                    </Group> */}
+                        <Text c={customStyles.colors._909090}>View, search, and manage all users by using multiple filters.</Text>
+                    </Stack>
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
@@ -341,7 +350,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 {/* Table */}
                 <Box
                     w="100%"
-                    h={700}
+                    mah={700}
                     style={{
                         overflowX: 'auto',
                         overflowY: 'auto',
@@ -564,7 +573,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalCount)} of {totalCount} entries
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {totalCount} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>
