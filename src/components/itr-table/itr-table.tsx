@@ -21,7 +21,7 @@ import { customStyles } from '@/styles/custom-theme';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { fetchAll_ITR_Data, fetchAllItrData } from '@/redux/actions/itr-actions/itr-actions';
 import Loader from '../loader/loader';
-import { IconBuildingWarehouse, IconCalendarMonth, IconChevronDown, IconSearch, IconColumns, IconBorderCorners, IconFilter, IconSearchOff, IconFilterOff, IconArrowsUpDown, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconBuildingWarehouse, IconCalendarMonth, IconChevronDown, IconSearch, IconColumns, IconBorderCorners, IconFilter, IconSearchOff, IconFilterOff, IconArrowsUpDown, IconChevronLeft, IconChevronRight, IconArrowNarrowUp, IconArrowNarrowDown } from '@tabler/icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 import { DatePickerInput } from '@mantine/dates';
 import NextImage from 'next/image'
@@ -133,11 +133,16 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + (table.getState().pagination.pageIndex * table.getState().pagination.pageSize) + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
@@ -466,7 +471,16 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                                                         }}
                                                         ml={4}
                                                     >
-                                                        <IconArrowsUpDown size={16} />
+                                                        {(() => {
+                                                            const sortDirection = header.column.getIsSorted();
+                                                            if (sortDirection === 'asc') {
+                                                                return <IconArrowNarrowUp size={16} />;
+                                                            } else if (sortDirection === 'desc') {
+                                                                return <IconArrowNarrowDown size={16} />;
+                                                            } else {
+                                                                return <IconArrowsUpDown size={16} />;
+                                                            }
+                                                        })()}
                                                     </ActionIcon>
                                                 )}
                                             </Group>

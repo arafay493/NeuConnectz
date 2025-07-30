@@ -9,8 +9,8 @@ import { customStyles } from "@/styles/custom-theme";
 import { AssignGroupToUserDataType, GroupCodeDataType } from "@/types/modules/group-types/group-types";
 import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
@@ -134,11 +134,16 @@ const AssignGroupsComponent = () => {
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
@@ -203,7 +208,7 @@ const AssignGroupsComponent = () => {
     );
 
     // Custom global filter function to handle Status column properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -219,8 +224,8 @@ const AssignGroupsComponent = () => {
         }
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+        if (columnId === 'S.No') {
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -240,20 +245,27 @@ const AssignGroupsComponent = () => {
         // Keep client-side filtering and sorting since API doesn't support them yet
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(), // Add pagination model for client-side pagination
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['serialNumber', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+            const columnIds = ['S.No', 'groupCode', 'groupName'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
-        // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(groupsTotalCount / pagination.pageSize), // Calculate total pages from server data
+        manualPagination: false, // Use client-side pagination for filtered results
         state: {
             sorting,
             globalFilter,
@@ -274,25 +286,20 @@ const AssignGroupsComponent = () => {
         }
     }, [authenticatedUser?.token, dispatch])
 
-    // Note: warehouse list call
+    // Note: warehouse list call - fetch all data once
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
+            // Fetch all data at once since we're using client-side pagination
             dispatch(fetchListAllGroupCodes({
                 authToken: authenticatedUser?.token as string,
-                lastCount: lastCount,
-                skipRecords: skipRecord
+                lastCount: 1000, // Fetch a large number to get all records
+                skipRecords: 0
             })).finally(() => {
                 setIsLoading(false);
             });
         }
-    }, [lastCount, skipRecord, authenticatedUser, dispatch])
-
-    // Additional effect to handle pagination state changes
-    useEffect(() => {
-        // This will trigger the above effect when pagination changes
-        // The dependency on pagination state will automatically trigger API calls
-    }, [pagination]);
+    }, [authenticatedUser, dispatch])
 
     // Reset warehouse permissions when user changes
     useEffect(() => {
@@ -470,7 +477,7 @@ const AssignGroupsComponent = () => {
                 <Box
                     className="show-scroll-bar-overflow"
                     w="100%"
-                    h={700}
+                    mah={700}
                     style={{
                         overflowX: 'auto',
                         // overflowY: 'auto',
@@ -515,7 +522,16 @@ const AssignGroupsComponent = () => {
                                                         }}
                                                         ml={4}
                                                     >
-                                                        <IconArrowsUpDown size={16} />
+                                                        {(() => {
+                                                            const sortDirection = header.column.getIsSorted();
+                                                            if (sortDirection === 'asc') {
+                                                                return <IconArrowNarrowUp size={16} />;
+                                                            } else if (sortDirection === 'desc') {
+                                                                return <IconArrowNarrowDown size={16} />;
+                                                            } else {
+                                                                return <IconArrowsUpDown size={16} />;
+                                                            }
+                                                        })()}
                                                     </ActionIcon>
                                                 )}
                                             </Group>
@@ -696,7 +712,10 @@ const AssignGroupsComponent = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, groupsTotalCount)} of {groupsTotalCount} entries
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {groupsTotalCount} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>

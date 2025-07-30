@@ -11,8 +11,8 @@ import { AccessWareHouseDataType } from "@/types/modules/warehouse-types/warehou
 import { WarehousesListData } from "@/types/redux-types"
 import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
-import { IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react"
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table"
 import NextImage from 'next/image'
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter"
@@ -128,11 +128,16 @@ const AssignWarehouseComponent = () => {
         () => [
             {
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
@@ -236,7 +241,7 @@ const AssignWarehouseComponent = () => {
     );
 
     // Custom global filter function to handle Status column properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -252,8 +257,8 @@ const AssignWarehouseComponent = () => {
         }
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+        if (columnId === 'S.No') {
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -272,20 +277,29 @@ const AssignWarehouseComponent = () => {
         // Keep client-side filtering and sorting since API doesn't support them yet
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['serialNumber', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+            const columnIds = ['S.No', 'whsCode', 'whsName'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(warehousesTotalCount / pagination.pageSize), // Calculate total pages from server data
+        manualPagination: false, // Enable server-side pagination
+        // pageCount: Math.ceil(warehousesTotalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -312,13 +326,13 @@ const AssignWarehouseComponent = () => {
             setIsLoading(true);
             dispatch(fetchAllWareHouses({
                 authToken: authenticatedUser?.token as string,
-                lastCount: lastCount,
-                skipRecords: skipRecord
+                lastCount: 1000,
+                skipRecords: 0
             })).finally(() => {
                 setIsLoading(false);
             });
         }
-    }, [lastCount, skipRecord, authenticatedUser, dispatch])
+    }, [authenticatedUser, dispatch])
 
     // Additional effect to handle pagination state changes
     useEffect(() => {
@@ -547,8 +561,8 @@ const AssignWarehouseComponent = () => {
                 {/* Table */}
                 <Box
                     className="show-scroll-bar-overflow"
-                    w="100%"
-                    h={700}
+                    maw="100%"
+                    mah={700}
                     style={{
                         overflowX: 'auto',
                         // overflowY: 'auto',
@@ -593,7 +607,16 @@ const AssignWarehouseComponent = () => {
                                                         }}
                                                         ml={4}
                                                     >
-                                                        <IconArrowsUpDown size={16} />
+                                                        {(() => {
+                                                            const sortDirection = header.column.getIsSorted();
+                                                            if (sortDirection === 'asc') {
+                                                                return <IconArrowNarrowUp size={16} />;
+                                                            } else if (sortDirection === 'desc') {
+                                                                return <IconArrowNarrowDown size={16} />;
+                                                            } else {
+                                                                return <IconArrowsUpDown size={16} />;
+                                                            }
+                                                        })()}
                                                     </ActionIcon>
                                                 )}
                                             </Group>

@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { UserListProps } from '@/types/redux-types';
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
-import { IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
@@ -42,10 +42,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
         totalCount
     } } = useAppSelector(({ userStates }) => userStates);
 
-    // Pagination values for Api call
-    const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
-
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -68,8 +64,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
         route.push(routes.editUser(userId));
     }
 
-    console.log("fetched Data: ", data)
-
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
         // Calculate width based on header text (approximate 8px per character)
@@ -91,11 +85,16 @@ const UserListComponent: FC<UserListComponentProps> = ({
             {
                 // accessorKey: 'userId',
                 header: 'S.No',
-                cell: ({ row }) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {row.index + skipRecord + 1}
-                    </Text>
-                ),
+                cell: ({ row, table }) => {
+                    // Get the original index from filtered data, not paginated data
+                    const filteredRows = table.getFilteredRowModel().rows;
+                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {originalIndex + 1}
+                        </Text>
+                    );
+                },
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
@@ -106,7 +105,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Username', data.map(item => item.userName), 150, 400),
+                size: calculateColumnWidth('Username', (data || []).map(item => item.userName), 150, 400),
             },
             {
                 accessorKey: 'email',
@@ -116,7 +115,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Email', data.map(item => item.email), 180, 450),
+                size: calculateColumnWidth('Email', (data || []).map(item => item.email), 180, 450),
             },
             {
                 accessorKey: 'department',
@@ -126,7 +125,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Department', data.map(item => item.department), 120, 200),
+                size: calculateColumnWidth('Department', (data || []).map(item => item.department), 120, 200),
             },
             {
                 accessorKey: 'phone',
@@ -136,7 +135,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Phone', data.map(item => item.phone), 120, 180),
+                size: calculateColumnWidth('Phone', (data || []).map(item => item.phone), 120, 180),
             },
             {
                 accessorKey: 'role',
@@ -146,7 +145,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Role', data.map(item => item.role), 100, 150),
+                size: calculateColumnWidth('Role', (data || []).map(item => item.role), 100, 150),
             },
             {
                 accessorKey: 'isActive',
@@ -186,7 +185,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
             },
             {
-                // accessorKey: 'userId',
+                accessorKey: 'userId',
                 header: 'Action',
                 cell: ({ getValue }) => {
                     const userId = getValue() as string;
@@ -211,7 +210,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
     );
 
     // Custom global filter function to handle Status column properly
-    const globalFilterFn = (row: any, columnId: string, value: string) => {
+    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -227,8 +226,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
         }
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            const serialNumber = row.index + skipRecord + 1;
+        if (columnId === 'S.No') {
+            // For global filter, we need to check against the original row index
+            // since filtering happens before pagination
+            const serialNumber = row.index + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -247,20 +248,28 @@ const UserListComponent: FC<UserListComponentProps> = ({
         // Keep client-side filtering and sorting since API doesn't support them yet
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: setGlobalFilter,
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: (value) => {
+            setGlobalFilter(value);
+            // Reset to first page when global filter changes
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
+        onColumnFiltersChange: (filters) => {
+            setColumnFilters(filters);
+            // Reset to first page when column filters change
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['serialNumber', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+            const columnIds = ['S.No', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
+        manualPagination: false, // Enable server-side pagination
         state: {
             sorting,
             globalFilter,
@@ -279,19 +288,13 @@ const UserListComponent: FC<UserListComponentProps> = ({
 
             dispatch(fetchAllUsers({
                 authToken: authenticatedUser?.token,
-                LastCount: lastCount,
-                skipRecord: skipRecord
+                LastCount: 1000, // Fetch all records for client-side pagination
+                skipRecord: 0
             })).finally(() => {
                 setIsLoading(false);
             });
         };
-    }, [lastCount, skipRecord, authenticatedUser, dispatch]);
-
-    // Additional effect to handle pagination state changes
-    useEffect(() => {
-        // This will trigger the above effect when pagination changes
-        // The dependency on pagination state will automatically trigger API calls
-    }, [pagination]);
+    }, [authenticatedUser, dispatch]); // Remove pagination dependencies
 
     return (
         <Box p={8}>
@@ -306,18 +309,20 @@ const UserListComponent: FC<UserListComponentProps> = ({
                     variant="transparent"
                     size="md"
                     radius={8}
+                    onClick={() => route.push('/add-user')}
                 >
-                    Add Users
+                    Add User
                 </Button>
             </Group>
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
-                <Group justify="end" align="center" style={{ flexShrink: 0 }}>
-                    {/* <Group gap="xs">
-                        <Title order={4} c={customStyles.colors._4D4D4D}>
-                            Quantity Difference
+                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+                    <Stack gap={0}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                            Manage Users
                         </Title>
-                    </Group> */}
+                        <Text c={customStyles.colors._909090}>View, search, and manage all users by using multiple filters.</Text>
+                    </Stack>
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
@@ -341,7 +346,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 {/* Table */}
                 <Box
                     w="100%"
-                    h={700}
+                    mah={700}
                     style={{
                         overflowX: 'auto',
                         overflowY: 'auto',
@@ -353,7 +358,8 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         minWidth: 'max-content'
                     }}>
                         <thead>
-                            {table.getHeaderGroups().map(headerGroup => (
+                            {table.getHeaderGroups().map(headerGroup =>
+                            (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map(header => (
                                         <th key={header.id} style={{
@@ -383,7 +389,16 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                                         }}
                                                         ml={4}
                                                     >
-                                                        <IconArrowsUpDown size={16} />
+                                                        {(() => {
+                                                            const sortDirection = header.column.getIsSorted();
+                                                            if (sortDirection === 'asc') {
+                                                                return <IconArrowNarrowUp size={16} />;
+                                                            } else if (sortDirection === 'desc') {
+                                                                return <IconArrowNarrowDown size={16} />;
+                                                            } else {
+                                                                return <IconArrowsUpDown size={16} />;
+                                                            }
+                                                        })()}
                                                     </ActionIcon>
                                                 )}
                                             </Group>
@@ -564,7 +579,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalCount)} of {totalCount} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {totalCount} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>
