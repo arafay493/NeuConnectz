@@ -88,7 +88,6 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                 <Text size="md" mb={8} fw={500}>Date</Text>
                 <DatePickerInput
                     rightSection={<IconCalendarMonth size={24} />}
-                    rightSectionPointerEvents='none'
                     placeholder="DD/MM/YY"
                     value={selectDate}
                     onChange={(value: string) => setSelectDate(value)}

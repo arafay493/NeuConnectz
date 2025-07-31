@@ -1,45 +1,40 @@
 // Note: IT Table Component...!
 
-import React, { memo, useState, useEffect, useMemo } from 'react';
+import DataNotFound from '@/components/data-not-found/data-not-found';
+import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { fetchAllItData } from '@/redux/actions/itr-actions/itr-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { customStyles } from '@/styles/custom-theme';
 import {
-    Table,
-    Flex,
-    Select,
+    ActionIcon,
     Box,
-    Button,
+    Group,
+    Image,
+    Select,
     Stack,
     Text,
-    Group,
-    Title,
-    ActionIcon,
-    Image
+    Title
 } from '@mantine/core';
-import NextImage from 'next/image'
-import PaginationComponent from '../pagination/pagination';
-import DataNotFound from '@/components/data-not-found/data-not-found';
-import { IT_DataType } from '@/types/redux-types';
-import { customStyles } from '@/styles/custom-theme';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAll_ITR_Data, fetchAllItData } from '@/redux/actions/itr-actions/itr-actions';
-import Loader from '../loader/loader';
-import { useMediaQuery } from '@mantine/hooks';
-import { IconBuildingWarehouse, IconCalendarMonth, IconSearch, IconColumns, IconBorderCorners, IconSearchOff, IconFilterOff, IconFilter, IconArrowsUpDown, IconChevronRight, IconChevronDown, IconChevronLeft, IconArrowNarrowUp, IconArrowNarrowDown } from '@tabler/icons-react';
-import { DatePickerInput } from '@mantine/dates';
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from '@tabler/icons-react';
 import {
-    useReactTable,
+    ColumnDef,
+    ColumnFiltersState,
+    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getSortedRowModel,
-    ColumnDef,
-    SortingState,
-    ColumnFiltersState,
-    PaginationState,
-    flexRender,
     getPaginationRowModel,
+    getSortedRowModel,
+    PaginationState,
+    SortingState,
+    useReactTable,
 } from '@tanstack/react-table';
-import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
+import NextImage from 'next/image';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import StockMovementFilterBar, { DocStatusProp, SapStatusProp } from '../stock-movement/StockMovementFilterBar';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { localAssets } from '@/lib/file-paths/file-paths';
 
 // Note: IT Data type based on actual Redux state structure
 type ITDataType = {
@@ -71,13 +66,12 @@ type ApiProp = {
 };
 
 const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
-    // Note: Media query to determine if the screen is small
-    const isSmallScreen = useMediaQuery("(max-width: 768px)")
-    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1200px)');
-
-    // Note: state for date
+    // Search Table Filter With API Call
+    const [toWarehouse, setToWarehouse] = useState('')
+    const [fromWarehouse, setFromWarehouse] = useState('')
     const [selectDate, setSelectDate] = useState<string | null>(null);
+    const [sapStatus, setSapStatus] = useState<SapStatusProp>()
+    const [docStatus, setDocStatus] = useState<DocStatusProp>()
 
     // Note: States...!
     const [isLoading, setIsLoading] = useState(false);
@@ -90,7 +84,6 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -113,8 +106,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { itData, itDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
-
-    const totalPages = Math.ceil(itDataCount / pagination.pageSize);
+    const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -307,7 +299,6 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         },
         onPaginationChange: setPagination,
         manualPagination: false,
-        // pageCount: Math.ceil(itDataCount / pagination.pageSize),
         state: {
             sorting,
             globalFilter,
@@ -320,6 +311,62 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
+    // Warehouse validation functions
+    const handleFromWarehouseChange = (value: string | null) => {
+        if (value && value === toWarehouse) {
+            showNotificationToast(
+                "Invalid Selection",
+                "From Warehouse and To Warehouse cannot be the same!",
+                customStyles.colors.red
+            );
+            return;
+        }
+        setFromWarehouse(value ?? '');
+    };
+
+    const handleToWarehouseChange = (value: string | null) => {
+        if (value && value === fromWarehouse) {
+            showNotificationToast(
+                "Invalid Selection",
+                "To Warehouse and From Warehouse cannot be the same!",
+                customStyles.colors.red
+            );
+            return;
+        }
+        setToWarehouse(value ?? '');
+    };
+
+    // Function to build URL parameters from filters
+    const buildFilterParams = () => {
+        const params = new URLSearchParams();
+
+        if (sapStatus) params.append('sapStatus', sapStatus);
+        if (docStatus) params.append('docStatus', docStatus);
+        if (fromWarehouse) params.append('fromWarehouseCode', fromWarehouse);
+        if (toWarehouse) params.append('toWarehouseCode', toWarehouse);
+        if (selectDate) params.append('docDate', selectDate);
+
+        return params.toString();
+    };
+
+    // Function to fetch filtered data
+    const fetchFilteredData = () => {
+        if (!authenticatedUser?.token) return;
+
+        const filterParams = buildFilterParams();
+        const apiUrlWithParams = filterParams ? `${apiUrl}?${filterParams}` : apiUrl;
+
+        setIsLoading(true);
+        dispatch(fetchAllItData({
+            authToken: authenticatedUser.token,
+            apiUrl: apiUrlWithParams,
+            lastCount: 1000,
+            skipRecords: 0
+        })).finally(() => {
+            setIsLoading(false);
+        });
+    };
+
     useEffect(() => {
         if (authenticatedUser?.token) {
             // setLoading(true);
@@ -327,60 +374,52 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 authToken: authenticatedUser?.token || '',
                 apiUrl: apiUrl,
                 lastCount: 1000,
-                skipRecords: 0
+                skipRecords: 0,
             }));
         };
     }, [authenticatedUser]);
 
+    // Note: Fetch All Warehouse List
+    useEffect(() => {
+        dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
+    }, [dispatch, authenticatedUser?.token])
+
+    // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
+    useEffect(() => {
+        // Uncomment the lines below if you want auto-filtering on filter changes
+        const timeoutId = setTimeout(() => {
+            // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
+            fetchFilteredData();
+            // }
+        }, 500); // Debounce API calls by 500ms
+
+        return () => clearTimeout(timeoutId);
+    }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate]);
+
+
+    // Transform warehouse data for Select component
+    const selectWarehouseData = wareHousesList.data
+        .filter(warehouse => warehouse.isActive && !warehouse.isArchived)
+        .map(warehouse => ({
+            value: warehouse.whsCode,
+            label: warehouse.whsName
+        }));
+
     return (
         <Box>
-            {/* Search Bar */}
-            <Group
-                p={isSmallScreen ? 16 : 24}
-                justify={isSmallScreen ? 'flex-start' : customStyles.alignment.right}
-                align={isSmallScreen ? 'stretch' : 'flex-end'}
-                bg={customStyles.colors.white}
-                style={{ borderRadius: '16px' }}
-                wrap="wrap"
-                gap={isSmallScreen ? 16 : 24}
-            >
-                {/* <Group
-                    w={isSmallScreen ? '100%' : 'auto'}
-                    justify={isSmallScreen ? 'center' : 'flex-start'}
-                    wrap="wrap"
-                    gap={isSmallScreen ? 12 : 16}
-                >
-                    <Stack
-                        gap={0}
-                        w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
-                        maw={isSmallScreen ? '100%' : 350}
-                    >
-                        <Text size="md" mb={8} fw={500}>Date</Text>
-                        <DatePickerInput
-                            rightSection={<IconCalendarMonth size={24} />}
-                            rightSectionPointerEvents='none'
-                            placeholder="DD/MM/YY"
-                            value={selectDate}
-                            onChange={(value: string) => setSelectDate(value)}
-                            radius={8}
-                            size='md'
-                            clearable
-                        />
-                    </Stack>
-                </Group> */}
-                <Button
-                    variant='transparent'
-                    className='filledButton'
-                    radius={8}
-                    size={isSmallScreen ? 'sm' : 'md'}
-                    leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                    // onClick={handleAssignGroups}
-                    w={isSmallScreen ? '100%' : 'auto'}
-                    mt={isSmallScreen ? 16 : 0}
-                >
-                    Export To CSV
-                </Button>
-            </Group>
+            <StockMovementFilterBar
+                docStatus={docStatus}
+                setDocStatus={setDocStatus}
+                sapStatus={sapStatus}
+                setSapStatus={setSapStatus}
+                fromWarehouse={fromWarehouse}
+                handleFromWarehouseChange={handleFromWarehouseChange}
+                toWarehouse={toWarehouse}
+                handleToWarehouseChange={handleToWarehouseChange}
+                selectDate={selectDate}
+                setSelectDate={setSelectDate}
+                selectWarehouseData={selectWarehouseData}
+            />
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
@@ -622,7 +661,6 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                             <Select
                                 w={80}
                                 radius={8}
-                                rightSectionPointerEvents='none'
                                 rightSection={<IconChevronDown size={18} />}
                                 data={[
                                     { value: '5', label: '5' },

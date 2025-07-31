@@ -1546,7 +1546,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
                             rightSection={<IconChevronDown size={18} />}
                             defaultValue='Success'
                             placeholder="Select Status"
-                            rightSectionPointerEvents='none'
                             value={statusColor}
                             onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}
                             clearable
