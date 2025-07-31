@@ -43,7 +43,7 @@ import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilte
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
-import { DocStatusProp, SapStatusProp } from '../itr-table/itr-table';
+import StockMovementFilterBar, { DocStatusProp, SapStatusProp } from '../stock-movement/StockMovementFilterBar';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 
 // Note: TR Data type based on actual Redux state structure
@@ -424,102 +424,19 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         }));
     return (
         <Box>
-            <Grid
-                mt={16}
-                mb={8}
-                bg={customStyles.colors.white}
-                p={24}
-                align='end'
-                style={{
-                    borderRadius: '16px',
-                    gap: isSmallScreen ? '16px' : '24px'
-                }}
-            >
-                {/* Sap Status */}
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Text size="md" mb={8} fw={500}>Sap Status</Text>
-                    <Select
-                        placeholder="Select Sap Status"
-                        data={['Updated', 'Integrated', 'Pending']}
-                        value={sapStatus}
-                        onChange={(value) => setSapStatus(value as SapStatusProp | undefined)}
-                        clearable
-                        radius={8}
-                        size='md'
-                    />
-                </GridCol>
-
-                {/* Doc Status */}
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Text size="md" mb={8} fw={500}>Doc Status</Text>
-                    <Select
-                        placeholder="Select Doc Status"
-                        data={['Open', 'Closed', 'Pending']}
-                        value={docStatus}
-                        onChange={(value) => setDocStatus(value as DocStatusProp | undefined)}
-                        clearable
-                        radius={8}
-                        size='md'
-                    />
-                </GridCol>
-
-                {/* From Warehouse */}
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Text size="md" mb={8} fw={500}>From Warehouse</Text>
-                    <Select
-                        placeholder="Select warehouse"
-                        data={selectWarehouseData}
-                        value={fromWarehouse}
-                        onChange={handleFromWarehouseChange}
-                        clearable
-                        radius={8}
-                        size='md'
-                    />
-                </GridCol>
-
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Text size="md" mb={8} fw={500}>To Warehouse</Text>
-                    <Select
-                        placeholder="Select warehouse"
-                        data={selectWarehouseData}
-                        value={toWarehouse}
-                        onChange={handleToWarehouseChange}
-                        clearable
-                        radius={8}
-                        size='md'
-                    />
-                </GridCol>
-
-                {/* Date */}
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Text size="md" mb={8} fw={500}>Date</Text>
-                    <DatePickerInput
-                        placeholder="DD/MM/YY"
-                        value={selectDate}
-                        onChange={(value: string) => setSelectDate(value)}
-                        radius={8}
-                        size='md'
-                        clearable
-                    />
-                </GridCol>
-
-                {/* Apply Filters Button */}
-                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
-                    <Button
-                        variant='transparent'
-                        className='filledButton'
-                        radius={8}
-                        size={isSmallScreen ? 'sm' : 'md'}
-                        leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                        // onClick={handleAssignGroups}
-                        fullWidth
-                        // w={isSmallScreen ? '100%' : 'auto'}
-                        mt={isSmallScreen ? 16 : 0}
-                    >
-                        Export To CSV
-                    </Button>
-                </GridCol>
-            </Grid>
+            <StockMovementFilterBar
+                docStatus={docStatus}
+                setDocStatus={setDocStatus}
+                sapStatus={sapStatus}
+                setSapStatus={setSapStatus}
+                fromWarehouse={fromWarehouse}
+                handleFromWarehouseChange={handleFromWarehouseChange}
+                toWarehouse={toWarehouse}
+                handleToWarehouseChange={handleToWarehouseChange}
+                selectDate={selectDate}
+                setSelectDate={setSelectDate}
+                selectWarehouseData={selectWarehouseData}
+            />
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
