@@ -1,50 +1,39 @@
 // Note: ITR Table Component...!
 
-import React, { memo, useState, useEffect, useMemo } from 'react';
+import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { fetchAllItrData } from '@/redux/actions/itr-actions/itr-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { customStyles } from '@/styles/custom-theme';
 import {
-    Table,
-    Flex,
+    ActionIcon,
+    Box,
+    Group,
+    Image,
     Select,
     Stack,
-    Box,
-    Button,
-    Group,
     Text,
-    Title,
-    ActionIcon,
-    Image,
-    Grid,
-    GridCol
+    Title
 } from '@mantine/core';
-import PaginationComponent from '../pagination/pagination';
-import DataNotFound from '@/components/data-not-found/data-not-found';
-import { ITR_DataType } from '@/types/redux-types';
-import { customStyles } from '@/styles/custom-theme';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAll_ITR_Data, fetchAllItrData } from '@/redux/actions/itr-actions/itr-actions';
-import Loader from '../loader/loader';
-import { IconBuildingWarehouse, IconCalendarMonth, IconChevronDown, IconSearch, IconColumns, IconBorderCorners, IconFilter, IconSearchOff, IconFilterOff, IconArrowsUpDown, IconChevronLeft, IconChevronRight, IconArrowNarrowUp, IconArrowNarrowDown } from '@tabler/icons-react';
-import { useMediaQuery } from '@mantine/hooks';
-import { DatePickerInput } from '@mantine/dates';
-import NextImage from 'next/image'
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from '@tabler/icons-react';
 import {
-    useReactTable,
+    ColumnDef,
+    ColumnFiltersState,
+    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
+    getPaginationRowModel,
     getSortedRowModel,
-    ColumnDef,
-    SortingState,
-    ColumnFiltersState,
     PaginationState,
-    flexRender,
-    getPaginationRowModel
+    SortingState,
+    useReactTable
 } from '@tanstack/react-table';
-import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
-import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { localAssets } from '@/lib/file-paths/file-paths';
-import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
-import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import NextImage from 'next/image';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import StockMovementFilterBar, { DocStatusProp, SapStatusProp } from '../stock-movement/StockMovementFilterBar';
+import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 
 // Note: ITR Data type based on actual Redux state structure
 type ITRDataType = {
@@ -76,11 +65,6 @@ type ApiProp = {
 };
 
 const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
-    // Note: Media query to determine if the screen is small
-    const isSmallScreen = useMediaQuery("(max-width: 768px)")
-    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1300px)');
-
     // Search Table Filter With API Call
     const [toWarehouse, setToWarehouse] = useState('')
     const [fromWarehouse, setFromWarehouse] = useState('')
@@ -96,7 +80,6 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -330,7 +313,6 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         },
         onPaginationChange: setPagination,
         manualPagination: false,
-        // pageCount: Math.ceil((itrDataCount || 0) / pagination.pageSize), // Handle undefined case
         state: {
             sorting,
             globalFilter,

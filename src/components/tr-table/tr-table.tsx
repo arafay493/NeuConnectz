@@ -1,50 +1,39 @@
 // Note: TR Table Component...!
 
-import React, { memo, useState, useEffect, useMemo } from 'react';
-import {
-    Table,
-    Flex,
-    Select,
-    Box,
-    Text,
-    Stack,
-    Group,
-    Button,
-    Title,
-    ActionIcon,
-    Image,
-    Grid,
-    GridCol
-} from '@mantine/core';
-import PaginationComponent from '../pagination/pagination';
-import NextImage from 'next/image'
-import DataNotFound from '@/components/data-not-found/data-not-found';
-import { TR_DataType } from '@/types/redux-types';
-import { customStyles } from '@/styles/custom-theme';
+import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { fetchAllTrData } from '@/redux/actions/itr-actions/itr-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAll_ITR_Data, fetchAllTrData } from '@/redux/actions/itr-actions/itr-actions';
-import Loader from '../loader/loader';
-import { DatePickerInput } from '@mantine/dates';
-import { IconBuildingWarehouse, IconCalendarMonth, IconSearch, IconColumns, IconBorderCorners, IconFilter, IconFilterOff, IconSearchOff, IconArrowsUpDown, IconChevronLeft, IconChevronDown, IconChevronRight, IconArrowNarrowUp, IconArrowNarrowDown } from '@tabler/icons-react';
-import { useMediaQuery } from '@mantine/hooks';
+import { customStyles } from '@/styles/custom-theme';
 import {
-    useReactTable,
+    ActionIcon,
+    Box,
+    Group,
+    Image,
+    Select,
+    Stack,
+    Text,
+    Title
+} from '@mantine/core';
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from '@tabler/icons-react';
+import {
+    ColumnDef,
+    ColumnFiltersState,
+    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getSortedRowModel,
-    ColumnDef,
-    SortingState,
-    ColumnFiltersState,
-    PaginationState,
-    flexRender,
     getPaginationRowModel,
+    getSortedRowModel,
+    PaginationState,
+    SortingState,
+    useReactTable,
 } from '@tanstack/react-table';
-import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
-import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { localAssets } from '@/lib/file-paths/file-paths';
-import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import NextImage from 'next/image';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import StockMovementFilterBar, { DocStatusProp, SapStatusProp } from '../stock-movement/StockMovementFilterBar';
-import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 
 // Note: TR Data type based on actual Redux state structure
 type TRDataType = {
@@ -76,11 +65,6 @@ type ApiProp = {
 };
 
 const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
-    // Note: Media query to determine if the screen is small
-    const isSmallScreen = useMediaQuery("(max-width: 768px)")
-    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1300px)');
-
     // Search Table Filter With API Call
     const [toWarehouse, setToWarehouse] = useState('')
     const [fromWarehouse, setFromWarehouse] = useState('')
@@ -99,7 +83,6 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
-    const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -123,8 +106,6 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { trData, trDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-
-    const totalPages = Math.ceil(trDataCount / pagination.pageSize);
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -317,7 +298,6 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         },
         onPaginationChange: setPagination,
         manualPagination: false,
-        // pageCount: Math.ceil(trDataCount / pagination.pageSize),
         state: {
             sorting,
             globalFilter,
