@@ -12,7 +12,9 @@ import {
     Button,
     Title,
     ActionIcon,
-    Image
+    Image,
+    Grid,
+    GridCol
 } from '@mantine/core';
 import PaginationComponent from '../pagination/pagination';
 import NextImage from 'next/image'
@@ -40,6 +42,9 @@ import {
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import { localAssets } from '@/lib/file-paths/file-paths';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { DocStatusProp, SapStatusProp } from '../itr-table/itr-table';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
 
 // Note: TR Data type based on actual Redux state structure
 type TRDataType = {
@@ -74,10 +79,15 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
     const isMediumScreen = useMediaQuery('(max-width: 1024px)');
-    const isLargeScreen = useMediaQuery('(min-width: 1200px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1300px)');
 
-    // Note: state for date
+    // Search Table Filter With API Call
+    const [toWarehouse, setToWarehouse] = useState('')
+    const [fromWarehouse, setFromWarehouse] = useState('')
     const [selectDate, setSelectDate] = useState<string | null>(null);
+    const [sapStatus, setSapStatus] = useState<SapStatusProp>()
+    const [docStatus, setDocStatus] = useState<DocStatusProp>()
+
     // Note: States...!
     const [isLoading, setIsLoading] = useState(false);
 
@@ -112,6 +122,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { trData, trDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
+    const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
 
     const totalPages = Math.ceil(trDataCount / pagination.pageSize);
 
@@ -319,6 +330,62 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
+    // Warehouse validation functions
+    const handleFromWarehouseChange = (value: string | null) => {
+        if (value && value === toWarehouse) {
+            showNotificationToast(
+                "Invalid Selection",
+                "From Warehouse and To Warehouse cannot be the same!",
+                customStyles.colors.red
+            );
+            return;
+        }
+        setFromWarehouse(value ?? '');
+    };
+
+    const handleToWarehouseChange = (value: string | null) => {
+        if (value && value === fromWarehouse) {
+            showNotificationToast(
+                "Invalid Selection",
+                "To Warehouse and From Warehouse cannot be the same!",
+                customStyles.colors.red
+            );
+            return;
+        }
+        setToWarehouse(value ?? '');
+    };
+
+    // Function to build URL parameters from filters
+    const buildFilterParams = () => {
+        const params = new URLSearchParams();
+
+        if (sapStatus) params.append('sapStatus', sapStatus);
+        if (docStatus) params.append('docStatus', docStatus);
+        if (fromWarehouse) params.append('fromWarehouseCode', fromWarehouse);
+        if (toWarehouse) params.append('toWarehouseCode', toWarehouse);
+        if (selectDate) params.append('docDate', selectDate);
+
+        return params.toString();
+    };
+
+    // Function to fetch filtered data
+    const fetchFilteredData = () => {
+        if (!authenticatedUser?.token) return;
+
+        const filterParams = buildFilterParams();
+        const apiUrlWithParams = filterParams ? `${apiUrl}?${filterParams}` : apiUrl;
+
+        setIsLoading(true);
+        dispatch(fetchAllTrData({
+            authToken: authenticatedUser.token,
+            apiUrl: apiUrlWithParams,
+            lastCount: 1000,
+            skipRecords: 0
+        })).finally(() => {
+            setIsLoading(false);
+        });
+    };
+
     useEffect(() => {
         if (authenticatedUser?.token) {
             // setLoading(true);
@@ -331,57 +398,128 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         };
     }, [authenticatedUser]);
 
+    // Note: Fetch All Warehouse List
+    useEffect(() => {
+        dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
+    }, [dispatch, authenticatedUser?.token])
+
+    // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
+    useEffect(() => {
+        // Uncomment the lines below if you want auto-filtering on filter changes
+        const timeoutId = setTimeout(() => {
+            // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
+            fetchFilteredData();
+            // }
+        }, 500); // Debounce API calls by 500ms
+
+        return () => clearTimeout(timeoutId);
+    }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate]);
+
+    // Transform warehouse data for Select component
+    const selectWarehouseData = wareHousesList.data
+        .filter(warehouse => warehouse.isActive && !warehouse.isArchived)
+        .map(warehouse => ({
+            value: warehouse.whsCode,
+            label: warehouse.whsName
+        }));
     return (
         <Box>
-
-            {/* Search Bar */}
-            <Group
-                p={isSmallScreen ? 16 : 24}
-                justify={isSmallScreen ? 'flex-start' : customStyles.alignment.right}
-                align={isSmallScreen ? 'stretch' : 'flex-end'}
+            <Grid
+                mt={16}
+                mb={8}
                 bg={customStyles.colors.white}
-                style={{ borderRadius: '16px' }}
-                wrap="wrap"
-                gap={isSmallScreen ? 16 : 24}
+                p={24}
+                align='end'
+                style={{
+                    borderRadius: '16px',
+                    gap: isSmallScreen ? '16px' : '24px'
+                }}
             >
-                {/* <Group
-                    w={isSmallScreen ? '100%' : 'auto'}
-                    justify={isSmallScreen ? 'center' : 'flex-start'}
-                    wrap="wrap"
-                    gap={isSmallScreen ? 12 : 16}
-                >
-                    <Stack
-                        gap={0}
-                        w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
-                        maw={isSmallScreen ? '100%' : 350}
+                {/* Sap Status */}
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>Sap Status</Text>
+                    <Select
+                        placeholder="Select Sap Status"
+                        data={['Updated', 'Integrated', 'Pending']}
+                        value={sapStatus}
+                        onChange={(value) => setSapStatus(value as SapStatusProp | undefined)}
+                        clearable
+                        radius={8}
+                        size='md'
+                    />
+                </GridCol>
+
+                {/* Doc Status */}
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>Doc Status</Text>
+                    <Select
+                        placeholder="Select Doc Status"
+                        data={['Open', 'Closed', 'Pending']}
+                        value={docStatus}
+                        onChange={(value) => setDocStatus(value as DocStatusProp | undefined)}
+                        clearable
+                        radius={8}
+                        size='md'
+                    />
+                </GridCol>
+
+                {/* From Warehouse */}
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>From Warehouse</Text>
+                    <Select
+                        placeholder="Select warehouse"
+                        data={selectWarehouseData}
+                        value={fromWarehouse}
+                        onChange={handleFromWarehouseChange}
+                        clearable
+                        radius={8}
+                        size='md'
+                    />
+                </GridCol>
+
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>To Warehouse</Text>
+                    <Select
+                        placeholder="Select warehouse"
+                        data={selectWarehouseData}
+                        value={toWarehouse}
+                        onChange={handleToWarehouseChange}
+                        clearable
+                        radius={8}
+                        size='md'
+                    />
+                </GridCol>
+
+                {/* Date */}
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>Date</Text>
+                    <DatePickerInput
+                        placeholder="DD/MM/YY"
+                        value={selectDate}
+                        onChange={(value: string) => setSelectDate(value)}
+                        radius={8}
+                        size='md'
+                        clearable
+                    />
+                </GridCol>
+
+                {/* Apply Filters Button */}
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Button
+                        variant='transparent'
+                        className='filledButton'
+                        radius={8}
+                        size={isSmallScreen ? 'sm' : 'md'}
+                        leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
+                        // onClick={handleAssignGroups}
+                        fullWidth
+                        // w={isSmallScreen ? '100%' : 'auto'}
+                        mt={isSmallScreen ? 16 : 0}
                     >
-                        <Text size="md" mb={8} fw={500}>Date</Text>
-                        <DatePickerInput
-                            rightSection={<IconCalendarMonth size={24} />}
-                            rightSectionPointerEvents='none'
-                            placeholder="DD/MM/YY"
-                            value={selectDate}
-                            onChange={(value: string) => setSelectDate(value)}
-                            radius={8}
-                            size='md'
-                            clearable
-                        />
-                    </Stack>
-                </Group> */}
-                <Button
-                    variant='transparent'
-                    className='filledButton'
-                    radius={8}
-                    size={isSmallScreen ? 'sm' : 'md'}
-                    leftSection={<IconBuildingWarehouse
-                        size={isSmallScreen ? 20 : 24} />}
-                    // onClick={handleAssignGroups}
-                    w={isSmallScreen ? '100%' : 'auto'}
-                    mt={isSmallScreen ? 16 : 0}
-                >
-                    Export To CSV
-                </Button>
-            </Group>
+                        Export To CSV
+                    </Button>
+                </GridCol>
+            </Grid>
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
@@ -578,7 +716,6 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                             <Select
                                 w={80}
                                 radius={8}
-                                rightSectionPointerEvents='none'
                                 rightSection={<IconChevronDown size={18} />}
                                 data={numbersArray.map(num => ({ value: String(num), label: String(num) }))}
                                 styles={{
