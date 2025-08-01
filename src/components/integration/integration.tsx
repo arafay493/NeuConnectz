@@ -161,10 +161,42 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
         pageSize: 10,
     });
 
+    // Custom filter functions for specific column types
+    const serialNumberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        // Calculate serial number based on the current row's position in the filtered data
+        const serialNumber = row.index + 1;
+        return String(serialNumber).includes(value);
+    };
+
+    const dateFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (!cellValue) return false;
+        const date = new Date(cellValue as string);
+        const dateValue = `${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`;
+        return dateValue.toLowerCase().includes(value.toLowerCase());
+    };
+
+    const numberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
+    const stringFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
     // Note: Columns Data for GRN Table
     const columns = useMemo<ColumnDef<GRN_Props>[]>(
         () => [
             {
+                id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
                 cell: ({ row, table }) => {
                     // Get the original index from filtered data, not paginated data
@@ -176,15 +208,23 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         </Text>
                     );
                 },
+                filterFn: serialNumberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
+                id: 'type', // Static value column
                 header: 'Type',
                 cell: () => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         GRN
                     </Text>
                 ),
+                filterFn: (row: any, columnId: string, value: string) => {
+                    if (!value) return true;
+                    return 'GRN'.toLowerCase().includes(value.toLowerCase());
+                },
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Type', ['GRN'], 80, 120),
             },
             {
@@ -195,6 +235,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Number', list_GRNS_Data.map(item => String(item.docNum)), 120, 200),
             },
             {
@@ -205,6 +247,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Item Code', list_GRNS_Data.map(item => item.itemCode), 150, 250),
             },
             {
@@ -215,6 +259,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Warehouse', list_GRNS_Data.map(item => item.whsCode), 120, 200),
             },
             {
@@ -225,6 +271,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Vendor', list_GRNS_Data.map(item => item.vendorCode), 120, 200),
             },
             {
@@ -235,6 +283,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('User Name', list_GRNS_Data.map(item => item.userName), 150, 250),
             },
             {
@@ -245,6 +295,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() ? String(getValue()) : '-'}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Doc Entry', list_GRNS_Data.map(item => item.erpDocEntry ? String(item.erpDocEntry) : '-'), 140, 220),
             },
             {
@@ -255,6 +307,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() ? String(getValue()) : '-'}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Line ID', list_GRNS_Data.map(item => item.erpDocLine ? String(item.erpDocLine) : '-'), 130, 200),
             },
             {
@@ -265,6 +319,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('SAP Status', list_GRNS_Data.map(item => item.sapStatus), 120, 180),
             },
             {
@@ -275,6 +331,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Status', list_GRNS_Data.map(item => item.docStatus), 120, 180),
             },
             {
@@ -288,6 +346,8 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         </Text>
                     );
                 },
+                filterFn: dateFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
         ],
@@ -345,6 +405,16 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
         globalFilterFn: (row, columnId, value) => {
+            // Handle S.No column separately for global search
+            if (row.index + 1 && String(row.index + 1).includes(value)) {
+                return true;
+            }
+
+            // Handle Type column separately (always 'GRN')
+            if ('GRN'.toLowerCase().includes(value.toLowerCase())) {
+                return true;
+            }
+
             // Get all column IDs to search across
             const columnIds = ['docNum', 'itemCode', 'whsCode', 'vendorCode', 'userName', 'erpDocEntry', 'erpDocLine', 'sapStatus', 'docStatus', 'updatedDate'];
 
@@ -673,10 +743,42 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
         pageSize: 10, // Adjusted to a more reasonable default
     });
 
+    // Custom filter functions for specific column types
+    const serialNumberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        // Calculate serial number based on the current row's position in the filtered data
+        const serialNumber = row.index + 1;
+        return String(serialNumber).includes(value);
+    };
+
+    const dateFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (!cellValue) return false;
+        const date = new Date(cellValue as string);
+        const dateValue = `${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`;
+        return dateValue.toLowerCase().includes(value.toLowerCase());
+    };
+
+    const numberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
+    const stringFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
     // Note: Columns Data for Stock Movement Table
     const columns = useMemo<ColumnDef<IT_TR_ITR_Props>[]>(
         () => [
             {
+                id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
                 cell: ({ row, table }) => {
                     // Get the original index from filtered data, not paginated data
@@ -688,6 +790,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         </Text>
                     );
                 },
+                filterFn: serialNumberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
@@ -698,6 +802,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Type', listAll_ITR_IT_TRS.map(item => item.type), 80, 120),
             },
             {
@@ -708,6 +814,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() ? String(getValue()) : '-'}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Number', listAll_ITR_IT_TRS.map(item => item.docNumber ? String(item.docNumber) : '-'), 120, 200),
             },
             {
@@ -718,6 +826,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Item Code', listAll_ITR_IT_TRS.map(item => item.itemCode), 150, 250),
             },
             {
@@ -728,6 +838,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('From Warehouse', listAll_ITR_IT_TRS.map(item => item.fromWarehouse), 150, 250),
             },
             {
@@ -738,6 +850,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('To Warehouse', listAll_ITR_IT_TRS.map(item => item.toWarehouse), 150, 250),
             },
             {
@@ -748,6 +862,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('User Name', listAll_ITR_IT_TRS.map(item => item.userName), 150, 250),
             },
             {
@@ -758,6 +874,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() ? String(getValue()) : '-'}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Doc Entry', listAll_ITR_IT_TRS.map(item => item.erpDocEntry ? String(item.erpDocEntry) : '-'), 140, 220),
             },
             {
@@ -768,6 +886,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() ? String(getValue()) : '-'}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Line ID', listAll_ITR_IT_TRS.map(item => item.erpLineID ? String(item.erpLineID) : '-'), 130, 200),
             },
             {
@@ -778,6 +898,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('SAP Status', listAll_ITR_IT_TRS.map(item => item.status), 120, 180),
             },
             {
@@ -788,6 +910,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Status', listAll_ITR_IT_TRS.map(item => item.docStatus), 120, 180),
             },
             {
@@ -801,6 +925,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         </Text>
                     );
                 },
+                filterFn: dateFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
         ],
@@ -808,7 +934,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     );
 
     // Custom global filter function to handle columns properly
-    const globalFilterFn = (row: any, columnId: string, value: string): boolean => {
+    const globalFilterFnSM = (row: any, columnId: string, value: string): boolean => {
         if (!value) return true;
 
         // Get the search value in lowercase for case-insensitive search
@@ -816,12 +942,6 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
 
         // Get the cell value
         const cellValue = row.getValue(columnId);
-
-        // Handle S.No column (computed value)
-        if (columnId === 'S.No') {
-            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
-            return String(serialNumber).includes(value);
-        }
 
         // Handle updatedDate column (formatted date)
         if (columnId === 'updatedDate') {
@@ -858,11 +978,16 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
         globalFilterFn: (row, columnId, value) => {
+            // Handle S.No column separately for global search
+            if (row.index + 1 && String(row.index + 1).includes(value)) {
+                return true;
+            }
+
             // Get all column IDs to search across
-            const columnIds = ['S.No', 'type', 'docNumber', 'itemCode', 'fromWarehouse', 'toWarehouse', 'userName', 'erpDocEntry', 'erpLineID', 'status', 'docStatus', 'updatedDate'];
+            const columnIds = ['type', 'docNumber', 'itemCode', 'fromWarehouse', 'toWarehouse', 'userName', 'erpDocEntry', 'erpLineID', 'status', 'docStatus', 'updatedDate'];
 
             // Search across all columns
-            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+            return columnIds.some((colId: string) => globalFilterFnSM(row, colId, value));
         },
         onPaginationChange: setPagination,
         manualPagination: false,
