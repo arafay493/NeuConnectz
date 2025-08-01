@@ -1,9 +1,13 @@
+"use client";
+
 import { customStyles } from "@/styles/custom-theme"
 import { Button, Grid, GridCol, Select, Text } from "@mantine/core"
 import { DatePickerInput } from "@mantine/dates"
 import { IconBuildingWarehouse } from "@tabler/icons-react"
 import { FC, useState } from "react"
 import { useMediaQuery } from "@mantine/hooks"
+import { useAppSelector, useAppDispatch } from "@/redux/store";
+import { exportDataToCsvFile } from "@/redux/actions/sap-actions/sap-actions";
 
 export type SapStatusProp = 'Pending' | 'Updated' | 'Integrated'
 export type DocStatusProp = 'Pending' | 'Open' | 'Closed'
@@ -20,6 +24,8 @@ interface StockMovementFilterBarProps {
     selectWarehouseData: { value: string; label: string }[];
     handleFromWarehouseChange: (value: string | null) => void;
     handleToWarehouseChange: (value: string | null) => void;
+    sapType: 'ITR' | 'IT' | 'TR',
+    sapTypeApiUrl: string
 }
 
 const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
@@ -33,12 +39,29 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
     setDocStatus,
     selectWarehouseData,
     handleFromWarehouseChange,
-    handleToWarehouseChange
+    handleToWarehouseChange,
+    sapType,
+    sapTypeApiUrl
 }) => {
+    console.log('Sap type: ', sapType);
+
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
     const isMediumScreen = useMediaQuery('(max-width: 1024px)');
     const isLargeScreen = useMediaQuery('(min-width: 1300px)');
+
+    // Note: handeling redux here...!
+    const dispatch = useAppDispatch();
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+
+    // Note: Function to export to CSV data...!
+    const handleExportToCSV = () => {
+        dispatch(exportDataToCsvFile({
+            token: authenticatedUser?.token || "",
+            apiUrl: sapTypeApiUrl || "",
+            type: sapType || ""
+        }));
+    };
 
     return (
         <Grid
@@ -128,9 +151,8 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
                     radius={8}
                     size={isSmallScreen ? 'sm' : 'md'}
                     leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                    // onClick={handleAssignGroups}
+                    onClick={handleExportToCSV}
                     fullWidth
-                    // w={isSmallScreen ? '100%' : 'auto'}
                     mt={isSmallScreen ? 16 : 0}
                 >
                     Export To CSV

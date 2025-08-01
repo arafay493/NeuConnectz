@@ -468,6 +468,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 selectDate={selectDate}
                 setSelectDate={setSelectDate}
                 selectWarehouseData={selectWarehouseData}
+                sapType='TR'
+                sapTypeApiUrl={process.env.NEXT_PUBLIC_EXPORT_TR_TO_EXCEL || ""}
             />
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
