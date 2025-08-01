@@ -122,10 +122,33 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
     };
 
+    // Custom filter functions for specific column types
+    const serialNumberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        // Calculate serial number based on the current row's position in the filtered data
+        const serialNumber = row.index + 1;
+        return String(serialNumber).includes(value);
+    };
+
+    const numberFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
+    const stringFilterFn = (row: any, columnId: string, value: string): boolean => {
+        if (!value) return true;
+        const cellValue = row.getValue(columnId);
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(value.toLowerCase());
+    };
+
     // Note: Column definitions for the table
     const columns = useMemo<ColumnDef<TRDataType>[]>(
         () => [
             {
+                id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
                 cell: ({ row, table }) => {
                     // Get the original index from filtered data, not paginated data
@@ -137,6 +160,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         </Text>
                     );
                 },
+                filterFn: serialNumberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120),
             },
             {
@@ -147,6 +172,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {String(getValue())}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Document Number', trData.map(item => String(item.docNum)), 120, 200),
             },
             {
@@ -157,6 +184,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('From Warehouse Code', trData.map(item => item.fromWareHouseCode), 200, 220),
             },
             {
@@ -167,6 +196,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('To Warehouse Code', trData.map(item => item.toWareHouseCode), 200, 220),
             },
             {
@@ -177,6 +208,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Document Status', trData.map(item => item.docStatus), 180, 220),
             },
             {
@@ -187,6 +220,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Item Code', trData.map(item => item.itemCode), 150, 200),
             },
             {
@@ -197,6 +232,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Item Description', trData.map(item => item.itemName), 200, 300),
             },
             {
@@ -207,6 +244,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {String(getValue())}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('Quantity', trData.map(item => String(item.quantity)), 150, 180),
             },
             {
@@ -217,6 +256,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() != null ? String(getValue()) : "-"}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Document Entry', trData.map(item => String(item.erpDocEntry || '-')), 180, 200),
             },
             {
@@ -227,6 +268,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() != null ? String(getValue()) : "-"}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Object Type', trData.map(item => String(item.erpObjectType || '-')), 220, 250),
             },
             {
@@ -237,6 +280,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() != null ? String(getValue()) : "-"}
                     </Text>
                 ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('ERP Doc Line', trData.map(item => String(item.erpDocLine || '-')), 180, 200),
             },
             {
@@ -247,10 +292,12 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         {getValue() as string}
                     </Text>
                 ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
                 size: calculateColumnWidth('SAP Status', trData.map(item => item.sapStatus), 180, 200),
             }
         ],
-        [trData, skipRecord]
+        [trData]
     );
 
     // Custom global filter function
@@ -293,7 +340,12 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
         globalFilterFn: (row, columnId, value) => {
-            const columnIds = ['S.No', 'docNum', 'fromWareHouseCode', 'toWareHouseCode', 'docStatus', 'itemCode', 'itemName', 'quantity', 'erpDocEntry', 'erpObjectType', 'erpDocLine', 'sapStatus'];
+            // Handle S.No column separately for global search
+            if (row.index + 1 && String(row.index + 1).includes(value)) {
+                return true;
+            }
+
+            const columnIds = ['docNum', 'fromWareHouseCode', 'toWareHouseCode', 'docStatus', 'itemCode', 'itemName', 'quantity', 'erpDocEntry', 'erpObjectType', 'erpDocLine', 'sapStatus'];
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         onPaginationChange: setPagination,
