@@ -1,20 +1,21 @@
 // Note: All SAP action functions are defined here...!
 
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import API_METHODS from "@/constants/api-methods";
 import apiRequestRoutes from "@/constants/api-request";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import API_METHODS from "@/constants/api-methods";
-import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
-import { ResHandler } from "@/types/api-types";
 import {
     CHECK_SAP_CONFIG_EXIST,
-    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
+    FETCH_ALL_INTEGRATED_GRNS,
     FETCH_ALL_ITR_IT_TRS,
-    FETCH_ALL_GRNS,
+    FETCH_ALL_PENDING_GRNS,
     FETCH_ALL_VENDOR_CODES,
-    GET_SAP_STAGING_DATA_COUNTS
+    GET_SAP_STAGING_DATA_COUNTS,
+    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA
 } from "@/redux/reducers/sap-reducer/sap-reducer";
+import { ResHandler } from "@/types/api-types";
+import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 // Note: Action function to add SAP configuration...!
 const addSAPConfiguration = createAsyncThunk(
@@ -28,9 +29,6 @@ const addSAPConfiguration = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Token: ", token);
-        // console.log("Add SAP configuration data in SAP action: ", sapConfigData);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -41,16 +39,12 @@ const addSAPConfiguration = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in SAP action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
                 resHandler(response);
             };
-        }
-
-        catch (error: any) {
-            // console.log('Error occured in Add SAP configuration api integration: ', error);
+        } catch (error: any) {
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -76,10 +70,6 @@ const postRequestToSAP = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Token: ", token);
-        // console.log("Type: ", type);
-        // console.log("API URL: ", apiUrl);
-
         try {
             const response = await axios({
                 method: API_METHODS.POST,
@@ -90,16 +80,12 @@ const postRequestToSAP = createAsyncThunk(
                     "Auth-Token": token,
                 }
             });
-            // console.log("Response in SAP action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
                 resHandler(response);
             };
-        }
-
-        catch (error: any) {
-            // console.log('Error occured in post request to SAP api integration: ', error);
+        } catch (error: any) {
             resHandler(error?.response);
 
             const { status, data } = error?.response;
@@ -127,15 +113,9 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", token);
-        // console.log("Status: ", dataStatus);
-        // console.log("Type: ", type);
-        // console.log("Last count: ", lastCount);
-        // console.log("Skip records: ", skipRecords);
 
         const apiUrl = !type ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
             `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
-        // console.log("Api url: ", apiUrl);
 
         try {
             const response = await axios({
@@ -150,9 +130,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response)
             const { status } = response;
-            // console.log("Api res: ", response);
 
             if (status == 200) {
                 dispatch(FETCH_ALL_ITR_IT_TRS({
@@ -161,9 +139,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
                 }));
                 handleLoading(); // Disable loading state...!
             };
-        }
-
-        catch (error: any) {
+        } catch (error: any) {
             console.log('Error occured in fetch all ITR, TR, IT data api integration: ', error);
             const { status, data } = error?.response;
 
@@ -177,7 +153,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
 );
 
 // Note: Action function fetch all GRNS...!
-const fetchAll_GRNS = createAsyncThunk(
+const fetchAll_PENDING_GRNS = createAsyncThunk(
     "sap/fetchAll_GRNS",
     async (
         { token, handleLoading, apiUrl, lastCount, skipRecords }:
@@ -190,11 +166,6 @@ const fetchAll_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        // console.log("Auth token: ", token);
-        // console.log("Api Url: ", apiUrl);
-        // console.log("Last Count: ", lastCount);
-        // console.log("Skip Records: ", skipRecords);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -208,20 +179,64 @@ const fetchAll_GRNS = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_GRNS({
+                dispatch(FETCH_ALL_PENDING_GRNS({
                     grnsData: data?.data?.items,
                     totalGRNSCount: data?.data?.totalRecords
                 }));
                 handleLoading(); // Disable loading state...!
             };
-        }
+        } catch (error: any) {
+            const { status, data } = error?.response;
 
-        catch (error: any) {
-            // console.log('Error occured in fetch all GRNS data api integration: ', error);
+            // 401:
+            if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
+// Note: Action function fetch all GRNS...!
+const fetchAll_INTEGRATED_GRNS = createAsyncThunk(
+    "sap/fetchAll_GRNS",
+    async (
+        { token, handleLoading, apiUrl, lastCount, skipRecords }:
+            {
+                token: string,
+                handleLoading: () => void,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
+                headers: {
+                    "Api-Url": apiUrl,
+                    "Auth-Token": token
+                }
+            });
+            const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_INTEGRATED_GRNS({
+                    grnsData: data?.data?.items,
+                    totalGRNSCount: data?.data?.totalRecords
+                }));
+                handleLoading(); // Disable loading state...!
+            };
+        } catch (error: any) {
             const { status, data } = error?.response;
 
             // 401:
@@ -237,7 +252,6 @@ const fetchAll_GRNS = createAsyncThunk(
 const checkSAPConfigExist = createAsyncThunk(
     "sap/checkSAPConfigExist",
     async (token: string, { dispatch }) => {
-        // console.log("Auth token: ", token);
 
         try {
             const response = await axios({
@@ -248,13 +262,10 @@ const checkSAPConfigExist = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) dispatch(CHECK_SAP_CONFIG_EXIST(data?.data));
-        }
-
-        catch (error: any) {
+        } catch (error: any) {
             console.log('Error occured in check SAP config exist api integration: ', error);
             // const { status, data } = error?.response;
 
@@ -278,9 +289,6 @@ const getSAPData = createAsyncThunk(
                 resHandler: ResHandler
             },
         { dispatch }) => {
-        // console.log("Auth token: ", token);
-        // console.log('Api Url: ', apiUrl);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -290,14 +298,10 @@ const getSAPData = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) resHandler(data);
-        }
-
-        catch (error: any) {
-            // console.log('Error occured in getting data from SAP api integration: ', error);
+        } catch (error: any) {
             const { status, data } = error?.response;
 
             // 401:
@@ -320,9 +324,6 @@ const exportDataToCsvFile = createAsyncThunk(
                 type: string
             },
         { dispatch }) => {
-        // console.log("Auth token: ", token);
-        // console.log('Api Url: ', apiUrl);
-
         try {
             const response = await fetch(apiRequestRoutes.getRequest, {
                 method: 'GET',
@@ -331,7 +332,6 @@ const exportDataToCsvFile = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Csv Response in sap action: ", response);
 
             const csvText = await response.text();
 
@@ -367,9 +367,7 @@ const exportDataToCsvFile = createAsyncThunk(
 
             console.log(`CSV file downloaded successfully: ${filename}`);
             return { success: true, filename, recordCount: formattedCsvText.split('\n').length - 1 };
-        }
-
-        catch (error) {
+        } catch (error) {
             console.log("Something went wrong while exporting data to csv: ", error);
         };
     }
@@ -379,8 +377,6 @@ const exportDataToCsvFile = createAsyncThunk(
 const fetchAllVendorCodes = createAsyncThunk(
     "sap/fetchAllVendorCodes",
     async (token: string, { dispatch }) => {
-        // console.log("Auth token: ", token);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -390,15 +386,12 @@ const fetchAllVendorCodes = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
                 dispatch(FETCH_ALL_VENDOR_CODES(data?.data?.data));
             };
-        }
-
-        catch (error: any) {
+        } catch (error: any) {
             console.log('Error occured in fetch all vendor codes data api integration: ', error);
             const { status, data } = error?.response;
 
@@ -415,8 +408,6 @@ const fetchAllVendorCodes = createAsyncThunk(
 const handleGetSapStagingDataCounts = createAsyncThunk(
     "sap/handleGetSapStagingDataCounts",
     async (token: string, { dispatch }) => {
-        // console.log("Auth token: ", token);
-
         try {
             const response = await axios({
                 method: API_METHODS.GET,
@@ -426,15 +417,12 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
                 dispatch(GET_SAP_STAGING_DATA_COUNTS(data?.data));
             };
-        }
-
-        catch (error: any) {
+        } catch (error: any) {
             console.log('Error occured in getting sap staging data counts api integration: ', error);
             const { status, data } = error?.response;
 
@@ -448,13 +436,6 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
 );
 
 export {
-    addSAPConfiguration,
-    postRequestToSAP,
-    fetchAllITR_IT_TRS,
-    fetchAll_GRNS,
-    checkSAPConfigExist,
-    getSAPData,
-    exportDataToCsvFile,
-    fetchAllVendorCodes,
-    handleGetSapStagingDataCounts
+    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_INTEGRATED_GRNS,
+    fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP
 };

@@ -106,7 +106,8 @@ export interface ListAllGroupCodesProps {
 
 export interface SAPStateType {
     listAll_ITR_IT_TRS: Array<IT_TR_ITR_Props>;
-    list_GRNS_Data: Array<GRN_Props>;
+    list_Pending_GRNS_Data: Array<GRN_Props>;
+    list_Integrated_GRNS_Data: Array<GRN_Props>;
     sapErrorState: string;
     isSAPConfigExist: boolean,
     vendorCodeList: {
