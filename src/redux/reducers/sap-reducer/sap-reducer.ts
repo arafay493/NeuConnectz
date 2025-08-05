@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: SAPStateType = {
     listAll_ITR_IT_TRS: [],
     list_Pending_GRNS_Data: [],
+    list_GRNS_Data: [],
     list_Integrated_GRNS_Data: [],
     sapErrorState: "",
     isSAPConfigExist: false,
@@ -37,6 +38,15 @@ const SAPReducer = createSlice({
             state.list_Integrated_GRNS_Data = [];
             state.listAll_ITR_IT_TRS = action?.payload?.listData;
             state.listAll_ITR_IT_TRS_Count = action?.payload?.listCount;
+        },
+
+        FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
+            // console.log("GRNS list data in sap reducer: ", action?.payload);
+            state.sapErrorState = "";
+            state.listAll_ITR_IT_TRS = [];
+            state.list_GRNS_Data = [];
+            state.list_GRNS_Data = action?.payload?.grnsData;
+            state.totalGRNS_DataCounts = action?.payload?.totalGRNSCount
         },
 
         FETCH_ALL_PENDING_GRNS: (state, action: PayloadAction<any>) => {
@@ -77,6 +87,7 @@ export const
         CHECK_SAP_CONFIG_EXIST,
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
+        FETCH_ALL_GRNS,
         FETCH_ALL_INTEGRATED_GRNS,
         FETCH_ALL_PENDING_GRNS,
         CLEAR_ALL_SAP_STATES,

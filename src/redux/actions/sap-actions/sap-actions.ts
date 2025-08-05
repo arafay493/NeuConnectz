@@ -5,6 +5,7 @@ import apiRequestRoutes from "@/constants/api-request";
 import { handleRefreshToken } from "@/constants/refresh-token";
 import {
     CHECK_SAP_CONFIG_EXIST,
+    FETCH_ALL_GRNS,
     FETCH_ALL_INTEGRATED_GRNS,
     FETCH_ALL_ITR_IT_TRS,
     FETCH_ALL_PENDING_GRNS,
@@ -141,6 +142,54 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
             };
         } catch (error: any) {
             console.log('Error occured in fetch all ITR, TR, IT data api integration: ', error);
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) handleRefreshToken(data?.error);
+
+            // 403
+            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        };
+    }
+);
+
+// Note: Action function fetch all GRNS...!
+const fetchAll_GRNS = createAsyncThunk(
+    "sap/fetchAll_GRNS",
+    async (
+        { token, handleLoading, apiUrl, lastCount, skipRecords }:
+            {
+                token: string,
+                handleLoading: () => void,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        try {
+            const response = await axios({
+                method: API_METHODS.GET,
+                url: apiRequestRoutes.getRequest,
+                params: {
+                    lastCount,
+                    skipRecords
+                },
+                headers: {
+                    "Api-Url": apiUrl,
+                    "Auth-Token": token
+                }
+            });
+            const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_GRNS({
+                    grnsData: data?.data?.items,
+                    totalGRNSCount: data?.data?.totalRecords
+                }));
+                handleLoading(); // Disable loading state...!
+            };
+        } catch (error: any) {
             const { status, data } = error?.response;
 
             // 401:
@@ -436,6 +485,6 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
 );
 
 export {
-    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_INTEGRATED_GRNS,
+    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_INTEGRATED_GRNS, fetchAll_GRNS,
     fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP
 };
