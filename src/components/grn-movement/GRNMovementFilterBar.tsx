@@ -7,6 +7,7 @@ import { useMediaQuery } from "@mantine/hooks"
 import { IconBuildingWarehouse } from "@tabler/icons-react"
 import { FC } from "react"
 import { DocStatusProp } from "../stock-movement/StockMovementFilterBar"
+import { exportToCSV } from "@/constants/export-to-csv"
 
 
 interface GRNMovementFilterBarProps {
@@ -20,8 +21,7 @@ interface GRNMovementFilterBarProps {
     selectWarehouseData: { value: string; label: string }[];
     vendorCodeList: { value: string; label: string }[];
     setWarehouseCode: (value: string | null) => void;
-    grnApiUrl: string,
-    isFilterParams?: string
+    exportToCSV: () => void;
 }
 
 const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
@@ -35,27 +35,12 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
     selectWarehouseData,
     vendorCodeList,
     setWarehouseCode,
-    grnApiUrl,
-    isFilterParams
+    exportToCSV
 }) => {
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
     const isMediumScreen = useMediaQuery('(max-width: 1024px)');
     const isLargeScreen = useMediaQuery('(min-width: 1300px)');
-
-    // Note: handling redux here...!
-    const dispatch = useAppDispatch();
-    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-
-    // Note: Function to export to CSV data...!
-    const handleExportToCSV = () => {
-        let apiUrl = !isFilterParams ? grnApiUrl : `${grnApiUrl}?${isFilterParams}`
-        dispatch(exportDataToCsvFile({
-            token: authenticatedUser?.token || "",
-            apiUrl: apiUrl || "",
-            type: 'GRN'
-        }));
-    };
 
     return (
         <Grid
@@ -133,7 +118,7 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                     radius={8}
                     size={isSmallScreen ? 'sm' : 'md'}
                     leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                    onClick={handleExportToCSV}
+                    onClick={exportToCSV}
                     fullWidth
                     mt={isSmallScreen ? 16 : 0}
                 >
