@@ -1,3 +1,5 @@
+import { exportDataToCsvFile } from "@/redux/actions/sap-actions/sap-actions"
+import { useAppDispatch, useAppSelector } from "@/redux/store"
 import { customStyles } from "@/styles/custom-theme"
 import { Button, Grid, GridCol, Select, Text } from "@mantine/core"
 import { DatePickerInput } from "@mantine/dates"
@@ -5,6 +7,7 @@ import { useMediaQuery } from "@mantine/hooks"
 import { IconBuildingWarehouse } from "@tabler/icons-react"
 import { FC } from "react"
 import { DocStatusProp } from "../stock-movement/StockMovementFilterBar"
+import { exportToCSV } from "@/constants/export-to-csv"
 
 
 interface GRNMovementFilterBarProps {
@@ -18,6 +21,7 @@ interface GRNMovementFilterBarProps {
     selectWarehouseData: { value: string; label: string }[];
     vendorCodeList: { value: string; label: string }[];
     setWarehouseCode: (value: string | null) => void;
+    exportToCSV: () => void;
 }
 
 const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
@@ -30,7 +34,8 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
     setDocStatus,
     selectWarehouseData,
     vendorCodeList,
-    setWarehouseCode
+    setWarehouseCode,
+    exportToCSV
 }) => {
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
@@ -98,7 +103,7 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                 <DatePickerInput
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string) => setSelectDate(value)}
+                    onChange={(value: string | null) => setSelectDate(value)}
                     radius={8}
                     size='md'
                     clearable
@@ -113,9 +118,8 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                     radius={8}
                     size={isSmallScreen ? 'sm' : 'md'}
                     leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                    // onClick={handleAssignGroups}
+                    onClick={exportToCSV}
                     fullWidth
-                    // w={isSmallScreen ? '100%' : 'auto'}
                     mt={isSmallScreen ? 16 : 0}
                 >
                     Export To CSV

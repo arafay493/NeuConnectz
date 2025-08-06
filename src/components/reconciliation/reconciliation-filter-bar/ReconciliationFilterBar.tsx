@@ -90,7 +90,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     rightSection={<IconCalendarMonth size={24} />}
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string) => setSelectDate(value)}
+                    onChange={(value: string | null) => setSelectDate(value)}
                     radius={8}
                     size='md'
                     clearable

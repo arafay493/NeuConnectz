@@ -2,7 +2,7 @@
 
 import calculateColumnWidth from "@/constants/calculateColumnWidth";
 import { localAssets } from "@/lib/file-paths/file-paths";
-import { fetchAll_PENDING_GRNS, fetchAllVendorCodes } from "@/redux/actions/sap-actions/sap-actions";
+import { exportDataToCsvFile, fetchAll_PENDING_GRNS, fetchAllVendorCodes } from "@/redux/actions/sap-actions/sap-actions";
 import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
@@ -411,7 +411,25 @@ const UnpostedGRNTable = () => {
             label: vendor.cardName
         }));
 
-    // Note: Handle SAP Error State
+    // Note: Function to export to CSV data...!
+    const handleExportToCSV = () => {
+        const params = new URLSearchParams();
+
+        params.append('sapStatus', 'Pending'); // Always include SAP status
+        if (vendorCode) params.append('vendorCode', vendorCode);
+        if (docStatus) params.append('docStatus', docStatus);
+        if (warehouseCode) params.append('whsCode', warehouseCode);
+        if (selectDate) params.append('docDate', selectDate);
+
+        const isFilterParams = params.toString();
+
+        let apiUrl = !isFilterParams ? process.env.NEXT_PUBLIC_EXPORT_GRN_TO_EXCEL : `${process.env.NEXT_PUBLIC_EXPORT_GRN_TO_EXCEL}?${isFilterParams}`
+        dispatch(exportDataToCsvFile({
+            token: authenticatedUser?.token || "",
+            apiUrl: apiUrl || "",
+            type: 'GRN'
+        }));
+    };
     return (
         <Box>
             <GRNMovementFilterBar
@@ -425,10 +443,10 @@ const UnpostedGRNTable = () => {
                 setVendorCode={setVendorCode}
                 docStatus={docStatus}
                 setDocStatus={setDocStatus}
+                exportToCSV={handleExportToCSV}
             />
             {/* Main Content */}
-            <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }
-            }>
+            <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
