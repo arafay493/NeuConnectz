@@ -25,7 +25,8 @@ interface StockMovementFilterBarProps {
     handleFromWarehouseChange: (value: string | null) => void;
     handleToWarehouseChange: (value: string | null) => void;
     sapType: 'ITR' | 'IT' | 'TR',
-    sapTypeApiUrl: string
+    sapTypeApiUrl: string,
+    isFilterParams?: string
 }
 
 const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
@@ -41,9 +42,11 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
     handleFromWarehouseChange,
     handleToWarehouseChange,
     sapType,
-    sapTypeApiUrl
+    sapTypeApiUrl,
+    isFilterParams
 }) => {
     console.log('Sap type: ', sapType);
+    console.log(`Is filter params: ${isFilterParams}`);
 
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
@@ -56,9 +59,10 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
 
     // Note: Function to export to CSV data...!
     const handleExportToCSV = () => {
+        let apiUrl = !isFilterParams ? sapTypeApiUrl : `${sapTypeApiUrl}?${isFilterParams}`
         dispatch(exportDataToCsvFile({
             token: authenticatedUser?.token || "",
-            apiUrl: sapTypeApiUrl || "",
+            apiUrl: apiUrl || "",
             type: sapType || ""
         }));
     };
