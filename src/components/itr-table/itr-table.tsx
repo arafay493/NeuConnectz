@@ -71,6 +71,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     const [selectDate, setSelectDate] = useState<string | null>(null);
     const [sapStatus, setSapStatus] = useState<SapStatusProp>()
     const [docStatus, setDocStatus] = useState<DocStatusProp>()
+    const [filteredParams, setFilteredParams] = useState('');
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -422,6 +423,8 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         if (toWarehouse) params.append('toWarehouseCode', toWarehouse);
         if (selectDate) params.append('docDate', selectDate);
 
+        // console.log(`Filter params: ${params.toString()}`);
+        setFilteredParams(params.toString());
         return params.toString();
     };
 
@@ -497,6 +500,9 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 selectDate={selectDate}
                 setSelectDate={setSelectDate}
                 selectWarehouseData={selectWarehouseData}
+                sapType='ITR'
+                sapTypeApiUrl={process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL || ""}
+                isFilterParams={filteredParams}
             />
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
