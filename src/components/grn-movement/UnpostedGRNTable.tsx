@@ -433,10 +433,10 @@ const UnpostedGRNTable = () => {
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Posted GRN
+                            Unposted GRN
                         </Title>
                         <Text c={customStyles.colors._909090}>
-                            Dummy Text
+                            Unposted GRNs pending final decision. You can review or post from here.
                         </Text>
                     </Stack>
                     <Group gap="xs">
