@@ -436,7 +436,7 @@ const PostedGRNTable = () => {
                             Posted GRN
                         </Title>
                         <Text c={customStyles.colors._909090}>
-                            Dummy Text
+                            All GRNs that have been successfully recorded and synced with the system. No further edits allowed.
                         </Text>
                     </Stack>
                     <Group gap="xs">

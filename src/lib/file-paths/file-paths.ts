@@ -10,6 +10,8 @@ import ReconciliationNotFoundImage from "@/assets/images/reconciliation-not-foun
 import ConfigAccessLogo from "@/assets/images/configuration-logo.svg";
 import Logo_sm from "@/assets/images/Logo_sm.png";
 import DataNotFound from "@/assets/images/Data_Not_Found.svg";
+import QBSLogo from "@/assets/images/QBS _LOGO.svg";
+import PoweredQBS from "@/assets/images/PoweredByQBS.svg";
 
 // Note: Local assets...!
 const localAssets: { [key: string]: StaticImageData } = {
@@ -22,7 +24,9 @@ const localAssets: { [key: string]: StaticImageData } = {
     logo_sm_new: Logo_sm,
     reconciliationNotFoundImage: ReconciliationNotFoundImage,
     configAccessLogo: ConfigAccessLogo,
-    dataNotFound: DataNotFound
+    dataNotFound: DataNotFound,
+    qbsLogo: QBSLogo,
+    poweredQBS: PoweredQBS
 };
 
 export { localAssets };

@@ -98,15 +98,11 @@ const LoginScreen = () => {
         >
 
             {/* Note: Left side container */}
-            <Box
+            <Stack
+                align='center'
+                justify='center'
+                flex={1}
                 className={styles.loginLeftContainer}
-                style={{
-                    flex: 1,
-                    display: customStyles.elementDirection.displayFlex,
-                    flexDirection: customStyles.elementDirection.column,
-                    justifyContent: customStyles.alignment.center,
-                    alignItems: customStyles.alignment.center,
-                }}
             >
                 {/* Note: Logo image */}
                 <Image
@@ -125,7 +121,7 @@ const LoginScreen = () => {
                     src={localAssets.productImage}
                     alt="Product Design Image"
                     style={{
-                        width: "70%",
+                        width: "60%",
                         height: "auto",
                         borderRadius: customStyles.size.size_10,
                         opacity: 0.8
@@ -133,122 +129,159 @@ const LoginScreen = () => {
                     unoptimized={true}
                     priority={true}
                 />
-            </Box>
+            </Stack>
 
             {/* Note: Right side container */}
             <Box
+                flex={1}
                 style={{
-                    flex: 1,
-                    display: customStyles.elementDirection.displayFlex,
-                    justifyContent: customStyles.alignment.center,
-                    alignItems: customStyles.alignment.center,
-                    padding: customStyles.size.size_20
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: customStyles.size.size_20,
+                    position: 'relative'
                 }}
             >
                 {/* Note: Loading Component */}
                 <Loader loadingState={loading} />
 
-                {/* Note: Login form container */}
-                <Paper
-                    // shadow='md'
-                    radius='xl'
-                    p='xl'
-                    style={{
-                        display: customStyles.elementDirection.displayFlex,
-                        flexDirection: customStyles.elementDirection.column,
-                        justifyContent: customStyles.alignment.center,
-                        alignItems: customStyles.alignment.center,
-                        width: '37.5rem',
-                        height: '31.25rem',
-                        maxWidth: customStyles.size.size_500,
-                        padding: customStyles.size.size_40,
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
+                {/* Note: Main content centered */}
+                <Stack
+                    align='center'
+                    justify='center'
+                    style={{ flex: 1 }}
                 >
-
-                    {/* Note: Sign in heading */}
-                    <Title
-                        order={2}
-                        c={customStyles.colors._4D4D4D}
-                        mb={4}
+                    {/* Note: Login form container */}
+                    <Paper
+                        // shadow='md'
+                        radius='xl'
+                        p='xl'
                         style={{
-                            textAlign: customStyles.alignment.center,
-                            textTransform: customStyles.textTransformation.capitalize,
-                        }}
-                    >
-                        log in
-                    </Title>
-
-                    {/* Note: Greeting heading */}
-                    <Text
-                        size={customStyles.deviceSize.md}
-                        style={{
-                            color: customStyles.colors._909090,
-                            textAlign: customStyles.alignment.center,
-                            marginBottom: customStyles.size.size_20,
-                        }}
-                    >
-                        Welcome to NeuConnectz
-                    </Text>
-
-                    <Stack
-                        align="center"
-                        style={{
-                            width: '100%',
+                            display: customStyles.elementDirection.displayFlex,
+                            flexDirection: customStyles.elementDirection.column,
+                            justifyContent: customStyles.alignment.center,
                             alignItems: customStyles.alignment.center,
+                            width: '37.5rem',
+                            height: '31.25rem',
+                            maxWidth: customStyles.size.size_500,
+                            padding: customStyles.size.size_40,
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         }}
                     >
-                        {/* Note: Email input field */}
-                        <TextInput
-                            w="100%"
-                            maw={400}
-                            miw={250}
-                            size='md'
-                            radius={8}
-                            label="Email"
-                            placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
-                        />
 
-                        {/* Note: Password input field */}
-                        <PasswordInput
-                            w="100%"
-                            maw={400}
-                            miw={250}
-                            size='md'
-                            radius={8}
-                            label="Password"
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
-                            visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
-                        />
-
-                        {/* Note: Log in button */}
-                        <Button
-                            mt={32}
-                            variant='transparent'
-                            size='md'
-                            radius={8}
-                            className={!email || !password || loading ? 'filledDisabledButton' : 'filledButton'}
-                            w="100%"
-                            maw={400}
-                            miw={250}
+                        {/* Note: Sign in heading */}
+                        <Title
+                            order={2}
+                            c={customStyles.colors._4D4D4D}
+                            mb={4}
                             style={{
+                                textAlign: customStyles.alignment.center,
                                 textTransform: customStyles.textTransformation.capitalize,
                             }}
-                            onClick={handleLogin}
-                            disabled={!email || !password || loading}
                         >
                             log in
-                        </Button>
-                    </Stack>
-                </Paper>
+                        </Title>
+
+                        {/* Note: Greeting heading */}
+                        <Text
+                            size={customStyles.deviceSize.md}
+                            style={{
+                                color: customStyles.colors._909090,
+                                textAlign: customStyles.alignment.center,
+                                marginBottom: customStyles.size.size_20,
+                            }}
+                        >
+                            Welcome to NeuConnectz
+                        </Text>
+
+                        <Stack
+                            align="center"
+                            style={{
+                                width: '100%',
+                                alignItems: customStyles.alignment.center,
+                            }}
+                        >
+                            {/* Note: Email input field */}
+                            <TextInput
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                                size='md'
+                                radius={8}
+                                label="Email"
+                                placeholder="Enter your email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
+                            />
+
+                            {/* Note: Password input field */}
+                            <PasswordInput
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                                size='md'
+                                radius={8}
+                                label="Password"
+                                placeholder="Enter your password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
+                                visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
+                            />
+
+                            {/* Note: Log in button */}
+                            <Button
+                                mt={32}
+                                variant='transparent'
+                                size='md'
+                                radius={8}
+                                className={!email || !password || loading ? 'filledDisabledButton' : 'filledButton'}
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                                style={{
+                                    textTransform: customStyles.textTransformation.capitalize,
+                                }}
+                                onClick={handleLogin}
+                                disabled={!email || !password || loading}
+                            >
+                                log in
+                            </Button>
+                        </Stack>
+                    </Paper>
+                </Stack>
+
+                {/* Note: Powered by QBS at bottom */}
+                <Group
+                    gap={8}
+                    justify="center"
+                    p='sm'
+                    style={{
+                        position: 'absolute',
+                        bottom: 80,
+                        left: 0,
+                        right: 0,
+                        borderRadius: '6px',
+                    }}
+                >
+                    <Text size='sm' fw={500} c={customStyles.colors._909090}>
+                        Powered By
+                    </Text>
+                    <Image
+                        src={localAssets.qbsLogo}
+                        alt="Powered by QBS"
+                        style={{
+                            width: "56px",
+                            height: "auto",
+                            borderRadius: customStyles.size.size_10,
+                            opacity: 0.9
+                        }}
+                        unoptimized={true}
+                        priority={true}
+                    />
+                </Group>
             </Box>
         </Box>
     );
