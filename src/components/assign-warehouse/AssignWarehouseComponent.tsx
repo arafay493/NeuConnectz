@@ -124,6 +124,58 @@ const AssignWarehouseComponent = () => {
         });
     }, []);
 
+    // Note: Handle Select All for current page
+    const handleSelectAllCurrentPage = useCallback((checked: boolean, permission: 'allow' | 'receive', currentPageData: WarehousesListData[]) => {
+        if (!selectedUser) return;
+
+        const currentPageWarehouseCodes = currentPageData.map((item: WarehousesListData) => String(item.whsCode));
+
+        setWarehousePermissions(prev => {
+            let updatedPermissions = [...prev];
+
+            currentPageWarehouseCodes.forEach((whsCode: string) => {
+                const existingIndex = updatedPermissions.findIndex(item => item.whsCode === whsCode);
+                const existingPermission = existingIndex !== -1 ? updatedPermissions[existingIndex] : { allow: false, receive: false, whsCode };
+
+                let updatedPermission = { ...existingPermission };
+
+                if (permission === 'allow') {
+                    updatedPermission.allow = checked;
+                    // If unchecking 'allow', also uncheck 'receive'
+                    if (!checked) {
+                        updatedPermission.receive = false;
+                    }
+                } else if (permission === 'receive') {
+                    // Can only check 'receive' if 'allow' is already checked
+                    if (checked && !existingPermission.allow) {
+                        // First enable 'allow', then 'receive'
+                        updatedPermission.allow = true;
+                        updatedPermission.receive = true;
+                    } else {
+                        updatedPermission.receive = checked;
+                    }
+                }
+
+                if (existingIndex === -1) {
+                    // Add new permission if it doesn't exist and has some permission
+                    if (updatedPermission.allow || updatedPermission.receive) {
+                        updatedPermissions.push(updatedPermission);
+                    }
+                } else {
+                    // Update existing permission
+                    if (updatedPermission.allow || updatedPermission.receive) {
+                        updatedPermissions[existingIndex] = updatedPermission;
+                    } else {
+                        // Remove if both permissions are false
+                        updatedPermissions = updatedPermissions.filter(item => item.whsCode !== whsCode);
+                    }
+                }
+            });
+
+            return updatedPermissions;
+        });
+    }, [selectedUser]);
+
     const columns = useMemo<ColumnDef<WarehousesListData>[]>(
         () => [
             {
@@ -161,7 +213,36 @@ const AssignWarehouseComponent = () => {
                 size: calculateColumnWidth('Warehouse Name', warehouses.map(item => item.whsName), 180, 450),
             },
             {
-                header: 'Allow',
+                id: 'allow', // Add id for display column
+                header: ({ table }) => {
+                    // Calculate select all state inside the header component
+                    const currentPageRows = table.getRowModel().rows;
+                    const currentPageData = currentPageRows.map((row: any) => row.original);
+                    const currentPageWarehouseCodes = currentPageData.map((item: WarehousesListData) => String(item.whsCode));
+                    const allCurrentPageAllowSelected = currentPageRows.length > 0 &&
+                        currentPageWarehouseCodes.every((code: string) =>
+                            warehousePermissions.find(item => item.whsCode === code)?.allow || false
+                        );
+                    const someCurrentPageAllowSelected = currentPageWarehouseCodes.some((code: string) =>
+                        warehousePermissions.find(item => item.whsCode === code)?.allow || false
+                    );
+
+                    return (
+                        <Group gap={8} align="center">
+                            <Checkbox
+                                checked={allCurrentPageAllowSelected}
+                                indeterminate={!allCurrentPageAllowSelected && someCurrentPageAllowSelected}
+                                onChange={(event) => handleSelectAllCurrentPage(event.currentTarget.checked, 'allow', currentPageData)}
+                                size="sm"
+                                color={customStyles.colors._1B59F8}
+                                radius="xl"
+                                disabled={!selectedUser || currentPageRows.length === 0}
+                                title="Select all on current page"
+                            />
+                            <span>Allow</span>
+                        </Group>
+                    );
+                },
                 cell: ({ row }) => {
                     const warehouseId = row.original.whsCode; // Using whsCode as unique identifier
                     const isChecked = warehousePermissions.find(item => item.whsCode === warehouseId)?.allow || false;
@@ -195,10 +276,39 @@ const AssignWarehouseComponent = () => {
                         />
                     );
                 },
-                size: 120,
+                size: 120, // Increased size to accommodate header checkbox
             },
             {
-                header: 'Receiver',
+                id: 'receive', // Add id for display column
+                header: ({ table }) => {
+                    // Calculate select all state inside the header component
+                    const currentPageRows = table.getRowModel().rows;
+                    const currentPageData = currentPageRows.map((row: any) => row.original);
+                    const currentPageWarehouseCodes = currentPageData.map((item: WarehousesListData) => String(item.whsCode));
+                    const allCurrentPageReceiveSelected = currentPageRows.length > 0 &&
+                        currentPageWarehouseCodes.every((code: string) =>
+                            warehousePermissions.find(item => item.whsCode === code)?.receive || false
+                        );
+                    const someCurrentPageReceiveSelected = currentPageWarehouseCodes.some((code: string) =>
+                        warehousePermissions.find(item => item.whsCode === code)?.receive || false
+                    );
+
+                    return (
+                        <Group gap={8} align="center">
+                            <Checkbox
+                                checked={allCurrentPageReceiveSelected}
+                                indeterminate={!allCurrentPageReceiveSelected && someCurrentPageReceiveSelected}
+                                onChange={(event) => handleSelectAllCurrentPage(event.currentTarget.checked, 'receive', currentPageData)}
+                                size="sm"
+                                color={customStyles.colors._1B59F8}
+                                radius="xl"
+                                disabled={!selectedUser || currentPageRows.length === 0}
+                                title="Select all on current page"
+                            />
+                            <span>Receiver</span>
+                        </Group>
+                    );
+                },
                 cell: ({ row }) => {
                     const warehouseId = row.original.whsCode; // Using whsCode as unique identifier
                     const isChecked = warehousePermissions.find(item => item.whsCode === warehouseId)?.receive || false;
@@ -237,7 +347,7 @@ const AssignWarehouseComponent = () => {
                 size: 120,
             }
         ],
-        [warehouses, warehousePermissions, skipRecord, handlePermissionChange, selectedUser] // Add selectedUser to dependencies
+        [warehouses, warehousePermissions, handlePermissionChange, selectedUser, handleSelectAllCurrentPage] // Updated dependencies
     );
 
     // Custom global filter function to handle Status column properly
@@ -384,23 +494,25 @@ const AssignWarehouseComponent = () => {
 
     // Update warehouse permissions when warehousesListByUserId changes
     useEffect(() => {
-        if (warehousesListByUserId && warehousesListByUserId.length > 0) {
-            const newPermissions: Array<AccessWareHouseDataType> = [];
+        if (selectedUser) {
+            if (warehousesListByUserId && warehousesListByUserId.length > 0) {
+                const newPermissions: Array<AccessWareHouseDataType> = [];
 
-            warehousesListByUserId.forEach(userWarehouse => {
-                newPermissions.push({
-                    allow: userWarehouse.isActive, // Use isActive for allow permission
-                    receive: userWarehouse.isReceiver, // Use isReceiver for receive permission
-                    whsCode: userWarehouse.whsCode // Store the whsCode
+                warehousesListByUserId.forEach(userWarehouse => {
+                    newPermissions.push({
+                        allow: userWarehouse.isActive, // Use isActive for allow permission
+                        receive: userWarehouse.isReceiver, // Use isReceiver for receive permission
+                        whsCode: userWarehouse.whsCode // Store the whsCode
+                    });
                 });
-            });
 
-            setWarehousePermissions(newPermissions);
-        } else {
-            // Clear permissions if warehousesListByUserId is empty or null
-            setWarehousePermissions([]);
+                setWarehousePermissions(newPermissions);
+            } else {
+                // Reset to empty array if no warehouses assigned to this user
+                setWarehousePermissions([]);
+            }
         }
-    }, [warehousesListByUserId]);
+    }, [warehousesListByUserId, selectedUser]);
 
     // Note: Assign warehouse to user api response handler...!
     const handleResponse = (response: any): void => {
@@ -480,7 +592,6 @@ const AssignWarehouseComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select User</Text>
                         <Select
                             placeholder="Select User"
-                            rightSection={<IconChevronDown size={18} />}
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
@@ -594,9 +705,9 @@ const AssignWarehouseComponent = () => {
                                                 gap={6}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}>
-                                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                                </Text>
+                                                {/* <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}> */}
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {/* </Text> */}
                                                 {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
@@ -798,7 +909,10 @@ const AssignWarehouseComponent = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, warehousesTotalCount)} of {warehousesTotalCount} entries
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
+                            {(globalFilter || columnFilters.length > 0) && (
+                                <span> (filtered from {warehousesTotalCount} total entries)</span>
+                            )}
                         </Text>
                     </Group>
                 </Group>

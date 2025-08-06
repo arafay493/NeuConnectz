@@ -129,6 +129,42 @@ const AssignGroupsComponent = () => {
         });
     }, [selectedUser]);
 
+    // Note: Handle Select All for current page
+    const handleSelectAllCurrentPage = useCallback((checked: boolean, currentPageData: GroupCodeDataType[]) => {
+        if (!selectedUser) return;
+
+        const currentPageGroupCodes = currentPageData.map((item: GroupCodeDataType) => String(item.groupCode));
+
+        setGroupPermission(prev => {
+            const existingGroupCodes = prev?.groupCodes || [];
+
+            if (checked) {
+                // Add all current page group codes that aren't already selected
+                const newGroupCodes = [...existingGroupCodes];
+                currentPageGroupCodes.forEach((code: string) => {
+                    if (!newGroupCodes.includes(code)) {
+                        newGroupCodes.push(code);
+                    }
+                });
+
+                return {
+                    userId: selectedUser,
+                    groupCodes: newGroupCodes
+                };
+            } else {
+                // Remove all current page group codes
+                const filteredGroupCodes = existingGroupCodes.filter((code: string | number) =>
+                    !currentPageGroupCodes.includes(String(code))
+                );
+
+                return {
+                    userId: selectedUser,
+                    groupCodes: filteredGroupCodes
+                };
+            }
+        });
+    }, [selectedUser]);
+
     // Note: Columns Data for Assign Groups
     const columns = useMemo<ColumnDef<GroupCodeDataType>[]>(
         () => [
@@ -167,7 +203,32 @@ const AssignGroupsComponent = () => {
                 size: calculateColumnWidth('Warehouse Name', groups.map(item => item.groupName), 180, 450),
             },
             {
-                header: 'Allow',
+                id: 'allow', // Add id for display column
+                header: ({ table }) => {
+                    // Calculate select all state inside the header component
+                    const currentPageRows = table.getRowModel().rows;
+                    const currentPageData = currentPageRows.map((row: any) => row.original);
+                    const currentPageGroupCodes = currentPageData.map((item: GroupCodeDataType) => String(item.groupCode));
+                    const allCurrentPageSelected = currentPageRows.length > 0 &&
+                        currentPageGroupCodes.every((code: string) => groupPermission?.groupCodes?.includes(code));
+                    const someCurrentPageSelected = currentPageGroupCodes.some((code: string) => groupPermission?.groupCodes?.includes(code));
+
+                    return (
+                        <Group gap={8} align="center">
+                            <Checkbox
+                                checked={allCurrentPageSelected}
+                                indeterminate={!allCurrentPageSelected && someCurrentPageSelected}
+                                onChange={(event) => handleSelectAllCurrentPage(event.currentTarget.checked, currentPageData)}
+                                size="sm"
+                                color={customStyles.colors._1B59F8}
+                                radius="xl"
+                                disabled={!selectedUser || currentPageRows.length === 0}
+                                title="Select all on current page"
+                            />
+                            <span>Allow</span>
+                        </Group>
+                    );
+                },
                 cell: ({ row }) => {
                     const groupId = row.original.groupCode; // Using groupCode as unique identifier
                     const isChecked = groupPermission?.groupCodes?.includes(String(groupId)) || false;
@@ -204,7 +265,7 @@ const AssignGroupsComponent = () => {
                 size: 120,
             },
         ],
-        [groups, groupPermission, skipRecord, handlePermissionChange, selectedUser] // Add selectedUser to dependencies
+        [groups, groupPermission, handlePermissionChange, selectedUser, handleSelectAllCurrentPage] // Remove circular dependencies
     );
 
     // Custom global filter function to handle Status column properly
@@ -318,12 +379,20 @@ const AssignGroupsComponent = () => {
 
     // Update group permissions when listGroupCodesByUserId changes
     useEffect(() => {
-        if (listGroupCodesByUserId && listGroupCodesByUserId.length > 0 && selectedUser) {
-            const groupCodes = listGroupCodesByUserId.map(group => String(group.groupCode));
-            setGroupPermission({
-                userId: selectedUser,
-                groupCodes: groupCodes
-            });
+        if (selectedUser) {
+            if (listGroupCodesByUserId && listGroupCodesByUserId.length > 0) {
+                const groupCodes = listGroupCodesByUserId.map(group => String(group.groupCode));
+                setGroupPermission({
+                    userId: selectedUser,
+                    groupCodes: groupCodes
+                });
+            } else {
+                // Reset to empty array if no groups assigned to this user
+                setGroupPermission({
+                    userId: selectedUser,
+                    groupCodes: []
+                });
+            }
         }
     }, [listGroupCodesByUserId, selectedUser]);
 
@@ -344,7 +413,6 @@ const AssignGroupsComponent = () => {
 
 
     const handleAssignGroups = () => {
-
         dispatch(assignGroupToUser({
             token: authenticatedUser?.token as string,
             addGroupToUserData: groupPermission!,
@@ -394,7 +462,6 @@ const AssignGroupsComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select User</Text>
                         <Select
                             placeholder="Select User"
-                            rightSection={<IconChevronDown size={18} />}
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
@@ -509,9 +576,9 @@ const AssignGroupsComponent = () => {
                                                 gap={6}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}>
-                                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                                </Text>
+                                                {/* <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}> */}
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {/* </Text> */}
                                                 {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
