@@ -1,13 +1,13 @@
 "use client";
 
-import { customStyles } from "@/styles/custom-theme"
-import { Button, Grid, GridCol, Select, Text } from "@mantine/core"
-import { DatePickerInput } from "@mantine/dates"
-import { IconBuildingWarehouse } from "@tabler/icons-react"
-import { FC, useState } from "react"
-import { useMediaQuery } from "@mantine/hooks"
-import { useAppSelector, useAppDispatch } from "@/redux/store";
 import { exportDataToCsvFile } from "@/redux/actions/sap-actions/sap-actions";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { customStyles } from "@/styles/custom-theme";
+import { Button, Grid, GridCol, Select, Text } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconBuildingWarehouse } from "@tabler/icons-react";
+import { FC } from "react";
 
 export type SapStatusProp = 'Pending' | 'Updated' | 'Integrated'
 export type DocStatusProp = 'Pending' | 'Open' | 'Closed'
@@ -45,9 +45,6 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
     sapTypeApiUrl,
     isFilterParams
 }) => {
-    console.log('Sap type: ', sapType);
-    console.log(`Is filter params: ${isFilterParams}`);
-
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
     const isMediumScreen = useMediaQuery('(max-width: 1024px)');
@@ -140,7 +137,7 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
                 <DatePickerInput
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string) => setSelectDate(value)}
+                    onChange={(value: string | null) => setSelectDate(value)}
                     radius={8}
                     size='md'
                     clearable

@@ -23,6 +23,7 @@ const UnpostedGRNTable = () => {
     const [selectDate, setSelectDate] = useState<string | null>(null);
     const [vendorCode, setVendorCode] = useState<string>()
     const [docStatus, setDocStatus] = useState<DocStatusProp>()
+    const [filteredParams, setFilteredParams] = useState('');
 
     // Note: Handling redux here...!
     const dispatch = useAppDispatch();
@@ -336,6 +337,7 @@ const UnpostedGRNTable = () => {
         if (warehouseCode) params.append('whsCode', warehouseCode);
         if (selectDate) params.append('docDate', selectDate);
 
+        setFilteredParams(params.toString());
         return params.toString();
     };
 
@@ -425,10 +427,11 @@ const UnpostedGRNTable = () => {
                 setVendorCode={setVendorCode}
                 docStatus={docStatus}
                 setDocStatus={setDocStatus}
+                grnApiUrl={process.env.NEXT_PUBLIC_EXPORT_GRN_TO_EXCEL || ""}
+                isFilterParams={filteredParams}
             />
             {/* Main Content */}
-            <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }
-            }>
+            <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>

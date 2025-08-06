@@ -1,8 +1,7 @@
 'use client';
 
 import { customStyles } from "@/styles/custom-theme";
-import { Box, Button, Group, Stack, Tabs, Text, Title } from "@mantine/core";
-import { IconUserPlus } from "@tabler/icons-react";
+import { Box, Stack, Tabs, Text, Title } from "@mantine/core";
 import { useState } from "react";
 import PostedGRNTable from "./PostedGRNTable";
 import UnpostedGRNTable from "./UnpostedGRNTable";
@@ -13,22 +12,10 @@ const GRNMovementComponent = () => {
 
     return (
         <Box>
-            <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
-                <Stack gap={0}>
-                    <Title order={2} c={customStyles.colors._4D4D4D}>GRN Movement</Title>
-                    <Text c={customStyles.colors._909090}>Track and manage all goods receipt notes to ensure timely, accurate inventory updates and smooth warehouse operations.</Text>
-                </Stack>
-                <Button
-                    leftSection={<IconUserPlus size={24} />}
-                    className='filledButton'
-                    variant="transparent"
-                    size="md"
-                    radius={8}
-                // onClick={() => route.push('/add-user')}
-                >
-                    Export TO CSV
-                </Button>
-            </Group>
+            <Stack gap={8} mb={24} style={{ flexShrink: 0 }}>
+                <Title order={2} c={customStyles.colors._4D4D4D}>GRN Movement</Title>
+                <Text c={customStyles.colors._909090}>Track and manage all goods receipt notes to ensure timely, accurate inventory updates and smooth warehouse operations.</Text>
+            </Stack>
             <Box>
                 <Tabs defaultValue="integration" value={tab} onChange={(value) => setTab(value as typeof tab)}>
                     <Tabs.List mb={32} justify='center' grow>

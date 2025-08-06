@@ -1,3 +1,5 @@
+import { exportDataToCsvFile } from "@/redux/actions/sap-actions/sap-actions"
+import { useAppDispatch, useAppSelector } from "@/redux/store"
 import { customStyles } from "@/styles/custom-theme"
 import { Button, Grid, GridCol, Select, Text } from "@mantine/core"
 import { DatePickerInput } from "@mantine/dates"
@@ -18,6 +20,8 @@ interface GRNMovementFilterBarProps {
     selectWarehouseData: { value: string; label: string }[];
     vendorCodeList: { value: string; label: string }[];
     setWarehouseCode: (value: string | null) => void;
+    grnApiUrl: string,
+    isFilterParams?: string
 }
 
 const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
@@ -30,12 +34,28 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
     setDocStatus,
     selectWarehouseData,
     vendorCodeList,
-    setWarehouseCode
+    setWarehouseCode,
+    grnApiUrl,
+    isFilterParams
 }) => {
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)")
     const isMediumScreen = useMediaQuery('(max-width: 1024px)');
     const isLargeScreen = useMediaQuery('(min-width: 1300px)');
+
+    // Note: handling redux here...!
+    const dispatch = useAppDispatch();
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+
+    // Note: Function to export to CSV data...!
+    const handleExportToCSV = () => {
+        let apiUrl = !isFilterParams ? grnApiUrl : `${grnApiUrl}?${isFilterParams}`
+        dispatch(exportDataToCsvFile({
+            token: authenticatedUser?.token || "",
+            apiUrl: apiUrl || "",
+            type: 'GRN'
+        }));
+    };
 
     return (
         <Grid
@@ -98,7 +118,7 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                 <DatePickerInput
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string) => setSelectDate(value)}
+                    onChange={(value: string | null) => setSelectDate(value)}
                     radius={8}
                     size='md'
                     clearable
@@ -113,9 +133,8 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                     radius={8}
                     size={isSmallScreen ? 'sm' : 'md'}
                     leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                    // onClick={handleAssignGroups}
+                    onClick={handleExportToCSV}
                     fullWidth
-                    // w={isSmallScreen ? '100%' : 'auto'}
                     mt={isSmallScreen ? 16 : 0}
                 >
                     Export To CSV
