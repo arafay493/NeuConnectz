@@ -153,13 +153,12 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             {
                 id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
-                cell: ({ row, table }) => {
-                    // Get the original index from filtered data, not paginated data
-                    const filteredRows = table.getFilteredRowModel().rows;
-                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                cell: ({ row }) => {
+                    // Calculate serial number based on server-side pagination
+                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
-                            {originalIndex + 1}
+                            {serialNumber}
                         </Text>
                     );
                 },
@@ -352,9 +351,10 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         data: trData,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // Remove client-side filtering and sorting for server-side pagination
+        // getFilteredRowModel: getFilteredRowModel(),
+        // getSortedRowModel: getSortedRowModel(),
+        // getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
@@ -376,7 +376,8 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
         onPaginationChange: setPagination,
-        manualPagination: false,
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(trDataCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -435,13 +436,14 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
         const filterParams = buildFilterParams();
         const apiUrlWithParams = filterParams ? `${apiUrl}?${filterParams}` : apiUrl;
+        const skipRecord = pagination.pageIndex * pagination.pageSize;
 
         setIsLoading(true);
         dispatch(fetchAllTrData({
             authToken: authenticatedUser.token,
             apiUrl: apiUrlWithParams,
-            lastCount: 1000,
-            skipRecords: 0
+            lastCount: pagination.pageSize, // Use page size for server-side pagination
+            skipRecords: skipRecord
         })).finally(() => {
             setIsLoading(false);
         });
@@ -450,14 +452,16 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     useEffect(() => {
         if (authenticatedUser?.token) {
             // setLoading(true);
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+
             dispatch(fetchAllTrData({
                 authToken: authenticatedUser?.token || '',
                 apiUrl: apiUrl,
-                lastCount: 1000,
-                skipRecords: 0
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
             }));
         };
-    }, [authenticatedUser]);
+    }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
     // Note: Fetch All Warehouse List
     useEffect(() => {
@@ -765,10 +769,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
-                            {(globalFilter || columnFilters.length > 0) && (
-                                <span> (filtered from {trDataCount} total entries)</span>
-                            )}
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, trDataCount)} of {trDataCount} entries
                         </Text>
                     </Group>
                 </Group>

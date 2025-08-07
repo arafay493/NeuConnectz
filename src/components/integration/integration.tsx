@@ -198,13 +198,12 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
             {
                 id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
-                cell: ({ row, table }) => {
-                    // Get the original index from filtered data, not paginated data
-                    const filteredRows = table.getFilteredRowModel().rows;
-                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                cell: ({ row }) => {
+                    // Calculate serial number based on server-side pagination
+                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
-                            {originalIndex + 1}
+                            {serialNumber}
                         </Text>
                     );
                 },
@@ -696,10 +695,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
-                            {(globalFilter || columnFilters.length > 0) && (
-                                <span> (filtered from {totalGRNS_DataCounts} total entries)</span>
-                            )}
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, totalGRNS_DataCounts)} of {totalGRNS_DataCounts} entries
                         </Text>
                     </Group>
                 </Group>
@@ -780,13 +776,12 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             {
                 id: 'serialNumber', // Use id instead of accessorKey for computed columns
                 header: 'S.No',
-                cell: ({ row, table }) => {
-                    // Get the original index from filtered data, not paginated data
-                    const filteredRows = table.getFilteredRowModel().rows;
-                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                cell: ({ row }) => {
+                    // Calculate serial number based on server-side pagination
+                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
-                            {originalIndex + 1}
+                            {serialNumber}
                         </Text>
                     );
                 },
@@ -963,9 +958,10 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
         data: listAll_ITR_IT_TRS,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // Remove client-side filtering and sorting for server-side pagination
+        // getFilteredRowModel: getFilteredRowModel(),
+        // getSortedRowModel: getSortedRowModel(),
+        // getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
@@ -990,8 +986,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             return columnIds.some((colId: string) => globalFilterFnSM(row, colId, value));
         },
         onPaginationChange: setPagination,
-        manualPagination: false,
-        // pageCount: Math.ceil(listAll_ITR_IT_TRS_Count / pagination.pageSize),
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(listAll_ITR_IT_TRS_Count / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -1007,16 +1003,18 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     useEffect(() => {
         if (authenticatedUser?.token) {
             setLoading(true); // Note: Enable loading...!
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+
             dispatch(fetchAllITR_IT_TRS({
                 token: authenticatedUser?.token || "",
                 dataStatus: type,
                 handleLoading: () => setLoading(false),
                 type: sapType != undefined ? sapType : undefined,
-                lastCount: 1000,
-                skipRecords: 0
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
             }));
         };
-    }, [authenticatedUser, type, sapType]);
+    }, [authenticatedUser, type, sapType, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
     return (
         <>
@@ -1270,10 +1268,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
-                            {(globalFilter || columnFilters.length > 0) && (
-                                <span> (filtered from {listAll_ITR_IT_TRS_Count} total entries)</span>
-                            )}
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, listAll_ITR_IT_TRS_Count)} of {listAll_ITR_IT_TRS_Count} entries
                         </Text>
                     </Group>
                 </Group>

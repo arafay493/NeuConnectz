@@ -180,13 +180,12 @@ const AssignWarehouseComponent = () => {
         () => [
             {
                 header: 'S.No',
-                cell: ({ row, table }) => {
-                    // Get the original index from filtered data, not paginated data
-                    const filteredRows = table.getFilteredRowModel().rows;
-                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                cell: ({ row }) => {
+                    // Calculate serial number based on server-side pagination
+                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
-                            {originalIndex + 1}
+                            {serialNumber}
                         </Text>
                     );
                 },
@@ -384,10 +383,10 @@ const AssignWarehouseComponent = () => {
         data: warehouses,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        // Keep client-side filtering and sorting since API doesn't support them yet
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // Remove client-side filtering and sorting for server-side pagination
+        // getFilteredRowModel: getFilteredRowModel(),
+        // getSortedRowModel: getSortedRowModel(),
+        // getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
@@ -406,10 +405,9 @@ const AssignWarehouseComponent = () => {
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
-        // Remove getPaginationRowModel for server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: false, // Enable server-side pagination
-        // pageCount: Math.ceil(warehousesTotalCount / pagination.pageSize), // Calculate total pages from server data
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(warehousesTotalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -430,25 +428,21 @@ const AssignWarehouseComponent = () => {
         }
     }, [authenticatedUser?.token, dispatch])
 
-    // Note: warehouse list call
+    // Note: warehouse list call with server-side pagination
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+
             dispatch(fetchAllWareHouses({
                 authToken: authenticatedUser?.token as string,
-                lastCount: 1000,
-                skipRecords: 0
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
             })).finally(() => {
                 setIsLoading(false);
             });
         }
-    }, [authenticatedUser, dispatch])
-
-    // Additional effect to handle pagination state changes
-    useEffect(() => {
-        // This will trigger the above effect when pagination changes
-        // The dependency on pagination state will automatically trigger API calls
-    }, [pagination]);
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]) // Add pagination dependencies
 
     // Reset warehouse permissions when user changes
     useEffect(() => {
@@ -909,10 +903,7 @@ const AssignWarehouseComponent = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
-                            {(globalFilter || columnFilters.length > 0) && (
-                                <span> (filtered from {warehousesTotalCount} total entries)</span>
-                            )}
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, warehousesTotalCount)} of {warehousesTotalCount} entries
                         </Text>
                     </Group>
                 </Group>
