@@ -251,6 +251,30 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 size: calculateColumnWidth('Item Description', itData.map(item => item.itemName), 200, 300),
             },
             {
+                accessorKey: 'groupCode',
+                header: 'Group Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Code', itData.map(item => item.groupCode), 200, 220),
+            },
+            {
+                accessorKey: 'groupName',
+                header: 'Group Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Name', itData.map(item => item.groupName), 200, 300),
+            },
+            {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
                 cell: ({ getValue }) => (

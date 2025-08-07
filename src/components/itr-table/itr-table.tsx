@@ -257,6 +257,30 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 size: calculateColumnWidth('Item Description', (itrData || []).map(item => item.itemName), 200, 300),
             },
             {
+                accessorKey: 'groupCode',
+                header: 'Group Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Code', itrData.map(item => item.groupCode), 200, 220),
+            },
+            {
+                accessorKey: 'groupName',
+                header: 'Group Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Name', itrData.map(item => item.groupName), 200, 300),
+            },
+            {
                 accessorKey: 'quantity',
                 header: 'Quantity',
                 cell: ({ getValue }) => (

@@ -140,6 +140,8 @@ export interface GRN_Props {
     isArchived: boolean;
     itemCode: string;
     itemName: string;
+    groupCode: string;
+    groupName: string;
     sapStatus: string;
     updatedBy: string
     updatedDate: string
@@ -190,6 +192,8 @@ export interface ITRStateType {
         docStatus: string,
         itemCode: string,
         itemName: string,
+        groupCode: string,
+        groupName: string,
         quantity: string | number,
         uom: string,
         openQuantity: string | number,
@@ -210,6 +214,8 @@ export interface ITRStateType {
         toWareHouseCode: string,
         itemCode: string,
         itemName: string,
+        groupCode: string,
+        groupName: string,
         quantity: string | number,
         uom: string,
         barCode: string | number,
@@ -233,6 +239,8 @@ export interface ITRStateType {
         toWarehouseId: string,
         itemCode: string,
         itemName: string,
+        groupCode: string,
+        groupName: string,
         binCode: string,
         barCode: string,
         docStatus: string,

@@ -42,6 +42,8 @@ type TRDataType = {
     toWareHouseCode: string,
     itemCode: string,
     itemName: string,
+    groupCode: string,
+    groupName: string,
     quantity: string | number,
     uom: string,
     barCode: string | number,
@@ -236,6 +238,30 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Item Description', trData.map(item => item.itemName), 200, 300),
+            },
+            {
+                accessorKey: 'groupCode',
+                header: 'Group Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Code', trData.map(item => item.groupCode), 200, 220),
+            },
+            {
+                accessorKey: 'groupName',
+                header: 'Group Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Name', trData.map(item => item.groupName), 200, 300),
             },
             {
                 accessorKey: 'quantity',

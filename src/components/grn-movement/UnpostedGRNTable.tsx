@@ -183,6 +183,30 @@ const UnpostedGRNTable = () => {
                 size: calculateColumnWidth('Item Name', list_Pending_GRNS_Data.map(item => item.itemName), 150, 250),
             },
             {
+                accessorKey: 'groupCode',
+                header: 'Group Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Code', list_Pending_GRNS_Data.map(item => item.groupCode), 200, 220),
+            },
+            {
+                accessorKey: 'groupName',
+                header: 'Group Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : "-"}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Group Name', list_Pending_GRNS_Data.map(item => item.groupName), 200, 300),
+            },
+            {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
                 cell: ({ getValue }) => (
