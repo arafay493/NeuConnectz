@@ -99,11 +99,6 @@ const cardsData = [
     },
 ];
 
-interface IntegrationComponentProps {
-    enableLoader: () => void,
-    disableLoader: () => void,
-};
-
 // GRN Table Props...!
 type TableProps = {
     type: "Pending" | "Integrated";
@@ -1282,9 +1277,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     );
 };
 
-const IntegrationComponent = (props: IntegrationComponentProps) => {
-    const { enableLoader, disableLoader } = props;
-
+const IntegrationComponent = () => {
     // Note: Handling states here...!
     const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
     const [selectedType, setSelectedType] = useState("");
@@ -1378,9 +1371,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
 
-        // Note: Stop loading...!
-        disableLoader();
-
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
                 showNotificationToast("Successful", response?.data?.data?.message, customStyles.colors._408CCE);
@@ -1426,9 +1416,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string, totalPendingValue: string) => {
 
-        // Note: Enable loader...!
-        enableLoader();
-
         if (reqData == "ITR") {
             dispatch(postRequestToSAP({
                 token: authenticatedUser?.token as string,
@@ -1455,7 +1442,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
             const itrPendingVal = statsData['totalItrPending']
 
             if (itrPendingVal != undefined && itrPendingVal > 0) {
-                disableLoader();
                 showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
                 return;
             }
@@ -1482,7 +1468,6 @@ const IntegrationComponent = (props: IntegrationComponentProps) => {
         };
 
         if (reqData == "GI" || reqData == "GR") {
-            disableLoader(); // Note: Disable loader...!
             showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
             return;
         };

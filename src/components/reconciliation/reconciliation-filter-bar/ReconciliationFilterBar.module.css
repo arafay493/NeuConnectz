@@ -1,0 +1,59 @@
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+        "fromWarehouse"
+        "toWarehouse"
+        "date"
+        "filterBarButton";
+    gap: 16px;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--white);
+    padding: 1.6rem;
+    border-radius: 1rem;
+    align-items: end;
+}
+
+.colOne {
+    grid-area: fromWarehouse;
+}
+
+.colTwo {
+    grid-area: toWarehouse;
+}
+
+.colThree {
+    grid-area: date;
+}
+
+.colFour {
+    grid-area: filterBarButton;
+    /* justify-self: end; */
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas:
+            "fromWarehouse toWarehouse"
+            "date filterBarButton";
+    }
+
+    .colFour {
+        justify-self: end;
+    }
+}
+
+@media (min-width: 1200px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-areas:
+            "fromWarehouse toWarehouse date filterBarButton";
+    }
+
+    .colFour {
+        justify-self: end;
+    }
+}
