@@ -1,0 +1,65 @@
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+        "docStatus"
+        "vendorCode"
+        "warehouseCode"
+        "date"
+        "filterBarButton";
+    gap: 16px;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--white);
+    padding: 1.6rem;
+    border-radius: 1rem;
+    align-items: end;
+}
+
+.colOne {
+    grid-area: docStatus;
+}
+
+.colTwo {
+    grid-area: vendorCode;
+}
+
+.colThree {
+    grid-area: warehouseCode;
+}
+
+.colFour {
+    grid-area: date;
+    /* justify-self: end; */
+}
+
+.colFive {
+    grid-area: filterBarButton;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas:
+            "docStatus vendorCode"
+            "warehouseCode date"
+            "filterBarButton filterBarButton";
+    }
+
+    .colFive {
+        justify-self: end;
+    }
+}
+
+@media (min-width: 1300px) {
+    .grid {
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-areas:
+            "docStatus vendorCode warehouseCode date filterBarButton filterBarButton";
+    }
+
+    .colFive {
+        justify-self: end;
+    }
+}
