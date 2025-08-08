@@ -585,7 +585,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                                     borderBottom: 'none'
                                 }}>
                                     <Stack justify="center" align="center">
-                                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Image w={180} h={180} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
                                         <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
                                     </Stack>
                                 </td>
@@ -1158,7 +1158,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                                     borderBottom: 'none'
                                 }}>
                                     <Stack justify="center" align="center">
-                                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Image w={180} h={180} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
                                         <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
                                     </Stack>
                                 </td>
