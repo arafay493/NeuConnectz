@@ -1,12 +1,9 @@
-'use client';
-
-import { customStyles } from '@/styles/custom-theme';
 import { WarehousesListData } from '@/types/redux-types';
-import { Button, Grid, GridCol, Select, Text } from '@mantine/core';
+import { Button, Select, Text } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
-import { useMediaQuery } from '@mantine/hooks';
 import { IconCalendarMonth, IconDatabaseImport } from '@tabler/icons-react';
 import { Dispatch, FC, SetStateAction } from 'react';
+import styles from './ReconciliationFilterBar.module.css';
 
 interface ReconciliationFilterBarProps {
     warehouseData: WarehousesListData[];
@@ -29,9 +26,6 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
     setSelectDate,
     handleGetData
 }) => {
-    // Break points
-    const isSmallScreen = useMediaQuery('(max-width: 768px)');
-    const isMediumScreen = useMediaQuery('(max-width: 1200px)');
 
     // Transform warehouse data for Select component
     const selectWarehouseData = warehouseData
@@ -42,19 +36,8 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
         }));
 
     return (
-        <Grid
-            mt={16}
-            mb={8}
-            bg={customStyles.colors.white}
-            p={24}
-            align='end'
-            style={{
-                borderRadius: '16px',
-                gap: isSmallScreen ? '16px' : '24px'
-            }}
-        >
-            {/* From Warehouse */}
-            <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 'auto'}>
+        <div className={styles.grid}>
+            <div className={styles.colOne}>
                 <Text size="md" mb={8} fw={500}>From Warehouse</Text>
                 <Select
                     placeholder="Select warehouse"
@@ -66,10 +49,8 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     size='md'
                     searchable
                 />
-            </GridCol>
-
-            {/* To Warehouse */}
-            <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 'auto'}>
+            </div>
+            <div className={styles.colTwo}>
                 <Text size="md" mb={8} fw={500}>To Warehouse</Text>
                 <Select
                     placeholder="Select warehouse"
@@ -81,10 +62,9 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     size='md'
                     searchable
                 />
-            </GridCol>
 
-            {/* Date */}
-            <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 'auto'}>
+            </div>
+            <div className={styles.colThree}>
                 <Text size="md" mb={8} fw={500}>Date</Text>
                 <DatePickerInput
                     rightSection={<IconCalendarMonth size={24} />}
@@ -95,25 +75,49 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     size='md'
                     clearable
                 />
-            </GridCol>
-
-            {/* Button */}
-            <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 'content'}>
+            </div>
+            <div className={styles.colFour}>
                 <Button
-                    className={!fromWarehouse || !toWarehouse || !selectDate ? 'outlineDisabledButton' : 'outlineButton'}
+                    className={!fromWarehouse || !toWarehouse || !selectDate ? 'filledDisabledButton' : 'outlineButton'}
                     leftSection={<IconDatabaseImport size={24} />}
                     variant="transparent"
                     size="md"
                     radius={8}
-                    fullWidth={isSmallScreen}
-                    style={{ marginTop: isSmallScreen ? '8px' : '0' }}
+                    fullWidth
                     onClick={() => handleGetData()}
                     disabled={!fromWarehouse || !toWarehouse || !selectDate}
                 >
                     Get Data
                 </Button>
-            </GridCol>
-        </Grid>
+            </div>
+        </div>
+        // <Grid
+        //     mt={16}
+        //     mb={8}
+        //     bg={customStyles.colors.white}
+        //     p={24}
+        //     align='end'
+        //     style={{
+        //         borderRadius: '16px',
+        //         gap: isSmallScreen ? '16px' : '24px'
+        //     }}
+        // >
+        //     {/* From Warehouse */}
+        //     <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 3}>
+        //     </GridCol>
+
+        //     {/* To Warehouse */}
+        //     <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 3}>
+        //     </GridCol>
+
+        //     {/* Date */}
+        //     <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : 3}>
+        //     </GridCol>
+
+        //     {/* Button */}
+        //     <GridCol style={{ justifySelf: 'end' }} span={isSmallScreen ? 12 : isMediumScreen ? 6 : 3}>
+        //     </GridCol>
+        // </Grid>
     )
 
 }
