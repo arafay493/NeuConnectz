@@ -85,13 +85,12 @@ const UserListComponent: FC<UserListComponentProps> = ({
             {
                 // accessorKey: 'userId',
                 header: 'S.No',
-                cell: ({ row, table }) => {
-                    // Get the original index from filtered data, not paginated data
-                    const filteredRows = table.getFilteredRowModel().rows;
-                    const originalIndex = filteredRows.findIndex(filteredRow => filteredRow.id === row.id);
+                cell: ({ row }) => {
+                    // Calculate serial number based on server-side pagination
+                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
-                            {originalIndex + 1}
+                            {serialNumber}
                         </Text>
                     );
                 },
@@ -245,10 +244,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
         data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        // Keep client-side filtering and sorting since API doesn't support them yet
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        // Remove client-side filtering and sorting for server-side pagination  
+        // getFilteredRowModel: getFilteredRowModel(),
+        // getSortedRowModel: getSortedRowModel(),
+        // getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
@@ -267,9 +266,10 @@ const UserListComponent: FC<UserListComponentProps> = ({
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
-        // Remove getPaginationRowModel for server-side pagination
+        // Enable server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: false, // Enable server-side pagination
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -286,15 +286,17 @@ const UserListComponent: FC<UserListComponentProps> = ({
         if (authenticatedUser) {
             setIsLoading(true);
 
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+
             dispatch(fetchAllUsers({
                 authToken: authenticatedUser?.token,
-                LastCount: 1000, // Fetch all records for client-side pagination
-                skipRecord: 0
+                LastCount: pagination.pageSize, // Fetch only current page records
+                skipRecord: skipRecord
             })).finally(() => {
                 setIsLoading(false);
             });
         };
-    }, [authenticatedUser, dispatch]); // Remove pagination dependencies
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
     return (
         <Box p={8}>
@@ -579,10 +581,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, table.getFilteredRowModel().rows.length)} of {table.getFilteredRowModel().rows.length} entries
-                            {(globalFilter || columnFilters.length > 0) && (
-                                <span> (filtered from {totalCount} total entries)</span>
-                            )}
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, totalCount)} of {totalCount} entries
                         </Text>
                     </Group>
                 </Group>
