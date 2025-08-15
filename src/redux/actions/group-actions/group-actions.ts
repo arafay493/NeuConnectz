@@ -1,18 +1,13 @@
-// Note: All warehouse action functions are defined here...!
-
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import apiRequestRoutes from "@/constants/api-request";
-import API_METHODS from "@/constants/api-methods";
+import { handleRefreshToken } from "@/constants/refresh-token";
+import { apiGet, apiPost } from "@/lib/api-service";
 import {
-    UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA,
     FETCH_ALL_GROUP_CODES,
     FETCH_GROUP_CODES_BY_USER_ID,
-}
-    from "@/redux/reducers/group-reducer/group-reducer";
-import { handleRefreshToken } from "@/constants/refresh-token";
-import { AssignGroupToUserDataType } from "@/types/modules/group-types/group-types";
+    UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA,
+} from "@/redux/reducers/group-reducer/group-reducer";
 import { ResHandler } from "@/types/api-types";
+import { AssignGroupToUserDataType } from "@/types/modules/group-types/group-types";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Note: Action function to fetch list all group codes...!
 const fetchListAllGroupCodes = createAsyncThunk(
@@ -27,18 +22,11 @@ const fetchListAllGroupCodes = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_LIST_GROUP_CODES,
-                    "Auth-Token": authToken
-                }
-            });
+            const params: { [key: string]: number } = {};
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet('/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodes', authToken, params);
 
             const { status, data } = response;
 
@@ -69,17 +57,12 @@ const fetchGroupCodesListByUserId = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: { userId },
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ADD_FETCH_GROUP_CODES_BY_USER_ID,
-                    "Auth-Token": authToken
-                }
-            });
-
+            const response = await apiGet(`/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodesByUserId?userId=${userId}`, authToken);
             const { status, data } = response;
+
+            if (status == 200) {
+                dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
+            };
 
             if (status == 200) {
                 dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
@@ -112,15 +95,7 @@ const assignGroupToUser = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.POST,
-                url: apiRequestRoutes.postRequest,
-                data: addGroupToUserData,
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ADD_GROUP_TO_USER,
-                    "Auth-Token": token
-                }
-            });
+            const response = await apiPost('/neu-connect/v2/IGroupcodeFeature/AddGroupcodeToUser', addGroupToUserData, token);
 
             const { status, data } = response;
 
@@ -141,7 +116,6 @@ const assignGroupToUser = createAsyncThunk(
 );
 
 export {
-    fetchListAllGroupCodes,
-    fetchGroupCodesListByUserId,
-    assignGroupToUser
+    assignGroupToUser, fetchGroupCodesListByUserId, fetchListAllGroupCodes
 };
+

@@ -1,13 +1,9 @@
-// Note: All user action functions are defined here...!
-
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import apiRequestRoutes from "@/constants/api-request";
-import API_METHODS from "@/constants/api-methods";
-import { FETCH_ALL_USERS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { CreateUserDataType, UpdateUserType } from "@/types/modules/user-types/user-types";
+import { apiGet, apiPost, apiPut } from "@/lib/api-service";
+import { FETCH_ALL_USERS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA } from "@/redux/reducers/user-reducer/user-reducer";
 import { ResHandler } from "@/types/api-types";
+import { CreateUserDataType, UpdateUserType } from "@/types/modules/user-types/user-types";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Note: Action function fetch all users...!
 const fetchAllUsers = createAsyncThunk(
@@ -22,18 +18,12 @@ const fetchAllUsers = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    LastCount: LastCount,
-                    skipRecord: skipRecord,
-                },
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_USERS,
-                    "Auth-Token": authToken
-                }
-            });
+            const params: { [key: string]: number } = {};
+            if (LastCount !== undefined) params.LastCount = LastCount;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+
+            const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
+
             const { status, data } = response;
 
             if (status == 200) {
@@ -66,15 +56,8 @@ const addUser = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.POST,
-                url: apiRequestRoutes.postRequest,
-                data: userData,
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ADD_USER,
-                    "Auth-Token": token
-                }
-            });
+            const response = await apiPost('/neu-connect/v2/IUserManagementFeature/AddUser', userData, token);
+
             const { status, data } = response;
 
             if (status == 201) {
@@ -108,15 +91,8 @@ const updateUser = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.POST,
-                url: apiRequestRoutes.postRequest,
-                data: editUserData,
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_UPDATE_USER,
-                    "Auth-Token": token
-                }
-            });
+            const response = await apiPut('/neu-connect/v2/IUserManagementFeature/ActivateOrDeactivateUser', editUserData, token);
+
             const { status, data } = response;
 
             if (status == 201) {
@@ -138,7 +114,5 @@ const updateUser = createAsyncThunk(
 );
 
 export {
-    fetchAllUsers,
-    addUser,
-    updateUser
+    addUser, fetchAllUsers, updateUser
 };

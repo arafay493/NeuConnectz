@@ -1,5 +1,3 @@
-// Note: LoginScreen page...!
-
 "use client";
 
 import { useState } from 'react';
@@ -15,21 +13,23 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '@/components/loader/loader';
 import styles from "./login.module.css";
 import { customStyles } from "@/styles/custom-theme";
+import { useRouter } from 'next/navigation';
 
 const LoginScreen = () => {
 
     // Note: handle styling hook...!
     const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Note: handeling states here...!
+    // Note: handling states here...!
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
-    // Note: Handeling redux here...!
+    // Note: Handling redux here...!
     const dispatch = useAppDispatch();
 
-    // Note: Fucntion to clear states...!
+    // Note: Function to clear states...!
     const clearStates = () => {
         setLoading(false);
         setEmail("");
@@ -47,7 +47,7 @@ const LoginScreen = () => {
             setCookie("UserAuthenticated", true);
             setCookie("AuthToken", response?.data?.data?.token);
             clearStates();
-            window.location.reload();
+            router.push('/dashboard'); // Redirect to dashboard after login
             return;
         }
 

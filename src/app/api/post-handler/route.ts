@@ -1,7 +1,7 @@
 // Note: All POST Api's request are handled here...!
 
 import { NextRequest, NextResponse } from "next/server";
-import instance from "@/lib/axios/axios";
+import instance from "@/lib/axios-instance";
 import API_METHODS from "@/constants/api-methods";
 
 export const POST = async (req: NextRequest) => {

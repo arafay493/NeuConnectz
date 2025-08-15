@@ -1,17 +1,13 @@
-// Note: All ITR action functions are defined here...!
-
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import API_METHODS from "@/constants/api-methods";
-import apiRequestRoutes from "@/constants/api-request";
+import { apiFilterParams } from "@/constants/filters";
 import { handleRefreshToken } from "@/constants/refresh-token";
+import { apiGet } from "@/lib/api-service";
 import {
+    FETCH_ALL_IT_DATA,
     FETCH_ALL_ITR_DATA,
     FETCH_ALL_TR_DATA,
-    FETCH_ALL_IT_DATA,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA,
 } from "@/redux/reducers/itr-reducer/itr-reducer";
-import { apiFilterParams } from "@/constants/filters";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Note: Action function to fetch list all group codes...!
 const fetchAllItrData = createAsyncThunk(
@@ -27,18 +23,11 @@ const fetchAllItrData = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": apiUrl,
-                    "Auth-Token": authToken
-                }
-            });
+            const params: { [key: string]: number } = {};
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
             const { status, data } = response;
 
@@ -74,18 +63,11 @@ const fetchAllTrData = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": apiUrl,
-                    "Auth-Token": authToken
-                }
-            });
+            const params: { [key: string]: number } = {};
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
             const { status, data } = response;
 
@@ -121,18 +103,11 @@ const fetchAllItData = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": apiUrl,
-                    "Auth-Token": authToken
-                }
-            });
+            const params: { [key: string]: number } = {};
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
             const { status, data } = response;
 
@@ -173,25 +148,16 @@ const fetchAll_ITR_Data = createAsyncThunk(
             },
         { dispatch }
     ) => {
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
         const modifiedApiUrl = (filterIndex != undefined && appliedFilter != undefined) ?
             (`${apiUrl}?${apiFilterParams[filterIndex || 0]}=${appliedFilter || ''}`) :
             apiUrl;
-        // console.log("Modified API URL: ", modifiedApiUrl);
-
         try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": modifiedApiUrl,
-                    "Auth-Token": token
-                }
-            });
-            // console.log("Response in ITR action: ", response);
+            const response = await apiGet(`/neu-connect/v2/${modifiedApiUrl}`, token, params);
+
             const { status, data } = response;
 
             if (status == 200) {
@@ -211,10 +177,7 @@ const fetchAll_ITR_Data = createAsyncThunk(
                     itDataCount: data?.data?.totalRecords
                 }));
             };
-        }
-
-        catch (error: any) {
-            console.log(`Error occured in fetch all ${type} data integration:`, error);
+        } catch (error: any) {
             const { status, data } = error?.response;
 
             // 401:
@@ -227,8 +190,6 @@ const fetchAll_ITR_Data = createAsyncThunk(
 );
 
 export {
-    fetchAll_ITR_Data,
-    fetchAllItrData,
-    fetchAllItData,
-    fetchAllTrData
+    fetchAll_ITR_Data, fetchAllItData, fetchAllItrData, fetchAllTrData
 };
+
