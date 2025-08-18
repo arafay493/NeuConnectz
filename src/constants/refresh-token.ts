@@ -1,18 +1,47 @@
-// Note: Refresh token handler...!
+import AuthService from "@/lib/auth-service/auth-service";
+import { apiPost } from "@/lib/api-service";
+import { customStyles } from "@/styles/custom-theme";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { logout } from "./logout";
 
-import { store } from "@/redux/store";
-import { refreshToken } from "@/redux/actions/auth-actions/auth-actions";
-import { RefreshTokenType } from "@/types/modules/user-types/user-types";
+export const handleRefreshToken = async (message: string): Promise<boolean> => {
+    try {
+        const accessToken = AuthService.getAccessToken();
+        const refreshToken = AuthService.getRefreshToken();
 
-export const handleRefreshToken = (message: string): void => {
-    const fetchAuthUser = store.getState().authStates.authenticatedUser;
+        if (!accessToken || !refreshToken) {
+            logout("Session Expired", "No valid tokens found");
+            return false;
+        }
 
-    if (fetchAuthUser) {
-        // console.log("Expired token data: ", fetchAuthUser);
-        const tokenData: RefreshTokenType = {
-            accessToken: fetchAuthUser?.token,
-            refreshToken: fetchAuthUser?.refreshToken
-        };
-        store.dispatch(refreshToken(tokenData));
-    };
+        const response = await apiPost('/auth/refresh-token', {
+            accessToken,
+            refreshToken
+        });
+
+        const { status, data } = response;
+
+        console.log("Response from refresh token API: ", response);
+
+        if (status === 200) {
+            // Update tokens using AuthService
+            AuthService.setTokens(data.data.accessToken, data.data.refreshToken);
+
+            showNotificationToast("Token Refreshed", "Session has been renewed", customStyles.colors._408CCE);
+
+            return true; // Return success
+        }
+
+        if (status === 401) {
+            console.log(message);
+            logout("Session Expired", message);
+            return false;
+        }
+
+        return false;
+    } catch (error) {
+        console.error("Refresh token failed:", error);
+        logout("Session Expired", "Unable to refresh session");
+        return false;
+    }
 };

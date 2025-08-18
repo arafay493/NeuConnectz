@@ -20,7 +20,6 @@ const unAuthenticatedRoutes: String[] = ["/login"];
 
 // Note: Authenticated routes...!
 const authenticatedRoutes: String[] = [
-    "/",
     "/dashboard",
     "/stock-movement",
     "/reconciliation",

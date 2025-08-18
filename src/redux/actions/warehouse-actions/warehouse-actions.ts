@@ -1,18 +1,13 @@
-// Note: All warehouse action functions are defined here...!
-
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import apiRequestRoutes from "@/constants/api-request";
-import API_METHODS from "@/constants/api-methods";
+import { handleRefreshToken } from "@/constants/refresh-token";
+import { apiGet, apiPost } from "@/lib/api-service";
 import {
     FETCH_ALL_WAREHOUSES,
     FETCH_WAREHOUSES_BY_USER_ID,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA
-}
-    from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
-import { handleRefreshToken } from "@/constants/refresh-token";
-import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
+} from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 import { ResHandler } from "@/types/api-types";
+import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Note: Action function to fetch all warehouses...!
 const fetchAllWareHouses = createAsyncThunk(
@@ -26,34 +21,16 @@ const fetchAllWareHouses = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: {
-                    lastCount,
-                    skipRecords
-                },
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_FETCH_ALL_WAREHOUSES,
-                    "Auth-Token": authToken
-                }
-            });
-            const { status, data } = response;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
-            };
-        }
+        const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', authToken, params);
 
-        catch (error: any) {
-            const { status, data } = error?.response;
+        const { status, data } = response;
 
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_WAREHOUSES(data?.data));
         };
     }
 );
@@ -65,34 +42,12 @@ const fetchWarehousesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
-        try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                params: { userId },
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ADD_FETCH_WAREHOUSES_BY_USER_ID,
-                    "Auth-Token": authToken
-                }
-            });
-            const { status, data } = response;
+        const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
 
-            if (status == 200) {
-                dispatch(FETCH_WAREHOUSES_BY_USER_ID(data?.data));
-            };
-        }
+        const { status, data } = response;
 
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
-
-            // 404
-            else if (status == 404) dispatch(FETCH_WAREHOUSES_BY_USER_ID([]));
+        if (status == 200) {
+            dispatch(FETCH_WAREHOUSES_BY_USER_ID(data?.data));
         };
     }
 );
@@ -109,38 +64,18 @@ const assignWareHouseToUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await axios({
-                method: API_METHODS.POST,
-                url: apiRequestRoutes.postRequest,
-                data: wareHouseData,
-                headers: {
-                    "Api-Url": process.env.NEXT_PUBLIC_ASSIGN_WAREHOUSE_TO_USER,
-                    "Auth-Token": token
-                }
-            });
-            const { status, data } = response;
+        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', wareHouseData, token);
 
-            if (status == 201) {
-                resHandler(response);
-            };
-        }
+        const { status, data } = response;
 
-        catch (error: any) {
-            resHandler(error?.response);
-
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) {
-                handleRefreshToken(data?.error);
-            };
+        if (status == 201) {
+            resHandler(response);
         };
     }
 );
 
 export {
-    fetchAllWareHouses,
-    fetchWarehousesListByUserId,
-    assignWareHouseToUser
+    assignWareHouseToUser, fetchAllWareHouses,
+    fetchWarehousesListByUserId
 };
+
