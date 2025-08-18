@@ -18,15 +18,15 @@ const logInUser = createAsyncThunk(
         }: { loginData: LoginUserDataType, resHandler: ResHandler },
         { dispatch }
     ) => {
-        const response = await apiPost('/auth/signup', loginData);
+        const response = await apiPost('/auth/login', loginData);
 
         const { status, data } = response;
 
         if (status === 200) {
-            // resHandler(response);
+            resHandler(response);
             // Use AuthService to set tokens
-            AuthService.setTokens(data?.data.token, data?.data.refreshToken);
-            showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
+            // AuthService.setTokens(data?.data.token, data?.data.refreshToken);
+            // showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
             dispatch(LOG_IN_USER(data?.data));
         }
     }

@@ -6,9 +6,9 @@ async function proxyRequest(req: NextRequest, method: string) {
     let targetBackend: string | undefined = '';
 
     // Decide which backend to use based on path
-    if (req.nextUrl.pathname.startsWith('/api/backend/auth/signup')) {
+    if (req.nextUrl.pathname.startsWith('/api/backend/auth/login')) {
         targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.auth ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.auth : undefined;
-    } else if (req.nextUrl.pathname.startsWith('/api/backend/auth/login')) {
+    } else if (req.nextUrl.pathname.startsWith('/api/backend/auth/refresh-token')) {
         targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.refreshToken ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.refreshToken : undefined;
     } else if (req.nextUrl.pathname.startsWith('/api/backend/neu-connect/v2')) {
         targetBackend = API_ENDPOINTS.neuConnect + '/ZCAPI';

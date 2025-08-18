@@ -4,24 +4,44 @@ import { customStyles } from "@/styles/custom-theme";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { logout } from "./logout";
 
-export const handleRefreshToken = async (message: string) => {
-    const accessToken = AuthService.getAccessToken();
-    const refreshToken = AuthService.getRefreshToken();
+export const handleRefreshToken = async (message: string): Promise<boolean> => {
+    try {
+        const accessToken = AuthService.getAccessToken();
+        const refreshToken = AuthService.getRefreshToken();
 
-    const response = await apiPost('/auth/login', { accessToken, refreshToken });
+        if (!accessToken || !refreshToken) {
+            logout("Session Expired", "No valid tokens found");
+            return false;
+        }
 
-    const { status, data } = response;
+        const response = await apiPost('/auth/refresh-token', {
+            accessToken,
+            refreshToken
+        });
 
-    console.log("Response from refresh token API: ", response);
+        const { status, data } = response;
 
-    if (status === 200) {
-        showNotificationToast("Session Expired", "Token has been refreshed", customStyles.colors._408CCE)
-        AuthService.setTokens(data.data.accessToken, data.data.refreshToken)
-    }
+        console.log("Response from refresh token API: ", response);
 
+        if (status === 200) {
+            // Update tokens using AuthService
+            AuthService.setTokens(data.data.accessToken, data.data.refreshToken);
 
-    if (status === 401) {
-        console.log(message)
-        logout("Session Expired", message);
+            showNotificationToast("Token Refreshed", "Session has been renewed", customStyles.colors._408CCE);
+
+            return true; // Return success
+        }
+
+        if (status === 401) {
+            console.log(message);
+            logout("Session Expired", message);
+            return false;
+        }
+
+        return false;
+    } catch (error) {
+        console.error("Refresh token failed:", error);
+        logout("Session Expired", "Unable to refresh session");
+        return false;
     }
 };
