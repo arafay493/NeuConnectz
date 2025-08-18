@@ -17,28 +17,16 @@ const fetchAllUsers = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (LastCount !== undefined) params.LastCount = LastCount;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+        const params: { [key: string]: number } = {};
+        if (LastCount !== undefined) params.LastCount = LastCount;
+        if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
-            const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
+        const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_USERS(data?.data));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_USERS(data?.data));
         };
     }
 );
@@ -55,25 +43,12 @@ const addUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await apiPost('/neu-connect/v2/IUserManagementFeature/AddUser', userData, token);
+        const response = await apiPost('/neu-connect/v2/IUserManagementFeature/AddUser', userData, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 201) {
-                resHandler(response);
-            };
-        }
-
-        catch (error: any) {
-            resHandler(error?.response);
-
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) {
-                handleRefreshToken(data?.error);
-            };
+        if (status == 201) {
+            resHandler(response);
         };
     }
 );
@@ -90,25 +65,12 @@ const updateUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await apiPut('/neu-connect/v2/IUserManagementFeature/ActivateOrDeactivateUser', editUserData, token);
+        const response = await apiPut('/neu-connect/v2/IUserManagementFeature/ActivateOrDeactivateUser', editUserData, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 201) {
-                resHandler(response);
-            };
-        }
-
-        catch (error: any) {
-            resHandler(error?.response);
-
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) {
-                handleRefreshToken(data?.error);
-            };
+        if (status == 201) {
+            resHandler(response);
         };
     }
 );

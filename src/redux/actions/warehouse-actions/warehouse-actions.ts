@@ -21,28 +21,16 @@ const fetchAllWareHouses = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', authToken, params);
+        const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_WAREHOUSES(data?.data));
         };
     }
 );
@@ -54,27 +42,12 @@ const fetchWarehousesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
-        try {
-            const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
+        const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_WAREHOUSES_BY_USER_ID(data?.data));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA());
-
-            // 404
-            else if (status == 404) dispatch(FETCH_WAREHOUSES_BY_USER_ID([]));
+        if (status == 200) {
+            dispatch(FETCH_WAREHOUSES_BY_USER_ID(data?.data));
         };
     }
 );
@@ -91,25 +64,12 @@ const assignWareHouseToUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', wareHouseData, token);
+        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', wareHouseData, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 201) {
-                resHandler(response);
-            };
-        }
-
-        catch (error: any) {
-            resHandler(error?.response);
-
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) {
-                handleRefreshToken(data?.error);
-            };
+        if (status == 201) {
+            resHandler(response);
         };
     }
 );

@@ -17,12 +17,15 @@ export const apiGet = async (endpoint: string, authToken?: string, params?: { [k
     } catch (error: any) {
         const { status, data } = error?.response || {};
 
+        console.log("Error from API: ", error);
+        console.log("Error response data: ", data);
+
         // Handle 401 - Unauthorized
         if (status === 401) {
-            handleRefreshToken(data?.error);
+            handleRefreshToken(error.message);
         }
 
-        return { success: false, error: data, status };
+        return { success: false, error: error.message, status };
     }
 };
 
@@ -43,10 +46,10 @@ export const apiPost = async (endpoint: string, payload: any, authToken?: string
 
         // Handle 401 - Unauthorized
         if (status === 401) {
-            handleRefreshToken(data?.error);
+            handleRefreshToken(error.message);
         }
 
-        return { success: false, error: data, status };
+        return { success: false, error: error.message, status };
     }
 };
 
@@ -67,10 +70,10 @@ export const apiPut = async (endpoint: string, payload: any, authToken?: string)
 
         // Handle 401 - Unauthorized
         if (status === 401) {
-            handleRefreshToken(data?.error);
+            handleRefreshToken(error.message);
         }
 
-        return { success: false, error: data, status };
+        return { success: false, error: error.message, status };
     }
 };
 
@@ -90,9 +93,9 @@ export const apiDelete = async (endpoint: string, authToken?: string) => {
 
         // Handle 401 - Unauthorized
         if (status === 401) {
-            handleRefreshToken(data?.error);
+            handleRefreshToken(error.message);
         }
 
-        return { success: false, error: data, status };
+        return { success: false, error: error.message, status };
     }
 };

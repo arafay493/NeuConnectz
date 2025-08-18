@@ -21,30 +21,18 @@ const fetchListAllGroupCodes = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet('/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodes', authToken, params);
+        const response = await apiGet('/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodes', authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            const { data: groupData, totalCount } = data?.data
+        const { data: groupData, totalCount } = data?.data
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_GROUP_CODES({ groups: groupData, totalCount }));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_GROUP_CODES({ groups: groupData, totalCount }));
         };
     }
 );
@@ -56,28 +44,15 @@ const fetchGroupCodesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
-        try {
-            const response = await apiGet(`/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodesByUserId?userId=${userId}`, authToken);
-            const { status, data } = response;
+        const response = await apiGet(`/neu-connect/v2/IGroupcodeFeature/ListAllGroupcodesByUserId?userId=${userId}`, authToken);
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
-            };
+        if (status == 200) {
+            dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
+        };
 
-            if (status == 200) {
-                dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
-            };
-        } catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_GROUPS_DATA());
-
-            // 404
-            else if (status == 404) dispatch(FETCH_GROUP_CODES_BY_USER_ID([]));
+        if (status == 200) {
+            dispatch(FETCH_GROUP_CODES_BY_USER_ID(data?.data));
         };
     }
 );
@@ -94,23 +69,12 @@ const assignGroupToUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const response = await apiPost('/neu-connect/v2/IGroupcodeFeature/AddGroupcodeToUser', addGroupToUserData, token);
+        const response = await apiPost('/neu-connect/v2/IGroupcodeFeature/AddGroupcodeToUser', addGroupToUserData, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 201) {
-                resHandler(response);
-            };
-        } catch (error: any) {
-            resHandler(error?.response);
-
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) {
-                handleRefreshToken(data?.error);
-            };
+        if (status == 201) {
+            resHandler(response);
         };
     }
 );

@@ -15,29 +15,18 @@ const fetchReconciliationData = createAsyncThunk(
     "reconciliation/fetchReconciliationData",
     async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
 
-        try {
-            const params = {
-                fromWarehouseCode,
-                toWarehouseCode,
-                dateTime: date
-            }
-            const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetInventoryAndTransferReceiptItems`, authToken, params)
-
-            const { status, data } = response;
-
-            if (status == 200) {
-                dispatch(FETCH_RECONCILIATION_DATA(data?.data));
-            };
+        const params = {
+            fromWarehouseCode,
+            toWarehouseCode,
+            dateTime: date
         }
 
-        catch (error: any) {
-            const { status, data } = error?.response;
+        const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetInventoryAndTransferReceiptItems`, authToken, params)
 
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
+        const { status, data } = response;
 
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA());
+        if (status == 200) {
+            dispatch(FETCH_RECONCILIATION_DATA(data?.data));
         };
     }
 );

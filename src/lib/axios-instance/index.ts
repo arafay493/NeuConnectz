@@ -33,8 +33,6 @@ axiosInstance.interceptors.request.use(
         // Example: Add token from cookies (if available)
         const token = getCookie('AuthToken') as string | undefined;
 
-        console.log("Axios auth token: ", token);
-
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         } else {
@@ -52,12 +50,12 @@ axiosInstance.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response) {
             const status = error.response.status;
-            console.error(
+            console.log(
                 `Axios Error: Status ${status}`,
                 error.response.data || error.message
             );
         } else {
-            console.error('Network or unexpected error:', error.message);
+            console.log('Network or unexpected error:', error.message);
         }
 
         return Promise.reject(error);

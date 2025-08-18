@@ -22,31 +22,19 @@ const fetchAllItrData = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_ITR_DATA({
-                    itrData: data?.data?.data,
-                    itrDataCount: data?.data?.totalRecords
-                }));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_ITR_DATA({
+                itrData: data?.data?.data,
+                itrDataCount: data?.data?.totalRecords
+            }));
         };
     }
 );
@@ -62,31 +50,19 @@ const fetchAllTrData = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_TR_DATA({
-                    trData: data?.data?.data,
-                    trDataCount: data?.data?.totalRecords
-                }));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_TR_DATA({
+                trData: data?.data?.data,
+                trDataCount: data?.data?.totalRecords
+            }));
         };
     }
 );
@@ -102,31 +78,19 @@ const fetchAllItData = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_IT_DATA({
-                    itData: data?.data?.data,
-                    itDataCount: data?.data?.totalRecords
-                }));
-            };
-        }
-
-        catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_IT_DATA({
+                itData: data?.data?.data,
+                itDataCount: data?.data?.totalRecords
+            }));
         };
     }
 );
@@ -155,36 +119,27 @@ const fetchAll_ITR_Data = createAsyncThunk(
         const modifiedApiUrl = (filterIndex != undefined && appliedFilter != undefined) ?
             (`${apiUrl}?${apiFilterParams[filterIndex || 0]}=${appliedFilter || ''}`) :
             apiUrl;
-        try {
-            const response = await apiGet(`/neu-connect/v2/${modifiedApiUrl}`, token, params);
 
-            const { status, data } = response;
+        const response = await apiGet(`/neu-connect/v2/${modifiedApiUrl}`, token, params);
 
-            if (status == 200) {
-                handleLoading(); // Note: Stop loading...!
-                if (type === 'ITR') {
-                    dispatch(FETCH_ALL_ITR_DATA({
-                        itrData: data?.data?.data,
-                        itrDataCount: data?.data?.totalRecords
-                    }))
-                }
-                else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA({
-                    trData: data?.data?.data,
-                    trDataCount: data?.data?.totalRecords
-                }));
-                else if (type === 'IT') dispatch(FETCH_ALL_IT_DATA({
-                    itData: data?.data?.data,
-                    itDataCount: data?.data?.totalRecords
-                }));
-            };
-        } catch (error: any) {
-            const { status, data } = error?.response;
+        const { status, data } = response;
 
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_ITR_DATA());
+        if (status == 200) {
+            handleLoading(); // Note: Stop loading...!
+            if (type === 'ITR') {
+                dispatch(FETCH_ALL_ITR_DATA({
+                    itrData: data?.data?.data,
+                    itrDataCount: data?.data?.totalRecords
+                }))
+            }
+            else if (type === 'TR') dispatch(FETCH_ALL_TR_DATA({
+                trData: data?.data?.data,
+                trDataCount: data?.data?.totalRecords
+            }));
+            else if (type === 'IT') dispatch(FETCH_ALL_IT_DATA({
+                itData: data?.data?.data,
+                itDataCount: data?.data?.totalRecords
+            }));
         };
     }
 );

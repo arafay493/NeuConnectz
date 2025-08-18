@@ -112,27 +112,17 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
 
         const apiUrl = !type ? `/neu-connect/v2/${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
             `/neu-connect/v2/${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
-        try {
-            const response = await apiGet(apiUrl, token, params);
 
-            const { status } = response;
+        const response = await apiGet(apiUrl, token, params);
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_ITR_IT_TRS({
-                    listData: response?.data?.data?.data,
-                    listCount: response?.data?.data?.totalRecords
-                }));
-                handleLoading(); // Disable loading state...!
-            };
-        } catch (error: any) {
-            console.log('Error occurred in fetch all ITR, TR, IT data api integration: ', error);
-            const { status, data } = error?.response;
+        const { status } = response;
 
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_ITR_IT_TRS({
+                listData: response?.data?.data?.data,
+                listCount: response?.data?.data?.totalRecords
+            }));
+            handleLoading(); // Disable loading state...!
         };
     }
 );
@@ -151,30 +141,20 @@ const fetchAll_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_GRNS({
-                    grnsData: data?.data?.items,
-                    totalGRNSCount: data?.data?.totalRecords
-                }));
-                handleLoading(); // Disable loading state...!
-            };
-        } catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_GRNS({
+                grnsData: data?.data?.items,
+                totalGRNSCount: data?.data?.totalRecords
+            }));
+            handleLoading(); // Disable loading state...!
         };
     }
 );
@@ -193,30 +173,20 @@ const fetchAll_PENDING_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_PENDING_GRNS({
-                    grnsData: data?.data?.items,
-                    totalGRNSCount: data?.data?.totalRecords
-                }));
-                handleLoading(); // Disable loading state...!
-            };
-        } catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_PENDING_GRNS({
+                grnsData: data?.data?.items,
+                totalGRNSCount: data?.data?.totalRecords
+            }));
+            handleLoading(); // Disable loading state...!
         };
     }
 );
@@ -235,30 +205,20 @@ const fetchAll_INTEGRATED_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        try {
-            const params: { [key: string]: number } = {};
-            if (lastCount !== undefined) params.lastCount = lastCount;
-            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_INTEGRATED_GRNS({
-                    grnsData: data?.data?.items,
-                    totalGRNSCount: data?.data?.totalRecords
-                }));
-                handleLoading(); // Disable loading state...!
-            };
-        } catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_INTEGRATED_GRNS({
+                grnsData: data?.data?.items,
+                totalGRNSCount: data?.data?.totalRecords
+            }));
+            handleLoading(); // Disable loading state...!
         };
     }
 );
@@ -267,23 +227,11 @@ const fetchAll_INTEGRATED_GRNS = createAsyncThunk(
 const checkSAPConfigExist = createAsyncThunk(
     "sap/checkSAPConfigExist",
     async (token: string, { dispatch }) => {
+        const response = await apiGet(`/neu-connect/v2/ISapFeature/CheckIfSapConfigurationExists`, token);
 
-        try {
-            const response = await apiGet(`/neu-connect/v2/ISapFeature/CheckIfSapConfigurationExists`, token);
+        const { status, data } = response;
 
-            const { status, data } = response;
-
-            if (status == 200) dispatch(CHECK_SAP_CONFIG_EXIST(data?.data));
-        } catch (error: any) {
-            console.log('Error occurred in check SAP config exist api integration: ', error);
-            // const { status, data } = error?.response;
-
-            // 401:
-            // if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            // else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
-        };
+        if (status == 200) dispatch(CHECK_SAP_CONFIG_EXIST(data?.data));
     }
 );
 
@@ -298,21 +246,11 @@ const getSAPData = createAsyncThunk(
                 resHandler: ResHandler
             },
         { dispatch }) => {
-        try {
-            const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token);
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) resHandler(data);
-        } catch (error: any) {
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
-        };
+        if (status == 200) resHandler(data);
     }
 );
 
@@ -380,23 +318,12 @@ const exportDataToCsvFile = createAsyncThunk(
 const fetchAllVendorCodes = createAsyncThunk(
     "sap/fetchAllVendorCodes",
     async (token: string, { dispatch }) => {
-        try {
-            const response = await apiGet(`/neu-connect/v2/ISapFeature/ListBusinessPartnerVendors`, token);
+        const response = await apiGet(`/neu-connect/v2/ISapFeature/ListBusinessPartnerVendors`, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(FETCH_ALL_VENDOR_CODES(data?.data?.data));
-            };
-        } catch (error: any) {
-            console.log('Error occurred in fetch all vendor codes data api integration: ', error);
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(FETCH_ALL_VENDOR_CODES(data?.data?.data));
         };
     }
 );
@@ -405,23 +332,12 @@ const fetchAllVendorCodes = createAsyncThunk(
 const handleGetSapStagingDataCounts = createAsyncThunk(
     "sap/handleGetSapStagingDataCounts",
     async (token: string, { dispatch }) => {
-        try {
-            const response = await apiGet(`/neu-connect/v2/IFetchNewDataFromSAPFeature/GetSapStagingDataCounts`, token);
+        const response = await apiGet(`/neu-connect/v2/IFetchNewDataFromSAPFeature/GetSapStagingDataCounts`, token);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status == 200) {
-                dispatch(GET_SAP_STAGING_DATA_COUNTS(data?.data));
-            };
-        } catch (error: any) {
-            console.log('Error occurred in getting sap staging data counts api integration: ', error);
-            const { status, data } = error?.response;
-
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
-
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA());
+        if (status == 200) {
+            dispatch(GET_SAP_STAGING_DATA_COUNTS(data?.data));
         };
     }
 );

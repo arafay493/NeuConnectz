@@ -1,6 +1,9 @@
 import { logout } from "@/constants/logout";
 import { apiPost } from "@/lib/api-service";
+import AuthService from "@/lib/auth-service/auth-service";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { LOG_IN_USER, REFRESH_TOKEN } from "@/redux/reducers/auth-reducer/auth-reducer";
+import { customStyles } from "@/styles/custom-theme";
 import { ResHandler } from "@/types/api-types";
 import { LoginUserDataType, RefreshTokenType } from "@/types/modules/user-types/user-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -15,18 +18,17 @@ const logInUser = createAsyncThunk(
         }: { loginData: LoginUserDataType, resHandler: ResHandler },
         { dispatch }
     ) => {
-        try {
-            const response = await apiPost('/auth/signup', loginData);
+        const response = await apiPost('/auth/signup', loginData);
 
-            const { status, data } = response;
+        const { status, data } = response;
 
-            if (status === 200) {
-                resHandler(response);
-                dispatch(LOG_IN_USER(data?.data));
-            }
-        } catch (error: any) {
-            resHandler(error?.response);
-        };
+        if (status === 200) {
+            // resHandler(response);
+            // Use AuthService to set tokens
+            AuthService.setTokens(data?.data.token, data?.data.refreshToken);
+            showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
+            dispatch(LOG_IN_USER(data?.data));
+        }
     }
 );
 
