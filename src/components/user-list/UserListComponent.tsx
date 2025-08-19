@@ -283,7 +283,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
     }, [table.getPageCount()]);
 
     useEffect(() => {
-        if (authenticatedUser && !data.length) {
+        if (authenticatedUser) {
             setIsLoading(true);
 
             const skipRecord = pagination.pageIndex * pagination.pageSize;

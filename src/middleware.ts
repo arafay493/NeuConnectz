@@ -15,8 +15,6 @@ export async function middleware(req: NextRequest) {
     const isAuthenticated = Boolean(authToken && userAuthenticated);
 
     const { pathname } = req.nextUrl;
-    console.log('Current route: ', pathname);
-    console.log('Is authenticated: ', isAuthenticated);
 
     // Check if current path is an authenticated route (including dynamic routes)
     const isAuthenticatedRoute = authenticatedRoutes.some(route => {
