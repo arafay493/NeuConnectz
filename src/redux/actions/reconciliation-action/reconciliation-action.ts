@@ -1,13 +1,7 @@
-// Note: All warehouse action functions are defined here...!
-
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import apiRequestRoutes from "@/constants/api-request";
-import API_METHODS from "@/constants/api-methods";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
-import { ResHandler } from "@/types/api-types";
+import { apiGet } from "@/lib/api-service";
 import { FETCH_RECONCILIATION_DATA, UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA } from "@/redux/reducers/reconciliation-reducer/reconciliation-reducer";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 interface FetchReconciliationTableProps {
     authToken: string;
@@ -21,31 +15,18 @@ const fetchReconciliationData = createAsyncThunk(
     "reconciliation/fetchReconciliationData",
     async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
 
-        try {
-            const response = await axios({
-                method: API_METHODS.GET,
-                url: apiRequestRoutes.getRequest,
-                headers: {
-                    "Api-Url": `${process.env.NEXT_PUBLIC_FETCH_IT_AND_TR_RECONCILIATION_DATA}?fromWarehouseCode=${fromWarehouseCode}&toWarehouseCode=${toWarehouseCode}&dateTime=${date}`,
-                    "Auth-Token": authToken
-                }
-            });
-            const { status, data } = response;
-
-            if (status == 200) {
-                dispatch(FETCH_RECONCILIATION_DATA(data?.data));
-            };
+        const params = {
+            fromWarehouseCode,
+            toWarehouseCode,
+            dateTime: date
         }
 
-        catch (error: any) {
-            // console.log('Error occurred in fetch all warehouses api integration: ', error);
-            const { status, data } = error?.response;
+        const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetInventoryAndTransferReceiptItems`, authToken, params)
 
-            // 401:
-            if (status == 401) handleRefreshToken(data?.error);
+        const { status, data } = response;
 
-            // 403
-            else if (status == 403) dispatch(UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA());
+        if (status == 200) {
+            dispatch(FETCH_RECONCILIATION_DATA(data?.data));
         };
     }
 );
@@ -142,7 +123,5 @@ const fetchReconciliationData = createAsyncThunk(
 // );
 
 export {
-    fetchReconciliationData,
-    // fetchWarehousesListByUserId,
-    // assignWareHouseToUser
+    fetchReconciliationData
 };

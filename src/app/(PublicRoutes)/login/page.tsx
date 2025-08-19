@@ -1,13 +1,10 @@
-// Note: LoginScreen page...!
-
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useMediaQuery } from '@mantine/hooks';
 import { TextInput, PasswordInput, Button, Box, Paper, Text, Group, Title, Stack } from '@mantine/core';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
-import { setCookie } from "cookies-next";
 import { useAppDispatch } from '@/redux/store';
 import { logInUser } from '@/redux/actions/auth-actions/auth-actions';
 import { localAssets } from '@/lib/file-paths/file-paths';
@@ -15,21 +12,31 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '@/components/loader/loader';
 import styles from "./login.module.css";
 import { customStyles } from "@/styles/custom-theme";
+import { useRouter } from 'next/navigation';
+import AuthService from '@/lib/auth-service/auth-service';
 
 const LoginScreen = () => {
 
     // Note: handle styling hook...!
     const isMobile = useMediaQuery('(max-width: 768px)');
 
-    // Note: handeling states here...!
+    // Note: handling states here...!
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
 
-    // Note: Handeling redux here...!
+    // Note: Handling redux here...!
     const dispatch = useAppDispatch();
 
-    // Note: Fucntion to clear states...!
+    // Note: Check if user is already authenticated on component mount
+    useEffect(() => {
+        if (AuthService.isAuthenticated()) {
+            router.replace('/dashboard');
+        }
+    }, [router]);
+
+    // Note: Function to clear states...!
     const clearStates = () => {
         setLoading(false);
         setEmail("");
@@ -41,21 +48,29 @@ const LoginScreen = () => {
     const handleResponse = (response: any): void => {
         // console.log("Login response: ", response);
 
-        if (response && response.status == 200) {
+        if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
+
+            const { token, refreshToken } = response?.data?.data;
+
+            // Use AuthService to set tokens
+            AuthService.setTokens(token, refreshToken);
+
             showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
-            setCookie("UserAuthenticated", true);
-            setCookie("AuthToken", response?.data?.data?.token);
             clearStates();
-            window.location.reload();
+
+            // Add a small delay to ensure cookies are set before redirect
+            setTimeout(() => {
+                router.replace('/dashboard');
+            }, 100);
             return;
         }
 
-        if (response && response.status != 200) {
+        if (response && response.status !== 200) {
             setLoading(false); // Note: Stop loading...!
             showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors.red);
             return;
-        };
+        }
     };
 
     // Note: Function to login user...!
