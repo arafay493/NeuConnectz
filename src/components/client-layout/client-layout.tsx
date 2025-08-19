@@ -68,7 +68,7 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
         <Provider store={store}>
             <PersistGate persistor={persistor}>
                 <MantineUiProvider>
-                    <HtmlAppLayout>{children}</HtmlAppLayout>
+                    {children}
                 </MantineUiProvider>
             </PersistGate>
         </Provider>

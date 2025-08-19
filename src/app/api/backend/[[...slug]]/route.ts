@@ -6,22 +6,21 @@ async function proxyRequest(req: NextRequest, method: string) {
     let targetBackend: string | undefined = '';
 
     // Decide which backend to use based on path
-    if (req.nextUrl.pathname.startsWith(process.env.AUTH_API_URL as string)) {
+    if (req.nextUrl.pathname.startsWith(process.env.AUTH_API_URL!)) {
         targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.auth ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.auth : undefined;
-    } else if (req.nextUrl.pathname.startsWith(process.env.REFRESH_AUTH_API_URL as string)) {
+    } else if (req.nextUrl.pathname.startsWith(process.env.REFRESH_AUTH_API_URL!)) {
         targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.refreshToken ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.refreshToken : undefined;
-    } else if (req.nextUrl.pathname.startsWith(process.env.ZCAPI_API_URL as string)) {
+    } else if (req.nextUrl.pathname.startsWith(process.env.ZCAPI_API_URL!)) {
         targetBackend = API_ENDPOINTS.neuConnect + '/ZCAPI';
-    } else if (req.nextUrl.pathname.startsWith(process.env.TT_API_URL as string)) {
+    } else if (req.nextUrl.pathname.startsWith(process.env.TT_API_URL!)) {
         targetBackend = API_ENDPOINTS.traceAndTrack;
     } else {
         return new NextResponse(JSON.stringify({ error: 'Unknown API route' }), { status: 400 });
     }
 
     // Remove the "/api/backend/{type}" part
-    const url = targetBackend + req.nextUrl.pathname.replace(/^\/api\/backend\/(auth\/signup|auth\/login|neu-connect\/v2|trace-and-track\/v2)/, '') + req.nextUrl.search;
+    const url = targetBackend + req.nextUrl.pathname.replace(/^\/api\/backend\/(auth\/login|auth\/refresh-token|neu-connect\/v2|trace-and-track\/v2)/, '') + req.nextUrl.search;
 
-    console.log("Original URL: ", url);
     const headers = Object.fromEntries(req.headers.entries());
     delete headers.host;
 
