@@ -1,4 +1,4 @@
-import GenerateBarcodeComponent from '@/container/generate-barcode-page/main-component'
+import GenerateBarcodeComponent from '@/components/generate-barcode/GenerateBarcodeComponent'
 import React from 'react'
 
 const GenerateBarcodeScreen = () => {

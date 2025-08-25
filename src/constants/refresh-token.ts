@@ -26,15 +26,16 @@ export const handleRefreshToken = async (message: string): Promise<boolean> => {
         if (status === 200) {
             // Update tokens using AuthService
             AuthService.setTokens(data.data.accessToken, data.data.refreshToken);
-
             showNotificationToast("Token Refreshed", "Session has been renewed", customStyles.colors._408CCE);
 
+            window.location.reload();
             return true; // Return success
         }
 
         if (status === 401) {
             console.log(message);
             logout("Session Expired", message);
+            window.location.reload();
             return false;
         }
 

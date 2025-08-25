@@ -395,3 +395,21 @@ export interface QuantityDifferenceData {
     quantityDifference: number;
     action: string;
 }
+
+
+export interface GenerateBarcodeStateProps {
+    generateBarcodeData: GenerateBarcodeProps | null;
+}
+export interface GenerateBarcodeProps {
+    id: string;
+    status: string;
+    qty: number;
+    codes: Array<Codes>;
+
+}
+
+export interface Codes {
+    id: string;
+    code: string;
+    serialNum: string;
+} 

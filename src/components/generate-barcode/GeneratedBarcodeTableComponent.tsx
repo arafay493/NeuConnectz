@@ -9,12 +9,12 @@ import { localAssets } from "@/lib/file-paths/file-paths";
 import { customStyles } from "@/styles/custom-theme";
 import { data, GenerateBarcodeTableProps } from "@/types/generate-barcode.types";
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
 import { useMemo, useState } from "react";
 
-const GenerateBarcodeTableComponent = () => {
+const GeneratedBarcodeTableComponent = () => {
     // Note: Filter States
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -500,4 +500,4 @@ const GenerateBarcodeTableComponent = () => {
     )
 }
 
-export default GenerateBarcodeTableComponent
+export default GeneratedBarcodeTableComponent

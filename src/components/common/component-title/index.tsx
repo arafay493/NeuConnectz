@@ -61,7 +61,7 @@ const TitleComponent: FC<TitleComponentProps> = ({
                 </Stack>
 
                 <Button
-                    rightSection={buttonIcon}
+                    leftSection={buttonIcon}
                     className='filledButton'
                     variant="transparent"
                     size="md"
