@@ -5,27 +5,33 @@ import { GlobalSearchFilter } from "@/components/table-filters/GlobalSearchFilte
 import { TableColumnsFilter } from "@/components/table-filters/TableColumnsFilter";
 import calculateColumnWidth from "@/constants/calculateColumnWidth";
 import { dateFilterFn, numberFilterFn, stringFilterFn } from "@/constants/table-filteration";
+import { formatDate } from "@/lib/date-formatter";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import { customStyles } from "@/styles/custom-theme";
-import { data, GenerateBarcodeTableProps } from "@/types/generate-barcode.types";
+import { GenerateBarcodeProps } from "@/types/redux-types";
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
-import { useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
-const GeneratedBarcodeTableComponent = () => {
+interface GeneratedBarcodeTableComponentProps {
+    generateBarcodeData: Array<GenerateBarcodeProps> | null;
+    pagination: PaginationState;
+    setPagination: Dispatch<SetStateAction<PaginationState>>;
+    totalCount?: number; // Add total count from server
+    onSendBarcode: (id: string, email?: string) => void;
+}
+
+const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPagination, totalCount, onSendBarcode }: GeneratedBarcodeTableComponentProps) => {
+    // Use totalCount from props if available, otherwise fall back to data length
+    const actualTotalCount = totalCount || generateBarcodeData?.length || 0;
     // Note: Filter States
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Note: State for pagination
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10, // Adjusted to a more reasonable default
-    });
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -75,7 +81,7 @@ const GeneratedBarcodeTableComponent = () => {
     };
 
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<GenerateBarcodeTableProps>[]>(
+    const columns = useMemo<ColumnDef<GenerateBarcodeProps>[]>(
         () => [
             {
                 // accessorKey: 'userId',
@@ -92,7 +98,7 @@ const GeneratedBarcodeTableComponent = () => {
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
-                accessorKey: 'batchId',
+                accessorKey: 'id',
                 header: 'Batch ID',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
@@ -101,10 +107,10 @@ const GeneratedBarcodeTableComponent = () => {
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('BatchId', (data || []).map(item => item.batchId), 150, 400),
+                size: calculateColumnWidth('BatchId', (generateBarcodeData || []).map(item => item.id), 150, 400),
             },
             {
-                accessorKey: 'quantity',
+                accessorKey: 'qty',
                 header: 'Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
@@ -113,19 +119,19 @@ const GeneratedBarcodeTableComponent = () => {
                 ),
                 filterFn: numberFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Quantity', (data || []).map(item => item.quantity), 180, 450),
+                size: calculateColumnWidth('Quantity', (generateBarcodeData || []).map(item => String(item.qty)), 180, 450),
             },
             {
-                accessorKey: 'date',
+                accessorKey: 'createdDate',
                 header: 'Date',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as string}
+                        {formatDate(getValue() as string)}
                     </Text>
                 ),
                 filterFn: dateFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Date', (data || []).map(item => item.date), 120, 200),
+                size: calculateColumnWidth('Date', (generateBarcodeData || []).map(item => item.createdDate), 120, 200),
             },
             {
                 accessorKey: 'status',
@@ -166,8 +172,9 @@ const GeneratedBarcodeTableComponent = () => {
             {
                 // accessorKey: 'batchId',
                 header: 'Action',
-                cell: ({ getValue }) => {
-                    const batchId = getValue() as string;
+                cell: ({ getValue, row }) => {
+                    const id = row.original.id;
+
                     return (
                         <Button
                             variant="transparent"
@@ -177,7 +184,7 @@ const GeneratedBarcodeTableComponent = () => {
                             style={{
                                 cursor: 'pointer',
                             }}
-                        // onClick={() => handleEditUser(batchId)}
+                            onClick={() => onSendBarcode(id)}
                         >
                             Email
                         </Button>
@@ -186,11 +193,11 @@ const GeneratedBarcodeTableComponent = () => {
                 size: calculateColumnWidth('Action', ['Edit'], 100, 120)
             }
         ],
-        [data] // Add data as dependency to recalculate when data changes
+        [generateBarcodeData, pagination.pageIndex, pagination.pageSize] // Add proper dependencies
     );
 
     const table = useReactTable({
-        data: data,
+        data: generateBarcodeData || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -214,7 +221,7 @@ const GeneratedBarcodeTableComponent = () => {
         // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        // pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(actualTotalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -491,7 +498,7 @@ const GeneratedBarcodeTableComponent = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            {/* Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, totalCount)} of {totalCount} entries */}
+                            Showing {actualTotalCount > 0 ? skipRecord + 1 : 0} to {Math.min(skipRecord + pagination.pageSize, actualTotalCount)} of {actualTotalCount} entries
                         </Text>
                     </Group>
                 </Group>

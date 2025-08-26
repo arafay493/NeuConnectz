@@ -398,18 +398,12 @@ export interface QuantityDifferenceData {
 
 
 export interface GenerateBarcodeStateProps {
-    generateBarcodeData: GenerateBarcodeProps | null;
+    generateBarcodeData: Array<GenerateBarcodeProps> | null;
+    totalCount: number;
 }
 export interface GenerateBarcodeProps {
     id: string;
     status: string;
     qty: number;
-    codes: Array<Codes>;
-
+    createdDate: string;
 }
-
-export interface Codes {
-    id: string;
-    code: string;
-    serialNum: string;
-} 

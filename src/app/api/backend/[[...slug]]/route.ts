@@ -7,11 +7,11 @@ async function proxyRequest(req: NextRequest, method: string) {
 
     // Decide which backend to use based on path
     if (req.nextUrl.pathname.startsWith(process.env.AUTH_API_URL!)) {
-        targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.auth ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.auth : undefined;
+        targetBackend = API_ENDPOINTS.auth;
     } else if (req.nextUrl.pathname.startsWith(process.env.REFRESH_AUTH_API_URL!)) {
-        targetBackend = API_ENDPOINTS.neuConnect && API_ENDPOINTS.refreshToken ? API_ENDPOINTS.neuConnect + API_ENDPOINTS.refreshToken : undefined;
+        targetBackend = API_ENDPOINTS.refreshToken;
     } else if (req.nextUrl.pathname.startsWith(process.env.ZCAPI_API_URL!)) {
-        targetBackend = API_ENDPOINTS.neuConnect + '/ZCAPI';
+        targetBackend = API_ENDPOINTS.neuConnect;
     } else if (req.nextUrl.pathname.startsWith(process.env.TT_API_URL!)) {
         targetBackend = API_ENDPOINTS.traceAndTrack;
     } else {

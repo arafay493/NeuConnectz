@@ -5,19 +5,25 @@ import GenerateBarcodeModalComponent from '@/components/generate-barcode/Generat
 import ConfirmationComponent from '@/components/message-modal/MessageModalComponent';
 import ModalComponent from '@/components/modal-component/ModalComponent';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { addGenerateBarcode, fetchGeneratedBarcodeData } from '@/redux/actions/generate-barcode-actions/generate-barcode-actions';
+import { addGenerateBarcode, fetchGeneratedBarcodeData, sendGenerateBarcodeToEmail } from '@/redux/actions/generate-barcode-actions/generate-barcode-actions';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus } from '@tabler/icons-react';
-import { useState } from 'react';
+import { PaginationState } from '@tanstack/react-table';
+import { useEffect, useState } from 'react';
 import GeneratedBarcodeTableComponent from './GeneratedBarcodeTableComponent';
 
 const GenerateBarcodeComponent = () => {
     const [generateModalOpened, { open: openGenerateModal, close: closeGenerateModal }] = useDisclosure(false);
     const [confirmationModalOpened, { open: openConfirmationModal, close: closeConfirmationModal }] = useDisclosure(false);
     const [quantity, setQuantity] = useState('');
+    // Note: State for pagination
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10, // Adjusted to a more reasonable default
+    });
 
     // Initialize dispatch
     const dispatch = useAppDispatch();
@@ -28,7 +34,7 @@ const GenerateBarcodeComponent = () => {
         openConfirmationModal();
     };
 
-    const { generateBarcodeData } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; })
+    const { generateBarcodeData, totalCount } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; })
 
     const responseHandler = (status: number) => {
         if (status === 201) {
@@ -37,12 +43,11 @@ const GenerateBarcodeComponent = () => {
             setQuantity('');
 
             showNotificationToast("Barcode Generated", "Barcode generated successfully", customStyles.colors._408CCE);
-            dispatch(fetchGeneratedBarcodeData());
+            dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecords: pagination.pageIndex * pagination.pageSize }));
             return;
         }
 
         if (status === 500) {
-
             showNotificationToast("Server Error", "An error occurred on the server", customStyles.colors.red);
             return;
         }
@@ -63,6 +68,14 @@ const GenerateBarcodeComponent = () => {
         setQuantity('');
     };
 
+    const handleSendBarcodeToGenerate = (id: string, email?: string) => {
+        // dispatch(sendGenerateBarcodeToEmail({ id, email, resHandler: responseHandler }))
+    }
+
+    useEffect(() => {
+        dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecords: pagination.pageIndex * pagination.pageSize }));
+    }, [pagination.pageIndex, pagination.pageSize, dispatch])
+
     return (
         <Box>
             <TitleComponent
@@ -73,7 +86,13 @@ const GenerateBarcodeComponent = () => {
                 buttonIcon={<IconPlus size={16} />}
                 handleOnClick={openGenerateModal}
             />
-            <GeneratedBarcodeTableComponent />
+            <GeneratedBarcodeTableComponent
+                generateBarcodeData={generateBarcodeData}
+                pagination={pagination}
+                setPagination={setPagination}
+                totalCount={totalCount}
+                onSendBarcode={handleSendBarcodeToGenerate}
+            />
 
             {/* Generate Barcode Modal */}
             <ModalComponent
