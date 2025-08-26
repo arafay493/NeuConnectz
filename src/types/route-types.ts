@@ -21,6 +21,7 @@ export type Routes = {
     integrationMonitor: string;
     editUser: (uid: string) => string,
     grnMovement: string
+    generateBarcode: string
 };
 
 export type DrawerRoute = {

@@ -66,11 +66,17 @@ const LoginScreen = () => {
             return;
         }
 
-        if (response && response.status !== 200) {
+        if (response.status === 404 || response.status === 500) {
             setLoading(false); // Note: Stop loading...!
-            showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors.red);
+            showNotificationToast("Login Failed", response?.data?.error, customStyles.colors.red);
             return;
         }
+
+        // if (response && response.status !== 200) {
+        //     setLoading(false); // Note: Stop loading...!
+        //     showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors.red);
+        //     return;
+        // }
     };
 
     // Note: Function to login user...!

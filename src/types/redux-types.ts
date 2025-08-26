@@ -395,3 +395,15 @@ export interface QuantityDifferenceData {
     quantityDifference: number;
     action: string;
 }
+
+
+export interface GenerateBarcodeStateProps {
+    generateBarcodeData: Array<GenerateBarcodeProps> | null;
+    totalCount: number;
+}
+export interface GenerateBarcodeProps {
+    id: string;
+    status: string;
+    qty: number;
+    createdDate: string;
+}

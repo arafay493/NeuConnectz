@@ -22,13 +22,18 @@ const logInUser = createAsyncThunk(
 
         const { status, data } = response;
 
+        console.log("Login response: ", response);
+
         if (status === 200) {
             resHandler(response);
-            // Use AuthService to set tokens
-            // AuthService.setTokens(data?.data.token, data?.data.refreshToken);
-            // showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
             dispatch(LOG_IN_USER(data?.data));
+            return;
         }
+
+        resHandler(response);
+        // Use AuthService to set tokens
+        // AuthService.setTokens(data?.data.token, data?.data.refreshToken);
+        // showNotificationToast("Login Success", "You have logged in successfully", customStyles.colors._408CCE);
     }
 );
 
