@@ -13,9 +13,6 @@ import { customStyles } from '@/styles/custom-theme';
 
 export const logout = (message: string, description: string): void => {
     if (message) {
-        // console.log("Message: ", message);
-        // console.log("Description: ", description);
-
         // Note: For showing logout message...!
         showNotificationToast(message, description, customStyles.colors._408CCE);
         

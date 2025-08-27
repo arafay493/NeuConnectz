@@ -306,7 +306,6 @@ const exportDataToCsvFile = createAsyncThunk(
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            console.log(`CSV file downloaded successfully: ${filename}`);
             return { success: true, filename, recordCount: formattedCsvText.split('\n').length - 1 };
         } catch (error) {
             console.log("Something went wrong while exporting data to csv: ", error);

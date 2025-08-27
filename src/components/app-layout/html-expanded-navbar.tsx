@@ -150,16 +150,14 @@ const HtmlExpandedNavbar = ({
 
                 {/* Navigation Section */}
                 <Stack
-                    className='scroll-bar'
+                    className='scroll-bar show-scroll-bar-overflow'
                     flex={1}
                     my={32}
                     justify='space-between'
                     px={customStyles.deviceSize.sm}
                     style={{
-                        overflow: 'hidden',
                         minHeight: 0,
                         flex: 1,
-                        overflowY: 'auto',
                     }}
                 >
                     {/* Navigation Links */}

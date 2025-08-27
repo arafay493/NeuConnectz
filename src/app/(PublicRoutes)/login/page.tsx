@@ -46,8 +46,7 @@ const LoginScreen = () => {
 
     // Note: Login api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Login response: ", response);
-
+       
         if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
 
@@ -98,7 +97,7 @@ const LoginScreen = () => {
             email,
             password
         };
-        // console.log("Login data: ", dataObj);
+        
         dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse

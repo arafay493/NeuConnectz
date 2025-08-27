@@ -19,6 +19,10 @@ export interface UserStateType {
         users: Array<UserListProps>,
         totalCount: number,
     };
+    listDepartmentData: {
+        departments: Array<GenerateListDepartmentProps> | null;
+        totalCount: number;
+    }
     usersErrorState: string;
 };
 
@@ -406,4 +410,21 @@ export interface GenerateBarcodeProps {
     status: string;
     qty: number;
     createdDate: string;
+}
+
+
+
+export interface GenerateListDepartmentStateProps {
+    listDepartmentData: Array<GenerateListDepartmentProps> | null;
+    totalCount: number;
+}
+
+export interface GenerateListDepartmentProps {
+    id: "20e3840b-36ef-4253-91ef-4fe456c7d394",
+    departmentName: "string",
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean
 }

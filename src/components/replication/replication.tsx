@@ -47,12 +47,10 @@ const ReplicationComponent = () => {
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { sapStagingDataCounts } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("Sap Staging Data Counts in component: ", sapStagingDataCounts);
-
+    
     // Note: Get SAP data api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Get SAP data api response: ", response);
-
+    
         if (response && response.statusCode == 200) {
             showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
 
