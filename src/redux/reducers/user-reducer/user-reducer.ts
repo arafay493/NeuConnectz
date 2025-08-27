@@ -9,6 +9,10 @@ const initialState: UserStateType = {
         users: [],
         totalCount: 0
     },
+    listDepartmentData: {
+        departments: [],
+        totalCount: 0
+    },
     usersErrorState: ""
 };
 
@@ -25,14 +29,21 @@ const userSlice = createSlice({
         },
 
         FETCH_ALL_USERS: (state, action: PayloadAction<any>) => {
-            // console.log("Users list data in user reducer: ", action.payload);
             state.usersErrorState = ""
             state.usersList = action?.payload;
+        },
+
+        FETCH_ALL_LIST_DEPARTMENTS: (state, action: PayloadAction<any>) => {
+            state.listDepartmentData = action?.payload;
         },
 
         CLEAR_ALL_USER_STATES: (state) => {
             state.usersList = {
                 users: [],
+                totalCount: 0
+            };
+            state.listDepartmentData = {
+                departments: [],
                 totalCount: 0
             };
             state.usersErrorState = ""
@@ -44,6 +55,7 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA,
         FETCH_ALL_USERS,
+        FETCH_ALL_LIST_DEPARTMENTS,
         CLEAR_ALL_USER_STATES
     } = userSlice.actions;
 export default userSlice.reducer;

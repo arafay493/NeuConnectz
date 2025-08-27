@@ -31,7 +31,6 @@ const SAPReducer = createSlice({
         },
 
         FETCH_ALL_ITR_IT_TRS: (state, action: PayloadAction<any>) => {
-            console.log("ITR_IT_TRS list data in sap reducer: ", action.payload);
             state.sapErrorState = "";
             state.listAll_ITR_IT_TRS = [];
             state.list_Pending_GRNS_Data = [];
@@ -41,7 +40,6 @@ const SAPReducer = createSlice({
         },
 
         FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
-            // console.log("GRNS list data in sap reducer: ", action?.payload);
             state.sapErrorState = "";
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];

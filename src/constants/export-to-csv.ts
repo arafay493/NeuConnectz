@@ -1,8 +1,7 @@
 // Note: This code is designed to export data to a CSV file format...!
 
 export const exportToCSV = <T extends Record<string, any>>(data: T[], filename: string = 'data.csv') => {
-    // console.log('Exporting data to CSV:', data);
-
+    
     if (!data || data.length === 0) {
         console.warn('No data available to export');
         return;

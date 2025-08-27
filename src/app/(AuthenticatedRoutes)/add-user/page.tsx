@@ -23,8 +23,8 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { userDepartments } from '@/constants/user-data';
-import { addUser, fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
+// import { userDepartments } from '@/constants/user-data';
+import { addUser, fetchAllUsers, fetchAllListDepartments } from '@/redux/actions/user-actions/user-actions';
 import { fetchAllRolesList } from '@/redux/actions/roles-actions/roles-actions';
 import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
@@ -46,6 +46,7 @@ const AddUserScreen = () => {
         loading: false
     });
     const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
+    const [depOptions, setDepOptions] = useState<{ value: string, label: string }[]>([]);
 
     // Note: Handle routing here...!
     const router = useRouter();
@@ -56,9 +57,9 @@ const AddUserScreen = () => {
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
+    const { listDepartmentData } = useAppSelector(({ userStates }) => { return userStates });
     const token = authenticatedUser?.token as string;
-    // console.log("User: ", authenticatedUser);
-    // console.log("Roles: ", listRoles);
+   
 
     // Note: Clear all states handler...!
     const clearAllStates = () => {
@@ -78,17 +79,14 @@ const AddUserScreen = () => {
 
     // Note: Handle on change...!
     const handleChange = (field: string, value: any) => {
-        // console.log(`Field: ${field}, Value: ${value}`);
         setUserData((prev) => ({ ...prev, [field]: value }));
     };
 
     // Note: Image on chnage handler...!
     const handleImageChange = (file: File | null) => {
         if (file) {
-            console.log('File: ', file);
             const reader = new FileReader();
-            console.log('Image reader result: ', reader);
-
+            
             reader.onloadend = () => {
                 setUserData({
                     ...userData,
@@ -111,8 +109,7 @@ const AddUserScreen = () => {
 
     // Note: Add / Create user response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Add user api response: ", response);
-
+        
         if (response && response.status == 201) {
             // Note: Stop loading...!
             setUserData({
@@ -183,8 +180,7 @@ const AddUserScreen = () => {
                     department,
                     role
                 };
-                // console.log('User data: ', userData);
-
+                
                 // Note: Enable loader...!
                 setUserData({
                     ...userData,
@@ -202,7 +198,6 @@ const AddUserScreen = () => {
         catch (error) {
             if (error) {
                 const errMessage = error as string
-                // console.log("Error: ", errMessage);
                 showNotificationToast("Validation Error", errMessage, customStyles.colors.red);
             };
         };
@@ -210,19 +205,33 @@ const AddUserScreen = () => {
 
     // Note: Fetch all roles list...!
     useEffect(() => {
-        authenticatedUser && dispatch(fetchAllRolesList(token));
+        if (authenticatedUser) {
+            dispatch(fetchAllRolesList(token));
+            dispatch(fetchAllListDepartments(token));
+        }
     }, [authenticatedUser]);
 
     // Note: This hook is used to set roles options...!
     useEffect(() => {
         if (listRoles && listRoles.length > 0) {
-            const options = listRoles.map((role) => ({
+            const options = listRoles.map((role: any) => ({
                 value: role.name,
                 label: role.name
             }));
             setRolesOptions(options);
         };
     }, [listRoles]);
+
+    // Note: This hook is used to set departments options...!
+    useEffect(() => {
+        if (listDepartmentData != null && listDepartmentData?.departments) {
+            const options = listDepartmentData?.departments.map((dep: any) => ({
+                value: dep.departmentName,
+                label: dep.departmentName
+            }));
+            setDepOptions(options);
+        };
+    }, [listDepartmentData?.departments]);
 
     return (
         <Container
@@ -270,7 +279,7 @@ const AddUserScreen = () => {
                                 <Select
                                     label="Department"
                                     placeholder="Department"
-                                    data={userDepartments}
+                                    data={depOptions}
                                     value={userData.department}
                                     onChange={(val) => handleChange("department", val)}
                                     required

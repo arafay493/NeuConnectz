@@ -26,18 +26,11 @@ const reconciliationSlice = createSlice({
             state.transferReceiptItems = action?.payload.transferReceiptItems;
         },
 
-        // FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {
-        //     // console.log("Warehouses list by user id data in reducer: ", action.payload);
-        //     state.warehouseErrorState = "";
-        //     state.warehousesListByUserId = [];
-        //     state.warehousesListByUserId = action?.payload;
-        // },
-
-        // CLEAR_ALL_WAREHOUSE_STATES: (state) => {
-        //     state.wareHousesList = [];
-        //     state.warehousesListByUserId = [];
-        //     state.warehouseErrorState = "";
-        // },
+        CLEAR_ALL_WAREHOUSE_STATES: (state) => {
+            state.inventoryTransferItems = [];
+            state.transferReceiptItems = [];
+            state.reconciliationErrorState = "";
+        },
     }
 });
 

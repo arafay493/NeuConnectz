@@ -11,8 +11,7 @@ const BarChart = () => {
 
     // Note: Fetchinf data from redux...!
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    // console.log("Dashboard Stats in Bar Chart com: ", dashboardAnalyticsData);
-
+    
     return (
         <Card withBorder shadow="md" radius="lg" p="lg">
             <Box

@@ -48,13 +48,11 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
 
   // Note: Fetch user data from redux...!
   const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-  // console.log('User: ', authenticatedUser);
-
+  
   // Note: Handle navigation here...!
   const router = useRouter();
   const pathName = usePathname();
-  // console.log('Path: ', pathName);
-
+  
   // Note: This hook will run only once when the component mounts...!
   useEffect(() => {
     if (window.location.pathname === routes.root) router.push(routes.dashboard);
