@@ -58,8 +58,7 @@ const AddUserScreen = () => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
     const { listDepartmentData } = useAppSelector(({ userStates }) => { return userStates });
-    const token = authenticatedUser?.token as string;
-   
+    const token = authenticatedUser?.token as string;   
 
     // Note: Clear all states handler...!
     const clearAllStates = () => {
@@ -177,7 +176,7 @@ const AddUserScreen = () => {
                     phone,
                     email,
                     password,
-                    department,
+                    departmentId: department,
                     role
                 };
                 
@@ -226,7 +225,7 @@ const AddUserScreen = () => {
     useEffect(() => {
         if (listDepartmentData != null && listDepartmentData?.departments) {
             const options = listDepartmentData?.departments.map((dep: any) => ({
-                value: dep.departmentName,
+                value: dep.id,
                 label: dep.departmentName
             }));
             setDepOptions(options);

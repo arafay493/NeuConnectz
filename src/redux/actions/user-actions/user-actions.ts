@@ -43,13 +43,14 @@ const addUser = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        const response = await apiPost('/neu-connect/v2/IUserManagementFeature/AddUser', userData, token);
+        const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_USER}`, userData, token);
+        console.log(response);
 
         const { status, data } = response;
 
-        if (status == 201) {
+        // if (status == 201) {
             resHandler(response);
-        };
+        // };
     }
 );
 
