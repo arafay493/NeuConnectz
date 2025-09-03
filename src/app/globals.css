@@ -17,12 +17,12 @@
 .filledButton {
     background-color: var(--_1B59F8);
     color: var(--white);
-    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out, border 0.3s ease-in-out;
 }
 
 .filledDisabledButton {
-    background-color: var(--_909090);
-    color: var(--white);
+    background-color: #e9ecef;
+    color: #adb5bd;
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
 }
 
@@ -110,6 +110,7 @@
 
 .show-scroll-bar-overflow:hover {
     overflow-y: auto;
+    overflow-x: auto;
 }
 
 /* Loading animation for table skeleton */

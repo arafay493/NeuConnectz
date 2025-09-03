@@ -11,19 +11,19 @@ import { customStyles } from "@/styles/custom-theme";
 import { GenerateBarcodeProps } from "@/types/redux-types";
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
-interface GeneratedBarcodeTableComponentProps {
+interface ProductionOrderTableComponentProps {
     generateBarcodeData: Array<GenerateBarcodeProps> | null;
     pagination: PaginationState;
     setPagination: Dispatch<SetStateAction<PaginationState>>;
     totalCount?: number; // Add total count from server
-    onSendBarcode: (id: string, email?: string) => void;
+    onSendBarcode?: (id: string, email?: string) => void;
 }
 
-const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPagination, totalCount, onSendBarcode }: GeneratedBarcodeTableComponentProps) => {
+const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPagination, totalCount, onSendBarcode }: ProductionOrderTableComponentProps) => {
     // Use totalCount from props if available, otherwise fall back to data length
     const actualTotalCount = totalCount || generateBarcodeData?.length || 0;
     // Note: Filter States
@@ -58,41 +58,17 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
         // Get the cell value
         const cellValue = row.getValue(columnId);
 
-        // Special handling for status column
-        if (columnId === 'status') {
-            const statusText = cellValue as string;
-            return statusText?.toLowerCase().includes(searchValue);
-        }
-
-        // Special handling for date column - use same format as displayed
-        if (columnId === 'createdDate') {
-            if (!cellValue) return false;
-            const date = new Date(cellValue as string);
-
-            // Format the date the same way as displayed in the table
-            const formattedDate = date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-
-            // Also check against various date parts for better search experience
-            const year = date.getFullYear().toString();
-            const month = date.toLocaleDateString('en-US', { month: 'short' }).toLowerCase();
-            const monthLong = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
-            const day = date.getDate().toString();
-
-            return formattedDate.toLowerCase().includes(searchValue) ||
-                year.includes(value) ||
-                month.includes(searchValue) ||
-                monthLong.includes(searchValue) ||
-                day.includes(value);
+        // Special handling for isActive (Status) column
+        if (columnId === 'isActive') {
+            const displayText = cellValue === true ? 'Active' : 'Inactive';
+            return displayText.toLowerCase().includes(searchValue);
         }
 
         // Handle S.No column (computed value)
-        if (columnId === 'serialNumber') {
-            // For global filter, we need to check against the computed serial number
-            const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
+        if (columnId === 'S.No') {
+            // For global filter, we need to check against the original row index
+            // since filtering happens before pagination
+            const serialNumber = row.index + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -108,7 +84,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
     const columns = useMemo<ColumnDef<GenerateBarcodeProps>[]>(
         () => [
             {
-                id: 'serialNumber', // Add unique ID for the column
                 header: 'S.No',
                 cell: ({ row }) => {
                     // Calculate serial number based on server-side pagination
@@ -119,8 +94,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                         </Text>
                     );
                 },
-                enableSorting: false, // Disable sorting for computed serial number
-                enableColumnFilter: false, // Disable filtering for computed serial number
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
@@ -133,7 +106,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                enableSorting: true,
                 size: calculateColumnWidth('BatchId', (generateBarcodeData || []).map(item => item.id), 150, 400),
             },
             {
@@ -146,7 +118,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                 ),
                 filterFn: numberFilterFn,
                 enableColumnFilter: true,
-                enableSorting: true,
                 size: calculateColumnWidth('Quantity', (generateBarcodeData || []).map(item => String(item.qty)), 180, 450),
             },
             {
@@ -159,7 +130,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                 ),
                 filterFn: dateFilterFn,
                 enableColumnFilter: true,
-                enableSorting: true,
                 size: calculateColumnWidth('Date', (generateBarcodeData || []).map(item => item.createdDate), 120, 200),
             },
             {
@@ -192,17 +162,16 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                 },
                 filterFn: (row, columnId, value) => {
                     if (!value) return true;
-                    const status = row.getValue(columnId) as string;
-                    return status.toLowerCase().includes(value.toLowerCase());
+                    const isActive = row.getValue(columnId) as boolean;
+                    const displayText = isActive ? 'Active' : 'Inactive';
+                    return displayText.toLowerCase().includes(value.toLowerCase());
                 },
-                enableColumnFilter: true,
-                enableSorting: true,
                 size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
             },
             {
-                id: 'action', // Add unique ID for the action column
+                // accessorKey: 'batchId',
                 header: 'Action',
-                cell: ({ row }) => {
+                cell: ({ getValue, row }) => {
                     const id = row.original.id;
 
                     return (
@@ -214,14 +183,12 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                             style={{
                                 cursor: 'pointer',
                             }}
-                            onClick={() => onSendBarcode(id)}
+                            onClick={() => onSendBarcode?.(id)}
                         >
                             Email
                         </Button>
                     )
                 },
-                enableSorting: false, // Disable sorting for action column
-                enableColumnFilter: false, // Disable filtering for action column
                 size: calculateColumnWidth('Action', ['Edit'], 100, 120)
             }
         ],
@@ -232,40 +199,28 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
         data: generateBarcodeData || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(), // Add filtered row model
-        getSortedRowModel: getSortedRowModel(), // Add sorted row model
-        getPaginationRowModel: getPaginationRowModel(), // Add pagination row model
-        // Sorting configuration
         onSortingChange: setSorting,
-        enableSorting: true,
-        manualSorting: false, // Enable client-side sorting since we have the data
-        // Global filter configuration
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
             // Reset to first page when global filter changes
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
-        enableGlobalFilter: true,
-        globalFilterFn: (row, columnId, value) => {
-            // Get all column IDs to search across - use actual accessorKeys
-            const columnIds = ['id', 'qty', 'createdDate', 'status'];
-
-            // Search across all columns including computed serial number
-            return columnIds.some((colId: string) => globalFilterFn(row, colId, value)) ||
-                globalFilterFn(row, 'serialNumber', value);
-        },
-        // Column filter configuration
         onColumnFiltersChange: (filters) => {
             setColumnFilters(filters);
             // Reset to first page when column filters change
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
-        enableColumnFilters: true,
-        manualFiltering: false, // Enable client-side filtering
-        // Pagination configuration
+        globalFilterFn: (row, columnId, value) => {
+            // Get all column IDs to search across
+            const columnIds = ['S.No', 'userId', 'quantity', 'date', 'status'];
+
+            // Search across all columns
+            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+        },
+        // Enable server-side pagination
         onPaginationChange: setPagination,
-        manualPagination: true, // Keep server-side pagination
-        pageCount: Math.ceil(actualTotalCount / pagination.pageSize),
+        manualPagination: true, // Enable server-side pagination
+        pageCount: Math.ceil(actualTotalCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -312,7 +267,10 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                 <Box
                     w="100%"
                     mah={700}
-                    className="show-scroll-bar-overflow"
+                    style={{
+                        overflowX: 'auto',
+                        overflowY: 'auto',
+                    }}
                 >
                     <table style={{
                         width: '100%',
@@ -548,4 +506,4 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
     )
 }
 
-export default GeneratedBarcodeTableComponent
+export default ProductionOrderTableComponent

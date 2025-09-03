@@ -1,20 +1,19 @@
 // Note: All autheenticated and non-authenticated routes are defined here...!
 
 import {
-    IconListCheck,
     IconStack3Filled,
     IconFileInvoiceFilled,
     IconTextScan2,
     IconUsersGroup,
     IconBuildingWarehouse,
     IconSettingsCog,
-    IconPresentationFilled,
     IconPresentationAnalyticsFilled,
     IconLayoutDashboardFilled,
-    IconBarcode
+    IconBarcode,
+    IconContainer,
+    IconBox
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
-import { customStyles } from "@/styles/custom-theme";
 
 // Note: Unauthenticated routes...!
 const unAuthenticatedRoutes: String[] = ["/login"];
@@ -38,6 +37,9 @@ const authenticatedRoutes: String[] = [
     "/edit",
     "/grn-movement",
     "/generate-barcode",
+    "/production-order",
+    "/handling-unit",
+    "/handling-unit/add-unit"
 ];
 
 // Note: Defining all routes...!
@@ -60,7 +62,10 @@ const routes: Routes = {
     integrationMonitor: "/integration-monitor",
     editUser: (uid: string) => `/edit/${uid}`,
     grnMovement: "/grn-movement",
-    generateBarcode: "/generate-barcode"
+    generateBarcode: "/generate-barcode",
+    productionOrder: "/production-order",
+    handlingUnit: "/handling-unit",
+    addHandlingUnit: "/handling-unit/add-unit",
 };
 
 // Note: Defining drawer routes...!
@@ -139,12 +144,31 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBarcode color='currentColor' size={24} />,
         label: "Generate Barcode",
         route: routes.generateBarcode
-    }
+    },
+    {
+        icon: <IconBox color='currentColor' size={24} />,
+        label: "Handling Unit",
+        route: routes.handlingUnit
+    },
+    {
+        icon: <IconContainer color='currentColor' size={24} />,
+        label: "Production Order",
+        route: routes.productionOrder
+    },
 ];
+
+function routeExists(path: string, routes: string[]) {
+    return routes.some(route => {
+        // Convert `:param` into regex match
+        const regex = new RegExp("^" + route.replace(/:[^/]+/g, "[^/]+") + "$");
+        return regex.test(path);
+    });
+}
 
 export {
     unAuthenticatedRoutes,
     authenticatedRoutes,
     routes,
+    routeExists,
     drawerRoutes
 };

@@ -19,9 +19,6 @@ async function proxyRequest(req: NextRequest, method: string) {
     // Remove the "/api/backend/{type}" part
     const url = targetBackend + req.nextUrl.pathname.replace(/^\/api\/backend\/(auth|neu-connect\/v2|trace-and-track\/v2)/, '') + req.nextUrl.search;
 
-    console.log("Target Backend:", targetBackend);
-    console.log("URL:", url);
-
     // Forward the request to the target backend
     const headers = Object.fromEntries(req.headers.entries());
     delete headers.host;

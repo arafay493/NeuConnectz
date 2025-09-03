@@ -94,7 +94,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     };
 
     // Note: Show layout only on authenticated routes...!
-    const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string);
+    const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string);
 
     if (!showLayout) {
         return <>{children}</>;

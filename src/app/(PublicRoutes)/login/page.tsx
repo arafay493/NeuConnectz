@@ -46,12 +46,11 @@ const LoginScreen = () => {
 
     // Note: Login api response handler...!
     const handleResponse = (response: any): void => {
-       
+
         if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
 
             const { token, refreshToken } = response?.data?.data;
-
             // Use AuthService to set tokens
             AuthService.setTokens(token, refreshToken);
 
@@ -97,7 +96,7 @@ const LoginScreen = () => {
             email,
             password
         };
-        
+
         dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse
