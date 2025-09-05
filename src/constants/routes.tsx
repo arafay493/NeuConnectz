@@ -11,7 +11,8 @@ import {
     IconPresentationFilled,
     IconPresentationAnalyticsFilled,
     IconLayoutDashboardFilled,
-    IconBarcode
+    IconBarcode,
+    IconChecklist
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -38,6 +39,7 @@ const authenticatedRoutes: String[] = [
     "/edit",
     "/grn-movement",
     "/generate-barcode",
+    "/production-order"
 ];
 
 // Note: Defining all routes...!
@@ -60,7 +62,8 @@ const routes: Routes = {
     integrationMonitor: "/integration-monitor",
     editUser: (uid: string) => `/edit/${uid}`,
     grnMovement: "/grn-movement",
-    generateBarcode: "/generate-barcode"
+    generateBarcode: "/generate-barcode",
+    productionOrder: "/production-order"
 };
 
 // Note: Defining drawer routes...!
@@ -139,7 +142,12 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBarcode color='currentColor' size={24} />,
         label: "Generate Barcode",
         route: routes.generateBarcode
-    }
+    },
+    {
+        icon: <IconChecklist color='currentColor' size={24} />,
+        label: "Production Order",
+        route: routes.productionOrder
+    },
 ];
 
 export {

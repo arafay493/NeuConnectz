@@ -16,6 +16,7 @@ import { DocStatusProp } from "../stock-movement/StockMovementFilterBar";
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 import GRNMovementFilterBar from "./GRNMovementFilterBar";
+import classes from "../production-order-section-component/po.module.css";
 
 const UnpostedGRNTable = () => {
     // Search Table Filter With API Call
@@ -508,14 +509,10 @@ const UnpostedGRNTable = () => {
                 </Group >
 
                 {/* Table */}
-                < Box
-                    className="show-scroll-bar-overflow"
+                <Box
                     w="100%"
                     mah={700}
-                    style={{
-                        overflowX: 'auto',
-                        // overflowY: 'auto',
-                    }}
+                    className={classes.scrollOnHover}
                 >
                     <table style={{
                         width: '100%',
@@ -652,7 +649,7 @@ const UnpostedGRNTable = () => {
             </Stack >
 
             {/* Pagination */}
-            < Box
+            <Box
                 mt={12}
                 bg={customStyles.colors.white}
                 style={{ borderRadius: '16px', padding: "12px 24px" }}

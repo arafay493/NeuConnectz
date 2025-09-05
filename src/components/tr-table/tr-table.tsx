@@ -34,6 +34,7 @@ import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import StockMovementFilterBar, { DocStatusProp, SapStatusProp } from '../stock-movement/StockMovementFilterBar';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import classes from "../production-order-section-component/po.module.css";
 
 // Note: TR Data type based on actual Redux state structure
 type TRDataType = {
@@ -538,10 +539,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 <Box
                     w="100%"
                     mah={700}
-                    style={{
-                        overflowX: 'auto',
-                        overflowY: 'auto',
-                    }}
+                    className={classes.scrollOnHover}
                 >
                     <table style={{
                         width: '100%',

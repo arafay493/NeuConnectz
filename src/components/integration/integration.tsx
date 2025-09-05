@@ -27,6 +27,7 @@ import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import classes from "../production-order-section-component/po.module.css";
 
 const headers: string[] =
     [
@@ -1027,21 +1028,16 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             </Group>
 
             <Box
-                className="show-scroll-bar-overflow"
                 w="100%"
                 mah={700}
-                style={{
-                    overflowX: 'auto',
-                    // overflowY: 'auto',
-                }
-                }
+                className={classes.scrollOnHover}
             >
                 <table style={{
                     width: '100%',
                     borderCollapse: 'collapse',
                     minWidth: 'max-content'
                 }}>
-                    <thead                        >
+                    <thead>
                         {table.getHeaderGroups().map(headerGroup => (
                             <tr
                                 key={headerGroup.id}
