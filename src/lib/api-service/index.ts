@@ -17,9 +17,6 @@ export const apiGet = async (endpoint: string, authToken?: string, params?: { [k
     } catch (error: any) {
         const { status, data } = error?.response || {};
 
-        console.log("Error from API: ", error);
-        console.log("Error response data: ", data);
-
         // Handle 401 - Unauthorized
         if (status === 401) {
             handleRefreshToken(error.message);
@@ -40,16 +37,18 @@ export const apiPost = async (endpoint: string, payload: any, authToken?: string
                 'Auth-Token': authToken
             }
         });
+        // console.log("API Post Response: ", response);
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
         const { status, data } = error?.response || {};
+        // console.log("API Post Error Response: ", error?.response || {});
 
         // Handle 401 - Unauthorized
         if (status === 401) {
             handleRefreshToken(error.message);
         }
 
-        return { success: false, error: error.message, status };
+        return { success: false, error: data.message, status };
     }
 };
 

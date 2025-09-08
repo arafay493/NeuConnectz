@@ -46,7 +46,6 @@ const Configuration = () => {
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { isSAPConfigExist } = useAppSelector(({ sapStates }) => { return sapStates });
-    // console.log("Is SAP Config Exist: ", isSAPConfigExist);
     // const isSAPConfigExist = false;
 
     // Note: Fucntion to clear all states...!
@@ -66,7 +65,6 @@ const Configuration = () => {
 
     // Note: Handle onchnage...!
     const handleChange = (field: string, value: any) => {
-        // console.log(`For: ${field}, Value: ${value}`);
         setFormData({
             ...formData,
             [field]: value
@@ -75,8 +73,7 @@ const Configuration = () => {
 
     // Note: Add SAP configuration api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Add SAP configuration api response: ", response);
-
+        
         if (response && response.status == 200) {
             // Note: Stop loading...!
             setFormData({
@@ -161,7 +158,6 @@ const Configuration = () => {
         catch (error) {
             if (error) {
                 const errMessage = error as string
-                // console.log("Error: ", errMessage);
                 showNotificationToast("Validation Error", errMessage, customStyles.colors.red);
             };
         };

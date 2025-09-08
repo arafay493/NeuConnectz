@@ -9,8 +9,6 @@ export const useNetworkStatus = () => {
 
     // Note: This hook will check the online and offline status of the internet...!
     useEffect(() => {
-        // console.log("Network status changed: ", isOnline ? "Online" : "Offline");
-
         const updateOnlineStatus = () => {
             setIsOnline(navigator.onLine);
         };

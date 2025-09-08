@@ -22,6 +22,7 @@ export type Routes = {
     editUser: (uid: string) => string,
     grnMovement: string
     generateBarcode: string
+    productionOrder: string
 };
 
 export type DrawerRoute = {

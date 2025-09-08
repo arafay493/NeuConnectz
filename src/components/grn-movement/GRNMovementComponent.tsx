@@ -21,14 +21,14 @@ const GRNMovementComponent = () => {
                     c={customStyles.colors._4D4D4D}
                     size={isSmallScreen ? 'h3' : 'h2'}
                 >
-                    GRN Movement
+                    Good Receive Note
                 </Title>
                 <Text
                     mb={isSmallScreen ? 16 : 24}
                     c={customStyles.colors._909090}
                     size={isSmallScreen ? 'sm' : 'md'}
                 >
-                    Track and manage all goods receipt notes to ensure timely, accurate inventory updates and smooth warehouse operations.
+                    Monitor and review how stock moves between warehouses and systems.
                 </Text>
             </Stack>
             <Box>

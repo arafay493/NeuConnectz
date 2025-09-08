@@ -10,7 +10,10 @@ import {
     FETCH_ALL_PENDING_GRNS,
     FETCH_ALL_VENDOR_CODES,
     GET_SAP_STAGING_DATA_COUNTS,
-    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA
+    FETCH_ALL_PRODUCTION_ORDERS,
+    FETCH_ALL_ISSUES_FOR_PRODUCTION,
+    FETCH_ALL_RECIEPT_FROM_PRODUCTION,
+    FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 import { ResHandler } from "@/types/api-types";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
@@ -306,7 +309,6 @@ const exportDataToCsvFile = createAsyncThunk(
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            console.log(`CSV file downloaded successfully: ${filename}`);
             return { success: true, filename, recordCount: formattedCsvText.split('\n').length - 1 };
         } catch (error) {
             console.log("Something went wrong while exporting data to csv: ", error);
@@ -342,7 +344,146 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
     }
 );
 
+// Note: Action function fetch production orders list...!
+const fetchAllProductionOrders = createAsyncThunk(
+    "sap/fetchAllProductionOrders",
+    async (
+        { token, apiUrl, lastCount, skipRecords }:
+            {
+                token: string,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.pageSize = lastCount;
+        if (skipRecords !== undefined) params.pageNumber = skipRecords;
+
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        // console.log("Fetch all production orders api response: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_PRODUCTION_ORDERS({
+                productionOrdersData: data?.data?.values,
+                totalproductionOrdersCount: data?.data?.totalRecords
+            }));
+        };
+    }
+);
+
+// Note: Action function fetch issues for production list...!
+const fetchIssuesForProductionList = createAsyncThunk(
+    "sap/fetchIssuesForProductionList",
+    async (
+        { token, apiUrl, lastCount, skipRecords }:
+            {
+                token: string,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        // console.log("Fetch all isseus for production api response: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_ISSUES_FOR_PRODUCTION({
+                issuesForProductionData: data?.data?.issueForProduction,
+                totalIssuesForProductionCount: data?.data?.totalCount
+            }));
+        };
+    }
+);
+
+// Note: Action function fetch reciept from production list...!
+const fetchRecieptFromProductionList = createAsyncThunk(
+    "sap/fetchRecieptFromProductionList",
+    async (
+        { token, apiUrl, lastCount, skipRecords }:
+            {
+                token: string,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        // console.log("Fetch all reciept from production api response: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_RECIEPT_FROM_PRODUCTION({
+                recieptFromProductionData: data?.data?.recieptFormProduction,
+                totalRecieptFromProductionCount: data?.data?.totalCount
+            }));
+        };
+    }
+);
+
+// Note: Action function to fetch list of production orders lines...!
+const fetchProductionOrdersLinesList = createAsyncThunk(
+    "sap/fetchProductionOrdersLinesList",
+    async (
+        { docEntry, token, apiUrl, lastCount, skipRecords }:
+            {
+                docEntry: number,
+                token: string,
+                apiUrl: string,
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        // const params: { [key: string]: number } = {};
+        // if (lastCount !== undefined) params.pageSize = lastCount;
+        // if (skipRecords !== undefined) params.pageNumber = skipRecords;
+
+        const response = await apiGet(`/neu-connect/v2/${apiUrl}?Docentry=${docEntry}`, token);
+        // console.log("Fetch all production order lines api response: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA({
+                listOfProductionOrderLinesData: data?.data?.values[0]?.stockTransferLines,
+                totalCountOfProductionOrderLines: data?.data?.totalRecords
+            }));
+        };
+    }
+);
+
 export {
-    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_GRNS, fetchAll_INTEGRATED_GRNS, fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP
+    addSAPConfiguration,
+    checkSAPConfigExist,
+    exportDataToCsvFile,
+    fetchAll_GRNS,
+    fetchAll_INTEGRATED_GRNS,
+    fetchAll_PENDING_GRNS,
+    fetchAllITR_IT_TRS,
+    fetchAllVendorCodes,
+    getSAPData,
+    handleGetSapStagingDataCounts,
+    postRequestToSAP,
+    fetchAllProductionOrders,
+    fetchIssuesForProductionList,
+    fetchRecieptFromProductionList,
+    fetchProductionOrdersLinesList
 };
 

@@ -46,8 +46,8 @@ const LoginScreen = () => {
 
     // Note: Login api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Login response: ", response);
-
+        // console.log("Login Api Response: ", response);
+       
         if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
 
@@ -66,9 +66,9 @@ const LoginScreen = () => {
             return;
         }
 
-        if (response.status === 404 || response.status === 500) {
+        if (response.status != 200) {
             setLoading(false); // Note: Stop loading...!
-            showNotificationToast("Login Failed", response?.data?.error, customStyles.colors.red);
+            showNotificationToast("Login Failed", response?.error, customStyles.colors.red);
             return;
         }
 
@@ -98,7 +98,7 @@ const LoginScreen = () => {
             email,
             password
         };
-        // console.log("Login data: ", dataObj);
+        
         dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse

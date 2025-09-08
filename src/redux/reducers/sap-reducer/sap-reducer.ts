@@ -12,7 +12,16 @@ const initialState: SAPStateType = {
     vendorCodeList: [],
     sapStagingDataCounts: null,
     totalGRNS_DataCounts: 0,
-    listAll_ITR_IT_TRS_Count: 0
+    listAll_ITR_IT_TRS_Count: 0,
+    productionOrdersList: [],
+    productionOrdersCount: 0,
+    issuesForProductionList: [],
+    issuesForProductionCount: 0,
+    recieptFromProductionList: [],
+    recieptFromProductionCount: 0,
+
+    listOfProductionOrderLines: [],
+    productionOrderLinesCount: 0,
 };
 
 const SAPReducer = createSlice({
@@ -31,7 +40,6 @@ const SAPReducer = createSlice({
         },
 
         FETCH_ALL_ITR_IT_TRS: (state, action: PayloadAction<any>) => {
-            console.log("ITR_IT_TRS list data in sap reducer: ", action.payload);
             state.sapErrorState = "";
             state.listAll_ITR_IT_TRS = [];
             state.list_Pending_GRNS_Data = [];
@@ -41,7 +49,6 @@ const SAPReducer = createSlice({
         },
 
         FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
-            // console.log("GRNS list data in sap reducer: ", action?.payload);
             state.sapErrorState = "";
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
@@ -78,6 +85,44 @@ const SAPReducer = createSlice({
             state.isSAPConfigExist = false;
             state.vendorCodeList = [];
             state.sapStagingDataCounts = null;
+            state.productionOrdersList = [];
+            state.productionOrdersCount = 0;
+            state.issuesForProductionList = [];
+            state.issuesForProductionCount = 0;
+            state.recieptFromProductionList = [];
+            state.recieptFromProductionCount = 0;
+            state.listOfProductionOrderLines = [];
+            state.productionOrderLinesCount = 0;
+        },
+
+        FETCH_ALL_PRODUCTION_ORDERS: (state, action: PayloadAction<any>) => {
+            // console.log('Production order data in sap reducer: ', action?.payload);
+            state.productionOrdersList = action?.payload?.productionOrdersData;
+            state.productionOrdersCount = action?.payload?.totalproductionOrdersCount;
+        },
+
+        FETCH_ALL_ISSUES_FOR_PRODUCTION: (state, action: PayloadAction<any>) => {
+            // console.log('Issues for production data in sap reducer: ', action?.payload);
+            state.issuesForProductionList = action?.payload?.issuesForProductionData;
+            state.issuesForProductionCount = action?.payload?.totalIssuesForProductionCount;
+        },
+
+        FETCH_ALL_RECIEPT_FROM_PRODUCTION: (state, action: PayloadAction<any>) => {
+            // console.log('Reciept from Production data in sap reducer: ', action?.payload);
+            state.recieptFromProductionList = action?.payload?.recieptFromProductionData;
+            state.recieptFromProductionCount = action?.payload?.totalRecieptFromProductionCount;
+        },
+
+        FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA: (state, action: PayloadAction<any>) => {
+            // console.log('Production order lines data in sap reducer: ', action?.payload);
+            state.listOfProductionOrderLines = [];
+            state.listOfProductionOrderLines = action?.payload?.listOfProductionOrderLinesData;
+            state.productionOrderLinesCount = action?.payload?.totalCountOfProductionOrderLines;
+        },
+
+        CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA: (state) => {
+            state.listOfProductionOrderLines = [];
+            state.productionOrderLinesCount = 0;
         },
     }
 });
@@ -92,6 +137,11 @@ export const
         FETCH_ALL_PENDING_GRNS,
         CLEAR_ALL_SAP_STATES,
         FETCH_ALL_VENDOR_CODES,
-        GET_SAP_STAGING_DATA_COUNTS
+        GET_SAP_STAGING_DATA_COUNTS,
+        FETCH_ALL_PRODUCTION_ORDERS,
+        FETCH_ALL_ISSUES_FOR_PRODUCTION,
+        FETCH_ALL_RECIEPT_FROM_PRODUCTION,
+        FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA,
+        CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

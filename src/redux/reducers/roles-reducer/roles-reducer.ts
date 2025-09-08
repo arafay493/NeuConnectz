@@ -19,7 +19,6 @@ const rolesSlice = createSlice({
         },
 
         FETCH_ALL_LIST_ROLES: (state, action: PayloadAction<any>) => {
-            // console.log("List roles data in roles reducer: ", action.payload);
             state.rolesErrorState = ""
             state.listRoles = action?.payload;
         },

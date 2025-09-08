@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import classes from "../production-order-section-component/po.module.css";
 
 interface UserListComponentProps {
     // data: Array<UserListProps>;
@@ -349,10 +350,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                 <Box
                     w="100%"
                     mah={700}
-                    style={{
-                        overflowX: 'auto',
-                        overflowY: 'auto',
-                    }}
+                    className={classes.scrollOnHover}
                 >
                     <table style={{
                         width: '100%',

@@ -13,7 +13,6 @@ interface ProgressBarCardProps {
 };
 
 const ProgressBarCard = (props: ProgressBarCardProps) => {
-    // console.log("Props of progress bar component: ", props);
     const { title, completedRatio, remainingRatio, color } = props;
 
     return (

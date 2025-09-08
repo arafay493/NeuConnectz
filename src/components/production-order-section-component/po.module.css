@@ -1,0 +1,8 @@
+.scrollOnHover {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.scrollOnHover:hover {
+  overflow-x: auto;
+}

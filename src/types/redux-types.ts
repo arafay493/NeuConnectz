@@ -19,6 +19,10 @@ export interface UserStateType {
         users: Array<UserListProps>,
         totalCount: number,
     };
+    listDepartmentData: {
+        departments: Array<GenerateListDepartmentProps> | null;
+        totalCount: number;
+    }
     usersErrorState: string;
 };
 
@@ -104,6 +108,73 @@ export interface ListAllGroupCodesProps {
     isArchived: boolean
 }
 
+export interface ProductionOrderDataType {
+    absoluteEntry: number,
+    documentNumber: number,
+    itemNo: string,
+    originNo: number,
+    plannedDate: string,
+    productDescription: string,
+    productionOrderStatus: string,
+    project: string,
+    quantity: number,
+    remainingQuantity: number,
+    uom: string,
+    warehouse: string
+}
+
+export interface IssuesForProductionDataType {
+    id: string,
+    wareHouseCode: string,
+    itemCode: string,
+    documentType: string,
+    documentAbsoluteEntry: number,
+    quantity: number,
+    documentNumber: number,
+    sapStatus: string,
+    issueDetails: {
+        issueForProductionId: any,
+        makeReady: number,
+        qtyApproved: number,
+        machineCount: number,
+        sheetCount: number,
+        section: any,
+        qtyRejected: number,
+        productionTime: any,
+        unProductionTime: any,
+        problem: any,
+        workShift: any,
+    }
+}
+
+export interface RecieptFromProductionDataType {
+    id: string,
+    wareHouseCode: string,
+    itemCode: string,
+    documentType: string,
+    documentStatus: any,
+    documentAbsoluteEntry: number,
+    quantity: number,
+    documentNumber: number,
+    sapStatus: string,
+}
+
+export interface ProductionOrderLinesDataType {
+    documentAbsoluteEntry: number,
+    lineNumber: number,
+    itemNo: string,
+    productDescription: string,
+    productionOrderIssueType: string,
+    warehouse: string,
+    remainingQuantity: number,
+    baseQuantity: number,
+    plannedQuantity: number,
+    issuedQuantity: number,
+    stageID: number,
+    stageName: string,
+    uomName: string,
+}
+
 export interface SAPStateType {
     listAll_ITR_IT_TRS: Array<IT_TR_ITR_Props>;
     list_GRNS_Data: Array<GRN_Props>;
@@ -127,6 +198,17 @@ export interface SAPStateType {
     } | null;
     totalGRNS_DataCounts: number;
     listAll_ITR_IT_TRS_Count: number;
+    productionOrdersList: Array<ProductionOrderDataType>;
+    productionOrdersCount: number;
+
+    issuesForProductionList: Array<IssuesForProductionDataType>;
+    issuesForProductionCount: number;
+
+    recieptFromProductionList: Array<RecieptFromProductionDataType>;
+    recieptFromProductionCount: number;
+
+    listOfProductionOrderLines: Array<ProductionOrderLinesDataType>;
+    productionOrderLinesCount: number;
 };
 
 export interface GRN_Props {
@@ -406,4 +488,21 @@ export interface GenerateBarcodeProps {
     status: string;
     qty: number;
     createdDate: string;
+}
+
+
+
+export interface GenerateListDepartmentStateProps {
+    listDepartmentData: Array<GenerateListDepartmentProps> | null;
+    totalCount: number;
+}
+
+export interface GenerateListDepartmentProps {
+    id: "20e3840b-36ef-4253-91ef-4fe456c7d394",
+    departmentName: "string",
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean
 }

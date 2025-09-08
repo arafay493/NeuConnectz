@@ -1,5 +1,5 @@
 const API_ENDPOINTS = {
-    auth: process.env.BASE_URL + process.env.AUTH_LOGIN_API!,
+    auth: process.env.BASE_URL + process.env.AUTH_URL!,
     refreshToken: process.env.BASE_URL + process.env.AUTH_REFRESH_TOKEN!,
     neuConnect: process.env.BASE_URL + process.env.NEU_CONNECTZ!,
     traceAndTrack: process.env.BASE_URL + process.env.TRACE_AND_TRACK_URL!,
