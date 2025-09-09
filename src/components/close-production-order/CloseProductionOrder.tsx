@@ -1,16 +1,60 @@
 // CloseProductionOrderComponent...!
 
 "use client";
-import React, { memo, FC } from "react";
+import React, { memo, FC, useState } from "react";
 import { Modal, Button, Group, Text, Stack, Center } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
+import { closeProductionOrder, fetchAllProductionOrders } from "@/redux/actions/sap-actions/sap-actions";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { customStyles } from "@/styles/custom-theme";
 
 type CloseProductionOrderComponentProp = {
     open: boolean,
     onClose: () => void,
+    docEntry?: number
 };
 
-const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ open, onClose }) => {
+const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ open, onClose, docEntry }) => {
+
+    // Note: Handling states here...!
+    const [loading, setLoading] = useState(false);
+
+    // Note: Handeling redux here...!
+    const dispatch = useAppDispatch();
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+
+    // Note: Add / Create user response handler...!
+    const handleResponse = (response: any): void => {
+        console.log('Res: ', response);
+
+        if (response && response.status == 200) {
+            setLoading(false);
+            onClose();
+
+            dispatch(fetchAllProductionOrders({
+                token: authenticatedUser?.token || '',
+                apiUrl: process.env.NEXT_PUBLIC_PRODUCTION_ORDERS_LIST as string,
+            }));
+
+            showNotificationToast("Production Order Closed", response?.data?.message, customStyles.colors._408CCE);
+        };
+    };
+
+    // Note: Function to close the production order...!
+    const handleCloseProductionOrder = () => {
+        // console.log("Doc Entry to close production order: ", docEntry);
+
+        if (docEntry) {
+            setLoading(true);
+            dispatch(closeProductionOrder({
+                token: authenticatedUser?.token || "",
+                docEntry: docEntry,
+                resHandler: handleResponse
+            }))
+        };
+    };
+
     return (
         <Modal
             opened={open}
@@ -52,6 +96,7 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
                         size="md"
                         w={300}
                         onClick={onClose}
+                        disabled={loading}
                     >
                         Cancel
                     </Button>
@@ -62,7 +107,9 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
                         radius={8}
                         size="md"
                         w={300}
-                        onClick={onClose}
+                        onClick={handleCloseProductionOrder}
+                        loading={loading}
+                        disabled={loading}
                     >
                         Confirm
                     </Button>

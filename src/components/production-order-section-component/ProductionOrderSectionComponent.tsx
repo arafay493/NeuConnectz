@@ -168,6 +168,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         };
     };
 
+    // Note: Close production order function...!
+    const closeProductionOrder = (rowData: ProductionOrderDataType) => {
+        // console.log("Close Row :", rowData);
+        setRowData(null);
+        setRowData(rowData);
+        setIsClosePOModalOpen(true);
+    };
+
     // Note: Column definitions for the table
     const columns = useMemo<ColumnDef<ProductionOrderDataType>[]>(
         () => [
@@ -347,7 +355,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                                     backgroundColor: "#E1E7EC",
                                     marginLeft: 8
                                 }}
-                                onClick={() => setIsClosePOModalOpen(true)}
+                                onClick={() => closeProductionOrder(rowData)}
                             >
                                 Close
                             </Button>
@@ -436,6 +444,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
             <CloseProductionOrderComponent
                 open={isClosePOModalOpen}
                 onClose={() => setIsClosePOModalOpen(false)}
+                docEntry={rowData?.absoluteEntry}
             />
 
             {/* Header Section */}

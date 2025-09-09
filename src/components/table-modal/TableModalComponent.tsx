@@ -124,7 +124,7 @@ const TableModal: FC<TableModalProp> = ({ open, onClose, rowData }) => {
                 accessorKey: 'baseQuantity',
                 header: 'Base Qty',
                 cell: ({ getValue, row }) => {
-                    const val = row.original.uom != null ? row.original.uom : 'N/A';
+                    const val = row.original.baseQuantity ? row.original.baseQuantity : '-';
                     return (
                         <Text c={customStyles.colors._909090} fw={500}>
                             {val as string}
@@ -159,11 +159,14 @@ const TableModal: FC<TableModalProp> = ({ open, onClose, rowData }) => {
             {
                 accessorKey: 'uomName',
                 header: 'UOM Name',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
+                cell: ({ getValue , row }) => {
+                    const val = row.original.uomName ? row.original.uomName : '-';
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {val as string}
+                        </Text>
+                    );
+                },
                 enableColumnFilter: true,
                 size: calculateColumnWidth('UOM Name', (listOfProductionOrderLines || []).map(item => item.uomName), 150, 220),
             },
