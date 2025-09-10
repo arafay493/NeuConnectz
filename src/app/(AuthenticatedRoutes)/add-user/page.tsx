@@ -29,6 +29,8 @@ import { fetchAllRolesList } from '@/redux/actions/roles-actions/roles-actions';
 import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
+// import UserIcon from "@/assets/images/user.png";
+const userIcon = "https://res.cloudinary.com/dxhp0pmrw/image/upload/v1757448710/lwvnmz1516dwacf90hyh.png";
 
 const AddUserScreen = () => {
 
@@ -58,7 +60,7 @@ const AddUserScreen = () => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
     const { listDepartmentData } = useAppSelector(({ userStates }) => { return userStates });
-    const token = authenticatedUser?.token as string;   
+    const token = authenticatedUser?.token as string;
 
     // Note: Clear all states handler...!
     const clearAllStates = () => {
@@ -85,7 +87,7 @@ const AddUserScreen = () => {
     const handleImageChange = (file: File | null) => {
         if (file) {
             const reader = new FileReader();
-            
+
             reader.onloadend = () => {
                 setUserData({
                     ...userData,
@@ -108,7 +110,7 @@ const AddUserScreen = () => {
 
     // Note: Add / Create user response handler...!
     const handleResponse = (response: any): void => {
-        
+
         if (response && response.status == 201) {
             // Note: Stop loading...!
             setUserData({
@@ -179,7 +181,7 @@ const AddUserScreen = () => {
                     departmentId: department,
                     role
                 };
-                
+
                 // Note: Enable loader...!
                 setUserData({
                     ...userData,
@@ -350,10 +352,19 @@ const AddUserScreen = () => {
                                     )
                                     :
                                     (
+                                        // <Image
+                                        //     src={UserIcon}
+                                        //     alt="User Icon"
+                                        //     style={{ width: "auto", height: "180px", objectFit: 'cover', marginBottom: 10 }}
+                                        // />
                                         <Image
-                                            src={localAssets.userIcon}
+                                            src={userIcon}
                                             alt="User Icon"
-                                            style={{ width: "auto", height: "180px", objectFit: 'cover', marginBottom: 10 }}
+                                            style={{ objectFit: 'cover', marginBottom: 10 }}
+                                            unoptimized={true}
+                                            priority={true}
+                                            height={180}
+                                            width={200}
                                         />
                                     )
                             }

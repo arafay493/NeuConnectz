@@ -15,6 +15,10 @@ import { customStyles } from "@/styles/custom-theme";
 import { useRouter } from 'next/navigation';
 import AuthService from '@/lib/auth-service/auth-service';
 
+import WhiteLogo from "@/assets/images/white-logo.svg"
+import ProductImage from "@/assets/images/product-image.gif";
+import QBSLogo from "@/assets/images/QBS _LOGO.svg";
+
 const LoginScreen = () => {
 
     // Note: handle styling hook...!
@@ -127,7 +131,7 @@ const LoginScreen = () => {
             >
                 {/* Note: Logo image */}
                 <Image
-                    src={localAssets.whiteLogo}
+                    src={WhiteLogo}
                     alt="Logo"
                     style={{
                         width: "40%",
@@ -139,7 +143,7 @@ const LoginScreen = () => {
 
                 {/* Note: Product image */}
                 <Image
-                    src={localAssets.productImage}
+                    src={ProductImage}
                     alt="Product Design Image"
                     style={{
                         width: "60%",
@@ -291,7 +295,7 @@ const LoginScreen = () => {
                         Powered By
                     </Text>
                     <Image
-                        src={localAssets.qbsLogo}
+                        src={QBSLogo}
                         alt="Powered by QBS"
                         style={{
                             width: "56px",
@@ -299,7 +303,7 @@ const LoginScreen = () => {
                             borderRadius: customStyles.size.size_10,
                             opacity: 0.9
                         }}
-                        unoptimized={true}
+                        // unoptimized={true}
                         priority={true}
                     />
                 </Group>
