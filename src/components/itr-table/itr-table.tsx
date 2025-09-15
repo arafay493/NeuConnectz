@@ -107,6 +107,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
     const { itrData, itrDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
+    console.log('ITR Data: ', itrData);
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {

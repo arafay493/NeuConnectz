@@ -32,7 +32,6 @@ export const handleRefreshToken = async (message: string): Promise<boolean> => {
 
         if (status === 401) {
             logout("Session Expired", message);
-            window.location.reload();
             return false;
         }
 

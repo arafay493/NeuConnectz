@@ -7,7 +7,7 @@ import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
 import { GRN_Props } from "@/types/redux-types";
-import { ActionIcon, Box, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Group, Image, Select, Stack, Text, Title, Button } from "@mantine/core";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
@@ -32,6 +32,7 @@ const UnpostedGRNTable = () => {
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
     const { vendorCodeList } = useAppSelector(({ sapStates }) => { return sapStates });
     const { list_Pending_GRNS_Data, totalGRNS_DataCounts, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    // console.log('Pending GRNS Data: ', list_Pending_GRNS_Data);
 
     const pendingGRNDataCount = list_Pending_GRNS_Data.length;
 
@@ -209,6 +210,22 @@ const UnpostedGRNTable = () => {
                 size: calculateColumnWidth('Group Name', list_Pending_GRNS_Data.map(item => item.groupName), 200, 300),
             },
             {
+                accessorKey: 'quantity',
+                header: 'Quantity',
+                cell: ({ getValue, row }) => {
+                    const { quantity } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {quantity != null ? quantity : "-"}
+                        </Text>
+                    );
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Quantity', list_Pending_GRNS_Data.map(item => String(item.quantity)), 200, 300),
+            },
+
+            {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
                 cell: ({ getValue }) => (
@@ -271,6 +288,52 @@ const UnpostedGRNTable = () => {
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
+            {
+                header: 'Action',
+                cell: ({ getValue, row }) => {
+                    // const rowId = row.original.itemNo;
+                    // console.log("row Id: ", rowId);
+                    return (
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                            }}
+                        >
+                            <Button
+                                variant="transparent"
+                                className={'outlineButton'}
+                                radius={8}
+                                size="sm"
+                                w={120}
+                            // onClick={() => {
+                            //     setRowData(row.original);
+                            //     setIsTableModalOpen(true)
+                            // }}
+                            >
+                                View Details
+                            </Button>
+
+                            <Button
+                                variant="transparent"
+                                className={'filledButton'}
+                                radius={8}
+                                size="sm"
+                                w={120}
+                                style={{
+                                    marginLeft: 8
+                                }}
+                            // onClick={viewGrnsData}
+                            >
+                                Post
+                            </Button>
+                        </div>
+                    )
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
+            }
         ],
         [list_Pending_GRNS_Data]
     );

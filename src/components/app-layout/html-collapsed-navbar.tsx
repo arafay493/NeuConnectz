@@ -1,13 +1,12 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import {
     Group,
     NavLink,
     ActionIcon,
     Stack,
-    Image,
     Divider,
     Box,
 } from '@mantine/core';
@@ -22,6 +21,8 @@ import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
 import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
 import { localAssets } from '@/lib/file-paths/file-paths';
+// import Logo_sm from "@/assets/images/Logo_sm.png";
+const logoSm = "https://res.cloudinary.com/dxhp0pmrw/image/upload/v1757448951/tj8kdknmztfsyoofqnvu.png";
 
 interface HtmlCollapsedNavbarProps {
     activeTab: number;
@@ -111,12 +112,20 @@ const HtmlCollapsedNavbar = ({
                     style={{ cursor: 'pointer' }}
                     wrap='nowrap'
                 >
-                    <Image
-                        src={localAssets.logo_sm}
+                    {/* <Image
+                        src={logoSm}
                         alt="Logo"
                         component={NextImage}
                         h={32}
-                        w='auto'
+                        w={10}
+                    /> */}
+                    <Image
+                        src={logoSm}
+                        alt="Logo"
+                        unoptimized={true}
+                        priority={true}
+                        height={32}
+                        width={100}
                     />
                 </Group>
 

@@ -21,7 +21,7 @@ export type Routes = {
     integrationMonitor: string;
     editUser: (uid: string) => string,
     grnMovement: string
-    generateBarcode: string
+    // generateBarcode: string
     productionOrder: string
 };
 

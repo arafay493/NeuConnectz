@@ -125,7 +125,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Department', (data || []).map(item => item.department), 120, 200),
+                size: calculateColumnWidth('Department', (data || []).map(item => item.department), 150, 200),
             },
             {
                 accessorKey: 'phone',

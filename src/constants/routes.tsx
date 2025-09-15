@@ -38,7 +38,7 @@ const authenticatedRoutes: String[] = [
     "/integration-monitor",
     "/edit",
     "/grn-movement",
-    "/generate-barcode",
+    // "/generate-barcode",
     "/production-order"
 ];
 
@@ -62,7 +62,7 @@ const routes: Routes = {
     integrationMonitor: "/integration-monitor",
     editUser: (uid: string) => `/edit/${uid}`,
     grnMovement: "/grn-movement",
-    generateBarcode: "/generate-barcode",
+    // generateBarcode: "/generate-barcode",
     productionOrder: "/production-order"
 };
 
@@ -84,9 +84,39 @@ const drawerRoutes: DrawerRoute[] = [
         route: routes.grnMovement
     },
     {
+        icon: <IconChecklist color='currentColor' size={24} />,
+        label: "Production",
+        route: routes.productionOrder
+    },
+    {
+        icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
+        label: "Integration Monitor",
+        route: routes.integrationMonitor
+    },
+    {
         icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
         label: "Reconciliation",
         route: routes.reconciliation,
+    },
+    {
+        icon: <IconUsersGroup color='currentColor' size={24} />,
+        label: "Users List",
+        route: routes.usersList,
+    },
+    {
+        icon: <IconUsersGroup color='currentColor' size={24} />,
+        label: "Assign Group",
+        route: routes.assignGroup,
+    },
+    {
+        icon: <IconBuildingWarehouse color='currentColor' size={24} />,
+        label: "Assign Warehouse",
+        route: routes.assignWareHouse,
+    },
+    {
+        icon: <IconSettingsCog color='currentColor' size={24} />,
+        label: "Configuration",
+        route: routes.configuration
     },
     // {
     //     icon: <IconListCheck size={20} />,
@@ -113,41 +143,11 @@ const drawerRoutes: DrawerRoute[] = [
     //     label: "TR posted documents",
     //     route: routes.trPostedDocuments,
     // },
-    {
-        icon: <IconUsersGroup color='currentColor' size={24} />,
-        label: "Users List",
-        route: routes.usersList,
-    },
-    {
-        icon: <IconUsersGroup color='currentColor' size={24} />,
-        label: "Assign Group",
-        route: routes.assignGroup,
-    },
-    {
-        icon: <IconBuildingWarehouse color='currentColor' size={24} />,
-        label: "Assign Warehouse",
-        route: routes.assignWareHouse,
-    },
-    {
-        icon: <IconSettingsCog color='currentColor' size={24} />,
-        label: "Configuration",
-        route: routes.configuration
-    },
-    {
-        icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "Integration Monitor",
-        route: routes.integrationMonitor
-    },
-    {
-        icon: <IconBarcode color='currentColor' size={24} />,
-        label: "Generate Barcode",
-        route: routes.generateBarcode
-    },
-    {
-        icon: <IconChecklist color='currentColor' size={24} />,
-        label: "Production Order",
-        route: routes.productionOrder
-    },
+    // {
+    //     icon: <IconBarcode color='currentColor' size={24} />,
+    //     label: "Generate Barcode",
+    //     route: routes.generateBarcode
+    // }
 ];
 
 export {

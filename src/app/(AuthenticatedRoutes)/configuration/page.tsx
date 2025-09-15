@@ -16,7 +16,7 @@ import {
     Grid,
     Box,
 } from "@mantine/core";
-import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
+import { IconSend, IconEye, IconEyeOff, IconCheckbox } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
@@ -73,7 +73,7 @@ const Configuration = () => {
 
     // Note: Add SAP configuration api response handler...!
     const handleResponse = (response: any): void => {
-        
+
         if (response && response.status == 200) {
             // Note: Stop loading...!
             setFormData({
@@ -177,7 +177,7 @@ const Configuration = () => {
             <Loader loadingState={formData.loading} />
 
             {/* Note: Screen Head section */}
-            <Group
+            {/* <Group
                 justify={customStyles.alignment.spaceBetween}
                 align="flex-start"
                 p="md"
@@ -198,6 +198,36 @@ const Configuration = () => {
                         Customizable Integration
                     </Text>
                 </Stack>
+            </Group> */}
+
+            <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }} p="md">
+                <Stack gap={0}>
+                    <Title
+                        order={3}
+                        style={{
+                            color: customStyles.colors._4D4D4D,
+                            fontSize: "24px",
+                            fontWeight: 700
+                        }}
+                    >
+                        Configuration
+                    </Title>
+
+                    <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+                        Customizable Integration
+                    </Text>
+                </Stack>
+                <Button
+                    leftSection={<IconCheckbox size={18} />}
+                    className='filledButton'
+                    variant="transparent"
+                    size="lg"
+                    radius={8}
+                    onClick={handleSubmitForm}
+                    disabled={isSAPConfigExist}
+                >
+                    Submit
+                </Button>
             </Group>
 
             {/* Note: Form section */}
@@ -299,7 +329,7 @@ const Configuration = () => {
                             />
                         </Grid.Col>
 
-                        <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        {/* <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button
                                 size="md"
                                 leftSection={<IconSend size={18} />}
@@ -310,7 +340,7 @@ const Configuration = () => {
                             >
                                 Submit
                             </Button>
-                        </Grid.Col>
+                        </Grid.Col> */}
                     </Grid>
                 </Paper>
             </div>

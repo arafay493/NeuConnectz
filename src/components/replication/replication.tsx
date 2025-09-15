@@ -203,7 +203,6 @@ const ReplicationComponent = () => {
                     );
                 })}
             </SimpleGrid>
-            {/* </Grid> */}
         </Card>
     );
 };

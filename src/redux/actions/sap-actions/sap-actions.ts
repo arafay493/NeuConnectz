@@ -1,7 +1,7 @@
 import API_METHODS from "@/constants/api-methods";
 import apiRequestRoutes from "@/constants/api-request";
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { apiGet, apiPost } from "@/lib/api-service";
+import { apiGet, apiPost, apiPut } from "@/lib/api-service";
 import {
     CHECK_SAP_CONFIG_EXIST,
     FETCH_ALL_GRNS,
@@ -75,6 +75,7 @@ const postRequestToSAP = createAsyncThunk(
     ) => {
         try {
             const response = await apiPost(`/neu-connect/v2/${apiUrl}`, { userName: type }, token);
+            console.log('Res: ' , response);
 
             const { status, data } = response;
 
@@ -469,6 +470,31 @@ const fetchProductionOrdersLinesList = createAsyncThunk(
     }
 );
 
+// Note: Action function to close production order...!
+const closeProductionOrder = createAsyncThunk(
+    "sap/closeProductionOrder",
+    async (
+        { token, docEntry, resHandler }:
+            {
+                token: string,
+                docEntry: number,
+                resHandler: ResHandler
+            },
+        { dispatch }
+    ) => {
+        console.log("Doc Entry to close production order: ", docEntry);
+
+        const response = await apiPut(`/neu-connect/v2/${process.env.NEXT_PUBLIC_PRODUCTION_CLOSE_PRODUCTION_ORDER}?DocEntry=${docEntry}`, token);
+        console.log("Close production order: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            resHandler(response);
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     checkSAPConfigExist,
@@ -484,6 +510,7 @@ export {
     fetchAllProductionOrders,
     fetchIssuesForProductionList,
     fetchRecieptFromProductionList,
-    fetchProductionOrdersLinesList
+    fetchProductionOrdersLinesList,
+    closeProductionOrder
 };
 
