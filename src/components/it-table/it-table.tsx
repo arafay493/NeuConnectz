@@ -47,7 +47,7 @@ type ITDataType = {
     binCode: string,
     barCode: string,
     docStatus: string,
-    receivedQuantity: string | number,
+    receivedQuantity: number,
     erpDocEntry: string | number,
     erpObjectType: string | number,
     erpDocLine: string | number,
@@ -109,6 +109,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { itData, itDataCount, itrErrorState } = useAppSelector(({ itrStates }) => { return itrStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+    // console.log('IT Data: ', itData);
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -273,6 +274,21 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Group Name', itData.map(item => item.groupName), 200, 300),
+            },
+            {
+                accessorKey: 'receivedQuantity',
+                header: 'Quantity',
+                cell: ({ getValue, row }) => {
+                    const { receivedQuantity } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {receivedQuantity != null ? Math.floor(receivedQuantity) : "-"}
+                        </Text>
+                    );
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Quantity', itData.map(item => String(item?.receivedQuantity)), 200, 300),
             },
             {
                 accessorKey: 'erpDocEntry',
@@ -671,7 +687,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                     </table>
                 </Box>
 
-                {itData.length < 1 && <DataNotFound notFoundContent={itrErrorState || "No IT data found."} />}
+                {/* {itData.length < 1 && <DataNotFound notFoundContent={itrErrorState || "No IT data found."} />} */}
             </Stack>
 
             {/* Pagination */}

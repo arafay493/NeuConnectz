@@ -17,6 +17,7 @@ import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 import GRNMovementFilterBar from "./GRNMovementFilterBar";
 import classes from "../production-order-section-component/po.module.css";
+import { Button } from "@mantine/core";
 
 const PostedGRNTable = () => {
     // Search Table Filter With API Call
@@ -32,6 +33,7 @@ const PostedGRNTable = () => {
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
     const { vendorCodeList } = useAppSelector(({ sapStates }) => { return sapStates });
     const { list_Integrated_GRNS_Data, totalGRNS_DataCounts, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    console.log('GRNS Data: ', list_Integrated_GRNS_Data);
 
     const integratedGRNDataCount = list_Integrated_GRNS_Data.length;
 
@@ -98,7 +100,7 @@ const PostedGRNTable = () => {
         () => [
             {
                 id: 'serialNumber', // Use id instead of accessorKey for computed columns
-                header: 'S.No',
+                header: 'Serial No',
                 cell: ({ row }) => {
                     // Calculate serial number based on server-side pagination
                     const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
@@ -110,11 +112,11 @@ const PostedGRNTable = () => {
                 },
                 filterFn: serialNumberFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('S.No', ['99999'], 80, 120),
+                size: calculateColumnWidth('Serial No', ['99999'], 80, 120),
             },
             {
                 accessorKey: 'docNum',
-                header: 'Number',
+                header: 'Doc No',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
@@ -122,11 +124,23 @@ const PostedGRNTable = () => {
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Number', list_Integrated_GRNS_Data.map(item => String(item.docNum)), 120, 200),
+                size: calculateColumnWidth('Doc No', list_Integrated_GRNS_Data.map(item => String(item.docNum)), 120, 200),
+            },
+            {
+                accessorKey: 'vendorCode',
+                header: 'Vendor Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Vendor Code', list_Integrated_GRNS_Data.map(item => item.vendorCode), 120, 200),
             },
             {
                 accessorKey: 'whsCode',
-                header: 'Warehouse Code',
+                header: 'Warehouse',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
@@ -137,16 +151,19 @@ const PostedGRNTable = () => {
                 size: calculateColumnWidth('Warehouse', list_Integrated_GRNS_Data.map(item => item.whsCode), 120, 200),
             },
             {
-                accessorKey: 'vendorCode',
-                header: 'Vendor',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                filterFn: stringFilterFn,
+                accessorKey: 'updatedDate',
+                header: 'Doc Date',
+                cell: ({ getValue }) => {
+                    const date = new Date(getValue() as string);
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {`${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`}
+                        </Text>
+                    );
+                },
+                filterFn: dateFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Vendor', list_Integrated_GRNS_Data.map(item => item.vendorCode), 120, 200),
+                size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
             {
                 accessorKey: 'docStatus',
@@ -209,6 +226,21 @@ const PostedGRNTable = () => {
                 size: calculateColumnWidth('Group Name', list_Integrated_GRNS_Data.map(item => item.groupName), 200, 300),
             },
             {
+                accessorKey: 'quantity',
+                header: 'Quantity',
+                cell: ({ getValue, row }) => {
+                    const { quantity } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {quantity != null ? quantity : "-"}
+                        </Text>
+                    );
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Quantity', list_Integrated_GRNS_Data.map(item => String(item.quantity)), 200, 300),
+            },
+            {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
                 cell: ({ getValue }) => (
@@ -256,21 +288,32 @@ const PostedGRNTable = () => {
                 enableColumnFilter: true,
                 size: calculateColumnWidth('User Name', list_Integrated_GRNS_Data.map(item => item.userName), 150, 250),
             },
+
             {
-                accessorKey: 'updatedDate',
-                header: 'Doc Date',
-                cell: ({ getValue }) => {
-                    const date = new Date(getValue() as string);
+                header: 'Action',
+                cell: ({ getValue, row }) => {
+                    // const rowId = row.original.itemNo;
+                    // console.log("row Id: ", rowId);
                     return (
-                        <Text c={customStyles.colors._909090} fw={500}>
-                            {`${date.toLocaleTimeString()} - ${date.toLocaleDateString()}`}
-                        </Text>
-                    );
+                        <Button
+                            variant="transparent"
+                            className={'outlineButton'}
+                            radius={8}
+                            size="sm"
+                            w={120}
+                        // onClick={() => {
+                        //     setRowData(row.original);
+                        //     setIsTableModalOpen(true)
+                        // }}
+                        >
+                            View Details
+                        </Button>
+                    )
                 },
-                filterFn: dateFilterFn,
+                filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
-            },
+                // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
+            }
         ],
         [list_Integrated_GRNS_Data]
     );

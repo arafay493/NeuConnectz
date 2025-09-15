@@ -7,6 +7,7 @@ import { fetchAll_GRNS, fetchAllITR_IT_TRS, postRequestToSAP } from '@/redux/act
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { GRN_Props, IT_TR_ITR_Props } from '@/types/redux-types';
+import { useMediaQuery } from "@mantine/hooks";
 import {
     ActionIcon,
     Box,
@@ -19,73 +20,62 @@ import {
     Stack,
     Text,
     ThemeIcon,
-    Title
+    Title,
+    ScrollArea,
+    Flex
 } from '@mantine/core';
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChartBar, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import {
+    IconArrowNarrowDown,
+    IconArrowNarrowUp,
+    IconArrowsUpDown,
+    IconBorderCorners,
+    IconChartBar,
+    IconChevronDown,
+    IconChevronLeft,
+    IconChevronRight,
+    IconColumns,
+    IconFilter,
+    IconFilterOff,
+    IconSearch,
+    IconSearchOff
+} from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import classes from "../production-order-section-component/po.module.css";
+import Loader from '@/components/loader/loader';
 
-const headers: string[] =
-    [
-        "S.No",
-        "Type",
-        "Number",
-        "Item Code",
-        "From Warehouse",
-        "To Warehouse",
-        "User Name",
-        "ERP Doc Entry",
-        "ERP Line ID",
-        "SAP Status",
-        "Doc Status",
-        "Doc Date"
-    ];
-const grnsHeaders: string[] =
-    [
-        "S.No",
-        "Type", // GRN
-        "Number",
-        "Item Code",
-        "Warehouse",
-        "Vendor",
-        "User Name",
-        "ERP Doc Entry",
-        "ERP Line ID",
-        "SAP Status",
-        "Doc Status",
-        "Doc Date"
-    ];
-
-const types: string[] = ["ITR", "IT", "TR"];
 const cardsData = [
     {
+        title: "Inventory Transfer Request",
         label: "ITR",
         pendingValue: "totalItrPending",
         integratedValue: "totalItrIntegrated",
         lastIntegrationDate: "lastItrIntegrationDate"
     },
     {
+        title: "Inventory Transfer",
         label: "IT",
         pendingValue: "totalItPending",
         integratedValue: "totalItIntegrated",
         lastIntegrationDate: "lastItIntegrationDate"
     },
     {
+        title: "Transfer Request",
         label: "TR",
         pendingValue: "totalTrPending",
         integratedValue: "totalTrIntegrated",
         lastIntegrationDate: "lastTrIntegrationDate"
     },
-    // {
-    //     label: "GI",
-    //     pendingValue: "",
-    //     integratedValue: "",
-    //     lastIntegrationDate: ""
-    // },
+    {
+        title: "Goods Issue",
+        label: "GI",
+        pendingValue: "",
+        integratedValue: "",
+        lastIntegrationDate: ""
+    },
     // {
     //     label: "GR",
     //     pendingValue: "",
@@ -93,10 +83,27 @@ const cardsData = [
     //     lastIntegrationDate: ""
     // },
     {
+        title: "Goods Receipt Notes",
         label: "GRN",
         pendingValue: "totalGrnPending",
         integratedValue: "totalGrnIntegrated",
         lastIntegrationDate: "lastGrnIntegrationDate"
+    },
+
+    {
+        title: "Issue For Production",
+        label: "IFP",
+        pendingValue: "",
+        integratedValue: "",
+        lastIntegrationDate: ""
+    },
+
+    {
+        title: "Receipt From Production",
+        label: "RFP",
+        pendingValue: "",
+        integratedValue: "",
+        lastIntegrationDate: ""
     },
 ];
 
@@ -132,8 +139,8 @@ const calculateColumnWidth = (headerText: string, sampleValues: string[], minWid
 
 // Note: GRN_Table_Component...!
 const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisible }) => {
+
     // Note: Handling states here...!
-    const [loading, setLoading] = useState(false);
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
@@ -143,7 +150,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
     const dispatch = useAppDispatch();
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { list_GRNS_Data, totalGRNS_DataCounts, sapErrorState } = useAppSelector(({ sapStates }) => { return sapStates });
+    const { list_GRNS_Data, totalGRNS_DataCounts } = useAppSelector(({ sapStates }) => { return sapStates });
 
     // Note: State for Filters
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -446,7 +453,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
     return (
         <>
             {/* Global Search Filter for GRN Table */}
-            <Group mb={16}>
+            {/* <Group mb={16}>
                 <GlobalSearchFilter
                     filters={globalFilter}
                     setFilters={setGlobalFilter}
@@ -456,7 +463,7 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                     !isSearchInputVisible ?
                         <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
                 }
-            </Group>
+            </Group> */}
 
             <Box
                 className="show-scroll-bar-overflow"
@@ -1015,7 +1022,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     return (
         <>
             {/* Global Search Filter for Stock Movement Table */}
-            <Group justify='flex-end' mb={16}>
+            {/* <Group justify='flex-end' mb={16}>
                 <GlobalSearchFilter
                     filters={globalFilter}
                     setFilters={setGlobalFilter}
@@ -1025,7 +1032,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                     !isSearchInputVisible ?
                         <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
                 }
-            </Group>
+            </Group> */}
 
             <Box
                 w="100%"
@@ -1269,11 +1276,15 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
 };
 
 const IntegrationComponent = () => {
+
+    const isLargeScreen = useMediaQuery("(min-width: 992px)");
+
     // Note: Handling states here...!
     const [statusColor, setStatusColor] = useState<"Pending" | "Integrated">("Pending");
     const [selectedType, setSelectedType] = useState("");
     const [loading, setLoading] = useState(false);
     const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
+    const [dataLoading, setDataLoading] = useState(false);
 
     // Note: State for Table Filters and Search
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -1294,9 +1305,11 @@ const IntegrationComponent = () => {
     // Note: Fetch user data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
+    // console.log('Stats: ', dashboardAnalyticsData);
 
     // Note: Function to shoe pending and integrated values...!
     const showPendingAndIntegratedValues = (sapType: string, value: string) => {
+        // console.log("SAP type: ", sapType, "Val: ", value);
 
         if (sapType === "ITR" || sapType === "IT" || sapType === "TR") {
             const { transferStatistics } = dashboardAnalyticsData || {};
@@ -1361,6 +1374,7 @@ const IntegrationComponent = () => {
 
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
+        console.log('Res in component: ', response);
 
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
@@ -1406,6 +1420,7 @@ const IntegrationComponent = () => {
 
     // Note: Handle post request to SAP...!
     const handleRequestToSap = (reqData: string, totalPendingValue: string) => {
+        setDataLoading(true);
 
         if (reqData == "ITR") {
             dispatch(postRequestToSAP({
@@ -1413,7 +1428,10 @@ const IntegrationComponent = () => {
                 type: "Post to ITR",
                 apiUrl: process.env.NEXT_PUBLIC_POST_ITR_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
-            }));
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
             return;
         };
 
@@ -1423,7 +1441,10 @@ const IntegrationComponent = () => {
                 type: "Post to TR",
                 apiUrl: process.env.NEXT_PUBLIC_POST_TR_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
-            }));
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
             return;
         };
 
@@ -1443,7 +1464,10 @@ const IntegrationComponent = () => {
                     type: "Post to IT",
                     apiUrl: process.env.NEXT_PUBLIC_POST_IT_REQUEST_TO_SAP as string,
                     resHandler: handleResponse
-                }));
+                }))
+                    .finally(() => {
+                        setDataLoading(false);
+                    })
                 return;
             }
         };
@@ -1454,12 +1478,16 @@ const IntegrationComponent = () => {
                 type: "Post to GRN",
                 apiUrl: process.env.NEXT_PUBLIC_POST_GRN_REQUEST_TO_SAP as string,
                 resHandler: handleResponse
-            }));
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
             return;
         };
 
-        if (reqData == "GI" || reqData == "GR") {
+        if (reqData == "GI" || reqData == "RFP" || reqData == "IFP") {
             showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
+            setDataLoading(false);
             return;
         };
     };
@@ -1552,12 +1580,29 @@ const IntegrationComponent = () => {
 
     return (
         <Box>
-            <Grid grow>
-                {
-                    cardsData.map((item) => (
-                        <Grid.Col
-                            span={{ base: 12, sm: 6, md: 2 }}
+
+            {/* Note: Loading Component */}
+            <Loader loadingState={dataLoading} />
+
+            <ScrollArea type="auto" scrollbarSize={8} offsetScrollbars>
+                <Flex
+                    direction="row"
+                    gap="md"
+                    wrap="nowrap"
+                    style={{
+                        padding: '1rem 0',
+                        overflowX: 'auto',
+                        WebkitOverflowScrolling: 'touch'
+                    }}
+                >
+                    {cardsData.map((item) => (
+                        <Box
                             key={item.label}
+                            style={{
+                                minWidth: isLargeScreen ? '15%' : 200,
+                                flexShrink: 0,
+                                // width: "auto"
+                            }}
                         >
                             <Card shadow="sm" radius="md" withBorder>
                                 <Group justify={customStyles.alignment.spaceBetween} mb="sm">
@@ -1571,7 +1616,13 @@ const IntegrationComponent = () => {
                                     </ThemeIcon>
                                 </Group>
 
-                                <Title order={4}>{item.label}</Title>
+                                <Title
+                                    order={4}
+                                    style={{ color: "#4D4D4D" }}
+                                >
+                                    {item.title}
+                                </Title>
+
                                 <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
                                     {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
                                 </Text>
@@ -1590,21 +1641,15 @@ const IntegrationComponent = () => {
                                     onClick={() => handleRequestToSap(item.label, item.pendingValue)}
                                     disabled={handleDisable(item.pendingValue, item.integratedValue)}
                                     color={customStyles.colors._1B59F8}
-                                    style={{
-                                        root: {
-                                            '&:hover': {
-                                                backgroundColor: 'yellow',
-                                            },
-                                        },
-                                    }}
                                 >
                                     {handleDisable(item.pendingValue, item.integratedValue) ? 'Posted' : 'Post'}
                                 </Button>
                             </Card>
-                        </Grid.Col>
-                    ))
-                }
-            </Grid>
+                        </Box>
+                    ))}
+                </Flex>
+            </ScrollArea>
+
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 <Group justify='space-between'>
                     <Group
@@ -1672,7 +1717,7 @@ const IntegrationComponent = () => {
                         </Text>
                     </Stack>
                     <Group gap="xs">
-                        {/* <GlobalSearchFilter
+                        <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
                             isSearchInputVisible={isSearchInputVisible}
@@ -1680,7 +1725,7 @@ const IntegrationComponent = () => {
                         {
                             !isSearchInputVisible ?
                                 <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
-                        } */}
+                        }
                         {
                             !areTableFiltersVisible ?
                                 <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} /> : <IconFilterOff cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />

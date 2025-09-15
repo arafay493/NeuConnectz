@@ -215,10 +215,13 @@ const AddUserScreen = () => {
     // Note: This hook is used to set roles options...!
     useEffect(() => {
         if (listRoles && listRoles.length > 0) {
-            const options = listRoles.map((role: any) => ({
-                value: role.name,
-                label: role.name
-            }));
+            const options = listRoles
+                .filter((item) => { return item?.name != "SuperAdmin" })
+                .map((role: any) => ({
+                    value: role.name,
+                    label: role.name
+                }));
+            // console.log('Options: ', options);
             setRolesOptions(options);
         };
     }, [listRoles]);

@@ -75,6 +75,7 @@ const postRequestToSAP = createAsyncThunk(
     ) => {
         try {
             const response = await apiPost(`/neu-connect/v2/${apiUrl}`, { userName: type }, token);
+            console.log('Res: ' , response);
 
             const { status, data } = response;
 

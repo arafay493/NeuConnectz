@@ -233,6 +233,7 @@ export interface GRN_Props {
     vendorCode: string;
     vendorReference: string;
     whsCode: string;
+    quantity: number
 }
 
 export interface IT_TR_ITR_Props {
@@ -326,7 +327,7 @@ export interface ITRStateType {
         binCode: string,
         barCode: string,
         docStatus: string,
-        receivedQuantity: string | number,
+        receivedQuantity: number,
         erpDocEntry: string | number,
         erpObjectType: string | number,
         erpDocLine: string | number,

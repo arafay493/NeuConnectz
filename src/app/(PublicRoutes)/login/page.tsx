@@ -51,7 +51,7 @@ const LoginScreen = () => {
     // Note: Login api response handler...!
     const handleResponse = (response: any): void => {
         // console.log("Login Api Response: ", response);
-       
+
         if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
 
@@ -102,7 +102,7 @@ const LoginScreen = () => {
             email,
             password
         };
-        
+
         dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse
@@ -203,7 +203,7 @@ const LoginScreen = () => {
                                 textTransform: customStyles.textTransformation.capitalize,
                             }}
                         >
-                            log in
+                            sign in
                         </Title>
 
                         {/* Note: Greeting heading */}
@@ -223,8 +223,20 @@ const LoginScreen = () => {
                             style={{
                                 width: '100%',
                                 alignItems: customStyles.alignment.center,
+                                // backgroundColor : "yellow"
                             }}
                         >
+                            <Group
+                                justify="space-between"
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                            >
+                                <Text size="md" fw={500} c={customStyles.colors._4D4D4D}>
+                                    Email ID
+                                </Text>
+                            </Group>
+
                             {/* Note: Email input field */}
                             <TextInput
                                 w="100%"
@@ -232,7 +244,7 @@ const LoginScreen = () => {
                                 miw={250}
                                 size='md'
                                 radius={8}
-                                label="Email"
+                                // label="Email ID"
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -240,25 +252,74 @@ const LoginScreen = () => {
                                 labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
                             />
 
-                            {/* Note: Password input field */}
+                            {/* Label Row: Password | Forgot password */}
+                            <Group
+                                justify="space-between"
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                            >
+                                <Text size="md" fw={500} c={customStyles.colors._4D4D4D}>
+                                    Password
+                                </Text>
+
+                                <Text
+                                    size="md"
+                                    c={customStyles.colors._1B59F8}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        // Add forgot password logic here
+                                        console.log('Forgot password clicked');
+                                    }}
+                                >
+                                    Forgot password?
+                                </Text>
+                            </Group>
+
+                            {/* Password input without built-in label */}
                             <PasswordInput
                                 w="100%"
                                 maw={400}
                                 miw={250}
-                                size='md'
+                                size="md"
                                 radius={8}
-                                label="Password"
                                 placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                labelProps={{ style: { color: customStyles.colors._4D4D4D } }}
-                                visibilityToggleIcon={({ reveal }) => reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />}
+                                visibilityToggleIcon={({ reveal }) =>
+                                    reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />
+                                }
                             />
+
+                            {/* Remember Me checkbox */}
+                            <Group
+                                w="100%"
+                                maw={400}
+                                miw={250}
+                                // mt={6}
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="rememberMe"
+                                    // style={{ marginRight: 2 }}
+                                // You can add state handling for remember me here
+                                />
+                                <label
+                                    htmlFor="rememberMe"
+                                    style={{
+                                        color: "#ACACAC",
+                                        fontSize: '14px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Remember Me
+                                </label>
+                            </Group>
 
                             {/* Note: Log in button */}
                             <Button
-                                mt={32}
+                                // mt={22}
                                 variant='transparent'
                                 size='md'
                                 radius={8}

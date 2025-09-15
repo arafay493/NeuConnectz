@@ -75,7 +75,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { issuesForProductionList , issuesForProductionCount } = useAppSelector(({ sapStates }) => { return sapStates });
+    const { issuesForProductionList, issuesForProductionCount } = useAppSelector(({ sapStates }) => { return sapStates });
+    console.log('IFP: ', issuesForProductionList);
 
     // Note: Functions...!
     const handleSearchInputVisibility = () => {
@@ -297,10 +298,10 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
                                 radius={8}
                                 size="sm"
                                 w={120}
-                                // onClick={() => {
-                                //     setRowData(row.original);
-                                //     setIsTableModalOpen(true)
-                                // }}
+                            // onClick={() => {
+                            //     setRowData(row.original);
+                            //     setIsTableModalOpen(true)
+                            // }}
                             >
                                 View Details
                             </Button>

@@ -14,7 +14,7 @@ const StockMovementComponent = () => {
 
     // Note: state for tas Switch
     // Note: handling states here...!
-    const [tab, setTab] = useState<'Inventory Transfer Request' | 'Inventory Transfer' | 'Transfer Request'>('Inventory Transfer Request');
+    const [tab, setTab] = useState<'Inventory Transfer Request' | 'Inventory Transfer' | 'Transfer Receipt'>('Inventory Transfer Request');
 
     return (
         <Box>
@@ -45,7 +45,7 @@ const StockMovementComponent = () => {
                     marginBottom: '32px',
                     position: 'relative'
                 }}>
-                    {(['Inventory Transfer Request', 'Inventory Transfer', 'Transfer Request'] as const).map((tabOption) => (
+                    {(['Inventory Transfer Request', 'Inventory Transfer', 'Transfer Receipt'] as const).map((tabOption) => (
                         <button
                             key={tabOption}
                             onClick={() => setTab(tabOption)}
@@ -75,7 +75,7 @@ const StockMovementComponent = () => {
                     {tab === 'Inventory Transfer' && (
                         <IT_TableCom apiUrl={process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA as string} />
                     )}
-                    {tab === 'Transfer Request' && (
+                    {tab === 'Transfer Receipt' && (
                         <TR_TableCom apiUrl={process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA as string} />
                     )}
                 </div>
@@ -84,4 +84,4 @@ const StockMovementComponent = () => {
     )
 }
 
-export default StockMovementComponent
+export default StockMovementComponent;
