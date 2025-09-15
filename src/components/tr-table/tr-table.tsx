@@ -98,10 +98,17 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
+        setGlobalFilter("");
     };
 
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
+        // Reset all filters
+    table.getAllColumns().forEach((col) => {
+      if (col.getCanFilter()) {
+        col.setFilterValue(undefined); // ya ''
+      }
+    });
     };
 
     // Note: Handeling redux here...!
@@ -353,20 +360,22 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         columns,
         getCoreRowModel: getCoreRowModel(),
         // Remove client-side filtering and sorting for server-side pagination
-        // getFilteredRowModel: getFilteredRowModel(),
-        // getSortedRowModel: getSortedRowModel(),
-        // getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: (value) => {
-            setGlobalFilter(value);
-            // Reset to first page when global filter changes
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
-        onColumnFiltersChange: (filters) => {
-            setColumnFilters(filters);
-            // Reset to first page when column filters change
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
+        onGlobalFilterChange: setGlobalFilter,
+    onColumnFiltersChange: setColumnFilters,
+        // onGlobalFilterChange: (value) => {
+        //     setGlobalFilter(value);
+        //     // Reset to first page when global filter changes
+        //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        // },
+        // onColumnFiltersChange: (filters) => {
+        //     setColumnFilters(filters);
+        //     // Reset to first page when column filters change
+        //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
+        // },
         globalFilterFn: (row, columnId, value) => {
             // Handle S.No column separately for global search
             if (row.index + 1 && String(row.index + 1).includes(value)) {
@@ -487,6 +496,10 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             value: warehouse.whsCode,
             label: warehouse.whsName
         }));
+
+        const handleGlobalSearch = (value: string) => {
+    table.setGlobalFilter(String(value));
+  };
     return (
         <Box>
             <StockMovementFilterBar
@@ -518,7 +531,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
-                            setFilters={setGlobalFilter}
+                            handleGlobalSearch={handleGlobalSearch}
                             isSearchInputVisible={isSearchInputVisible}
                         />
                         {
