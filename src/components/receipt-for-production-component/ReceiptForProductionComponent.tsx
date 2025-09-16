@@ -375,28 +375,35 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
     //     // Reset to first page when column filters change
     //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
     // },
-    globalFilterFn: (row, columnId, value) => {
-      // Handle S.No column separately for global search
-      if (row.index + 1 && String(row.index + 1).includes(value)) {
-        return true;
-      }
+    // globalFilterFn: (row, columnId, value) => {
+    //   // Handle S.No column separately for global search
+    //   if (row.index + 1 && String(row.index + 1).includes(value)) {
+    //     return true;
+    //   }
 
-      const columnIds = [
-        "serialNumber",
-        "documentNumber",
-        "itemNo",
-        "productDescription",
-        "uom",
-        "quantity",
-        "remainingQuantity",
-        "plannedDate",
-        "originNo",
-        "warehouse",
-        "productionOrderStatus",
-      ];
-      return columnIds.some((colId: string) =>
-        globalFilterFn(row, colId, value)
-      );
+    //   const columnIds = [
+    //     "serialNumber",
+    //     "documentNumber",
+    //     "itemNo",
+    //     "productDescription",
+    //     "uom",
+    //     "quantity",
+    //     "remainingQuantity",
+    //     "plannedDate",
+    //     "originNo",
+    //     "warehouse",
+    //     "productionOrderStatus",
+    //   ];
+    //   return columnIds.some((colId: string) =>
+    //     globalFilterFn(row, colId, value)
+    //   );
+    // },
+    globalFilterFn: (row: any, columnId: string, value: string): boolean => {
+      const searchValue = value.toLowerCase();
+      const cellValue = row.getValue(columnId);
+
+      if (cellValue == null) return false;
+      return String(cellValue).toLowerCase().includes(searchValue);
     },
     onPaginationChange: setPagination,
     manualPagination: true, // Enable server-side pagination
