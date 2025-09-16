@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import { customStyles } from "@/styles/custom-theme";
-import { Box, Grid, Group, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Grid, Group, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import AppUsageComponent from "./AppUsageComponent";
 import AverageConversionComponent from "./AverageConversionComponent";
@@ -11,64 +11,91 @@ import TopTransferItemsChart from "./TopTransferItemsChart";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useEffect } from "react";
 import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashboard-actions";
+import { IconUserCircle, IconUserPlus } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 const DashboardComponent = () => {
-    const isSmallScreen = useMediaQuery('(max-width: 768px)');
-    const isMediumScreen = useMediaQuery('(max-width: 1200px)');
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const isMediumScreen = useMediaQuery("(max-width: 1200px)");
 
-    // Note: Handeling redux here...!
-    const dispatch = useAppDispatch();
-    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
+  // Note: Router for switch page
+  const route = useRouter();
 
-    // Note: Fetching dashboard analytics on component mount...!
-    useEffect(() => {
-        if (authenticatedUser) dispatch(fetchDashboardAnalytics(authenticatedUser.token));
-    }, []);
+  // Note: Handeling redux here...!
+  const dispatch = useAppDispatch();
+  const { authenticatedUser } = useAppSelector(({ authStates }) => {
+    return authStates;
+  });
+  const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => {
+    return dashboardStates;
+  });
+  console.log(
+    "🚀 ~ DashboardComponent ~ dashboardAnalyticsData:",
+    dashboardAnalyticsData
+  );
 
-    return (
-        <Box>
-            {/* Title */}
-            <Group mb={24} align="center">
-                <Stack gap={8}>
-                    <Title
-                        order={isSmallScreen ? 3 : 2}
-                        c={customStyles.colors._4D4D4D}
-                        size={isSmallScreen ? 'h3' : 'h2'}
-                    >
-                        Dashboard
-                    </Title>
-                    <Text
-                        mb={isSmallScreen ? 16 : 24}
-                        c={customStyles.colors._909090}
-                        size={isSmallScreen ? 'sm' : 'md'}
-                    >
-                        View, search, and manage all users by using multiple filters.
-                    </Text>
-                </Stack>
-            </Group>
+  // Note: Fetching dashboard analytics on component mount...!
+  useEffect(() => {
+    if (authenticatedUser)
+      dispatch(fetchDashboardAnalytics(authenticatedUser.token));
+  }, []);
 
-            <Stack gap={24}>
-                {/* Posted Documents Cards Component */}
-                <DashboardPostedDocuments />
+  return (
+    <Box>
+      {/* Title */}
+      <Group mb={24} align="center" justify="space-between">
+        <Stack gap={8}>
+          <Title
+            order={isSmallScreen ? 3 : 2}
+            c={customStyles.colors._4D4D4D}
+            size={isSmallScreen ? "h3" : "h2"}
+          >
+            Home
+          </Title>
+          <Text
+            mb={isSmallScreen ? 16 : 24}
+            c={customStyles.colors._909090}
+            size={isSmallScreen ? "sm" : "md"}
+          >
+            Dashboard
+          </Text>
+        </Stack>
+        <Stack gap={8}>
+          <Button
+            leftSection={<IconUserCircle size={24} />}
+            // className="filledButton"
+            color="gray"
+            size="md"
+            radius={8}
+            onClick={() => route.push("/")}
 
-                {/* Un Posted Documents Cards Component */}
-                <DashboardUnPostedDocuments />
+          >
+            Select User
+          </Button>
+        </Stack>
+      </Group>
 
-                {/* 2nd Last Row - Charts */}
-                <Grid gutter={24}>
-                    <Grid.Col span={isMediumScreen ? 12 : 6}>
-                        <TopTransferItemsChart />
-                    </Grid.Col>
-                    <Grid.Col span={isMediumScreen ? 12 : 6}>
-                        <AppUsageComponent />
-                    </Grid.Col>
-                </Grid>
+      <Stack gap={24}>
+        {/* Posted Documents Cards Component */}
+        <DashboardPostedDocuments />
 
-                <AverageConversionComponent />
-            </Stack>
-        </Box>
-    )
-}
+        {/* Un Posted Documents Cards Component */}
+        <DashboardUnPostedDocuments />
 
-export default DashboardComponent
+        {/* 2nd Last Row - Charts */}
+        <Grid gutter={24}>
+          <Grid.Col span={isMediumScreen ? 12 : 6}>
+            <TopTransferItemsChart />
+          </Grid.Col>
+          <Grid.Col span={isMediumScreen ? 12 : 6}>
+            <AppUsageComponent />
+          </Grid.Col>
+        </Grid>
+
+        <AverageConversionComponent />
+      </Stack>
+    </Box>
+  );
+};
+
+export default DashboardComponent;
