@@ -1,4 +1,4 @@
-// Note: Production Order Component...!
+// Note: Goods Issue Component...!
 
 "use client";
 
@@ -11,10 +11,9 @@ import { customStyles } from '@/styles/custom-theme';
 import styles from '../../components/grn-movement/GRNMovementFilterBar.module.css'
 import { DatePickerInput } from "@mantine/dates"
 import ProductionOrderSectionComponent from '../production-order-section-component/ProductionOrderSectionComponent';
-import IssueForProductionComponent from '../issue-for-production-component/IssueForProductionComponent';
-import ReceiptForProductionComponent from '../receipt-for-production-component/ReceiptForProductionComponent';
+import GoodsIssuePosted from '../goods-issue-posted/GoodsIssuePosted';
 
-const ProductionOrderComponent = () => {
+const GoodsIssueComponent = () => {
 
     // Note: media query for responsive design
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
@@ -22,8 +21,9 @@ const ProductionOrderComponent = () => {
     const isLargeScreen = useMediaQuery('(min-width: 1200px)');
 
     // Note: handling states here...!
-    const [tab, setTab] = useState<'Production Order' | 'Issue for Production' | 'Receipt for Production'>('Production Order');
+    const [tab, setTab] = useState<'Posted' | 'Unposted'>('Posted');
     const [selectDate, setSelectDate] = useState<string | null>(null);
+    const [opened, setOpened] = useState(false);
 
     // Note: THis hook will run tab change...!
     useEffect(() => {
@@ -34,19 +34,18 @@ const ProductionOrderComponent = () => {
         <Box>
             {/* Header section */}
             <TitleComponent
-                title="Production"
-                description="View production orders, issues, and receipts to stay updated on manufacturing progress"
+                title="Goods Issue"
+                description="Monitor and review how stock moves between warehouses and systems"
             />
 
             {/* Tabs section */}
-            {/* Custom Tab Headers */}
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
                 marginBottom: '32px',
                 position: 'relative'
             }}>
-                {(['Production Order', 'Issue for Production', 'Receipt for Production'] as const).map((tabOption) => (
+                {(['Posted', 'Unposted'] as const).map((tabOption) => (
                     <button
                         key={tabOption}
                         onClick={() => setTab(tabOption)}
@@ -122,12 +121,11 @@ const ProductionOrderComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Production Order' && (<ProductionOrderSectionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ORDERS_LIST as string} />)}
-                {tab === 'Issue for Production' && (<IssueForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ISSUES_LIST as string} />)}
-                {tab === 'Receipt for Production' && (<ReceiptForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_RECEIPTS_LIST as string} />)}
+                {tab === 'Posted' && (<GoodsIssuePosted apiUrl={process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES as string} />)}
+                {/* {tab === 'Unposted' && (<IssueForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ISSUES_LIST as string} />)} */}
             </div>
         </Box>
     );
 };
 
-export default memo(ProductionOrderComponent);
+export default memo(GoodsIssueComponent);

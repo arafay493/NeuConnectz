@@ -39,7 +39,8 @@ const authenticatedRoutes: String[] = [
     "/edit",
     "/grn-movement",
     // "/generate-barcode",
-    "/production-order"
+    "/production-order",
+    "/goods-issue"
 ];
 
 // Note: Defining all routes...!
@@ -63,7 +64,8 @@ const routes: Routes = {
     editUser: (uid: string) => `/edit/${uid}`,
     grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
-    productionOrder: "/production-order"
+    productionOrder: "/production-order",
+    goodsIssue : "/goods-issue"
 };
 
 // Note: Defining drawer routes...!
@@ -80,13 +82,18 @@ const drawerRoutes: DrawerRoute[] = [
     },
     {
         icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "GRN Movement",
+        label: "Goods Receipt Note",
         route: routes.grnMovement
     },
     {
         icon: <IconChecklist color='currentColor' size={24} />,
         label: "Production",
         route: routes.productionOrder
+    },
+    {
+        icon: <IconChecklist color='currentColor' size={24} />,
+        label: "Goods Issue",
+        route: routes.goodsIssue
     },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,

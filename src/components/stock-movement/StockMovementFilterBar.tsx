@@ -141,6 +141,7 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
                     radius={8}
                     size='md'
                     clearable
+                    maxDate={new Date()}
                 />
             </GridCol>
 

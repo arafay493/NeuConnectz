@@ -215,10 +215,12 @@ const AddUserScreen = () => {
     // Note: This hook is used to set roles options...!
     useEffect(() => {
         if (listRoles && listRoles.length > 0) {
+            console.log('List roles: ' , listRoles);
+
             const options = listRoles
                 .filter((item) => { return item?.name != "SuperAdmin" })
                 .map((role: any) => ({
-                    value: role.name,
+                    value: role.tag,
                     label: role.name
                 }));
             // console.log('Options: ', options);
@@ -229,6 +231,8 @@ const AddUserScreen = () => {
     // Note: This hook is used to set departments options...!
     useEffect(() => {
         if (listDepartmentData != null && listDepartmentData?.departments) {
+            // console.log('List deps: ' , listDepartmentData);
+
             const options = listDepartmentData?.departments.map((dep: any) => ({
                 value: dep.id,
                 label: dep.departmentName

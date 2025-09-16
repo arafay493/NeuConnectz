@@ -33,7 +33,7 @@ const StockMovementComponent = () => {
                         c={customStyles.colors._909090}
                         size={isSmallScreen ? 'sm' : 'md'}
                     >
-                        View, search, and manage all users by using multiple filters.
+                        Track and manage how inventory shifts within and across warehouses.
                     </Text>
                 </Stack>
             </Group>

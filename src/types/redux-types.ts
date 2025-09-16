@@ -507,3 +507,21 @@ export interface GenerateListDepartmentProps {
     updatedDate: string,
     isActive: boolean
 }
+
+
+export interface GenerateListGoodsIssue {
+    docNum: number,
+    whsCode: string,
+    itemCode: string,
+    itemName: string,
+    binCode: string,
+    quantity: number,
+    resource: string,
+    uoM: string,
+    barCode: string
+}
+
+export interface GoodsIssueListStateProps {
+    listGoodIssue: Array<GenerateListGoodsIssue> | null;
+    totalCount: number;
+}

@@ -50,11 +50,14 @@ const fetchAllTrData = createAsyncThunk(
             },
         { dispatch }
     ) => {
+        console.log('Api to call: ', apiUrl)
+
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        console.log('Res: ', response);
 
         const { status, data } = response;
 

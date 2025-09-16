@@ -542,7 +542,7 @@ const UnpostedGRNTable = () => {
             {/* Main Content */}
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
-                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+                <Group mb={24} justify="space-between" align="flex-start" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
                             Unposted GRN
@@ -551,6 +551,7 @@ const UnpostedGRNTable = () => {
                             Unposted GRNs pending final decision. You can review or post from here.
                         </Text>
                     </Stack>
+
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
