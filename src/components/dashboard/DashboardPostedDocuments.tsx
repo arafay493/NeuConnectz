@@ -56,7 +56,7 @@ const DashboardPostedDocuments = () => {
                 <Title order={4} c={customStyles.colors._4D4D4D} fw={600}>Posted Documents</Title>
                 <Group gap={12}>
                     <Select
-                        w={130}
+                        w={150}
                         data={['This Week', 'This Month', 'This Year']}
                         defaultValue="This Week"
                         size="md"
@@ -70,7 +70,7 @@ const DashboardPostedDocuments = () => {
                         }}
                     />
                     <Select
-                        w={130}
+                        w={150}
                         data={['Download', 'Export PDF', 'Export Excel']}
                         defaultValue="Download"
                         size="md"
