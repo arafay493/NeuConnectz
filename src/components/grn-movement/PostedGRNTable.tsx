@@ -79,7 +79,7 @@ const PostedGRNTable = () => {
     useAppSelector(({ sapStates }) => {
       return sapStates;
     });
-  console.log("GRNS Data: ", list_Integrated_GRNS_Data);
+  // console.log("GRNS Data: ", list_Integrated_GRNS_Data);
 
   const integratedGRNDataCount = list_Integrated_GRNS_Data.length;
 
@@ -719,8 +719,11 @@ const PostedGRNTable = () => {
         <Group
           mb={24}
           justify="space-between"
-          align="center"
-          style={{ flexShrink: 0 }}
+          align="flex-start"
+          style={{
+              flexShrink: 0,
+              // backgroundColor: "yellow"
+          }}
         >
           <Stack gap={0}>
             <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>

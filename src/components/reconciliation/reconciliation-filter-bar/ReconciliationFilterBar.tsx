@@ -74,6 +74,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     radius={8}
                     size='md'
                     clearable
+                    maxDate={new Date()}
                 />
             </div>
             <div className={styles.colFour}>

@@ -22,7 +22,8 @@ import {
     ThemeIcon,
     Title,
     ScrollArea,
-    Flex
+    Flex,
+    SegmentedControl
 } from '@mantine/core';
 import {
     IconArrowNarrowDown,
@@ -37,7 +38,8 @@ import {
     IconFilter,
     IconFilterOff,
     IconSearch,
-    IconSearchOff
+    IconSearchOff,
+    IconCheckbox
 } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
@@ -53,28 +55,32 @@ const cardsData = [
         label: "ITR",
         pendingValue: "totalItrPending",
         integratedValue: "totalItrIntegrated",
-        lastIntegrationDate: "lastItrIntegrationDate"
+        lastIntegrationDate: "lastItrIntegrationDate",
+        color: "#FA5A7D"
     },
     {
         title: "Inventory Transfer",
         label: "IT",
         pendingValue: "totalItPending",
         integratedValue: "totalItIntegrated",
-        lastIntegrationDate: "lastItIntegrationDate"
+        lastIntegrationDate: "lastItIntegrationDate",
+        color: "#FF947A"
     },
     {
         title: "Transfer Request",
         label: "TR",
         pendingValue: "totalTrPending",
         integratedValue: "totalTrIntegrated",
-        lastIntegrationDate: "lastTrIntegrationDate"
+        lastIntegrationDate: "lastTrIntegrationDate",
+        color: "#3CD856"
     },
     {
         title: "Goods Issue",
         label: "GI",
         pendingValue: "",
         integratedValue: "",
-        lastIntegrationDate: ""
+        lastIntegrationDate: "",
+        color: "#BF83FF"
     },
     // {
     //     label: "GR",
@@ -87,7 +93,8 @@ const cardsData = [
         label: "GRN",
         pendingValue: "totalGrnPending",
         integratedValue: "totalGrnIntegrated",
-        lastIntegrationDate: "lastGrnIntegrationDate"
+        lastIntegrationDate: "lastGrnIntegrationDate",
+        color: "#5BB0FF"
     },
 
     {
@@ -95,7 +102,8 @@ const cardsData = [
         label: "IFP",
         pendingValue: "",
         integratedValue: "",
-        lastIntegrationDate: ""
+        lastIntegrationDate: "",
+        color: "#5181FF"
     },
 
     {
@@ -103,7 +111,8 @@ const cardsData = [
         label: "RFP",
         pendingValue: "",
         integratedValue: "",
-        lastIntegrationDate: ""
+        lastIntegrationDate: "",
+        color: "#5BB0FF"
     },
 ];
 
@@ -1275,6 +1284,10 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
     );
 };
 
+const handleGlobalSearch = (value: string) => {
+    
+  };
+
 const IntegrationComponent = () => {
 
     const isLargeScreen = useMediaQuery("(min-width: 992px)");
@@ -1374,7 +1387,7 @@ const IntegrationComponent = () => {
 
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
-        console.log('Res in component: ', response);
+        // console.log('Res in component: ', response);
 
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
@@ -1591,26 +1604,31 @@ const IntegrationComponent = () => {
                     wrap="nowrap"
                     style={{
                         padding: '1rem 0',
-                        overflowX: 'auto',
-                        WebkitOverflowScrolling: 'touch'
+                        // overflowX: 'auto',
+                        // WebkitOverflowScrolling: 'touch'
                     }}
                 >
                     {cardsData.map((item) => (
                         <Box
                             key={item.label}
                             style={{
-                                minWidth: isLargeScreen ? '15%' : 200,
+                                // minWidth: isLargeScreen ? '15%' : '30%',
+                                // minWidth: "15%",
                                 flexShrink: 0,
-                                // width: "auto"
+                                width: isLargeScreen ? '20%' : '30%'
                             }}
                         >
                             <Card shadow="sm" radius="md" withBorder>
-                                <Group justify={customStyles.alignment.spaceBetween} mb="sm">
+                                <Group
+                                    justify={customStyles.alignment.spaceBetween}
+                                    mb="sm"
+                                >
                                     <ThemeIcon
                                         variant="light"
-                                        color={customStyles.colors._1B59F8}
+                                        color={customStyles.colors.white}
                                         size="xl"
                                         radius="md"
+                                        style={{ backgroundColor: item?.color }}
                                     >
                                         <IconChartBar size="1.5rem" />
                                     </ThemeIcon>
@@ -1632,6 +1650,7 @@ const IntegrationComponent = () => {
                                 </Text>
 
                                 <Button
+                                    leftSection={<IconCheckbox size={18} />}
                                     variant="transparent"
                                     className={handleDisable(item.pendingValue, item.integratedValue) ? 'filledDisabledButton' : 'outlineButton'}
                                     radius={8}
@@ -1653,38 +1672,49 @@ const IntegrationComponent = () => {
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 <Group justify='space-between'>
                     <Group
-                        pt={5}
-                        pb={5}
+                        pt={1}
+                        pb={1}
                         justify={customStyles.alignment.left}
                         mb="sm"
-                        gap="sm"
+                        gap={0} // gap hatao taake border connect ho
+                        className="tabGroup"
                         style={{
                             display: "flex",
                             alignItems: customStyles.alignment.center,
+                            border: "1px solid #228be6",
+                            borderRadius: "5px"
                         }}
                     >
                         <Button
                             variant="transparent"
-                            className={headerBtnType === 'Stock Movement' ? 'filledButton' : 'outlineButton'}
-                            radius={8}
+                            radius={0}
                             size="md"
-                            w={200}
-                            onClick={viewStockMovementData}
+                            w={250}
+                            onClick={() => setHeaderBtnType("Stock Movement")}
+                            style={{
+                                backgroundColor : headerBtnType === "Stock Movement" ? "#DEE4F5" : "white"
+                            }}
                         >
                             Stock Movement
                         </Button>
 
                         <Button
                             variant="transparent"
-                            className={headerBtnType === 'GRN' ? 'filledButton' : 'outlineButton'}
-                            radius={8}
+                            // className={headerBtnType === "GRN" ? "myFilledButton" : "myOutlineButton"}
+                            radius={0}
                             size="md"
-                            w={200}
-                            onClick={viewGrnsData}
+                            w={250}
+                            onClick={() => setHeaderBtnType("GRN")}
+                            style={{
+                                borderLeftWidth: 1,
+                                borderLeftColor: "#228be6",
+                                backgroundColor : headerBtnType === "GRN" ? "#DEE4F5" : "white"
+                            }}
                         >
                             GRN
                         </Button>
                     </Group>
+
                     <Group>
                         <Text size='md' fw={500}>Select Status</Text>
                         <Select
@@ -1719,7 +1749,7 @@ const IntegrationComponent = () => {
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
-                            setFilters={setGlobalFilter}
+                            handleGlobalSearch={handleGlobalSearch}
                             isSearchInputVisible={isSearchInputVisible}
                         />
                         {

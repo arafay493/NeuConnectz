@@ -580,7 +580,7 @@ const AssignGroupsComponent = () => {
         c={customStyles.colors._909090}
         size={isSmallScreen ? "sm" : "md"}
       >
-        Select assign Groups to user
+        Assign groups to users for easier management
       </Text>
 
       {/* Search Bar */}
@@ -742,14 +742,14 @@ const AssignGroupsComponent = () => {
                       style={{
                         cursor: "pointer",
                         textAlign: "left",
-                        padding: "0 16px 24px 16px",
+                        //padding: "0 16px 24px 16px",
                         borderBottom: `1px solid ${
                           customStyles.colors._E1E7EC || "#E5E5E5"
                         }`,
                         verticalAlign: "top",
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,
-                        maxWidth: "max-content",
+                        maxWidth: "max-content"
                       }}
                     >
                       <Group
@@ -851,7 +851,7 @@ const AssignGroupsComponent = () => {
                         key={cell.id}
                         style={{
                           textAlign: "left",
-                          padding: "10px",
+                          padding: '10px 0px',
                           width: `${cell.column.getSize()}px`,
                           minWidth: `${cell.column.getSize()}px`,
                           maxWidth: "max-content",

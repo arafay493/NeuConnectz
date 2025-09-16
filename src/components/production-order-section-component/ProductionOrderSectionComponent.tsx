@@ -627,8 +627,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
             Production Order
           </Title>
           <Text c={customStyles.colors._909090}>
-            Track inventory transfers that are pending or successfully synced
-            with SAP.
+            Check production order records with status updates.
           </Text>
         </Stack>
 

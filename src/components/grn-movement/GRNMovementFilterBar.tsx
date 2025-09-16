@@ -79,6 +79,7 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
                     radius={8}
                     size='md'
                     clearable
+                    maxDate={new Date()}
                 />
             </div>
             <div className={styles.colFive}>

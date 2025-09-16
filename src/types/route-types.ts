@@ -22,7 +22,8 @@ export type Routes = {
     editUser: (uid: string) => string,
     grnMovement: string
     // generateBarcode: string
-    productionOrder: string
+    productionOrder: string,
+    goodsIssue: string
 };
 
 export type DrawerRoute = {

@@ -536,8 +536,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
             Issue for Production
           </Title>
           <Text c={customStyles.colors._909090}>
-            Track inventory transfers that are pending or successfully synced
-            with SAP.
+            Post materials to production orders and track what’s been issued for manufacturing
           </Text>
         </Stack>
 
