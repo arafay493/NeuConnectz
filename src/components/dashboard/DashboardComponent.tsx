@@ -9,10 +9,31 @@ import DashboardPostedDocuments from "./DashboardPostedDocuments";
 import DashboardUnPostedDocuments from "./DashboardUnpostedDocuments";
 import TopTransferItemsChart from "./TopTransferItemsChart";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashboard-actions";
 import { IconUserCircle, IconUserPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
+
+
+interface User {
+  id: number;
+  name: string;
+  role: "Worker" | "Manager" | "Receiver";
+  code: string;
+  status: "Active" | "Inactive";
+}
+
+const users: User[] = [
+  { id: 1, name: "Syed Taqwa Hussain Naqvi", role: "Manager", code: "521092", status: "Active" },
+  { id: 2, name: "Talib Ali Khan", role: "Worker", code: "521092", status: "Active" },
+  { id: 3, name: "Ali Imran", role: "Worker", code: "521092", status: "Inactive" },
+  { id: 4, name: "Khuwaija Masood", role: "Worker", code: "521092", status: "Inactive" },
+  { id: 5, name: "Fayez Talpur", role: "Worker", code: "521092", status: "Active" },
+  { id: 6, name: "Mohsin Ali", role: "Manager", code: "521092", status: "Inactive" },
+  { id: 7, name: "Yamin Khan", role: "Manager", code: "521092", status: "Active" },
+  { id: 8, name: "Owais Sheikh", role: "Worker", code: "521092", status: "Inactive" },
+];
 
 const DashboardComponent = () => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
@@ -21,18 +42,16 @@ const DashboardComponent = () => {
   // Note: Router for switch page
   const route = useRouter();
 
+  const [opened, setOpened] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => {
     return authStates;
   });
-  const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => {
-    return dashboardStates;
-  });
-  console.log(
-    "🚀 ~ DashboardComponent ~ dashboardAnalyticsData:",
-    dashboardAnalyticsData
-  );
+  
 
   // Note: Fetching dashboard analytics on component mount...!
   useEffect(() => {
@@ -67,7 +86,7 @@ const DashboardComponent = () => {
             color="gray"
             size="md"
             radius={8}
-            onClick={() => route.push("/")}
+            onClick={() => setOpened(true)}
 
           >
             Select User
@@ -83,17 +102,24 @@ const DashboardComponent = () => {
         <DashboardUnPostedDocuments />
 
         {/* 2nd Last Row - Charts */}
-        <Grid gutter={24}>
+        {/* <Grid gutter={24}>
           <Grid.Col span={isMediumScreen ? 12 : 6}>
             <TopTransferItemsChart />
           </Grid.Col>
           <Grid.Col span={isMediumScreen ? 12 : 6}>
             <AppUsageComponent />
           </Grid.Col>
-        </Grid>
+        </Grid> */}
 
-        <AverageConversionComponent />
+        {/* <AverageConversionComponent /> */}
       </Stack>
+
+      {/* Modals */}
+      <SelectUserModal
+        opened={opened}
+        handleModalClose={() => setOpened(false)}
+        users={users}
+      />
     </Box>
   );
 };
