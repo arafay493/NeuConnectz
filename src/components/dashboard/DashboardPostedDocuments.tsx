@@ -51,10 +51,6 @@ const DashboardPostedDocuments = () => {
             bgColor: '#FFF0E6'
         }
     ]
-    console.log(
-        "🚀 ~ DashboardComponent ~ dashboardAnalyticsData:",
-        dashboardAnalyticsData
-    );
 
     return (
         <Stack bg={customStyles.colors.white} p={24} gap={24} style={{ borderRadius: 16 }}>

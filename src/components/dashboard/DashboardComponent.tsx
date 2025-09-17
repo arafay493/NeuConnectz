@@ -14,6 +14,8 @@ import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashb
 import { IconUserCircle, IconUserPlus } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
+import { PaginationState } from "@tanstack/react-table";
+import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
 
 
 interface User {
@@ -38,26 +40,62 @@ const users: User[] = [
 const DashboardComponent = () => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const isMediumScreen = useMediaQuery("(max-width: 1200px)");
+  const {
+    usersList
+  } = useAppSelector(({ userStates }) => userStates);
+  // Note: State for pagination
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   // Note: Router for switch page
   const route = useRouter();
 
   const [opened, setOpened] = useState(false);
-  const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false)
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => {
     return authStates;
   });
-  
+
+  // useEffect(() => {
+    
+  // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
 
   // Note: Fetching dashboard analytics on component mount...!
   useEffect(() => {
     if (authenticatedUser)
       dispatch(fetchDashboardAnalytics(authenticatedUser.token));
   }, []);
+
+  const handleOpenModal = () => {
+    if (authenticatedUser) {
+      setOpened(true)
+      setIsLoading(true)
+      const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+      dispatch(
+        fetchAllUsers({
+          authToken: authenticatedUser?.token,
+          LastCount: pagination.pageSize,
+          skipRecord: skipRecord,
+        })
+      ).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }
+
+  const handleNext = () => {
+    
+  }
+
+  const handlePrevious = () => {
+
+  }
 
   return (
     <Box>
@@ -86,8 +124,7 @@ const DashboardComponent = () => {
             color="gray"
             size="md"
             radius={8}
-            onClick={() => setOpened(true)}
-
+            onClick={handleOpenModal}
           >
             Select User
           </Button>
@@ -118,7 +155,7 @@ const DashboardComponent = () => {
       <SelectUserModal
         opened={opened}
         handleModalClose={() => setOpened(false)}
-        users={users}
+        users={usersList?.users || []}
       />
     </Box>
   );

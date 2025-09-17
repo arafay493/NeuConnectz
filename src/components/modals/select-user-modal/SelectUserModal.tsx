@@ -1,4 +1,3 @@
-
 import {
     Modal,
     Box,
@@ -10,31 +9,90 @@ import {
     Card,
     ScrollArea,
     Tabs,
+    Typography,
 } from "@mantine/core";
-import { IconUser, IconSearch } from "@tabler/icons-react";
+import {
+    IconPoint,
+    IconPointFilled,
+    IconSearch,
+    IconUserSquare,
+    IconUserSquareRounded,
+} from "@tabler/icons-react";
 import { useState } from "react";
 
-
-interface propTypes {
-    opened: boolean;
-    handleModalClose: () => void;
-    users: any
+interface User {
+    userId: string;
+    userName: string;
+    email: string;
+    role: string;
+    phone: string;
+    department: string;
+    isActive: boolean;
 }
 
-export default function SelectUserModal({ opened, handleModalClose, users }: propTypes) {
-    const [search, setSearch] = useState("");
-    const [selectedUser, setSelectedUser] = useState<number | null>(null);
+interface SelectUserModalProps {
+    opened: boolean;
+    handleModalClose: () => void;
+    users: User[];
+}
 
-    const filteredUsers = users.filter((u: any) =>
-        u.name.toLowerCase().includes(search.toLowerCase())
-    );
+export default function SelectUserModal({
+    opened,
+    handleModalClose,
+    users,
+}: SelectUserModalProps) {
+    const [search, setSearch] = useState("");
+    const [selectedUser, setSelectedUser] = useState([]);
+    const [activeTab, setActiveTab] = useState<string>("all");
+    
+    const handleSelectUser = (user: any) => {
+        setSelectedUser((prevState: any) => {
+            const userExist = prevState.find((item: any) => item.userId === user.userId);
+            if (userExist) {
+                return prevState.filter((item: any) => item.userId !== user.userId);
+            }
+            return [...prevState, user];
+        });
+    };
+
+    // Filtering logic
+    const filteredUsers = users.filter((u) => {
+        const matchesSearch = u.userName
+            .toLowerCase()
+            .includes(search.toLowerCase());
+
+        const matchesTab =
+            activeTab === "all"
+                ? true
+                : activeTab === "active"
+                    ? u.isActive
+                    : activeTab === "inactive"
+                        ? !u.isActive
+                        : u.role.toLowerCase() === activeTab.toLowerCase();
+
+        return matchesSearch && matchesTab;
+    });
+
+    const activeTabStyles = {
+        backgroundColor: "#1B59F81A",
+        color: "blue",
+        width: "100px",
+        borderRadius: "5px"
+    }
+
+    const nonActiveTabStyles = {
+        backgroundColor: "#E1E7EC",
+        color: "#4D4D4D",
+        width: "100px",
+        borderRadius: "5px"
+    }
 
     return (
         <Modal
             opened={opened}
             onClose={handleModalClose}
             zIndex={10000}
-            size="90%"
+            size="100%"
             radius="md"
             title={
                 <Box>
@@ -48,15 +106,12 @@ export default function SelectUserModal({ opened, handleModalClose, users }: pro
             }
         >
             {/* Filters & Search */}
-            <Group justify="space-between" mb="md">
-                <Tabs defaultValue="all">
-                    <Tabs.List>
-                        <Tabs.Tab value="all">All</Tabs.Tab>
-                        <Tabs.Tab value="active">Active</Tabs.Tab>
-                        <Tabs.Tab value="inactive">Inactive</Tabs.Tab>
-                        <Tabs.Tab value="worker">Worker</Tabs.Tab>
-                        <Tabs.Tab value="manager">Manager</Tabs.Tab>
-                        <Tabs.Tab value="receiver">Receiver</Tabs.Tab>
+            <Group justify="space-between" mb="md" style={{ paddingTop: 20, paddingBottom: 20, marinBottom: 20, borderTop: "2px solid #E1E7EC", borderBottom: "2px solid #E1E7EC" }}>
+                <Tabs variant="none" value={activeTab} onChange={(val) => setActiveTab(val || "all")}>
+                    <Tabs.List style={{ display: "flex", gap: 10 }}>
+                        <Tabs.Tab value="all" variant="light" style={activeTab === "all" ? activeTabStyles : nonActiveTabStyles}>All</Tabs.Tab>
+                        <Tabs.Tab value="active" style={activeTab === "active" ? activeTabStyles : nonActiveTabStyles}>Active</Tabs.Tab>
+                        <Tabs.Tab value="inactive" style={activeTab === "inactive" ? activeTabStyles : nonActiveTabStyles}>Inactive</Tabs.Tab>
                     </Tabs.List>
                 </Tabs>
 
@@ -65,54 +120,99 @@ export default function SelectUserModal({ opened, handleModalClose, users }: pro
                         placeholder="Search here"
                         value={search}
                         onChange={(e) => setSearch(e.currentTarget.value)}
-                        leftSection={<IconSearch size={16} />}
+                        leftSection={<IconSearch size={16} color="#909090" />}
+                        styles={{
+                            input: {
+                                border: "none",
+                                backgroundColor: "#E1E7EC",
+                                color: "#909090",
+                                '&::placeholder': {
+                                    color: '#909090',
+                                },
+                            },
+                        }}
                     />
-                    <Button variant="filled" color="gray">
-                        Search
-                    </Button>
+                    <Button variant="filled" color="#909090">Search</Button>
                 </Group>
             </Group>
 
             {/* User Grid */}
             <ScrollArea h={400}>
                 <Group wrap="wrap" gap="md">
-                    {filteredUsers.map((user: any) => (
+                    {filteredUsers.map((user) => (
                         <Card
-                            key={user.id}
+                            key={user.userId}
                             withBorder
                             radius="md"
                             shadow="xs"
-                            w={250}
-                            onClick={() => setSelectedUser(user.id)}
+                            onClick={() => handleSelectUser(user)}
                             style={{
                                 cursor: "pointer",
                                 border:
-                                    selectedUser === user.id
-                                        ? "2px solid #228be6"
+                                    selectedUser.some((u: any) => u.userId === user.userId)
+                                        ? "1px solid #228be6"
                                         : "1px solid #e0e0e0",
                                 backgroundColor:
-                                    selectedUser === user.id ? "#f0f9ff" : "white",
+                                    selectedUser.some((u: any) => u.userId === user.userId) ? "#f0f9ff" : "white",
+                                transition: "0.2s",
                             }}
                         >
-                            <Group align="center" mb="sm">
-                                <IconUser size={20} color="blue" />
-                                <Text fw={500}>{user.name}</Text>
+                            <Group align="center" gap={5} mb={10}>
+                                <IconUserSquare
+                                    stroke={2}
+                                    size={20}
+                                    color="#228be6"
+                                />
+                                <Text fw={500}>{user.userName}</Text>
                             </Group>
-                            <Text size="sm" c="dimmed">
-                                {user.code} • {user.role}
-                            </Text>
+                            <Group justify="center" gap={3}>
+                                <Group gap={2}>
+                                    <IconUserSquare
+                                        stroke={2}
+                                        size={14}
+                                        color="#909090"
+                                    />
+                                    <Text size={"12px"} color="#909090">{user.userId}</Text>
+                                </Group>
+                                <Group gap={2}>
+                                    <IconUserSquare
+                                        stroke={2}
+                                        size={14}
+                                        color="#909090"
+                                    />
+                                    <Text size={"12px"} color="#909090">{user.role}</Text>
+                                </Group>
+                            </Group>
                             <Badge
                                 mt="sm"
-                                color={user.status === "Active" ? "green" : "gray"}
+                                color={user.isActive ? "green" : "gray"}
                                 variant="light"
                                 radius="sm"
+                                fullWidth
+                                p={15}
                             >
-                                {user.status}
+                                <Group gap={1}>
+                                    <IconPointFilled size={20} stroke={4} />
+                                    {user.isActive ? "Active" : "Inactive"}
+                                </Group>
                             </Badge>
                         </Card>
                     ))}
                 </Group>
             </ScrollArea>
+
+            {/* Confirm Button */}
+            <Group justify="flex-end" mt="lg">
+                <Button
+                    disabled={!selectedUser}
+                    onClick={() => {
+                        console.log("Selected User:", selectedUser);
+                        handleModalClose();
+                    }}
+                >
+                    Confirm Selection
+                </Button>
+            </Group>
         </Modal>
     );
 }
