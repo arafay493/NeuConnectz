@@ -12,6 +12,7 @@ import {
     Typography,
 } from "@mantine/core";
 import {
+    IconCircleX,
     IconPoint,
     IconPointFilled,
     IconSearch,
@@ -44,7 +45,7 @@ export default function SelectUserModal({
     const [search, setSearch] = useState("");
     const [selectedUser, setSelectedUser] = useState([]);
     const [activeTab, setActiveTab] = useState<string>("all");
-    
+
     const handleSelectUser = (user: any) => {
         setSelectedUser((prevState: any) => {
             const userExist = prevState.find((item: any) => item.userId === user.userId);
@@ -92,6 +93,9 @@ export default function SelectUserModal({
             opened={opened}
             onClose={handleModalClose}
             zIndex={10000}
+            closeButtonProps={{
+                icon: <IconCircleX size={70} stroke={2} color="#ED1C24"/>,
+            }}
             size="100%"
             radius="md"
             title={
