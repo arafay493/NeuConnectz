@@ -104,11 +104,11 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
         // Reset all filters
-    table.getAllColumns().forEach((col) => {
-      if (col.getCanFilter()) {
-        col.setFilterValue(undefined); // ya ''
-      }
-    });
+        table.getAllColumns().forEach((col) => {
+            if (col.getCanFilter()) {
+                col.setFilterValue(undefined); // ya ''
+            }
+        });
     };
 
     // Note: Handeling redux here...!
@@ -273,11 +273,14 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             {
                 accessorKey: 'quantity',
                 header: 'Quantity',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {String(getValue())}
-                    </Text>
-                ),
+                cell: ({ getValue, row }) => {
+                    const { quantity } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {String(Number(quantity)?.toFixed(2))}
+                        </Text>
+                    )
+                },
                 filterFn: numberFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Quantity', trData.map(item => String(item.quantity)), 150, 180),
@@ -365,7 +368,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         onGlobalFilterChange: setGlobalFilter,
-    onColumnFiltersChange: setColumnFilters,
+        onColumnFiltersChange: setColumnFilters,
         // onGlobalFilterChange: (value) => {
         //     setGlobalFilter(value);
         //     // Reset to first page when global filter changes
@@ -497,9 +500,9 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
             label: warehouse.whsName
         }));
 
-        const handleGlobalSearch = (value: string) => {
-    table.setGlobalFilter(String(value));
-  };
+    const handleGlobalSearch = (value: string) => {
+        table.setGlobalFilter(String(value));
+    };
     return (
         <Box>
             <StockMovementFilterBar
@@ -566,7 +569,7 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: "0 16px 16px 11px",
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,

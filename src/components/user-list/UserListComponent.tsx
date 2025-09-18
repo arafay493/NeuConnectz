@@ -502,7 +502,7 @@ const UserListComponent: FC<UserListComponentProps> = (
                       style={{
                         cursor: "pointer",
                         textAlign: "left",
-                        padding: "0 16px 24px 16px",
+                        padding: "0 16px 16px 11px",
                         borderBottom: `1px solid ${
                           customStyles.colors._E1E7EC || "#E5E5E5"
                         }`,

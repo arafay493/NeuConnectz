@@ -10,8 +10,8 @@ import TitleComponent from '@/components/common/component-title';
 import { customStyles } from '@/styles/custom-theme';
 import styles from '../../components/grn-movement/GRNMovementFilterBar.module.css'
 import { DatePickerInput } from "@mantine/dates"
-import ProductionOrderSectionComponent from '../production-order-section-component/ProductionOrderSectionComponent';
 import GoodsIssuePosted from '../goods-issue-posted/GoodsIssuePosted';
+import GoodsIssueUnPosted from "../goods-issue-unposted/GoodsIssueUnPosted"
 
 const GoodsIssueComponent = () => {
 
@@ -121,8 +121,8 @@ const GoodsIssueComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Posted' && (<GoodsIssuePosted apiUrl={process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES as string} />)}
-                {/* {tab === 'Unposted' && (<IssueForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ISSUES_LIST as string} />)} */}
+                {tab === 'Posted' && (<GoodsIssuePosted apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
+                {tab === 'Unposted' && (<GoodsIssueUnPosted apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
             </div>
         </Box>
     );

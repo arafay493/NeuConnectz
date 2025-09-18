@@ -204,7 +204,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -688,10 +688,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                     style={{
                       cursor: "pointer",
                       textAlign: "left",
-                      padding: "0 16px 24px 16px",
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#E5E5E5"
-                      }`,
+                      padding: "0 16px 16px 11px",
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                        }`,
                       width: `${header.getSize()}px`,
                       minWidth: `${header.getSize()}px`,
                       maxWidth: `${header.getSize()}px`,
@@ -753,9 +752,8 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={`loading-${index}`}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {columns.map((_, colIndex) => (
@@ -783,9 +781,8 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={row.id}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

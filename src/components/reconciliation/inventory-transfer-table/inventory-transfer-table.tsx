@@ -117,7 +117,7 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
                 <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
-                        setFilters={setGlobalFilter}
+                        handleGlobalSearch={() => { }}
                         isSearchInputVisible={isSearchInputVisible}
                     />
                     <IconSearch cursor="pointer" onClick={handleSearchInputVisibility} size={24} />

@@ -1,4 +1,4 @@
-// Note: Goods Issue Posted Component...!
+// Note: Goods Issue UnPosted Component...!
 
 import React, { memo, useState, useMemo, FC, useEffect } from 'react';
 import NextImage from 'next/image';
@@ -40,8 +40,8 @@ type ApiProp = {
     apiUrl: string;
 };
 
-const GoodsIssuePosted: FC<ApiProp> = ({ apiUrl }) => {
-    console.log("API URL Posted:", apiUrl);
+const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
+    console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
     const [isLoading, setIsLoading] = useState(false);
@@ -596,4 +596,4 @@ const GoodsIssuePosted: FC<ApiProp> = ({ apiUrl }) => {
     );
 };
 
-export default memo(GoodsIssuePosted);
+export default memo(GoodsIssueUnPosted);

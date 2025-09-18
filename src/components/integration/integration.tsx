@@ -39,7 +39,8 @@ import {
     IconFilterOff,
     IconSearch,
     IconSearchOff,
-    IconCheckbox
+    IconCheckbox,
+    IconReload
 } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
@@ -1285,8 +1286,8 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
 };
 
 const handleGlobalSearch = (value: string) => {
-    
-  };
+
+};
 
 const IntegrationComponent = () => {
 
@@ -1597,7 +1598,20 @@ const IntegrationComponent = () => {
             {/* Note: Loading Component */}
             <Loader loadingState={dataLoading} />
 
-            <ScrollArea type="auto" scrollbarSize={8} offsetScrollbars>
+            <ScrollArea
+                type="auto"
+                scrollbarSize={8}
+                offsetScrollbars
+                styles={{
+                    scrollbar: {
+                        backgroundColor: "white", // scrollbar track color
+                    },
+                    thumb: {
+                        backgroundColor: "#e0e0e0", // scrollbar thumb color
+                        borderRadius: 8,
+                    },
+                }}
+            >
                 <Flex
                     direction="row"
                     gap="md"
@@ -1615,7 +1629,7 @@ const IntegrationComponent = () => {
                                 // minWidth: isLargeScreen ? '15%' : '30%',
                                 // minWidth: "15%",
                                 flexShrink: 0,
-                                width: isLargeScreen ? '20%' : '30%'
+                                width: isLargeScreen ? '25%' : '30%'
                             }}
                         >
                             <Card shadow="sm" radius="md" withBorder>
@@ -1637,6 +1651,7 @@ const IntegrationComponent = () => {
                                 <Title
                                     order={4}
                                     style={{ color: "#4D4D4D" }}
+                                    size={isLargeScreen ? 'md' : 'sm'}
                                 >
                                     {item.title}
                                 </Title>
@@ -1645,9 +1660,19 @@ const IntegrationComponent = () => {
                                     {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
                                 </Text>
 
-                                <Text c="dimmed" size="sm">
-                                    {showTime(item.lastIntegrationDate)}
-                                </Text>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 8,
+                                        marginTop: 8
+                                    }}
+                                >
+                                    <IconReload cursor="pointer" size={18} color='#909090' />
+                                    <Text c="dimmed" size="sm">
+                                        {showTime(item.lastIntegrationDate)}
+                                    </Text>
+                                </div>
 
                                 <Button
                                     leftSection={<IconCheckbox size={18} />}
@@ -1692,7 +1717,7 @@ const IntegrationComponent = () => {
                             w={250}
                             onClick={() => setHeaderBtnType("Stock Movement")}
                             style={{
-                                backgroundColor : headerBtnType === "Stock Movement" ? "#DEE4F5" : "white"
+                                backgroundColor: headerBtnType === "Stock Movement" ? "#DEE4F5" : "white"
                             }}
                         >
                             Stock Movement
@@ -1708,7 +1733,7 @@ const IntegrationComponent = () => {
                             style={{
                                 borderLeftWidth: 1,
                                 borderLeftColor: "#228be6",
-                                backgroundColor : headerBtnType === "GRN" ? "#DEE4F5" : "white"
+                                backgroundColor: headerBtnType === "GRN" ? "#DEE4F5" : "white"
                             }}
                         >
                             GRN
