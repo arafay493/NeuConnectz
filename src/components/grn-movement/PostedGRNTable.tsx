@@ -443,10 +443,10 @@ const PostedGRNTable = () => {
               radius={8}
               size="sm"
               w={120}
-              // onClick={() => {
-              //     setRowData(row.original);
-              //     setIsTableModalOpen(true)
-              // }}
+            // onClick={() => {
+            //     setRowData(row.original);
+            //     setIsTableModalOpen(true)
+            // }}
             >
               View Details
             </Button>
@@ -479,7 +479,7 @@ const PostedGRNTable = () => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -521,36 +521,53 @@ const PostedGRNTable = () => {
     //     // Reset to first page when column filters change
     //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
     // },
-    globalFilterFn: (row, columnId, value) => {
-      // Handle S.No column separately for global search
-      if (row.index + 1 && String(row.index + 1).includes(value)) {
-        return true;
-      }
+    // globalFilterFn: (row, columnId, value) => {
+    //   // Handle S.No column separately for global search
+    //   if (row.index + 1 && String(row.index + 1).includes(value)) {
+    //     return true;
+    //   }
 
-      // Handle Type column separately (always 'GRN')
-      if ("GRN".toLowerCase().includes(value.toLowerCase())) {
-        return true;
-      }
+    //   // Handle Type column separately (always 'GRN')
+    //   if ("GRN".toLowerCase().includes(value.toLowerCase())) {
+    //     return true;
+    //   }
 
-      // Get all column IDs to search across
-      const columnIds = [
-        "docNum",
-        "itemCode",
-        "whsCode",
-        "vendorCode",
-        "userName",
-        "erpDocEntry",
-        "erpDocLine",
-        "vendorCode",
-        "docStatus",
-        "updatedDate",
-      ];
+    //   // Get all column IDs to search across
+    //   const columnIds = [
+    //     "docNum",
+    //     "itemCode",
+    //     "whsCode",
+    //     "vendorCode",
+    //     "userName",
+    //     "erpDocEntry",
+    //     "erpDocLine",
+    //     "vendorCode",
+    //     "docStatus",
+    //     "updatedDate",
+    //   ];
 
-      // Search across all columns
-      return columnIds.some((colId: string) =>
-        globalFilterFn(row, colId, value)
-      );
-    },
+    //   // Search across all columns
+    //   return columnIds.some((colId: string) =>
+    //     globalFilterFn(row, colId, value)
+    //   );
+    // },
+    // globalFilterFn: (row, columnId, value) => {
+    //   if (row.index + 1 && String(row.index + 1).includes(value)) {
+    //     return true;
+    //   }
+
+    //   if ('GRN'.toLowerCase().includes(value.toLowerCase())) {
+    //     return true;
+    //   }
+
+    //   // Dynamically search across all visible columns
+    //   return row.getAllCells().some(cell => {
+    //     const cellValue = cell.getValue();
+    //     return String(cellValue ?? "")
+    //       .toLowerCase()
+    //       .includes(value.toLowerCase());
+    //   });
+    // },
     onPaginationChange: setPagination,
     manualPagination: true, // Enable server-side pagination
     pageCount: Math.ceil(integratedGRNDataCount / pagination.pageSize), // Calculate total pages from server data
@@ -721,8 +738,8 @@ const PostedGRNTable = () => {
           justify="space-between"
           align="flex-start"
           style={{
-              flexShrink: 0,
-              // backgroundColor: "yellow"
+            flexShrink: 0,
+            // backgroundColor: "yellow"
           }}
         >
           <Stack gap={0}>
@@ -790,9 +807,8 @@ const PostedGRNTable = () => {
                         cursor: "pointer",
                         textAlign: "left",
                         padding: "0 16px 24px 16px",
-                        borderBottom: `1px solid ${
-                          customStyles.colors._E1E7EC || "#E5E5E5"
-                        }`,
+                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                          }`,
                         verticalAlign: "top",
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,
@@ -862,9 +878,8 @@ const PostedGRNTable = () => {
                   <tr
                     key={`loading-${index}`}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {columns.map((_, colIndex) => (
@@ -892,9 +907,8 @@ const PostedGRNTable = () => {
                   <tr
                     key={row.id}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (

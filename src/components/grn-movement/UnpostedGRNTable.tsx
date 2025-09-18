@@ -48,10 +48,17 @@ const UnpostedGRNTable = () => {
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
+        setGlobalFilter("");
     };
 
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
+        // Reset all filters
+        table.getAllColumns().forEach((col) => {
+            if (col.getCanFilter()) {
+                col.setFilterValue(undefined); // ya ''
+            }
+        });
     };
 
     // Note: State for pagination
@@ -375,37 +382,46 @@ const UnpostedGRNTable = () => {
         columns,
         getCoreRowModel: getCoreRowModel(),
         // Remove client-side filtering and sorting for server-side pagination
-        // getFilteredRowModel: getFilteredRowModel(),
-        // getSortedRowModel: getSortedRowModel(),
-        // getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: (value) => {
-            setGlobalFilter(value);
-            // Reset to first page when global filter changes
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
-        onColumnFiltersChange: (filters) => {
-            setColumnFilters(filters);
-            // Reset to first page when column filters change
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
-        globalFilterFn: (row, columnId, value) => {
-            // Handle S.No column separately for global search
-            if (row.index + 1 && String(row.index + 1).includes(value)) {
-                return true;
-            }
+        onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        // globalFilterFn: (row, columnId, value) => {
+        //     if (row.index + 1 && String(row.index + 1).includes(value)) {
+        //         return true;
+        //     }
 
-            // Handle Type column separately (always 'GRN')
-            if ('GRN'.toLowerCase().includes(value.toLowerCase())) {
-                return true;
-            }
+        //     if ('GRN'.toLowerCase().includes(value.toLowerCase())) {
+        //         return true;
+        //     }
 
-            // Get all column IDs to search across
-            const columnIds = ['docNum', 'itemCode', 'whsCode', 'vendorCode', 'userName', 'erpDocEntry', 'erpDocLine', 'vendorCode', 'docStatus', 'updatedDate'];
+        //     // Dynamically search across all visible columns
+        //     return row.getAllCells().some(cell => {
+        //         const cellValue = cell.getValue();
+        //         return String(cellValue ?? "")
+        //             .toLowerCase()
+        //             .includes(value.toLowerCase());
+        //     });
+        // },
+        // globalFilterFn: (row, columnId, value) => {
+        //     // Handle S.No column separately for global search
+        //     if (row.index + 1 && String(row.index + 1).includes(value)) {
+        //         return true;
+        //     }
 
-            // Search across all columns
-            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
-        },
+        //     // Handle Type column separately (always 'GRN')
+        //     if ('GRN'.toLowerCase().includes(value.toLowerCase())) {
+        //         return true;
+        //     }
+
+        //     // Get all column IDs to search across
+        //     const columnIds = ['docNum', 'itemCode', 'whsCode', 'vendorCode', 'userName', 'erpDocEntry', 'erpDocLine', 'vendorCode', 'docStatus', 'updatedDate'];
+
+        //     // Search across all columns
+        //     return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
+        // },
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
         pageCount: Math.ceil(pendingGRNDataCount / pagination.pageSize), // Calculate total pages from server data
@@ -524,6 +540,10 @@ const UnpostedGRNTable = () => {
             type: 'GRN'
         }));
     };
+
+    const handleGlobalSearch = (value: string) => {
+        table.setGlobalFilter(String(value));
+    };
     return (
         <Box>
             <GRNMovementFilterBar
@@ -555,7 +575,7 @@ const UnpostedGRNTable = () => {
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
-                            setFilters={setGlobalFilter}
+                            handleGlobalSearch={handleGlobalSearch}
                             isSearchInputVisible={isSearchInputVisible}
                         />
                         {
