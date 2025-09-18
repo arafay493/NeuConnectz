@@ -173,14 +173,14 @@ export default function SelectUserModal({
                                 <Text fw={500}>{user.userName}</Text>
                             </Group>
                             <Group justify="center" gap={3}>
-                                <Group gap={2}>
+                                {/* <Group gap={2}>
                                     <IconId
                                         stroke={2}
                                         size={14}
                                         color="#909090"
                                     />
                                     <Text size={"12px"} color="#909090">{user.userId}</Text>
-                                </Group>
+                                </Group> */}
                                 <Group gap={2}>
                                     <IconUserCog
                                         stroke={2}
