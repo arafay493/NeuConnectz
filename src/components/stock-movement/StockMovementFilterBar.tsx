@@ -6,7 +6,7 @@ import { customStyles } from "@/styles/custom-theme";
 import { Button, Grid, GridCol, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconBuildingWarehouse } from "@tabler/icons-react";
+import { IconBuildingWarehouse, IconCalendarMonth } from "@tabler/icons-react";
 import { FC } from "react";
 
 export type SapStatusProp = 'Pending' | 'Updated' | 'Integrated'
@@ -135,6 +135,7 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
             <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
                 <Text size="md" mb={8} fw={500}>Date</Text>
                 <DatePickerInput
+                    rightSection={<IconCalendarMonth size={24} />}
                     placeholder="DD/MM/YY"
                     value={selectDate}
                     onChange={(value: string | null) => setSelectDate(value)}

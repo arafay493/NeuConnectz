@@ -404,7 +404,7 @@ const AssignGroupsComponent = () => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -571,14 +571,16 @@ const AssignGroupsComponent = () => {
         mb={8}
         order={isSmallScreen ? 3 : 2}
         c={customStyles.colors._4D4D4D}
-        size={isSmallScreen ? "h3" : "h2"}
+        // size={isSmallScreen ? "h3" : "h2"}
+        style={{ fontWeight: 700, fontSize: 24 }}
       >
         Assign Groups
       </Title>
       <Text
         mb={isSmallScreen ? 16 : 24}
         c={customStyles.colors._909090}
-        size={isSmallScreen ? "sm" : "md"}
+        // size={isSmallScreen ? "sm" : "md"}
+        style={{ fontWeight: 500, fontSize: 16 }}
       >
         Assign groups to users for easier management
       </Text>
@@ -607,10 +609,10 @@ const AssignGroupsComponent = () => {
               isSmallScreen
                 ? "100%"
                 : isMediumScreen
-                ? "48%"
-                : isLargeScreen
-                ? 300
-                : 250
+                  ? "48%"
+                  : isLargeScreen
+                    ? 300
+                    : 250
             }
             maw={isSmallScreen ? "100%" : 350}
           >
@@ -680,10 +682,10 @@ const AssignGroupsComponent = () => {
           style={{ flexShrink: 0 }}
         >
           <Stack gap={0}>
-            <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+            <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
               Group List
             </Title>
-            <Text c={customStyles.colors._909090}>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
               Select user to assign group
             </Text>
           </Stack>
@@ -743,9 +745,8 @@ const AssignGroupsComponent = () => {
                         cursor: "pointer",
                         textAlign: "left",
                         //padding: "0 16px 24px 16px",
-                        borderBottom: `1px solid ${
-                          customStyles.colors._E1E7EC || "#E5E5E5"
-                        }`,
+                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                          }`,
                         verticalAlign: "top",
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,
@@ -811,9 +812,8 @@ const AssignGroupsComponent = () => {
                   <tr
                     key={`loading-${index}`}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {columns.map((_, colIndex) => (
@@ -841,9 +841,8 @@ const AssignGroupsComponent = () => {
                   <tr
                     key={row.id}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (

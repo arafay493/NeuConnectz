@@ -410,10 +410,10 @@ const UserListComponent: FC<UserListComponentProps> = (
         style={{ flexShrink: 0, marginBottom: "16px" }}
       >
         <Stack gap={0}>
-          <Title order={2} c={customStyles.colors._4D4D4D}>
+          <Title order={2} c={customStyles.colors._4D4D4D} style={{ fontWeight: 700, fontSize: 24 }}>
             User List
           </Title>
-          <Text c={customStyles.colors._909090}>List of users</Text>
+          <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>List of users</Text>
         </Stack>
         <Button
           leftSection={<IconUserPlus size={24} />}
@@ -440,10 +440,10 @@ const UserListComponent: FC<UserListComponentProps> = (
           style={{ flexShrink: 0 }}
         >
           <Stack gap={0}>
-            <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+            <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
               Manage Users
             </Title>
-            <Text c={customStyles.colors._909090}>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
               View, search, and manage all users by using multiple filters.
             </Text>
           </Stack>
@@ -503,9 +503,8 @@ const UserListComponent: FC<UserListComponentProps> = (
                         cursor: "pointer",
                         textAlign: "left",
                         padding: "0 16px 16px 11px",
-                        borderBottom: `1px solid ${
-                          customStyles.colors._E1E7EC || "#E5E5E5"
-                        }`,
+                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                          }`,
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,
                         maxWidth: `${header.getSize()}px`,
@@ -570,9 +569,8 @@ const UserListComponent: FC<UserListComponentProps> = (
                   <tr
                     key={`loading-${index}`}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {columns.map((_, colIndex) => (
@@ -600,9 +598,8 @@ const UserListComponent: FC<UserListComponentProps> = (
                   <tr
                     key={row.id}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (

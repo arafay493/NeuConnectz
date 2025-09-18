@@ -702,10 +702,10 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
           style={{ flexShrink: 0 }}
         >
           <Stack gap={0}>
-            <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+            <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
               Manage IT Data
             </Title>
-            <Text c={customStyles.colors._909090}>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
               View, search, and manage all IT data by using multiple filters.
             </Text>
           </Stack>

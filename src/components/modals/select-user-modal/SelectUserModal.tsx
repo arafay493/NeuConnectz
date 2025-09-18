@@ -9,7 +9,6 @@ import {
     Card,
     ScrollArea,
     Tabs,
-    Typography,
 } from "@mantine/core";
 import {
     IconCircleX,

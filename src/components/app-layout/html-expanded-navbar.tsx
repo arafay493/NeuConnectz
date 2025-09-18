@@ -86,7 +86,7 @@ const HtmlExpandedNavbar = ({
             styles={{
                 label: {
                     fontSize: 14,
-                    fontWeight: 700,
+                    fontWeight: 500,
                     transition: 'opacity 0.3s ease',
                     opacity: 1,
                 },

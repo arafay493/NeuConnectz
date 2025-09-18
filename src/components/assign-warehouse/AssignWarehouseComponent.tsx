@@ -555,14 +555,16 @@ const AssignWarehouseComponent = () => {
                 mb={8}
                 order={isSmallScreen ? 3 : 2}
                 c={customStyles.colors._4D4D4D}
-                size={isSmallScreen ? 'h3' : 'h2'}
+                // size={isSmallScreen ? 'h3' : 'h2'}
+                style={{ fontWeight: 700, fontSize: 24 }}
             >
                 Assign Warehouse
             </Title>
             <Text
                 mb={isSmallScreen ? 16 : 24}
                 c={customStyles.colors._909090}
-                size={isSmallScreen ? 'sm' : 'md'}
+                // size={isSmallScreen ? 'sm' : 'md'}
+                style={{ fontWeight: 500, fontSize: 16 }}
             >
                 Select user & assign single or multiple warehouse to user
             </Text>
@@ -641,10 +643,10 @@ const AssignWarehouseComponent = () => {
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
-                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
                             Warehouse List
                         </Title>
-                        <Text c={customStyles.colors._909090}>
+                        <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
                             Select user to assign warehouse
                         </Text>
                     </Stack>

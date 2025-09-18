@@ -121,7 +121,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 zIndex: 1000,
                 transition: 'width 0.3s ease',
                 overflow: 'hidden',
-                boxShadow: isMobile && !collapsed ? 'none' : '2px 0 8px rgba(0,0,0,0.1)',
+                boxShadow: isMobile && !collapsed ? 'none' : '0.4px 0 0 rgba(0,0,0,0.1)',
                 transform: isMobile && collapsed ? 'translateX(-100%)' : 'translateX(0)',
             }}>
                 {collapsed ? (

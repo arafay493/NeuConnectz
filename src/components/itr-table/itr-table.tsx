@@ -528,30 +528,30 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     //     // Reset to first page when column filters change
     //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
     // },
-    globalFilterFn: (row, columnId, value) => {
-      // Handle S.No column separately for global search
-      if (row.index + 1 && String(row.index + 1).includes(value)) {
-        return true;
-      }
+    // globalFilterFn: (row, columnId, value) => {
+    //   // Handle S.No column separately for global search
+    //   if (row.index + 1 && String(row.index + 1).includes(value)) {
+    //     return true;
+    //   }
 
-      const columnIds = [
-        "docNum",
-        "docDate",
-        "fromWarehouseId",
-        "toWarehouseId",
-        "docStatus",
-        "itemCode",
-        "itemName",
-        "quantity",
-        "erpDocEntry",
-        "erpObjectType",
-        "erpDocLine",
-        "sapStatus",
-      ];
-      return columnIds.some((colId: string) =>
-        globalFilterFn(row, colId, value)
-      );
-    },
+    //   const columnIds = [
+    //     "docNum",
+    //     "docDate",
+    //     "fromWarehouseId",
+    //     "toWarehouseId",
+    //     "docStatus",
+    //     "itemCode",
+    //     "itemName",
+    //     "quantity",
+    //     "erpDocEntry",
+    //     "erpObjectType",
+    //     "erpDocLine",
+    //     "sapStatus",
+    //   ];
+    //   return columnIds.some((colId: string) =>
+    //     globalFilterFn(row, colId, value)
+    //   );
+    // },
     onPaginationChange: setPagination,
     manualPagination: true, // Enable server-side pagination
     pageCount: Math.ceil(itrDataCount / pagination.pageSize), // Calculate total pages from server data
@@ -717,10 +717,10 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
           style={{ flexShrink: 0 }}
         >
           <Stack gap={0}>
-            <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+            <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
               Manage ITR Data
             </Title>
-            <Text c={customStyles.colors._909090}>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
               View, search, and manage all ITR data by using multiple filters.
               {(sapStatus ||
                 docStatus ||

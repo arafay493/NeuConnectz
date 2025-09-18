@@ -75,14 +75,16 @@ const postRequestToSAP = createAsyncThunk(
     ) => {
         try {
             const response = await apiPost(`/neu-connect/v2/${apiUrl}`, { userName: type }, token);
-            console.log('Res: ' , response);
+            console.log('SAP Api Res: ', response);
 
             const { status, data } = response;
 
             if (status == 201) {
                 resHandler(response);
             };
-        } catch (error: any) {
+        }
+
+        catch (error: any) {
             resHandler(error?.response);
 
             const { status, data } = error?.response;

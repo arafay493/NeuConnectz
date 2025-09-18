@@ -40,7 +40,7 @@ export const GlobalSearchFilter: FC<GlobalSearchFilterProps> = ({
           size="xs"
           value={filters}
           onChange={(e) => handleGlobalSearch(e.target.value)}
-          placeholder="Search..."
+          placeholder="Search here..."
           style={{
             width: "150px",
             minWidth: "150px",
