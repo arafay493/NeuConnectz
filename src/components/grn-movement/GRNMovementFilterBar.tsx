@@ -1,6 +1,6 @@
 import { Button, Select, Text } from "@mantine/core"
 import { DatePickerInput } from "@mantine/dates"
-import { IconBuildingWarehouse } from "@tabler/icons-react"
+import { IconBuildingWarehouse, IconCalendarMonth } from "@tabler/icons-react"
 import { FC } from "react"
 import { DocStatusProp } from "../stock-movement/StockMovementFilterBar"
 import styles from './GRNMovementFilterBar.module.css'
@@ -73,6 +73,7 @@ const GRNMovementFilterBar: FC<GRNMovementFilterBarProps> = ({
             <div className={styles.colFour}>
                 <Text size="md" mb={8} fw={500}>Date</Text>
                 <DatePickerInput
+                    rightSection={<IconCalendarMonth size={24} />}
                     placeholder="DD/MM/YY"
                     value={selectDate}
                     onChange={(value: string | null) => setSelectDate(value)}

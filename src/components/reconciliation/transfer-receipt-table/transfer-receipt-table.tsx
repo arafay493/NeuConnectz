@@ -116,7 +116,7 @@ const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowCl
                 <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
-                        setFilters={setGlobalFilter}
+                        handleGlobalSearch={() => { }}
                         isSearchInputVisible={isSearchInputVisible}
                     />
                     <IconSearch cursor="pointer" onClick={handleSearchInputVisibility} size={24} />

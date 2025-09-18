@@ -288,52 +288,52 @@ const UnpostedGRNTable = () => {
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Doc Date', ['00:00:00 AM - 00/00/0000'], 180, 250),
             },
-            {
-                header: 'Action',
-                cell: ({ getValue, row }) => {
-                    // const rowId = row.original.itemNo;
-                    // console.log("row Id: ", rowId);
-                    return (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                            }}
-                        >
-                            <Button
-                                variant="transparent"
-                                className={'outlineButton'}
-                                radius={8}
-                                size="sm"
-                                w={120}
-                            // onClick={() => {
-                            //     setRowData(row.original);
-                            //     setIsTableModalOpen(true)
-                            // }}
-                            >
-                                View Details
-                            </Button>
+            // {
+            //     header: 'Action',
+            //     cell: ({ getValue, row }) => {
+            //         // const rowId = row.original.itemNo;
+            //         // console.log("row Id: ", rowId);
+            //         return (
+            //             <div
+            //                 style={{
+            //                     display: "flex",
+            //                     flexDirection: "row",
+            //                 }}
+            //             >
+            //                 <Button
+            //                     variant="transparent"
+            //                     className={'outlineButton'}
+            //                     radius={8}
+            //                     size="sm"
+            //                     w={120}
+            //                 // onClick={() => {
+            //                 //     setRowData(row.original);
+            //                 //     setIsTableModalOpen(true)
+            //                 // }}
+            //                 >
+            //                     View Details
+            //                 </Button>
 
-                            <Button
-                                variant="transparent"
-                                className={'filledButton'}
-                                radius={8}
-                                size="sm"
-                                w={120}
-                                style={{
-                                    marginLeft: 8
-                                }}
-                            // onClick={viewGrnsData}
-                            >
-                                Post
-                            </Button>
-                        </div>
-                    )
-                },
-                filterFn: stringFilterFn,
-                enableColumnFilter: true,
-                // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
-            }
+            //                 <Button
+            //                     variant="transparent"
+            //                     className={'filledButton'}
+            //                     radius={8}
+            //                     size="sm"
+            //                     w={120}
+            //                     style={{
+            //                         marginLeft: 8
+            //                     }}
+            //                 // onClick={viewGrnsData}
+            //                 >
+            //                     Post
+            //                 </Button>
+            //             </div>
+            //         )
+            //     },
+            //     filterFn: stringFilterFn,
+            //     enableColumnFilter: true,
+            //     // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
+            // }
         ],
         [list_Pending_GRNS_Data]
     );
@@ -555,7 +555,7 @@ const UnpostedGRNTable = () => {
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
-                            setFilters={setGlobalFilter}
+                            handleGlobalSearch={() => { }}
                             isSearchInputVisible={isSearchInputVisible}
                         />
                         {
@@ -592,7 +592,7 @@ const UnpostedGRNTable = () => {
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: "0 16px 16px 11px",
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             verticalAlign: 'top',
                                             width: `${header.getSize()}px`,

@@ -158,7 +158,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                 <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
-                        setFilters={setGlobalFilter}
+                        handleGlobalSearch={() => { }}
                         isSearchInputVisible={isSearchInputVisible}
                     />
                     <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} />

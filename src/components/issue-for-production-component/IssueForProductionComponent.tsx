@@ -366,52 +366,52 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         enableColumnFilter: true,
         // size: calculateColumnWidth('Posting Date', (issuesForProductionList || []).map(item => item.), 150, 220),
       },
-      {
-        header: "Action",
-        cell: ({ getValue, row }) => {
-          // const rowId = row.original.itemNo;
-          // console.log("row Id: ", rowId);
-          return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <Button
-                variant="transparent"
-                className={"outlineButton"}
-                radius={8}
-                size="sm"
-                w={120}
-                // onClick={() => {
-                //     setRowData(row.original);
-                //     setIsTableModalOpen(true)
-                // }}
-              >
-                View Details
-              </Button>
+      // {
+      //   header: "Action",
+      //   cell: ({ getValue, row }) => {
+      //     // const rowId = row.original.itemNo;
+      //     // console.log("row Id: ", rowId);
+      //     return (
+      //       <div
+      //         style={{
+      //           display: "flex",
+      //           flexDirection: "row",
+      //         }}
+      //       >
+      //         <Button
+      //           variant="transparent"
+      //           className={"outlineButton"}
+      //           radius={8}
+      //           size="sm"
+      //           w={120}
+      //           // onClick={() => {
+      //           //     setRowData(row.original);
+      //           //     setIsTableModalOpen(true)
+      //           // }}
+      //         >
+      //           View Details
+      //         </Button>
 
-              <Button
-                variant="transparent"
-                className={"filledButton"}
-                radius={8}
-                size="sm"
-                w={120}
-                style={{
-                  marginLeft: 8,
-                }}
-                // onClick={viewGrnsData}
-              >
-                Post
-              </Button>
-            </div>
-          );
-        },
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
-      },
+      //         <Button
+      //           variant="transparent"
+      //           className={"filledButton"}
+      //           radius={8}
+      //           size="sm"
+      //           w={120}
+      //           style={{
+      //             marginLeft: 8,
+      //           }}
+      //           // onClick={viewGrnsData}
+      //         >
+      //           Post
+      //         </Button>
+      //       </div>
+      //     );
+      //   },
+      //   filterFn: stringFilterFn,
+      //   enableColumnFilter: true,
+      //   // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
+      // },
     ],
     [issuesForProductionList]
   );
@@ -597,7 +597,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
                     style={{
                       cursor: "pointer",
                       textAlign: "left",
-                      padding: "0 16px 24px 16px",
+                      // padding: "0 16px 24px 16px",
+                      padding: "0 16px 16px 11px",
                       borderBottom: `1px solid ${
                         customStyles.colors._E1E7EC || "#E5E5E5"
                       }`,

@@ -247,7 +247,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                     <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
-                            setFilters={setGlobalFilter}
+                            handleGlobalSearch={() => { }}
                             isSearchInputVisible={isSearchInputVisible}
                         />
                         {

@@ -22,7 +22,7 @@ const ProductionOrderComponent = () => {
     const isLargeScreen = useMediaQuery('(min-width: 1200px)');
 
     // Note: handling states here...!
-    const [tab, setTab] = useState<'Production Order' | 'Issue for Production' | 'Receipt for Production'>('Production Order');
+    const [tab, setTab] = useState<'Production Order' | 'Issue for Production' | 'Receipt from Production'>('Production Order');
     const [selectDate, setSelectDate] = useState<string | null>(null);
 
     // Note: THis hook will run tab change...!
@@ -46,7 +46,7 @@ const ProductionOrderComponent = () => {
                 marginBottom: '32px',
                 position: 'relative'
             }}>
-                {(['Production Order', 'Issue for Production', 'Receipt for Production'] as const).map((tabOption) => (
+                {(['Production Order', 'Issue for Production', 'Receipt from Production'] as const).map((tabOption) => (
                     <button
                         key={tabOption}
                         onClick={() => setTab(tabOption)}
@@ -124,7 +124,7 @@ const ProductionOrderComponent = () => {
             <div>
                 {tab === 'Production Order' && (<ProductionOrderSectionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ORDERS_LIST as string} />)}
                 {tab === 'Issue for Production' && (<IssueForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_ISSUES_LIST as string} />)}
-                {tab === 'Receipt for Production' && (<ReceiptForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_RECEIPTS_LIST as string} />)}
+                {tab === 'Receipt from Production' && (<ReceiptForProductionComponent apiUrl={process.env.NEXT_PUBLIC_PRODUCTION_RECEIPTS_LIST as string} />)}
             </div>
         </Box>
     );

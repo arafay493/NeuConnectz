@@ -431,31 +431,31 @@ const PostedGRNTable = () => {
         ),
       },
 
-      {
-        header: "Action",
-        cell: ({ getValue, row }) => {
-          // const rowId = row.original.itemNo;
-          // console.log("row Id: ", rowId);
-          return (
-            <Button
-              variant="transparent"
-              className={"outlineButton"}
-              radius={8}
-              size="sm"
-              w={120}
-              // onClick={() => {
-              //     setRowData(row.original);
-              //     setIsTableModalOpen(true)
-              // }}
-            >
-              View Details
-            </Button>
-          );
-        },
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
-      },
+      // {
+      //   header: "Action",
+      //   cell: ({ getValue, row }) => {
+      //     // const rowId = row.original.itemNo;
+      //     // console.log("row Id: ", rowId);
+      //     return (
+      //       <Button
+      //         variant="transparent"
+      //         className={"outlineButton"}
+      //         radius={8}
+      //         size="sm"
+      //         w={120}
+      //         // onClick={() => {
+      //         //     setRowData(row.original);
+      //         //     setIsTableModalOpen(true)
+      //         // }}
+      //       >
+      //         View Details
+      //       </Button>
+      //     );
+      //   },
+      //   filterFn: stringFilterFn,
+      //   enableColumnFilter: true,
+      //   // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
+      // },
     ],
     [list_Integrated_GRNS_Data]
   );
@@ -730,8 +730,7 @@ const PostedGRNTable = () => {
               Posted GRN
             </Title>
             <Text c={customStyles.colors._909090}>
-              All GRNs that have been successfully recorded and synced with the
-              system. No further edits allowed.
+              GRNs successfully recorded and synced. Edits not allowed.
             </Text>
           </Stack>
           <Group gap="xs">
@@ -789,7 +788,7 @@ const PostedGRNTable = () => {
                       style={{
                         cursor: "pointer",
                         textAlign: "left",
-                        padding: "0 16px 24px 16px",
+                        padding: "0 16px 16px 11px",
                         borderBottom: `1px solid ${
                           customStyles.colors._E1E7EC || "#E5E5E5"
                         }`,
