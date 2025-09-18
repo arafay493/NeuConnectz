@@ -24,14 +24,16 @@ const StockMovementComponent = () => {
                         mb={8}
                         order={isSmallScreen ? 3 : 2}
                         c={customStyles.colors._4D4D4D}
-                        size={isSmallScreen ? 'h3' : 'h2'}
+                        // size={isSmallScreen ? 'h3' : 'h2'}
+                        style={{ fontWeight: 700, fontSize: 24 }}
                     >
                         Stock Movement
                     </Title>
                     <Text
                         mb={isSmallScreen ? 16 : 24}
                         c={customStyles.colors._909090}
-                        size={isSmallScreen ? 'sm' : 'md'}
+                        // size={isSmallScreen ? 'sm' : 'md'}
+                        style={{ fontWeight: 500, fontSize: 16 }}
                     >
                         Track and manage how inventory shifts within and across warehouses.
                     </Text>

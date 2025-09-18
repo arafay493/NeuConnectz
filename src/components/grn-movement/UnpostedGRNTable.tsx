@@ -564,10 +564,10 @@ const UnpostedGRNTable = () => {
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="flex-start" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
-                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
                             Unposted GRN
                         </Title>
-                        <Text c={customStyles.colors._909090}>
+                        <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
                             Unposted GRNs pending final decision. You can review or post from here.
                         </Text>
                     </Stack>

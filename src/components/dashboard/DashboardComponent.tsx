@@ -62,7 +62,7 @@ const DashboardComponent = () => {
   });
 
   // useEffect(() => {
-    
+
   // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
 
   // Note: Fetching dashboard analytics on component mount...!
@@ -90,7 +90,7 @@ const DashboardComponent = () => {
   }
 
   const handleNext = () => {
-    
+
   }
 
   const handlePrevious = () => {
@@ -105,14 +105,16 @@ const DashboardComponent = () => {
           <Title
             order={isSmallScreen ? 3 : 2}
             c={customStyles.colors._4D4D4D}
-            size={isSmallScreen ? "h3" : "h2"}
+            // size={isSmallScreen ? "h3" : "h2"}
+            style={{ fontWeight: 700, fontSize: 24 }}
           >
             Home
           </Title>
           <Text
             mb={isSmallScreen ? 16 : 24}
             c={customStyles.colors._909090}
-            size={isSmallScreen ? "sm" : "md"}
+            // size={isSmallScreen ? "sm" : "md"}
+            style={{ fontWeight: 500, fontSize: 16 }}
           >
             Dashboard
           </Text>

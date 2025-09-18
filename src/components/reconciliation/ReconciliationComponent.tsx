@@ -140,8 +140,8 @@ const ReconciliationComponent = () => {
     }, [handleCalculateQuantityDifference])
     return (
         <Box>
-            <Title order={2} mb={8} c={customStyles.colors._4D4D4D}>Reconciliation</Title>
-            <Text c={customStyles.colors._909090}>Match Inventory Transfers to Transfer Receipts for accurate stock and quantity tracking.</Text>
+            <Title order={2} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 700, fontSize: 24 }}>Reconciliation</Title>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>Match Inventory Transfers to Transfer Receipts for accurate stock and quantity tracking.</Text>
 
             {/* Reconciliation Get Data Filter Bar */}
             <ReconciliationFilterBar

@@ -11,6 +11,9 @@ import {
     ColumnFiltersState,
     flexRender,
     getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
     PaginationState,
     SortingState,
     useReactTable
@@ -72,10 +75,17 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
     // Note: Functions...!
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
+        setGlobalFilter("");
     };
 
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
+        // Reset all filters
+        table.getAllColumns().forEach((col) => {
+            if (col.getCanFilter()) {
+                col.setFilterValue(undefined); // ya ''
+            }
+        });
     };
 
     // Utility function to calculate optimal column width
@@ -271,26 +281,13 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
         data: listGoodIssue || [], // Handle undefined/null case
         columns,
         getCoreRowModel: getCoreRowModel(),
+        // Remove client-side filtering and sorting for server-side pagination
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
-        onGlobalFilterChange: (value) => {
-            setGlobalFilter(value);
-            // Reset to first page when global filter changes
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
-        onColumnFiltersChange: (filters) => {
-            setColumnFilters(filters);
-            // Reset to first page when column filters change
-            setPagination(prev => ({ ...prev, pageIndex: 0 }));
-        },
-        globalFilterFn: (row, columnId, value) => {
-            // Handle S.No column separately for global search
-            if (row.index + 1 && String(row.index + 1).includes(value)) {
-                return true;
-            }
-
-            const columnIds = ['serialNumber', 'docNum', 'itemCode', 'itemName', 'barCode', 'uoM', 'quantity', 'whsCode'];
-            return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
-        },
+        onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
         pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
@@ -322,16 +319,20 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
         };
     }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
+    const handleGlobalSearch = (value: string) => {
+        table.setGlobalFilter(String(value));
+    };
+
     return (
         <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
 
             {/* Header Section */}
             <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                 <Stack gap={0}>
-                    <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                        Posted Goods Issue
+                    <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
+                        Unposted Goods Issue
                     </Title>
-                    <Text c={customStyles.colors._909090}>
+                    <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
                         Track and review Good Issue seamlessly
                     </Text>
                 </Stack>
@@ -340,7 +341,7 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
                 <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
-                        handleGlobalSearch={() => { }}
+                        handleGlobalSearch={handleGlobalSearch}
                         isSearchInputVisible={isSearchInputVisible}
                     />
                     {

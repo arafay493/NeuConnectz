@@ -743,10 +743,15 @@ const PostedGRNTable = () => {
           }}
         >
           <Stack gap={0}>
-            <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+            <Title
+              order={3}
+              mb={8}
+              c={customStyles.colors._4D4D4D}
+              style={{ fontWeight: 600, fontSize: 16 }}
+            >
               Posted GRN
             </Title>
-            <Text c={customStyles.colors._909090}>
+            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
               GRNs successfully recorded and synced. Edits not allowed.
             </Text>
           </Stack>
@@ -806,9 +811,8 @@ const PostedGRNTable = () => {
                         cursor: "pointer",
                         textAlign: "left",
                         padding: "0 16px 16px 11px",
-                        borderBottom: `1px solid ${
-                          customStyles.colors._E1E7EC || "#E5E5E5"
-                        }`,
+                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                          }`,
                         verticalAlign: "top",
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,

@@ -30,7 +30,8 @@ const TitleComponent: FC<TitleComponentProps> = ({
                 <Title
                     order={isSmallScreen ? 3 : 2}
                     c={customStyles.colors._4D4D4D}
-                    size={isSmallScreen ? 'h3' : 'h2'}
+                    // size={isSmallScreen ? 'h3' : 'h2'}
+                    style={{ fontWeight: 700, fontSize: 24 }}
                 >
                     {title}
                 </Title>

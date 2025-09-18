@@ -1499,6 +1499,19 @@ const IntegrationComponent = () => {
             return;
         };
 
+        if (reqData == "RFP") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                type: "Post to RFP",
+                apiUrl: process.env.NEXT_PUBLIC_POST_RFP_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
+            return;
+        };
+
         if (reqData == "GI" || reqData == "RFP" || reqData == "IFP") {
             showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
             setDataLoading(false);
@@ -1764,10 +1777,10 @@ const IntegrationComponent = () => {
                 </Group>
                 <Group my={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
-                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+                        <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
                             Pending & Success Data
                         </Title>
-                        <Text c={customStyles.colors._909090}>
+                        <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
                             Track inventory transfers that are pending or successfully synced with SAP.
                         </Text>
                     </Stack>

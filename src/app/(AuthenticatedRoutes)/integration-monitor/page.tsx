@@ -24,14 +24,16 @@ const IntegrationMonitor = () => {
                     mb={8}
                     order={isSmallScreen ? 3 : 2}
                     c={customStyles.colors._4D4D4D}
-                    size={isSmallScreen ? 'h3' : 'h2'}
+                    // size={isSmallScreen ? 'h3' : 'h2'}
+                    style={{ fontWeight: 700, fontSize: 24 }}
                 >
                     Integration Monitor
                 </Title>
                 <Text
                     mb={isSmallScreen ? 16 : 24}
                     c={customStyles.colors._909090}
-                    size={isSmallScreen ? 'sm' : 'md'}
+                    // size={isSmallScreen ? 'sm' : 'md'}
+                    style={{ fontWeight: 500, fontSize: 16 }}
                 >
                     Data auto-syncs every 15 mins. To sync manually, Click the Sync All button anytime.
                 </Text>

@@ -463,10 +463,10 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         style={{ flexShrink: 0 }}
       >
         <Stack gap={0}>
-          <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
+          <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
             Receipt From Production
           </Title>
-          <Text c={customStyles.colors._909090}>
+          <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
             Track finished items recorded from production orders.
           </Text>
         </Stack>
