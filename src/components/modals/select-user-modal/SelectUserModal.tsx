@@ -13,9 +13,11 @@ import {
 } from "@mantine/core";
 import {
     IconCircleX,
+    IconId,
     IconPoint,
     IconPointFilled,
     IconSearch,
+    IconUserCog,
     IconUserSquare,
     IconUserSquareRounded,
 } from "@tabler/icons-react";
@@ -171,7 +173,7 @@ export default function SelectUserModal({
                             </Group>
                             <Group justify="center" gap={3}>
                                 <Group gap={2}>
-                                    <IconUserSquare
+                                    <IconId
                                         stroke={2}
                                         size={14}
                                         color="#909090"
@@ -179,7 +181,7 @@ export default function SelectUserModal({
                                     <Text size={"12px"} color="#909090">{user.userId}</Text>
                                 </Group>
                                 <Group gap={2}>
-                                    <IconUserSquare
+                                    <IconUserCog
                                         stroke={2}
                                         size={14}
                                         color="#909090"

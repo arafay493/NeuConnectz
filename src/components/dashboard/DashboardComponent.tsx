@@ -80,8 +80,8 @@ const DashboardComponent = () => {
       dispatch(
         fetchAllUsers({
           authToken: authenticatedUser?.token,
-          LastCount: pagination.pageSize,
-          skipRecord: skipRecord,
+          // LastCount: pagination.pageSize,
+          // skipRecord: skipRecord,
         })
       ).finally(() => {
         setIsLoading(false);
