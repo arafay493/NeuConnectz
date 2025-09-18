@@ -98,7 +98,7 @@ export default function SelectUserModal({
             closeButtonProps={{
                 icon: <IconCircleX size={70} stroke={2} color="#ED1C24"/>,
             }}
-            size="100%"
+            size="95%"
             radius="md"
             title={
                 <Box>
@@ -144,7 +144,7 @@ export default function SelectUserModal({
 
             {/* User Grid */}
             <ScrollArea h={400}>
-                <Group wrap="wrap" gap="md">
+                <Group wrap="wrap" gap="md" justify="center">
                     {filteredUsers.map((user) => (
                         <Card
                             key={user.userId}
@@ -161,6 +161,7 @@ export default function SelectUserModal({
                                 backgroundColor:
                                     selectedUser.some((u: any) => u.userId === user.userId) ? "#f0f9ff" : "white",
                                 transition: "0.2s",
+                                minWidth: "300px"
                             }}
                         >
                             <Group align="center" gap={5} mb={10}>
