@@ -1530,6 +1530,32 @@ const IntegrationComponent = () => {
             return;
         };
 
+        if (reqData == "IFP") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                type: "Post to IFP",
+                apiUrl: process.env.NEXT_PUBLIC_POST_IFP_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
+            return;
+        };
+
+        if (reqData == "GI") {
+            dispatch(postRequestToSAP({
+                token: authenticatedUser?.token as string,
+                type: "Post to GI",
+                apiUrl: process.env.NEXT_PUBLIC_POST_GI_REQUEST_TO_SAP as string,
+                resHandler: handleResponse
+            }))
+                .finally(() => {
+                    setDataLoading(false);
+                })
+            return;
+        };
+
         if (reqData == "GI" || reqData == "RFP" || reqData == "IFP") {
             showNotificationToast("Error", "This feature is not implemented yet!", customStyles.colors.red);
             setDataLoading(false);
