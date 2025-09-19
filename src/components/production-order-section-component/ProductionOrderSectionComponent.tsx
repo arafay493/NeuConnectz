@@ -12,6 +12,8 @@ import {
   Title,
   Select,
   Button,
+  Collapse,
+  Card,
 } from "@mantine/core";
 import { customStyles } from "@/styles/custom-theme";
 import { GlobalSearchFilter } from "@/components/table-filters/GlobalSearchFilter";
@@ -34,6 +36,7 @@ import {
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
@@ -52,6 +55,40 @@ import {
 import TableModalComponent from "../table-modal/TableModalComponent";
 import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
+import { useDisclosure } from "@mantine/hooks";
+
+const cardsData = [
+  {
+    title: "Inventory Transfer Request",
+    totalDoc: 2,
+    totalCreated: 15,
+    label: "ITR",
+  },
+  {
+    title: "Inventory Transfer",
+    totalDoc: 2,
+    totalCreated: 11,
+    label: "IT",
+  },
+  {
+    title: "Transfer Receipt",
+    totalDoc: 2,
+    totalCreated: 15,
+    label: "TR",
+  },
+  {
+    title: "Issuance",
+    totalDoc: 2,
+    totalCreated: 15,
+    label: "Issuance",
+  },
+  {
+    title: "Receving",
+    totalDoc: 2,
+    totalCreated: 15,
+    label: "Receving",
+  },
+];
 
 export interface ProductionOrderDataType {
   absoluteEntry: number;
@@ -86,6 +123,8 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
   });
+  const [expanded, setExpanded] = useState({});
+  const [opened, { toggle }] = useDisclosure(false);
 
   // Note: Table modal state...!
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
@@ -510,6 +549,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onExpandedChange: setExpanded,
+    getExpandedRowModel: getExpandedRowModel(),
+    getRowCanExpand: () => true,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
@@ -554,6 +596,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       globalFilter,
       columnFilters,
       pagination,
+      expanded
     },
   });
 
@@ -746,7 +789,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
               </tr>
             ))}
           </thead>
-          <tbody>
+          {/* <tbody>
             {isLoading ? (
               Array.from({ length: pagination.pageSize }).map((_, index) => (
                 <tr
@@ -814,6 +857,180 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                     </td>
                   ))}
                 </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  style={{
+                    textAlign: "center",
+                    padding: "32px 16px",
+                    borderBottom: "none",
+                  }}
+                >
+                  <Stack justify="center" align="center">
+                    <Image
+                      w={180}
+                      h={180}
+                      radius={16}
+                      component={NextImage}
+                      src={localAssets.dataNotFound}
+                      alt="not-found"
+                    />
+                    <Title order={4} c={customStyles.colors._4D4D4D}>
+                      No Data Found
+                    </Title>
+                  </Stack>
+                </td>
+              </tr>
+            )}
+          </tbody> */}
+          <tbody>
+            {isLoading ? (
+              Array.from({ length: pagination.pageSize }).map((_, index) => (
+                <tr
+                  key={`loading-${index}`}
+                  style={{
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
+                  }}
+                >
+                  {columns.map((_, colIndex) => (
+                    <td
+                      key={`loading-cell-${colIndex}`}
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                      }}
+                    >
+                      <Box
+                        h={20}
+                        bg={customStyles.colors._E1E7EC || "#F0F0F0"}
+                        style={{
+                          borderRadius: "4px",
+                          animation: "pulse 1.5s ease-in-out infinite",
+                        }}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  {/* --- Normal Row --- */}
+                  <tr
+                    style={{
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        style={{
+                          textAlign: "left",
+                          padding: "12px",
+                          width: `${cell.column.getSize()}px`,
+                          minWidth: `${cell.column.getSize()}px`,
+                          maxWidth:
+                            cell.column.id === "isActive"
+                              ? "fit-content"
+                              : "max-content",
+                          overflow:
+                            cell.column.id === "isActive" ? "visible" : "hidden",
+                          textOverflow:
+                            cell.column.id === "isActive" ? "initial" : "ellipsis",
+                          whiteSpace: "nowrap",
+                          verticalAlign: "middle",
+                        }}
+                      >
+                        {cell.column.id === "serialNumber" ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            {/* Arrow toggle */}
+                            {row.getCanExpand() && (
+                              <span
+                                style={{ cursor: "pointer", marginTop: 6 }}
+                                onClick={row.getToggleExpandedHandler()}
+                              >
+                                {row.getIsExpanded() ? <IconChevronDown stroke={2} color="#909090" /> : <IconChevronRight stroke={2} color="#909090" />
+                                }
+                              </span>
+                            )}
+
+                            {/* Serial number value */}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </div>
+                        ) : (
+                          flexRender(cell.column.columnDef.cell, cell.getContext())
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* --- Expanded Row --- */}
+                  {row.getIsExpanded() && (
+                    <tr>
+                      <td
+                        colSpan={row.getVisibleCells().length}
+                        style={{
+                          padding: "16px",
+                        }}
+                      >
+                        <Collapse in={row.getIsExpanded()} transitionDuration={1000}>
+                          <Stack gap="md">
+                            {cardsData.map((item, index) => (
+                              <Card
+                                key={index}
+                                withBorder
+                                radius="lg"
+                                // shadow="xs"
+                                w="100%"
+                                p="lg"
+                                style={{ borderColor: "#e0e0e0" }}
+                              >
+                                <Group align="center" justify="between">
+                                  <Group flex={1}>
+                                    <Text fw={600} size="sm">
+                                      {item.title}
+                                    </Text>
+                                  </Group>
+                                  <Group>
+                                    <Text size="sm" display={"flex"} fw={"bold"}>
+                                      Total No of {item.label} Created: {" "}
+                                      <Text c={"dimmed"} fw={"bold"}>
+                                        {item.totalCreated}
+                                      </Text>
+                                    </Text>
+                                    <Button
+                                      variant="transparent"
+                                      className={"outlineButton"}
+                                      radius={8}
+                                      size="xs"
+                                      w={120}
+                                      // onClick={() => getProductionOrderLinesList(rowData)}
+                                    >
+                                      View Details
+                                    </Button>
+                                  </Group>
+                                </Group>
+                              </Card>
+                            ))}
+                          </Stack>
+                          {/* <div style={{ padding: "16px" }}>
+                            <Stack gap="xs">
+                              <Text fw={600}>Details</Text>
+                              <Text>Doc No: {row.original.documentNumber}</Text>
+                              <Text>Item Code: {row.original.itemNo}</Text>
+                              <Text>Quantity: {row.original.quantity}</Text>
+                              <Text>Status: {row.original.productionOrderStatus}</Text>
+                            </Stack>
+                          </div> */}
+                        </Collapse>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <tr>
