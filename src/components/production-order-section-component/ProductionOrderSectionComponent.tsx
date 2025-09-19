@@ -996,19 +996,21 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                                     </Text>
                                   </Group>
                                   <Group>
-                                    <Text size="sm" display={"flex"} fw={"bold"}>
-                                      Total No of {item.label} Created: {" "}
-                                      <Text c={"dimmed"} fw={"bold"}>
+                                    <Group gap={3}>
+                                      <Text size="xs" display={"flex"} fw={"bold"}>
+                                        Total No of {item.label} Created : {" "}
+                                      </Text>
+                                      <Text size="xs" c={"dimmed"} fw={"bold"}>
                                         {item.totalCreated}
                                       </Text>
-                                    </Text>
+                                    </Group>
                                     <Button
                                       variant="transparent"
                                       className={"outlineButton"}
                                       radius={8}
                                       size="xs"
                                       w={120}
-                                      // onClick={() => getProductionOrderLinesList(rowData)}
+                                    // onClick={() => getProductionOrderLinesList(rowData)}
                                     >
                                       View Details
                                     </Button>
