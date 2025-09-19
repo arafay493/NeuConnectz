@@ -312,12 +312,13 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
-        accessorKey: "",
+        accessorKey: "baseQuantiy",
         header: "Base Qty",
         cell: ({ getValue, row }) => {
           return (
             <Text c={customStyles.colors._909090} fw={500}>
-              {/* {val as string} */}-
+              {/* {val as string}- */}
+              {getValue() as string}
             </Text>
           );
         },

@@ -424,6 +424,18 @@ export interface IT_DataType {
 export interface DashboardStateType {
     dashboardErrorState: string,
     dashboardAnalyticsData: {
+        receiptFromProductionStatistics: {
+            totalReceiptFromProductionIntegrated: string | number,
+            totalReceiptFromProductionPending: string | number
+        },
+        issueForProductionStatistics: {
+            totalIssueForProductionIntegrated: string | number,
+            totalIssueForProductionPending: string | number
+        },
+        goodIssueStatistics: {
+            totalGoodIssueIntegrated: string | number,
+            totalGoodIssuePending: string | number
+        },
         grnStatistics: {
             totalGrnIntegrated: string | number,
             totalGrnPending: string | number

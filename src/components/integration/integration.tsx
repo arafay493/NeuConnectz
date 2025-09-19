@@ -78,8 +78,8 @@ const cardsData = [
     {
         title: "Goods Issue",
         label: "GI",
-        pendingValue: "",
-        integratedValue: "",
+        pendingValue: "totalGoodIssuePending",
+        integratedValue: "totalGoodIssueIntegrated",
         lastIntegrationDate: "",
         color: "#BF83FF"
     },
@@ -101,8 +101,8 @@ const cardsData = [
     {
         title: "Issue For Production",
         label: "IFP",
-        pendingValue: "",
-        integratedValue: "",
+        pendingValue: "totalIssueForProductionPending",
+        integratedValue: "totalIssueForProductionIntegrated",
         lastIntegrationDate: "",
         color: "#5181FF"
     },
@@ -110,8 +110,8 @@ const cardsData = [
     {
         title: "Receipt From Production",
         label: "RFP",
-        pendingValue: "",
-        integratedValue: "",
+        pendingValue: "totalReceiptFromProductionPending",
+        integratedValue: "totalReceiptFromProductionIntegrated",
         lastIntegrationDate: "",
         color: "#5BB0FF"
     },
@@ -1334,6 +1334,24 @@ const IntegrationComponent = () => {
         if (sapType === "GRN") {
             const { grnStatistics } = dashboardAnalyticsData || {};
             const pendingValue = grnStatistics ? grnStatistics[value as keyof typeof grnStatistics] : 0;
+            return pendingValue;
+        };
+
+        if (sapType === "GI") {
+            const { goodIssueStatistics } = dashboardAnalyticsData || {};
+            const pendingValue = goodIssueStatistics ? goodIssueStatistics[value as keyof typeof goodIssueStatistics] : 0;
+            return pendingValue;
+        };
+
+        if (sapType === "IFP") {
+            const { issueForProductionStatistics } = dashboardAnalyticsData || {};
+            const pendingValue = issueForProductionStatistics ? issueForProductionStatistics[value as keyof typeof issueForProductionStatistics] : 0;
+            return pendingValue;
+        };
+
+        if (sapType === "RFP") {
+            const { receiptFromProductionStatistics } = dashboardAnalyticsData || {};
+            const pendingValue = receiptFromProductionStatistics ? receiptFromProductionStatistics[value as keyof typeof receiptFromProductionStatistics] : 0;
             return pendingValue;
         };
 
