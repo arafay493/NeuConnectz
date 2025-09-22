@@ -476,12 +476,10 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
             </Group> */}
 
             <Box
-                className="show-scroll-bar-overflow"
+                // className="show-scroll-bar-overflow"
                 w="100%"
                 mah={700}
-                style={{
-                    overflowX: 'auto',
-                }}
+                className={"custom-scroll"} style={{ overflow: "auto" }}
             >
                 <table style={{
                     width: '100%',
@@ -1047,7 +1045,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
             <Box
                 w="100%"
                 mah={700}
-                className={classes.scrollOnHover}
+                className={"custom-scroll"} style={{ overflow: "auto" }}
             >
                 <table style={{
                     width: '100%',

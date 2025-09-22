@@ -485,7 +485,7 @@ const UserListComponent: FC<UserListComponentProps> = (
         </Group>
 
         {/* Table */}
-        <Box w="100%" mah={700} className={classes.scrollOnHover}>
+        <Box w="100%" mah={700} className={"custom-scroll"} style={{ overflow: "auto" }}>
           <table
             style={{
               width: "100%",
