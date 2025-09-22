@@ -347,7 +347,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         accessorKey: "productDescription",
         header: "Item Description",
         cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
+          <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: "nowrap" }}>
             {getValue() as string}
           </Text>
         ),
@@ -361,6 +361,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
           150,
           220
         ),
+        minSize: 200,
       },
       {
         accessorKey: "uom",

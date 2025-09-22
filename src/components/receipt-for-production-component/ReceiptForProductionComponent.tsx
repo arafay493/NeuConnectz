@@ -265,14 +265,15 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
       },
       {
         accessorKey: "",
-        header: "Item Desc",
+        header: "Item Description",
         cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
+          <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: "nowrap" }}>
             {/* {getValue() as string} */}-
           </Text>
         ),
         filterFn: dateFilterFn,
         enableColumnFilter: true,
+        minSize: 200,
         // size: calculateColumnWidth('Item Desc', (recieptFromProductionList || []).map(item => new Date(item?.).toLocaleDateString()), 150, 220),
       },
       {
