@@ -72,6 +72,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
   const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [tab, setTab] = useState<"Unposted" | "Posted">("Unposted");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
@@ -188,7 +189,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -264,17 +265,17 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
-        accessorKey: "",
+        accessorKey: "itemName",
         header: "Item Description",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: "nowrap" }}>
-            {/* {getValue() as string} */}-
+            {getValue() as string}
           </Text>
         ),
         filterFn: dateFilterFn,
         enableColumnFilter: true,
         minSize: 200,
-        // size: calculateColumnWidth('Item Desc', (recieptFromProductionList || []).map(item => new Date(item?.).toLocaleDateString()), 150, 220),
+        size: calculateColumnWidth('Item Desc', (recieptFromProductionList || []).map(item => item?.itemName), 150, 220),
       },
       {
         accessorKey: "quantity",
@@ -332,12 +333,12 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         header: "Posting Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {/* {new Date(getValue() as string).toLocaleDateString()} */}-
+            {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        // size: calculateColumnWidth('Posting Date', (recieptFromProductionList || []).map(item => item.), 150, 220),
+        size: calculateColumnWidth('Posting Date', (recieptFromProductionList || []).map(item => item.postedDate), 150, 220),
       },
 
       {
@@ -465,6 +466,46 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         style={{ flexShrink: 0 }}
       >
         <Stack gap={0}>
+
+          <Group
+            w={503}
+            mb="sm"
+            gap={0}
+            style={{
+              display: "flex",
+              alignItems: customStyles.alignment.center,
+              border: "1px solid #228be6",
+              borderRadius: "5px"
+            }}
+          >
+            <Button
+              variant="transparent"
+              radius={'5px'}
+              w={250}
+              onClick={() => setTab("Unposted")}
+              style={{
+                backgroundColor: tab === "Unposted" ? "#DEE4F5" : "white"
+              }}
+            >
+              Unposted
+            </Button>
+
+            <Button
+              variant="transparent"
+              w={250}
+              onClick={() => setTab("Posted")}
+              style={{
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                borderLeftWidth: 1,
+                borderLeftColor: "#228be6",
+                backgroundColor: tab === "Posted" ? "#DEE4F5" : "white"
+              }}
+            >
+              Posted
+            </Button>
+          </Group>
+
           <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
             Receipt From Production
           </Title>
@@ -531,9 +572,8 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
                       cursor: "pointer",
                       textAlign: "left",
                       padding: "0 16px 16px 11px",
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#E5E5E5"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                        }`,
                       width: `${header.getSize()}px`,
                       minWidth: `${header.getSize()}px`,
                       maxWidth: `${header.getSize()}px`,
@@ -595,9 +635,8 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={`loading-${index}`}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {columns.map((_, colIndex) => (
@@ -625,9 +664,8 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={row.id}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

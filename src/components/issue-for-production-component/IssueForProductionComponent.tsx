@@ -28,6 +28,8 @@ import {
   IconFilterOff,
   IconSearch,
   IconSearchOff,
+  IconClipboardText
+
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -86,6 +88,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [tab, setTab] = useState<"Unposted" | "Posted">("Unposted");
+  const [viewMode, setViewMode] = useState<"document" | "column">("document");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
@@ -108,7 +112,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       return sapStates;
     }
   );
-  console.log("IFP: ", issuesForProductionList);
+  // console.log("IFP: ", issuesForProductionList);
 
   // Note: Functions...!
   const handleSearchInputVisibility = () => {
@@ -207,7 +211,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -283,17 +287,17 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
-        accessorKey: "productDescription",
+        accessorKey: "itemName",
         header: "Item Description",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: "nowrap" }}>
-            {/* {getValue() as string} */}-
+            {getValue() as string}
           </Text>
         ),
         filterFn: dateFilterFn,
         enableColumnFilter: true,
         minSize: 200,
-        // size: calculateColumnWidth('Item Description', (issuesForProductionList || []).map(item => new Date(item?.productDescription).toLocaleDateString()), 150, 220),
+        size: calculateColumnWidth('Item Description', (issuesForProductionList || []).map(item => item?.itemName), 150, 220),
       },
       {
         accessorKey: "quantity",
@@ -335,37 +339,39 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         cell: ({ getValue, row }) => {
           return (
             <Text c={customStyles.colors._909090} fw={500}>
-              {/* {val as string} */}-
+              {getValue() as string}
             </Text>
           );
         },
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        // size: calculateColumnWidth('baseQuantity', (issuesForProductionList || []).map(item => item.), 150, 220),
+        size: calculateColumnWidth('Base Qty', (issuesForProductionList || []).map(item => String(item.baseQuantity)), 150, 220),
       },
       {
         accessorKey: "plannedQuantity",
         header: "Plan Qty",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {/* {getValue() as string} */}-
+            {getValue() as string}
           </Text>
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.)), 150, 220),
+        size: calculateColumnWidth('Plan Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
       },
       {
-        accessorKey: "postingDate",
+        accessorKey: "postedDate",
         header: "Post Date",
-        cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
-            {/* {new Date(getValue() as string).toLocaleDateString()} */}-
-          </Text>
-        ),
+        cell: ({ getValue }) => {
+          return (
+            <Text c={customStyles.colors._909090} fw={500}>
+              {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
+            </Text>
+          )
+        },
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        // size: calculateColumnWidth('Posting Date', (issuesForProductionList || []).map(item => item.), 150, 220),
+        size: calculateColumnWidth('Posting Date', (issuesForProductionList || []).map(item => item.postedDate), 150, 220),
       },
       // {
       //   header: "Action",
@@ -518,12 +524,6 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       bg={customStyles.colors.white}
       style={{ borderRadius: "16px", width: "100%" }}
     >
-      {/* Table Modal Component */}
-      {/* <TableModalComponent
-                open={isTableModalOpen}
-                onClose={() => setIsTableModalOpen(false)}
-                rowData={rowData as ProductionOrderDataType}
-            /> */}
 
       {/* Header Section */}
       <Group
@@ -532,7 +532,48 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         align="center"
         style={{ flexShrink: 0 }}
       >
+
         <Stack gap={0}>
+
+          <Group
+            w={503}
+            mb="sm"
+            gap={0}
+            style={{
+              display: "flex",
+              alignItems: customStyles.alignment.center,
+              border: "1px solid #228be6",
+              borderRadius: "5px"
+            }}
+          >
+            <Button
+              variant="transparent"
+              radius={'5px'}
+              w={250}
+              onClick={() => setTab("Unposted")}
+              style={{
+                backgroundColor: tab === "Unposted" ? "#DEE4F5" : "white"
+              }}
+            >
+              Unposted
+            </Button>
+
+            <Button
+              variant="transparent"
+              w={250}
+              onClick={() => setTab("Posted")}
+              style={{
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+                borderLeftWidth: 1,
+                borderLeftColor: "#228be6",
+                backgroundColor: tab === "Posted" ? "#DEE4F5" : "white"
+              }}
+            >
+              Posted
+            </Button>
+          </Group>
+
           <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
             Issue for Production
           </Title>
@@ -576,7 +617,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
           )}
           <IconColumns cursor="pointer" size={24} />
 
-          <IconBorderCorners cursor="pointer" size={24} />
+          <IconClipboardText cursor="pointer" size={24} />
         </Group>
       </Group>
 
@@ -600,9 +641,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
                       textAlign: "left",
                       // padding: "0 16px 24px 16px",
                       padding: "0 16px 16px 11px",
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#E5E5E5"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                        }`,
                       width: `${header.getSize()}px`,
                       minWidth: `${header.getSize()}px`,
                       maxWidth: `${header.getSize()}px`,
@@ -664,9 +704,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={`loading-${index}`}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {columns.map((_, colIndex) => (
@@ -694,9 +733,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
                 <tr
                   key={row.id}
                   style={{
-                    borderBottom: `1px solid ${
-                      customStyles.colors._E1E7EC || "#F0F0F0"
-                    }`,
+                    borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                      }`,
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (

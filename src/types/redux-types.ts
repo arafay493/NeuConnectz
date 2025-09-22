@@ -124,15 +124,18 @@ export interface ProductionOrderDataType {
 }
 
 export interface IssuesForProductionDataType {
+    baseQuantity: number,
+    plannedQuantity: number,
+    postedDate: string,
     id: string,
     wareHouseCode: string,
     itemCode: string,
+    itemName: string,
     documentType: string,
     documentAbsoluteEntry: number,
     quantity: number,
     documentNumber: number,
-    sapStatus: string,
-    issueDetails: {
+    sapStatus: string, issueDetails: {
         issueForProductionId: any,
         makeReady: number,
         qtyApproved: number,
@@ -157,6 +160,8 @@ export interface RecieptFromProductionDataType {
     quantity: number,
     documentNumber: number,
     sapStatus: string,
+    itemName: string,
+    postedDate: string,
 }
 
 export interface ProductionOrderLinesDataType {
