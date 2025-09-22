@@ -272,13 +272,18 @@ const exportDataToCsvFile = createAsyncThunk(
             },
         { dispatch }) => {
         try {
-            const response = await fetch(apiRequestRoutes.getRequest, {
-                method: 'GET',
-                headers: {
-                    "Api-Url": apiUrl,
-                    "Auth-Token": token
+            console.log("Export to CSV apiUrl: ", apiUrl);
+            console.log("SAP Token: ", token);
+            const response = await fetch(
+                `http://zconnectstaging.qbscocloud.net:31155/ZCAPI${apiUrl}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
                 }
-            });
+            );
+            console.log("SAP Export to CSV response: ", response);
 
             const csvText = await response.text();
 

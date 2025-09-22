@@ -138,7 +138,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
       return itrStates;
     }
   );
-  console.log("ITR Data: ", itrData);
+  // console.log("ITR Data: ", itrData);
 
   // Utility function to calculate optimal column width
   const calculateColumnWidth = (
