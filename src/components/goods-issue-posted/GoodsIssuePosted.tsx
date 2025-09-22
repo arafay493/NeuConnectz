@@ -213,7 +213,8 @@ const GoodsIssuePosted: FC<ApiProp> = ({ apiUrl }) => {
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Item Name', (listGoodIssue || []).map(item => item.itemName), 150, 220),
+                minSize: 200
+                // size: calculateColumnWidth('Item Name', (listGoodIssue || []).map(item => item.itemName), 150, 220),
             },
             {
                 accessorKey: 'barCode',
