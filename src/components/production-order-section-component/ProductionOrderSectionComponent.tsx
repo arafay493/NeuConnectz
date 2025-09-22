@@ -523,7 +523,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                 size="sm"
                 w={120}
                 style={{
-                  color: "#909090",
+                  color: "#4A4A4A",
                   backgroundColor: "#E1E7EC",
                   marginLeft: 8,
                 }}
