@@ -752,7 +752,7 @@ const PostedGRNTable = () => {
               Posted GRN
             </Title>
             <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-              GRNs successfully recorded and synced. Edits not allowed.
+              GRNs successfully recorded and synced.
             </Text>
           </Stack>
           <Group gap="xs">

@@ -1655,101 +1655,104 @@ const IntegrationComponent = () => {
             {/* Note: Loading Component */}
             <Loader loadingState={dataLoading} />
 
-            <ScrollArea
-                type="auto"
-                scrollbarSize={8}
-                offsetScrollbars
-                styles={{
-                    scrollbar: {
-                        backgroundColor: "white", // scrollbar track color
-                    },
-                    thumb: {
-                        backgroundColor: "#e0e0e0", // scrollbar thumb color
-                        borderRadius: 8,
-                    },
-                }}
-            >
-                <Flex
-                    direction="row"
-                    gap="md"
-                    wrap="nowrap"
-                    style={{
-                        padding: '1rem 0',
-                        // overflowX: 'auto',
-                        // WebkitOverflowScrolling: 'touch'
+            <Stack bg={"white"} p={20}  style={{borderRadius: 20}}>
+                <ScrollArea
+                    type="auto"
+                    scrollbarSize={8}
+                    offsetScrollbars
+                    bg={"white"}
+                    styles={{
+                        scrollbar: {
+                            backgroundColor: "white", // scrollbar track color
+                        },
+                        thumb: {
+                            backgroundColor: "#e0e0e0", // scrollbar thumb color
+                            borderRadius: 8,
+                        },
                     }}
                 >
-                    {cardsData.map((item) => (
-                        <Box
-                            key={item.label}
-                            style={{
-                                // minWidth: isLargeScreen ? '15%' : '30%',
-                                // minWidth: "15%",
-                                flexShrink: 0,
-                                width: isLargeScreen ? '25%' : '30%'
-                            }}
-                        >
-                            <Card shadow="sm" radius="md" withBorder>
-                                <Group
-                                    justify={customStyles.alignment.spaceBetween}
-                                    mb="sm"
-                                >
-                                    <ThemeIcon
-                                        variant="light"
-                                        color={customStyles.colors.white}
-                                        size="xl"
-                                        radius="md"
-                                        style={{ backgroundColor: item?.color }}
+                    <Flex
+                        direction="row"
+                        gap="md"
+                        wrap="nowrap"
+                        style={{
+                            padding: '1rem 0',
+                            // overflowX: 'auto',
+                            // WebkitOverflowScrolling: 'touch'
+                        }}
+                    >
+                        {cardsData.map((item) => (
+                            <Box
+                                key={item.label}
+                                style={{
+                                    // minWidth: isLargeScreen ? '15%' : '30%',
+                                    // minWidth: "15%",
+                                    flexShrink: 0,
+                                    width: isLargeScreen ? '25%' : '30%'
+                                }}
+                            >
+                                <Card shadow="sm" radius="md" withBorder>
+                                    <Group
+                                        justify={customStyles.alignment.spaceBetween}
+                                        mb="sm"
                                     >
-                                        <IconChartBar size="1.5rem" />
-                                    </ThemeIcon>
-                                </Group>
+                                        <ThemeIcon
+                                            variant="light"
+                                            color={customStyles.colors.white}
+                                            size="xl"
+                                            radius="md"
+                                            style={{ backgroundColor: item?.color }}
+                                        >
+                                            <IconChartBar size="1.5rem" />
+                                        </ThemeIcon>
+                                    </Group>
 
-                                <Title
-                                    order={4}
-                                    style={{ color: "#4D4D4D" }}
-                                    size={isLargeScreen ? 'md' : 'sm'}
-                                >
-                                    {item.title}
-                                </Title>
+                                    <Title
+                                        order={4}
+                                        style={{ color: "#4D4D4D" }}
+                                        size={isLargeScreen ? 'md' : 'sm'}
+                                    >
+                                        {item.title}
+                                    </Title>
 
-                                <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
-                                    {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
-                                </Text>
-
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 8,
-                                        marginTop: 8
-                                    }}
-                                >
-                                    <IconReload cursor="pointer" size={18} color='#909090' />
-                                    <Text c="dimmed" size="sm">
-                                        {showTime(item.lastIntegrationDate)}
+                                    <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
+                                        {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
                                     </Text>
-                                </div>
 
-                                <Button
-                                    leftSection={<IconCheckbox size={18} />}
-                                    variant="transparent"
-                                    className={handleDisable(item.pendingValue, item.integratedValue) ? 'filledDisabledButton' : 'outlineButton'}
-                                    radius={8}
-                                    size="md"
-                                    fullWidth
-                                    mt="md"
-                                    onClick={() => handleRequestToSap(item.label, item.pendingValue)}
-                                    disabled={handleDisable(item.pendingValue, item.integratedValue)}
-                                    color={customStyles.colors._1B59F8}
-                                >
-                                    {handleDisable(item.pendingValue, item.integratedValue) ? 'Posted' : 'Post'}
-                                </Button>
-                            </Card>
-                        </Box>
-                    ))}
-                </Flex>
-            </ScrollArea>
+                                    <div
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 8,
+                                            marginTop: 8
+                                        }}
+                                    >
+                                        <IconReload cursor="pointer" size={18} color='#909090' />
+                                        <Text c="dimmed" size="sm">
+                                            {showTime(item.lastIntegrationDate)}
+                                        </Text>
+                                    </div>
+
+                                    <Button
+                                        leftSection={<IconCheckbox size={18} />}
+                                        variant="transparent"
+                                        className={handleDisable(item.pendingValue, item.integratedValue) ? 'filledDisabledButton' : 'outlineButton'}
+                                        radius={8}
+                                        size="md"
+                                        fullWidth
+                                        mt="md"
+                                        onClick={() => handleRequestToSap(item.label, item.pendingValue)}
+                                        disabled={handleDisable(item.pendingValue, item.integratedValue)}
+                                        color={customStyles.colors._1B59F8}
+                                    >
+                                        {handleDisable(item.pendingValue, item.integratedValue) ? 'Posted' : 'Post'}
+                                    </Button>
+                                </Card>
+                            </Box>
+                        ))}
+                    </Flex>
+                </ScrollArea>
+            </Stack>
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 <Group justify='space-between'>
