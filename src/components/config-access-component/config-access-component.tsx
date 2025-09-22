@@ -27,13 +27,13 @@ const ConfigAccessComponent = () => {
                     </Title>
 
                     <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
-                        Customizable Integration
+                        Customizable Integration.
                     </Text>
                 </Stack>
             </Group>
 
-            <Center h="auto" px="md" pt={'5%'}>
-                <Stack align="center" gap="lg" maw={400} w="100%">
+            <Center h="auto" p="md" pt={'5%'} bg={"white"} style={{borderRadius: 20}}>
+                <Stack align="center" gap="lg" maw={400} w="100%" >
                     <Box>
                         <Image
                             src={localAssets.configAccessLogo}

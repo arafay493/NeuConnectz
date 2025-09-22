@@ -1666,7 +1666,7 @@ const IntegrationComponent = () => {
                             backgroundColor: "white", // scrollbar track color
                         },
                         thumb: {
-                            backgroundColor: "#e0e0e0", // scrollbar thumb color
+                            backgroundColor: "#E7E7E7", // scrollbar thumb color
                             borderRadius: 8,
                         },
                     }}

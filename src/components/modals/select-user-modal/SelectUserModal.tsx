@@ -69,7 +69,7 @@ export default function SelectUserModal({
         //     }
         //     return [...prevState, user];
         // });
-        setSelectedUser(user);
+        setSelectedUser((prevState) => prevState ? null : user);
     };
 
     // Filtering logic
