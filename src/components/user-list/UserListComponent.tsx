@@ -413,7 +413,7 @@ const UserListComponent: FC<UserListComponentProps> = (
           <Title order={2} c={customStyles.colors._4D4D4D} style={{ fontWeight: 700, fontSize: 24 }}>
             User List
           </Title>
-          <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>List of users</Text>
+          <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>List of user, Create user.</Text>
         </Stack>
         <Button
           leftSection={<IconUserPlus size={24} />}
