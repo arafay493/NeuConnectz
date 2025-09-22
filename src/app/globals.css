@@ -51,6 +51,18 @@
     color: var(--white);
 }
 
+.btn{
+    background-color: var(--white);
+    color: var(--_4D4D4D);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+.btn:hover{
+    background-color: var(--_E1E7EC);
+    color: var(--_4D4D4D);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
 .completedButton {
     color: var(--white);
     border: 1px solid var(--green);
