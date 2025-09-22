@@ -1297,6 +1297,7 @@ const IntegrationComponent = () => {
     const [loading, setLoading] = useState(false);
     const [headerBtnType, setHeaderBtnType] = useState<"Stock Movement" | "GRN">("Stock Movement");
     const [dataLoading, setDataLoading] = useState(false);
+    const [mouseover, setMouseover] = useState(false)
 
     // Note: State for Table Filters and Search
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -1647,34 +1648,45 @@ const IntegrationComponent = () => {
         }
     }, [])
 
+    const handleMouseOver = () => {
+        setMouseover(true)
+    }
+
+    const handleMouseOut = () => {
+        setMouseover(false)
+    }
+
     return (
         <Box>
 
             {/* Note: Loading Component */}
             <Loader loadingState={dataLoading} />
 
-            <Stack bg={"white"} p={20}  style={{borderRadius: 20}}>
-                <ScrollArea
-                    type="auto"
-                    scrollbarSize={8}
-                    offsetScrollbars
+            <Stack bg={"white"} p={24} pb={12} style={{ borderRadius: 20 }} onMouseOver={handleMouseOver}
+                onMouseLeave={handleMouseOut}>
+                <Stack
+                    // type="auto"
+                    // scrollbarSize={6}
+                    // offsetScrollbars
                     bg={"white"}
-                    styles={{
-                        scrollbar: {
-                            backgroundColor: "white", // scrollbar track color
-                        },
-                        thumb: {
-                            backgroundColor: "#E7E7E7", // scrollbar thumb color
-                            borderRadius: 8,
-                        },
-                    }}
+                    className={"custom-scroll"} style={{ overflow: "auto" }}
+                // styles={{
+                //     scrollbar: {
+                //         backgroundColor: "white", // scrollbar track color
+                //     },
+                //     thumb: {
+                //         backgroundColor: "#E7E7E7", // scrollbar thumb color
+                //         borderRadius: 8,
+                //     },
+                // }}
                 >
                     <Flex
                         direction="row"
                         gap="md"
                         wrap="nowrap"
                         style={{
-                            padding: '1rem 0',
+                            // paddingBottom: mouseover ? '16px' : "0px",
+                            paddingBottom: '16px',
                             // overflowX: 'auto',
                             // WebkitOverflowScrolling: 'touch'
                         }}
@@ -1686,10 +1698,11 @@ const IntegrationComponent = () => {
                                     // minWidth: isLargeScreen ? '15%' : '30%',
                                     // minWidth: "15%",
                                     flexShrink: 0,
-                                    width: isLargeScreen ? '25%' : '30%'
+                                    // width: isLargeScreen ? '25%' : '30%'
+                                    width: 230
                                 }}
                             >
-                                <Card shadow="sm" radius="md" withBorder>
+                                <Card shadow="sm" radius="lg" withBorder>
                                     <Group
                                         justify={customStyles.alignment.spaceBetween}
                                         mb="sm"
@@ -1698,8 +1711,7 @@ const IntegrationComponent = () => {
                                             variant="light"
                                             color={customStyles.colors.white}
                                             size="xl"
-                                            radius="md"
-                                            style={{ backgroundColor: item?.color }}
+                                            style={{ backgroundColor: item?.color, borderRadius: 50 }}
                                         >
                                             <IconChartBar size="1.5rem" />
                                         </ThemeIcon>
@@ -1709,13 +1721,19 @@ const IntegrationComponent = () => {
                                         order={4}
                                         style={{ color: "#4D4D4D" }}
                                         size={isLargeScreen ? 'md' : 'sm'}
+                                        fw={500}
                                     >
                                         {item.title}
                                     </Title>
 
-                                    <Text size="xl" style={{ fontWeight: 700 }} mt="sm">
-                                        {`${showPendingAndIntegratedValues(item.label, item.pendingValue)} / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
-                                    </Text>
+                                    <Group gap={2} align='baseline'>
+                                        <Text style={{ fontWeight: 700, fontSize: "35px" }} mt="sm">
+                                            {`${showPendingAndIntegratedValues(item.label, item.pendingValue)}`}
+                                        </Text>
+                                        <Text size="xl" style={{ fontWeight: 700 }} mt="sm" color='#909090'>
+                                            {` / ${showPendingAndIntegratedValues(item.label, item.integratedValue)}`}
+                                        </Text>
+                                    </Group>
 
                                     <div
                                         style={{
@@ -1749,7 +1767,7 @@ const IntegrationComponent = () => {
                             </Box>
                         ))}
                     </Flex>
-                </ScrollArea>
+                </Stack>
             </Stack>
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
