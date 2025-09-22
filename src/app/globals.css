@@ -124,6 +124,28 @@
     overflow-y: auto;
 }
 
+/* Default: hide scrollbar */
+.custom-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Jab mouse hover kare to scrollbar visible ho */
+.custom-scroll:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: var(--_E1E7EC); /* your blue */
+  border-radius: 8px;
+}
+
 /* Loading animation for table skeleton */
 @keyframes pulse {
     0% {
