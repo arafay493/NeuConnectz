@@ -1702,7 +1702,7 @@ const IntegrationComponent = () => {
                                     width: 230
                                 }}
                             >
-                                <Card shadow="sm" radius="lg" withBorder>
+                                <Card radius="lg" style={{border: "1px solid #E1E7EC"}}>
                                     <Group
                                         justify={customStyles.alignment.spaceBetween}
                                         mb="sm"
