@@ -38,23 +38,38 @@ interface SelectUserModalProps {
     users: User[];
 }
 
+interface SelectedUserProps {
+    userId: string,
+    userName: string,
+    email: string,
+    phone: string,
+    department: string,
+    role: string,
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean
+}
+
 export default function SelectUserModal({
     opened,
     handleModalClose,
     users,
 }: SelectUserModalProps) {
     const [search, setSearch] = useState("");
-    const [selectedUser, setSelectedUser] = useState([]);
+    const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
     const [activeTab, setActiveTab] = useState<string>("all");
 
     const handleSelectUser = (user: any) => {
-        setSelectedUser((prevState: any) => {
-            const userExist = prevState.find((item: any) => item.userId === user.userId);
-            if (userExist) {
-                return prevState.filter((item: any) => item.userId !== user.userId);
-            }
-            return [...prevState, user];
-        });
+        // setSelectedUser((prevState: any) => {
+        //     const userExist = prevState.find((item: any) => item.userId === user.userId);
+        //     if (userExist) {
+        //         return prevState.filter((item: any) => item.userId !== user.userId);
+        //     }
+        //     return [...prevState, user];
+        // });
+        setSelectedUser(user);
     };
 
     // Filtering logic
@@ -95,7 +110,7 @@ export default function SelectUserModal({
             onClose={handleModalClose}
             zIndex={10000}
             closeButtonProps={{
-                icon: <IconCircleX size={70} stroke={2} color="#ED1C24"/>,
+                icon: <IconCircleX size={70} stroke={2} color="#ED1C24" />,
             }}
             size="95%"
             radius="md"
@@ -154,11 +169,13 @@ export default function SelectUserModal({
                             style={{
                                 cursor: "pointer",
                                 border:
-                                    selectedUser.some((u: any) => u.userId === user.userId)
+                                    // selectedUser.some((u: any) => u.userId === user.userId)
+                                    selectedUser?.userId === user.userId
                                         ? "1px solid #228be6"
                                         : "1px solid #e0e0e0",
                                 backgroundColor:
-                                    selectedUser.some((u: any) => u.userId === user.userId) ? "#f0f9ff" : "white",
+                                    // selectedUser.some((u: any) => u.userId === user.userId) ? "#f0f9ff" : "white",
+                                    selectedUser?.userId === user.userId ? "#f0f9ff" : "white",
                                 transition: "0.2s",
                                 minWidth: "300px"
                             }}
