@@ -51,6 +51,18 @@
     color: var(--white);
 }
 
+.btn{
+    background-color: var(--white);
+    color: var(--_4D4D4D);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
+.btn:hover{
+    background-color: var(--_E1E7EC);
+    color: var(--_4D4D4D);
+    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+}
+
 .completedButton {
     color: var(--white);
     border: 1px solid var(--green);
@@ -110,6 +122,28 @@
 
 .show-scroll-bar-overflow:hover {
     overflow-y: auto;
+}
+
+/* Default: hide scrollbar */
+.custom-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Jab mouse hover kare to scrollbar visible ho */
+.custom-scroll:hover::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: var(--_E1E7EC); /* your blue */
+  border-radius: 8px;
 }
 
 /* Loading animation for table skeleton */

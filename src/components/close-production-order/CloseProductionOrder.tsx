@@ -64,7 +64,7 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
             size={"auto"}
             radius="md"
         >
-            <Stack gap="sm" align="center">
+            <Stack gap="sm" align="start">
                 {/* Warning Icon */}
                 <Center
                     style={{
@@ -91,10 +91,15 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
                 <Group mt="md" grow>
                     <Button
                         variant="transparent"
-                        className={'filledButton'}
+                        // className={'filledButton'}
+                        className={'btn'}
                         radius={8}
                         size="md"
                         w={300}
+                        color="#1B59F8"
+                        style={{
+                            border: "1px solid", borderColor: "#E1E7EC", boxShadow: "10px"
+                        }}
                         onClick={onClose}
                         disabled={loading}
                     >
@@ -102,11 +107,12 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
                     </Button>
 
                     <Button
-                        variant="transparent"
-                        className={'outlineButton'}
+                        variant="filled"
+                        // className={'filledButton'}
                         radius={8}
                         size="md"
                         w={300}
+                        color="#1B59F8"
                         onClick={handleCloseProductionOrder}
                         loading={loading}
                         disabled={loading}

@@ -596,7 +596,7 @@ const UnpostedGRNTable = () => {
                 <Box
                     w="100%"
                     mah={700}
-                    className={classes.scrollOnHover}
+                    className={"custom-scroll"} style={{ overflow: "auto" }}
                 >
                     <table style={{
                         width: '100%',

@@ -99,6 +99,7 @@ const GoodsIssueComponent = () => {
                                 size='md'
                                 clearable
                                 maxDate={new Date()}
+                                miw={200}
                             />
                         </div>
                     </Stack>

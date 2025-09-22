@@ -30,6 +30,7 @@ export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, v
                 value={value}
                 onChange={e => setValue(e.currentTarget.value)}
                 size="xs"
+                style={{maxWidth: "150px"}}
             />
         </Box>
     )
