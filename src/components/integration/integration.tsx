@@ -1319,6 +1319,7 @@ const IntegrationComponent = () => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
     // console.log('Stats: ', dashboardAnalyticsData);
+    console.log('User: ', authenticatedUser);
 
     // Note: Function to shoe pending and integrated values...!
     const showPendingAndIntegratedValues = (sapType: string, value: string) => {

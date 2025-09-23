@@ -493,11 +493,12 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
     if (authenticatedUser?.token) {
       setIsLoading(true);
       const skipRecord = pagination.pageIndex * pagination.pageSize;
+      const newApiUrl = `${apiUrl}?sapStatus=pending`;
 
       dispatch(
         fetchIssuesForProductionList({
           token: authenticatedUser?.token || "",
-          apiUrl: apiUrl,
+          apiUrl: newApiUrl,
           lastCount: pagination.pageSize, // Use page size for server-side pagination
           skipRecords: skipRecord,
         })
@@ -515,6 +516,30 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
 
   const handleGlobalSearch = (value: string) => {
     table.setGlobalFilter(String(value));
+  };
+
+  // Note: Posted and unposted data filteration handler...!
+  const postedAndUnpostedDataHandler = (type: string) => {
+    // console.log("type: ", type);
+
+    setTab(type as "Unposted" | "Posted");
+    setIsLoading(true);
+    const sapStatus = type === "Posted" ? "integrated" : "pending";
+
+    const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const newApiUrl = `${apiUrl}?sapStatus=${sapStatus}`;
+    // console.log('New Api URL:', newApiUrl);
+
+    dispatch(
+      fetchIssuesForProductionList({
+        token: authenticatedUser?.token || "",
+        apiUrl: newApiUrl,
+        lastCount: pagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord,
+      })
+    ).finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -550,7 +575,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
               variant="transparent"
               radius={'5px'}
               w={250}
-              onClick={() => setTab("Unposted")}
+              onClick={() => postedAndUnpostedDataHandler("Unposted")}
               style={{
                 backgroundColor: tab === "Unposted" ? "#DEE4F5" : "white"
               }}
@@ -561,7 +586,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
             <Button
               variant="transparent"
               w={250}
-              onClick={() => setTab("Posted")}
+              onClick={() => postedAndUnpostedDataHandler("Posted")}
               style={{
                 borderTopLeftRadius: 0,
                 borderBottomLeftRadius: 0,
