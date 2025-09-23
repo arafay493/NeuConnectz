@@ -410,6 +410,13 @@ const fetchIssuesForProductionList = createAsyncThunk(
                 issuesForProductionData: data?.data?.issueForProduction,
                 totalIssuesForProductionCount: data?.data?.totalCount
             }));
+        }
+
+        else if (status == 404) {
+            dispatch(FETCH_ALL_ISSUES_FOR_PRODUCTION({
+                issuesForProductionData: [],
+                totalIssuesForProductionCount: 0
+            }));
         };
     }
 );
@@ -432,7 +439,7 @@ const fetchRecieptFromProductionList = createAsyncThunk(
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
-        // console.log("Fetch all reciept from production api response: ", response);
+        console.log("Fetch all reciept from production api response: ", response);
 
         const { status, data } = response;
 
@@ -441,7 +448,14 @@ const fetchRecieptFromProductionList = createAsyncThunk(
                 recieptFromProductionData: data?.data?.recieptFormProduction,
                 totalRecieptFromProductionCount: data?.data?.totalCount
             }));
-        };
+        }
+
+        else if (status == 404) {
+            dispatch(FETCH_ALL_RECIEPT_FROM_PRODUCTION({
+                recieptFromProductionData: [],
+                totalRecieptFromProductionCount: 0
+            }));
+        }
     }
 );
 
