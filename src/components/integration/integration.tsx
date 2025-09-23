@@ -80,7 +80,7 @@ const cardsData = [
         label: "GI",
         pendingValue: "totalGoodIssuePending",
         integratedValue: "totalGoodIssueIntegrated",
-        lastIntegrationDate: "",
+        lastIntegrationDate: "lastGoodIssueIntegrationDate",
         color: "#BF83FF"
     },
     // {
@@ -103,7 +103,7 @@ const cardsData = [
         label: "IFP",
         pendingValue: "totalIssueForProductionPending",
         integratedValue: "totalIssueForProductionIntegrated",
-        lastIntegrationDate: "",
+        lastIntegrationDate: "lastIssueForProductionIntegrationDate",
         color: "#5181FF"
     },
 
@@ -112,7 +112,7 @@ const cardsData = [
         label: "RFP",
         pendingValue: "totalReceiptFromProductionPending",
         integratedValue: "totalReceiptFromProductionIntegrated",
-        lastIntegrationDate: "",
+        lastIntegrationDate: "lastReceiptFromProductionIntegrationDate",
         color: "#5BB0FF"
     },
 ];
