@@ -505,6 +505,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setIsLoading(false);
       });
     }
+    
   }, [
     authenticatedUser,
     dispatch,
