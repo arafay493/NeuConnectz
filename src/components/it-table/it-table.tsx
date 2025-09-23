@@ -480,7 +480,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
       const serialNumber =
         row.index +
         (table?.getState?.()?.pagination?.pageIndex || 0) *
-          (table?.getState?.()?.pagination?.pageSize || 10) +
+        (table?.getState?.()?.pagination?.pageSize || 10) +
         1;
       return String(serialNumber).includes(value);
     }
@@ -614,21 +614,21 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     });
   };
 
-  useEffect(() => {
-    if (authenticatedUser?.token) {
-      // setLoading(true);
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+  // useEffect(() => {
+  //   if (authenticatedUser?.token) {
+  //     // setLoading(true);
+  //     const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      dispatch(
-        fetchAllItData({
-          authToken: authenticatedUser?.token || "",
-          apiUrl: apiUrl,
-          lastCount: pagination.pageSize, // Use page size for server-side pagination
-          skipRecords: skipRecord,
-        })
-      );
-    }
-  }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
+  //     dispatch(
+  //       fetchAllItData({
+  //         authToken: authenticatedUser?.token || "",
+  //         apiUrl: apiUrl,
+  //         lastCount: pagination.pageSize, // Use page size for server-side pagination
+  //         skipRecords: skipRecord,
+  //       })
+  //     );
+  //   }
+  // }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
   // Note: Fetch All Warehouse List
   useEffect(() => {
@@ -637,16 +637,19 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     );
   }, [dispatch, authenticatedUser?.token]);
 
-  // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
   useEffect(() => {
-    // Uncomment the lines below if you want auto-filtering on filter changes
-    const timeoutId = setTimeout(() => {
-      // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
-      fetchFilteredData();
-      // }
-    }, 500); // Debounce API calls by 500ms
+    // const timeoutId = setTimeout(() => {
+    //   // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
+    //   if (authenticatedUser?.token) {
+    //     fetchFilteredData();
+    //   }
+    //   // }
+    // }, 500); // Debounce API calls by 500ms
 
-    return () => clearTimeout(timeoutId);
+    // return () => clearTimeout(timeoutId);
+    if (authenticatedUser?.token) {
+      fetchFilteredData();
+    }
   }, [
     sapStatus,
     docStatus,
@@ -655,6 +658,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     selectDate,
     pagination.pageIndex,
     pagination.pageSize,
+    authenticatedUser
   ]); // Add pagination dependencies
 
   // Transform warehouse data for Select component
@@ -765,9 +769,8 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                         cursor: "pointer",
                         textAlign: "left",
                         padding: "0 16px 16px 11px",
-                        borderBottom: `1px solid ${
-                          customStyles.colors._E1E7EC || "#E5E5E5"
-                        }`,
+                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
+                          }`,
                         width: `${header.getSize()}px`,
                         minWidth: `${header.getSize()}px`,
                         maxWidth: `${header.getSize()}px`,
@@ -832,9 +835,8 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                   <tr
                     key={`loading-${index}`}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {columns.map((_, colIndex) => (
@@ -862,9 +864,8 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                   <tr
                     key={row.id}
                     style={{
-                      borderBottom: `1px solid ${
-                        customStyles.colors._E1E7EC || "#F0F0F0"
-                      }`,
+                      borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#F0F0F0"
+                        }`,
                     }}
                   >
                     {row.getVisibleCells().map((cell) => (

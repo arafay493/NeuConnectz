@@ -461,19 +461,19 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         });
     };
 
-    useEffect(() => {
-        if (authenticatedUser?.token) {
-            // setLoading(true);
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+    // useEffect(() => {
+    //     if (authenticatedUser?.token) {
+    //         // setLoading(true);
+    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-            dispatch(fetchAllTrData({
-                authToken: authenticatedUser?.token || '',
-                apiUrl: apiUrl,
-                lastCount: pagination.pageSize, // Use page size for server-side pagination
-                skipRecords: skipRecord
-            }));
-        };
-    }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
+    //         dispatch(fetchAllTrData({
+    //             authToken: authenticatedUser?.token || '',
+    //             apiUrl: apiUrl,
+    //             lastCount: pagination.pageSize, // Use page size for server-side pagination
+    //             skipRecords: skipRecord
+    //         }));
+    //     };
+    // }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
     // Note: Fetch All Warehouse List
     useEffect(() => {
@@ -482,15 +482,10 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
     useEffect(() => {
-        // Uncomment the lines below if you want auto-filtering on filter changes
-        const timeoutId = setTimeout(() => {
-            // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
+        if (authenticatedUser?.token) {
             fetchFilteredData();
-            // }
-        }, 500); // Debounce API calls by 500ms
-
-        return () => clearTimeout(timeoutId);
-    }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate]);
+        }
+    }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate, authenticatedUser, pagination.pageIndex, pagination.pageSize]);
 
     // Transform warehouse data for Select component
     const selectWarehouseData = wareHousesList.data

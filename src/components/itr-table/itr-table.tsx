@@ -629,30 +629,30 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     });
   };
 
-  useEffect(() => {
-    if (authenticatedUser?.token) {
-      setIsLoading(true);
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+  // useEffect(() => {
+  //   if (authenticatedUser?.token) {
+  //     setIsLoading(true);
+  //     const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      // Initial load without filters
-      dispatch(
-        fetchAllItrData({
-          authToken: authenticatedUser?.token || "",
-          apiUrl: apiUrl,
-          lastCount: pagination.pageSize, // Use page size for server-side pagination
-          skipRecords: skipRecord,
-        })
-      ).finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }, [
-    authenticatedUser,
-    dispatch,
-    apiUrl,
-    pagination.pageIndex,
-    pagination.pageSize,
-  ]); // Add pagination dependencies
+  //     // Initial load without filters
+  //     dispatch(
+  //       fetchAllItrData({
+  //         authToken: authenticatedUser?.token || "",
+  //         apiUrl: apiUrl,
+  //         lastCount: pagination.pageSize, // Use page size for server-side pagination
+  //         skipRecords: skipRecord,
+  //       })
+  //     ).finally(() => {
+  //       setIsLoading(false);
+  //     });
+  //   }
+  // }, [
+  //   authenticatedUser,
+  //   dispatch,
+  //   apiUrl,
+  //   pagination.pageIndex,
+  //   pagination.pageSize,
+  // ]); // Add pagination dependencies
 
   // Note: Fetch All Warehouse List
   useEffect(() => {
@@ -661,17 +661,20 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
     );
   }, [dispatch, authenticatedUser?.token]);
 
-  // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
   useEffect(() => {
-    // Uncomment the lines below if you want auto-filtering on filter changes
-    const timeoutId = setTimeout(() => {
-      // if (sapStatus || docStatus || fromWarehouse || toWarehouse || selectDate) {
-      fetchFilteredData();
-      // }
-    }, 500); // Debounce API calls by 500ms
+    // const timeoutId = setTimeout(() => {
+    //   fetchFilteredData();
+    // }, 500);
 
-    return () => clearTimeout(timeoutId);
-  }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate]);
+    // return () => clearTimeout(timeoutId);
+
+    if (authenticatedUser?.token) {
+      fetchFilteredData();
+    }
+  }, [sapStatus, docStatus, fromWarehouse, toWarehouse, selectDate, authenticatedUser, dispatch,
+    apiUrl,
+    pagination.pageIndex,
+    pagination.pageSize]);
 
   // Transform warehouse data for Select component
   const selectWarehouseData = wareHousesList.data
