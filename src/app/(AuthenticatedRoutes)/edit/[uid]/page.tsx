@@ -30,6 +30,7 @@ import { fetchAllRolesList } from '@/redux/actions/roles-actions/roles-actions';
 import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
+import axios from 'axios';
 // import UserIcon from "@/assets/images/user.png";
 const userIcon = "https://res.cloudinary.com/dxhp0pmrw/image/upload/v1757448710/lwvnmz1516dwacf90hyh.png";
 
@@ -48,6 +49,7 @@ const EditUserScreen = () => {
     preview: null as string | null,
     loading: false
   });
+  console.log("🚀 ~ EditUserScreen ~ userData:", userData)
   const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
   const [isUserActiveState, setIsUserActiveState] = useState(false);
 
@@ -68,6 +70,36 @@ const EditUserScreen = () => {
   const handleChange = (field: string, value: any) => {
     setUserData((prev) => ({ ...prev, [field]: value }));
   };
+
+  useEffect(() => {
+    if (!uid) return;
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://zconnectstaging.qbscocloud.net:31155/ZCAPI/IUserManagementFeature/GetUserDataByUserId?userId=${uid}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setUserData((prev: any) => ({
+          ...prev,
+          department: response?.data?.data?.department,
+          role: response?.data?.data?.role,
+          userName: response?.data?.data?.userName,
+          email: response?.data?.data?.email,
+          phone: response?.data?.data?.phone,
+        }));
+        setIsUserActiveState(response?.data?.data?.isActive)
+      } catch (err: any) {
+        console.log(err.message || "Something went wrong");
+      }
+    };
+
+    fetchData();
+  }, [uid])
 
   // Note: Image on chnage handler...!
   const handleImageChange = (file: File | null) => {
@@ -212,22 +244,22 @@ const EditUserScreen = () => {
               </Group>
 
               <Group grow>
-                <Select
+                <TextInput
                   label="Department"
                   placeholder="Department"
-                  data={userDepartments}
+                  type="text"
                   value={userData.department}
-                  onChange={(val) => handleChange("department", val)}
+                  onChange={(e) => handleChange("department", e.target.value)}
                   required
                   disabled
                 />
 
-                <Select
+                <TextInput
                   label="User Role"
                   placeholder="User Role"
-                  data={rolesOptions}
+                  type="text"
                   value={userData.role}
-                  onChange={(val) => handleChange("role", val)}
+                  onChange={(e) => handleChange("role", e.target.value)}
                   required
                   disabled
                 />
