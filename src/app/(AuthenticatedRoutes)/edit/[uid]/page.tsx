@@ -49,7 +49,6 @@ const EditUserScreen = () => {
     preview: null as string | null,
     loading: false
   });
-  console.log("🚀 ~ EditUserScreen ~ userData:", userData)
   const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
   const [isUserActiveState, setIsUserActiveState] = useState(false);
 
