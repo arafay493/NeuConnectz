@@ -618,14 +618,18 @@ const PostedGRNTable = () => {
 
   // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)
   useEffect(() => {
-    // Uncomment the lines below if you want auto-filtering on filter changes
-    const timeoutId = setTimeout(() => {
-      // if (vendorCode || docStatus || warehouseCode || toWarehouse || selectDate) {
+    // // Uncomment the lines below if you want auto-filtering on filter changes
+    // const timeoutId = setTimeout(() => {
+    //   // if (vendorCode || docStatus || warehouseCode || toWarehouse || selectDate) {
+    //   fetchFilteredData();
+    //   // }
+    // }, 500); // Debounce API calls by 500ms
+    // return () => clearTimeout(timeoutId);
+    
+    if(authenticatedUser?.token){
       fetchFilteredData();
-      // }
-    }, 500); // Debounce API calls by 500ms
+    }
 
-    return () => clearTimeout(timeoutId);
   }, [
     vendorCode,
     docStatus,
@@ -633,30 +637,31 @@ const PostedGRNTable = () => {
     selectDate,
     pagination.pageIndex,
     pagination.pageSize,
-  ]); // Add pagination dependencies
+    authenticatedUser
+  ]); 
 
   const numbersArray = useMemo<number[]>(() => {
     return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
   }, [table.getPageCount()]);
 
-  useEffect(() => {
-    if (authenticatedUser?.token) {
-      setIsLoading(true);
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+  // useEffect(() => {
+  //   if (authenticatedUser?.token) {
+  //     setIsLoading(true);
+  //     const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      dispatch(
-        fetchAll_INTEGRATED_GRNS({
-          token: authenticatedUser?.token || "",
-          handleLoading: () => setIsLoading(false),
-          apiUrl:
-            `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=integrated` ||
-            "",
-          lastCount: pagination.pageSize, // Use page size for server-side pagination
-          skipRecords: skipRecord,
-        })
-      );
-    }
-  }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
+  //     dispatch(
+  //       fetchAll_INTEGRATED_GRNS({
+  //         token: authenticatedUser?.token || "",
+  //         handleLoading: () => setIsLoading(false),
+  //         apiUrl:
+  //           `${process.env.NEXT_PUBLIC_FETCH_ALL_GRNS_DATA}?sapStatus=integrated` ||
+  //           "",
+  //         lastCount: pagination.pageSize, // Use page size for server-side pagination
+  //         skipRecords: skipRecord,
+  //       })
+  //     );
+  //   }
+  // }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
   useEffect(() => {
     dispatch(fetchAllVendorCodes(authenticatedUser?.token as string));
