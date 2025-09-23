@@ -1025,7 +1025,7 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 skipRecords: skipRecord
             }));
         };
-    }, [authenticatedUser, type, sapType, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
+    }, [authenticatedUser, sapType, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies
 
     return (
         <>
@@ -1636,17 +1636,17 @@ const IntegrationComponent = () => {
 
 
     // Note: List of IT TR and ITR API Call
-    useEffect(() => {
-        if (authenticatedUser) {
-            dispatch(fetchAllITR_IT_TRS({
-                token: authenticatedUser?.token,
-                dataStatus: statusColor,
-                handleLoading: () => setLoading(false),
-                lastCount: 10,
-                skipRecords: 0,
-            }))
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (authenticatedUser) {
+    //         dispatch(fetchAllITR_IT_TRS({
+    //             token: authenticatedUser?.token,
+    //             dataStatus: statusColor,
+    //             handleLoading: () => setLoading(false),
+    //             lastCount: 10,
+    //             skipRecords: 0,
+    //         }))
+    //     }
+    // }, [])
 
     const handleMouseOver = () => {
         setMouseover(true)
