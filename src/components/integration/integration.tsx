@@ -1396,7 +1396,7 @@ const IntegrationComponent = () => {
     // Note: Handle disable values...!
     const handleDisable = (pendingVal: string, integratedVal: string) => {
 
-        const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+        const statsData = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.goodIssueStatistics, ...dashboardAnalyticsData?.grnStatistics, ...dashboardAnalyticsData?.issueForProductionStatistics, ...dashboardAnalyticsData?.receiptFromProductionStatistics };
 
         const isPendingVal0 = statsData[pendingVal as keyof typeof statsData];
         if (isPendingVal0 == 0) return true;
@@ -1702,7 +1702,7 @@ const IntegrationComponent = () => {
                                     width: 230
                                 }}
                             >
-                                <Card radius="lg" style={{border: "1px solid #E1E7EC"}}>
+                                <Card radius="lg" style={{ border: "1px solid #E1E7EC" }}>
                                     <Group
                                         justify={customStyles.alignment.spaceBetween}
                                         mb="sm"
