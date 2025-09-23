@@ -14,6 +14,24 @@
     --_E1E7EC: #E1E7EC;
 }
 
+/* Custom Scroll Bar for body */
+/* body {
+    scrollbar-width: thin;
+}
+
+body::-webkit-scrollbar {
+    width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+    background: white;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: var(--_E1E7EC);
+    border-radius: 12px;
+} */
+
 .filledButton {
     background-color: var(--_1B59F8);
     color: var(--white);
@@ -86,11 +104,13 @@
 }
 
 .scroll-bar::-webkit-scrollbar-track {
-    background: var(--_F5F7FA);
+    /* background: var(--_F5F7FA); */
+    background: "white";
 }
 
 .scroll-bar::-webkit-scrollbar-thumb {
-    background-color: var(--_909090);
+    /* background-color: var(--_909090); */
+    background: var(--_E1E7EC);
     border-radius: 12px;
 }
 
