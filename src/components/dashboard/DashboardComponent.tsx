@@ -17,25 +17,29 @@ import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
 import { PaginationState } from "@tanstack/react-table";
 import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
 
-
 interface User {
-  id: number;
-  name: string;
-  role: "Worker" | "Manager" | "Receiver";
-  code: string;
-  status: "Active" | "Inactive";
+  userId: string;
+  userName: string;
+  email: string;
+  role: string;
+  phone: string;
+  department: string;
+  isActive: boolean;
 }
 
-const users: User[] = [
-  { id: 1, name: "Syed Taqwa Hussain Naqvi", role: "Manager", code: "521092", status: "Active" },
-  { id: 2, name: "Talib Ali Khan", role: "Worker", code: "521092", status: "Active" },
-  { id: 3, name: "Ali Imran", role: "Worker", code: "521092", status: "Inactive" },
-  { id: 4, name: "Khuwaija Masood", role: "Worker", code: "521092", status: "Inactive" },
-  { id: 5, name: "Fayez Talpur", role: "Worker", code: "521092", status: "Active" },
-  { id: 6, name: "Mohsin Ali", role: "Manager", code: "521092", status: "Inactive" },
-  { id: 7, name: "Yamin Khan", role: "Manager", code: "521092", status: "Active" },
-  { id: 8, name: "Owais Sheikh", role: "Worker", code: "521092", status: "Inactive" },
-];
+interface SelectedUserProps {
+  userId: string,
+  userName: string,
+  email: string,
+  phone: string,
+  department: string,
+  role: string,
+  createdBy: string,
+  updatedBy: string,
+  createdDate: string,
+  updatedDate: string,
+  isActive: boolean
+}
 
 const DashboardComponent = () => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
@@ -54,6 +58,8 @@ const DashboardComponent = () => {
 
   const [opened, setOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
+  // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
+  const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -66,10 +72,27 @@ const DashboardComponent = () => {
   // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
 
   // Note: Fetching dashboard analytics on component mount...!
+  // useEffect(() => {
+  //   if (authenticatedUser)
+  //     dispatch(fetchDashboardAnalytics(authenticatedUser.token, selectedUser?.userId));
+  // }, []);
+
   useEffect(() => {
-    if (authenticatedUser)
-      dispatch(fetchDashboardAnalytics(authenticatedUser.token));
-  }, []);
+    if (authenticatedUser && selectedUser?.userId) {
+      dispatch(
+        fetchDashboardAnalytics({
+          authToken: authenticatedUser.token,
+          userId: selectedUser.userId,
+        })
+      );
+    }else if (authenticatedUser){
+      dispatch(
+        fetchDashboardAnalytics({
+          authToken: authenticatedUser.token
+        })
+      );
+    }
+  }, [authenticatedUser, selectedUser?.userId, dispatch]);
 
   const handleOpenModal = () => {
     if (authenticatedUser) {
@@ -96,6 +119,17 @@ const DashboardComponent = () => {
   const handlePrevious = () => {
 
   }
+
+  const handleSelectUser = (user: any) => {
+    // setSelectedUser((prevState: any) => {
+    //     const userExist = prevState.find((item: any) => item.userId === user.userId);
+    //     if (userExist) {
+    //         return prevState.filter((item: any) => item.userId !== user.userId);
+    //     }
+    //     return [...prevState, user];
+    // });
+    setSelectedUser((prevState: any) => prevState?.userId === user?.userId ? null : user);
+  };
 
   return (
     <Box>
@@ -158,6 +192,8 @@ const DashboardComponent = () => {
         opened={opened}
         handleModalClose={() => setOpened(false)}
         users={usersList?.users || []}
+        selectedUser={selectedUser}
+        handleSelectUser={handleSelectUser}
       />
     </Box>
   );

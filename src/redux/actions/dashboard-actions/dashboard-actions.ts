@@ -6,8 +6,13 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchDashboardAnalytics = createAsyncThunk(
     "dashboard/fetchDashboardAnalytics",
-    async (authToken: string, { dispatch }) => {
-        const response = await apiGet('/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics', authToken);
+    async ({ authToken, userId }: { authToken: string; userId?: string }, { dispatch }) => {
+        // const response = await apiGet( `/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics?userId=${userId}`, authToken);
+        const url = userId
+            ? `/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics?userId=${userId}`
+            : `/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics`;
+
+        const response = await apiGet(url, authToken);
 
         const { status, data } = response;
 

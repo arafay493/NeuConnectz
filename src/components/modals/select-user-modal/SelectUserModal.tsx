@@ -32,10 +32,22 @@ interface User {
     isActive: boolean;
 }
 
+interface SelectedUser {
+    userId: string;
+    userName: string;
+    email: string;
+    role: string;
+    phone: string;
+    department: string;
+    isActive: boolean;
+}
+
 interface SelectUserModalProps {
     opened: boolean;
     handleModalClose: () => void;
     users: User[];
+    selectedUser: any
+    handleSelectUser: (a: any) => void;
 }
 
 interface SelectedUserProps {
@@ -56,21 +68,13 @@ export default function SelectUserModal({
     opened,
     handleModalClose,
     users,
+    selectedUser,
+    handleSelectUser
 }: SelectUserModalProps) {
     const [search, setSearch] = useState("");
-    const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
+    // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
+    // console.log("🚀 ~ SelectUserModal ~ selectedUser:", selectedUser)
     const [activeTab, setActiveTab] = useState<string>("all");
-
-    const handleSelectUser = (user: any) => {
-        // setSelectedUser((prevState: any) => {
-        //     const userExist = prevState.find((item: any) => item.userId === user.userId);
-        //     if (userExist) {
-        //         return prevState.filter((item: any) => item.userId !== user.userId);
-        //     }
-        //     return [...prevState, user];
-        // });
-        setSelectedUser((prevState) => prevState ? null : user);
-    };
 
     // Filtering logic
     const filteredUsers = users.filter((u) => {
@@ -159,7 +163,7 @@ export default function SelectUserModal({
             {/* User Grid */}
             <ScrollArea h={400}>
                 <Group wrap="wrap" gap="md" justify="center">
-                    {filteredUsers.map((user) => (
+                    {filteredUsers.map((user: User) => (
                         <Card
                             key={user.userId}
                             withBorder
@@ -229,7 +233,6 @@ export default function SelectUserModal({
                 <Button
                     disabled={!selectedUser}
                     onClick={() => {
-                        console.log("Selected User:", selectedUser);
                         handleModalClose();
                     }}
                 >
