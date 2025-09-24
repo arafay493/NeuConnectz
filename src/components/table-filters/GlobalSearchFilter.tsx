@@ -1,4 +1,5 @@
 import { Box, TextInput } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 import { Dispatch, FC, SetStateAction, useEffect, useRef } from "react";
 
 interface GlobalSearchFilterProps {
@@ -41,9 +42,22 @@ export const GlobalSearchFilter: FC<GlobalSearchFilterProps> = ({
           value={filters}
           onChange={(e) => handleGlobalSearch(e.target.value)}
           placeholder="Search here..."
+          leftSection={<IconSearch size={16} color="#909090" />}
           style={{
             width: "150px",
             minWidth: "150px",
+            backgroundColor: "#E1E7EC",
+            borderRadius: 40
+          }}
+          styles={{
+            input: {
+              border: "none",
+              backgroundColor: "#E1E7EC",
+              color: "#4D4D4D",
+              '&::placeholder': {
+                color: '#909090',
+              },
+            },
           }}
         />
       )}
