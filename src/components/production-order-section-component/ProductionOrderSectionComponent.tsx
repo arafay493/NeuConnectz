@@ -144,7 +144,6 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       return sapStates;
     }
   );
-  // console.log("productionOrdersList: ", productionOrdersList);
 
   // Note: Functions...!
   const handleSearchInputVisibility = () => {

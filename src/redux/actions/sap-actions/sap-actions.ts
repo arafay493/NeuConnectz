@@ -376,8 +376,8 @@ const fetchAllProductionOrders = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_ALL_PRODUCTION_ORDERS({
-                productionOrdersData: data?.data?.values,
-                totalproductionOrdersCount: data?.data?.totalRecords
+                productionOrdersData: data?.data?.productionOrders,
+                totalproductionOrdersCount: data?.data?.totalCount
             }));
         };
     }
