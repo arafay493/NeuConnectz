@@ -6,7 +6,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchDashboardAnalytics = createAsyncThunk(
     "dashboard/fetchDashboardAnalytics",
-    async ({ authToken, userId }: { authToken: string; userId?: string }, { dispatch }) => {
+    async ({ authToken, userId }: any, { dispatch }) => {
         // const response = await apiGet( `/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics?userId=${userId}`, authToken);
         const url = userId
             ? `/neu-connect/v2/IDashboardFeature/GetDashboardAnalytics?userId=${userId}`

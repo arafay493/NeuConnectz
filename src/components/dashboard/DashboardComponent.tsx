@@ -68,30 +68,27 @@ const DashboardComponent = () => {
   });
 
   // useEffect(() => {
-
-  // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
-
-  // Note: Fetching dashboard analytics on component mount...!
-  // useEffect(() => {
-  //   if (authenticatedUser)
-  //     dispatch(fetchDashboardAnalytics(authenticatedUser.token, selectedUser?.userId));
-  // }, []);
+  //   if (authenticatedUser && selectedUser?.userId) {
+  //     dispatch(
+  //       fetchDashboardAnalytics({
+  //         authToken: authenticatedUser?.token,
+  //         userId: selectedUser?.userId,
+  //       })
+  //     );
+  //   }else if (authenticatedUser){
+  //     dispatch(fetchDashboardAnalytics({ authToken: authenticatedUser?.token }));
+  //   }
+  // }, [authenticatedUser, selectedUser?.userId, dispatch]);
 
   useEffect(() => {
-    if (authenticatedUser && selectedUser?.userId) {
-      dispatch(
-        fetchDashboardAnalytics({
-          authToken: authenticatedUser.token,
-          userId: selectedUser.userId,
-        })
-      );
-    }else if (authenticatedUser){
-      dispatch(
-        fetchDashboardAnalytics({
-          authToken: authenticatedUser.token
-        })
-      );
-    }
+    if (!authenticatedUser) return;
+
+    dispatch(
+      fetchDashboardAnalytics({
+        authToken: authenticatedUser.token,
+        userId: selectedUser?.userId,
+      })
+    );
   }, [authenticatedUser, selectedUser?.userId, dispatch]);
 
   const handleOpenModal = () => {
