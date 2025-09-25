@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
 import { PaginationState } from "@tanstack/react-table";
 import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
+import DeleteModal from "../modals/delete-modal/DeleteModal";
 
 interface User {
   userId: string;
@@ -57,6 +58,7 @@ const DashboardComponent = () => {
   const route = useRouter();
 
   const [opened, setOpened] = useState(false);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
   // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
   const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
@@ -152,19 +154,29 @@ const DashboardComponent = () => {
             Dashboard
           </Text>
         </Stack>
-        <Stack gap={8}>
+        <Stack gap={2}>
+          {selectedUser && <Button
+            // className="filledButton"
+            // bg="#E1E7EC"
+            style={{ color: "red", fontSize: 10, textAlign: "right", width: 50, alignSelf: "end", padding: 0 }}
+            size="xs"
+            variant="transparent"
+            onClick={() => setDeleteModalOpened(true)}
+          >
+            Cancel
+          </Button>}
           <Button
             leftSection={<IconUserCircle size={24} />}
             // className="filledButton"
             bg="#E1E7EC"
-            style={{color: "#4D4D4D", fontSize: 16}}
+            style={{ color: "#4D4D4D", fontSize: 16 }}
             size="md"
             px={40}
             py={10}
             radius={8}
             onClick={handleOpenModal}
           >
-            Select User
+            {!selectedUser ? "Select User" : selectedUser.userName}
           </Button>
         </Stack>
       </Group>
@@ -196,6 +208,16 @@ const DashboardComponent = () => {
         users={usersList?.users || []}
         selectedUser={selectedUser}
         handleSelectUser={handleSelectUser}
+      />
+      <DeleteModal
+        opened={deleteModalOpened}
+        handleModalClose={() => setDeleteModalOpened(false)}
+        handleConfirm={() => {
+          setDeleteModalOpened(false)
+          setSelectedUser(null)
+        }}
+        handleCancel={() => setDeleteModalOpened(false)}
+        description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
       />
     </Box>
   );
