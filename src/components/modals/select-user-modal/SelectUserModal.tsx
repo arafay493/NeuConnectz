@@ -229,7 +229,7 @@ export default function SelectUserModal({
             </ScrollArea>
 
             {/* Confirm Button */}
-            <Group justify="flex-end" mt="lg">
+            {/* <Group justify="flex-end" mt="lg">
                 <Button
                     disabled={!selectedUser}
                     onClick={() => {
@@ -238,7 +238,7 @@ export default function SelectUserModal({
                 >
                     Confirm Selection
                 </Button>
-            </Group>
+            </Group> */}
         </Modal>
     );
 }

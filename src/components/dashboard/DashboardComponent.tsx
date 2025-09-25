@@ -88,7 +88,9 @@ const DashboardComponent = () => {
         authToken: authenticatedUser.token,
         userId: selectedUser?.userId,
       })
-    );
+    ).finally(() => {
+      setOpened(false)
+    });
   }, [authenticatedUser, selectedUser?.userId, dispatch]);
 
   const handleOpenModal = () => {
