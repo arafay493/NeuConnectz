@@ -156,8 +156,11 @@ const DashboardComponent = () => {
           <Button
             leftSection={<IconUserCircle size={24} />}
             // className="filledButton"
-            color="gray"
+            bg="#E1E7EC"
+            style={{color: "#4D4D4D", fontSize: 16}}
             size="md"
+            px={40}
+            py={10}
             radius={8}
             onClick={handleOpenModal}
           >
