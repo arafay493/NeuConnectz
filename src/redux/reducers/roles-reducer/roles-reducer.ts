@@ -6,6 +6,7 @@ import { RolesStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: RolesStateType = {
     listRoles: [],
+    totalRolesCount: 0,
     rolesErrorState: ""
 };
 
@@ -20,7 +21,8 @@ const rolesSlice = createSlice({
 
         FETCH_ALL_LIST_ROLES: (state, action: PayloadAction<any>) => {
             state.rolesErrorState = ""
-            state.listRoles = action?.payload;
+            state.listRoles = action?.payload?.roles;
+            state.totalRolesCount = action?.payload?.totalCount;
         },
 
         CLEAR_ALL_ROLES_STATES: (state) => {

@@ -11,14 +11,22 @@ import { handleRefreshToken } from "@/constants/refresh-token";
 // Note: Action function to fetch all roles list...!
 const fetchAllRolesList = createAsyncThunk(
     "roles/fetchAllRolesList",
-    async (authToken: string, { dispatch }) => {
+    async ({ authToken, LastCount, skipRecord }:
+        {
+            authToken: string,
+            LastCount?: number,
+            skipRecord?: number
+        }, { dispatch }) => {
         try {
-            const response = await apiGet(`/auth${process.env.NEXT_PUBLIC_FETCH_ALL_LIST_ROLES}`);
-            
+            const params: { [key: string]: number } = {};
+            if (LastCount !== undefined) params.LastCount = LastCount;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            const response = await apiGet(`/auth${process.env.NEXT_PUBLIC_FETCH_ALL_LIST_ROLES}`, authToken, params);
+
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_LIST_ROLES(data?.data?.roles));
+                dispatch(FETCH_ALL_LIST_ROLES(data?.data));
             };
         } catch (error: any) {
             const { status, data } = error?.response;

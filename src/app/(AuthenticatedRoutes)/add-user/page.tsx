@@ -49,6 +49,11 @@ const AddUserScreen = () => {
     });
     const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
     const [depOptions, setDepOptions] = useState<{ value: string, label: string }[]>([]);
+    // Note: State for pagination
+    const [pagination, setPagination] = useState({
+        pageIndex: 0,
+        pageSize: 5,
+    });
 
     // Note: Handle routing here...!
     const router = useRouter();
@@ -58,7 +63,7 @@ const AddUserScreen = () => {
 
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
+    const { listRoles, totalRolesCount } = useAppSelector(({ rolesStates }) => { return rolesStates });
     const { listDepartmentData } = useAppSelector(({ userStates }) => { return userStates });
     const token = authenticatedUser?.token as string;
 
@@ -207,7 +212,13 @@ const AddUserScreen = () => {
     // Note: Fetch all roles list...!
     useEffect(() => {
         if (authenticatedUser) {
-            dispatch(fetchAllRolesList(token));
+            // dispatch(fetchAllRolesList(token));
+            const skipRecord = 0;
+            dispatch(fetchAllRolesList({
+                authToken: token,
+                LastCount: pagination.pageSize,
+                skipRecord: skipRecord,
+            }))
             dispatch(fetchAllListDepartments(token));
         }
     }, [authenticatedUser]);
@@ -215,7 +226,7 @@ const AddUserScreen = () => {
     // Note: This hook is used to set roles options...!
     useEffect(() => {
         if (listRoles && listRoles.length > 0) {
-            console.log('List roles: ' , listRoles);
+            console.log('List roles: ', listRoles);
 
             const options = listRoles
                 .filter((item) => { return item?.name != "SuperAdmin" })
@@ -300,6 +311,25 @@ const AddUserScreen = () => {
                                     value={userData.role}
                                     onChange={(val) => handleChange("role", val)}
                                     required
+                                    maxDropdownHeight={100}
+                                    scrollAreaProps={{
+                                        onScrollEndCapture: (e) => {
+                                            const target = e.currentTarget;
+                                            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 5 && listRoles?.length < totalRolesCount) {
+                                                // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
+                                                const newSkip = 0;
+                                                setPagination((prev) => ({
+                                                    pageSize: prev.pageSize + 5,
+                                                    pageIndex: prev.pageIndex + 1,
+                                                }));
+                                                dispatch(fetchAllRolesList({
+                                                    authToken: token,
+                                                    LastCount: pagination.pageSize + 5,
+                                                    skipRecord: newSkip,
+                                                }));
+                                            }
+                                        },
+                                    }}
                                 />
                             </Group>
 

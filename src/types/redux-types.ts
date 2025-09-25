@@ -267,6 +267,7 @@ export interface RolesStateType {
         name: string,
         tag: string
     }[];
+    totalRolesCount: number,
     rolesErrorState: string
 };
 
