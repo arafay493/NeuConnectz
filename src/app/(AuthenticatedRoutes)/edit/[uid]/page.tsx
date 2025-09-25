@@ -160,7 +160,9 @@ const EditUserScreen = () => {
 
   // Note: Fetch all roles list...!
   useEffect(() => {
-    authenticatedUser && dispatch(fetchAllRolesList(token));
+    authenticatedUser && dispatch(fetchAllRolesList({
+      authToken: token
+    }))
   }, [authenticatedUser]);
 
   // Note: This hook is used to set roles options...!
