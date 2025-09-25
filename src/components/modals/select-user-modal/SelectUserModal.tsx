@@ -9,6 +9,9 @@ import {
     Card,
     ScrollArea,
     Tabs,
+    Stack,
+    Title,
+    Image
 } from "@mantine/core";
 import {
     IconCircleX,
@@ -21,6 +24,9 @@ import {
     IconUserSquareRounded,
 } from "@tabler/icons-react";
 import { useState } from "react";
+import NextImage from 'next/image';
+import { localAssets } from "@/lib/file-paths/file-paths";
+import { customStyles } from "@/styles/custom-theme";
 
 interface User {
     userId: string;
@@ -163,7 +169,12 @@ export default function SelectUserModal({
             {/* User Grid */}
             <ScrollArea h={400}>
                 <Group wrap="wrap" gap="md" justify="center">
-                    {filteredUsers.map((user: User) => (
+                    {(!filteredUsers.length) ? (
+                        <Stack align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
+                            <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
+                            <Title order={2} c={customStyles.colors._4D4D4D}>No User Found</Title>
+                        </Stack>
+                    ) : filteredUsers.map((user: User) => (
                         <Card
                             key={user.userId}
                             withBorder
