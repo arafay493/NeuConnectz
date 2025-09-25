@@ -48,6 +48,7 @@ const AddUserScreen = () => {
         loading: false
     });
     const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
+    const [rolesOptionsLoading, setRolesOptionsLoading] = useState<boolean>(true);
     const [depOptions, setDepOptions] = useState<{ value: string, label: string }[]>([]);
     // Note: State for pagination
     const [pagination, setPagination] = useState({
@@ -252,6 +253,23 @@ const AddUserScreen = () => {
         };
     }, [listDepartmentData?.departments]);
 
+    const OnScrollEndPaginate = (e: any) => {
+        const target = e.currentTarget;
+        if (target.scrollTop + target.clientHeight >= target.scrollHeight - 5 && listRoles?.length < totalRolesCount) {
+            // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
+            const newSkip = 0;
+            setPagination((prev) => ({
+                pageSize: prev.pageSize + 5,
+                pageIndex: prev.pageIndex + 1,
+            }));
+            dispatch(fetchAllRolesList({
+                authToken: token,
+                LastCount: pagination.pageSize + 5,
+                skipRecord: newSkip,
+            }));
+        }
+    }
+
     return (
         <Container
             size="xl"
@@ -312,23 +330,9 @@ const AddUserScreen = () => {
                                     onChange={(val) => handleChange("role", val)}
                                     required
                                     maxDropdownHeight={100}
+                                    // rightSection={rolesOptionsLoading ? <FadeLoader size={16} color="#228be6" /> : null} 
                                     scrollAreaProps={{
-                                        onScrollEndCapture: (e) => {
-                                            const target = e.currentTarget;
-                                            if (target.scrollTop + target.clientHeight >= target.scrollHeight - 5 && listRoles?.length < totalRolesCount) {
-                                                // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
-                                                const newSkip = 0;
-                                                setPagination((prev) => ({
-                                                    pageSize: prev.pageSize + 5,
-                                                    pageIndex: prev.pageIndex + 1,
-                                                }));
-                                                dispatch(fetchAllRolesList({
-                                                    authToken: token,
-                                                    LastCount: pagination.pageSize + 5,
-                                                    skipRecord: newSkip,
-                                                }));
-                                            }
-                                        },
+                                        onScrollEndCapture: (e) => OnScrollEndPaginate(e),
                                     }}
                                 />
                             </Group>
