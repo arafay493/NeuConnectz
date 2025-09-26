@@ -9,7 +9,7 @@ import { useMediaQuery } from "@mantine/hooks";
 
 
 const GRNMovementComponent = () => {
-    const [tab, setTab] = useState<'Posted' | 'Unposted'>('Posted');
+    const [tab, setTab] = useState<'Posted' | 'Unposted'>('Unposted');
 
     const isSmallScreen = useMediaQuery('(max-width: 768px)');
     return (
@@ -40,7 +40,7 @@ const GRNMovementComponent = () => {
                     marginBottom: '32px',
                     position: 'relative'
                 }}>
-                    {(['Posted', 'Unposted'] as const).map((tabOption) => (
+                    {(['Unposted' , 'Posted'] as const).map((tabOption) => (
                         <button
                             key={tabOption}
                             onClick={() => setTab(tabOption)}

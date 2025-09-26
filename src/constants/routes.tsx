@@ -80,11 +80,11 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Stock Movement",
         route: routes.stockMovement,
     },
-    {
-        icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "Goods Receipt Note",
-        route: routes.grnMovement
-    },
+    // {
+    //     icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Goods Receipt Note",
+    //     route: routes.grnMovement
+    // },
     {
         icon: <IconChecklist color='currentColor' size={24} />,
         label: "Production",
