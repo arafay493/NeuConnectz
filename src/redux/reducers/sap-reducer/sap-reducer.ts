@@ -19,9 +19,9 @@ const initialState: SAPStateType = {
     issuesForProductionCount: 0,
     recieptFromProductionList: [],
     recieptFromProductionCount: 0,
-
     listOfProductionOrderLines: [],
     productionOrderLinesCount: 0,
+    productionOrdersDocumentStates: null
 };
 
 const SAPReducer = createSlice({
@@ -101,6 +101,10 @@ const SAPReducer = createSlice({
             state.productionOrdersCount = action?.payload?.totalproductionOrdersCount;
         },
 
+        FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES: (state, action: PayloadAction<any>) => {
+            state.productionOrdersDocumentStates = action?.payload?.productionOrdersDocumentStats;
+        },
+
         FETCH_ALL_ISSUES_FOR_PRODUCTION: (state, action: PayloadAction<any>) => {
             // console.log('Issues for production data in sap reducer: ', action?.payload);
             state.issuesForProductionList = action?.payload?.issuesForProductionData;
@@ -142,6 +146,7 @@ export const
         FETCH_ALL_ISSUES_FOR_PRODUCTION,
         FETCH_ALL_RECIEPT_FROM_PRODUCTION,
         FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA,
-        CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA
+        CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA,
+        FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

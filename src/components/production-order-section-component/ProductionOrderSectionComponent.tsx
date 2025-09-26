@@ -50,45 +50,13 @@ import classes from "./po.module.css";
 import { useAppSelector, useAppDispatch, store } from "@/redux/store";
 import {
   fetchAllProductionOrders,
+  fetchProductionOrderDocumentStats,
   fetchProductionOrdersLinesList,
 } from "@/redux/actions/sap-actions/sap-actions";
 import TableModalComponent from "../table-modal/TableModalComponent";
 import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
 import { useDisclosure } from "@mantine/hooks";
-
-const cardsData = [
-  {
-    title: "Inventory Transfer Request",
-    totalDoc: 2,
-    totalCreated: 15,
-    label: "ITR",
-  },
-  {
-    title: "Inventory Transfer",
-    totalDoc: 2,
-    totalCreated: 11,
-    label: "IT",
-  },
-  {
-    title: "Transfer Receipt",
-    totalDoc: 2,
-    totalCreated: 15,
-    label: "TR",
-  },
-  {
-    title: "Issuance",
-    totalDoc: 2,
-    totalCreated: 15,
-    label: "Issuance",
-  },
-  {
-    title: "Receving",
-    totalDoc: 2,
-    totalCreated: 15,
-    label: "Receving",
-  },
-];
 
 export interface ProductionOrderDataType {
   absoluteEntry: number;
@@ -139,11 +107,43 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const { authenticatedUser } = useAppSelector(({ authStates }) => {
     return authStates;
   });
-  const { productionOrdersList, productionOrdersCount } = useAppSelector(
+  const { productionOrdersList, productionOrdersCount, productionOrdersDocumentStates } = useAppSelector(
     ({ sapStates }) => {
       return sapStates;
     }
   );
+  const cardsData = [
+    {
+      title: "Inventory Transfer Request",
+      totalDoc: 2,
+      totalCreated: productionOrdersDocumentStates?.inventoryTransferRequests || 0,
+      label: "ITR",
+    },
+    {
+      title: "Inventory Transfer",
+      totalDoc: 2,
+      totalCreated: productionOrdersDocumentStates?.inventoryTransfers || 0,
+      label: "IT",
+    },
+    {
+      title: "Transfer Receipt",
+      totalDoc: 2,
+      totalCreated: productionOrdersDocumentStates?.transferReceipts || 0,
+      label: "TR",
+    },
+    {
+      title: "Issuance",
+      totalDoc: 2,
+      totalCreated: productionOrdersDocumentStates?.issuances || 0,
+      label: "Issuance",
+    },
+    {
+      title: "Receving",
+      totalDoc: 2,
+      totalCreated: productionOrdersDocumentStates?.receivings || 0,
+      label: "Receving",
+    },
+  ];
 
   // Note: Functions...!
   const handleSearchInputVisibility = () => {
@@ -637,6 +637,23 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     table.setGlobalFilter(String(value));
   };
 
+  const handleRowExpand = (row: any) => {
+    const isExpanded = row.getIsExpanded()
+    const toggle = row.getToggleExpandedHandler();
+    toggle();
+    // setIsLoading(true)
+    if (!isExpanded) {
+      dispatch(
+        fetchProductionOrderDocumentStats({
+          token: authenticatedUser?.token || "",
+          productionNumber: row.original?.documentNumber
+        })
+      ).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }
+
   return (
     <Stack
       p={24}
@@ -951,7 +968,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                             {row.getCanExpand() && (
                               <span
                                 style={{ cursor: "pointer", marginTop: 6 }}
-                                onClick={row.getToggleExpandedHandler()}
+                                onClick={() => handleRowExpand(row)}
                               >
                                 {row.getIsExpanded() ? <IconChevronDown stroke={2} size={20} color="#909090" /> : <IconChevronRight stroke={2} size={20} color="#909090" />
                                 }

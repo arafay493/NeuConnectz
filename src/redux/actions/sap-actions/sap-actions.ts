@@ -13,7 +13,8 @@ import {
     FETCH_ALL_PRODUCTION_ORDERS,
     FETCH_ALL_ISSUES_FOR_PRODUCTION,
     FETCH_ALL_RECIEPT_FROM_PRODUCTION,
-    FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA
+    FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA,
+    FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 import { ResHandler } from "@/types/api-types";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
@@ -517,6 +518,34 @@ const closeProductionOrder = createAsyncThunk(
     }
 );
 
+// Note: Action function fetch production orders list...!
+const fetchProductionOrderDocumentStats = createAsyncThunk(
+    "sap/fetchProductionOrderDocumentStats",
+    async (
+        { token, productionNumber }:
+            {
+                token: string,
+                productionNumber: number
+            },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number } = {};
+        if (productionNumber !== undefined) params.productionNumber = productionNumber;
+
+        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_PRODUCTION_ORDER_DOCUMENT_STATS}`, token, params);
+        // console.log("Fetch all production orders api response: ", response);
+
+        const { status, data } = response;
+        // console.log("🚀 ~ response1:", data)
+
+        if (status == 200) {
+            dispatch(FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES({
+                productionOrdersDocumentStats: data?.data,
+            }));
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     checkSAPConfigExist,
@@ -533,6 +562,7 @@ export {
     fetchIssuesForProductionList,
     fetchRecieptFromProductionList,
     fetchProductionOrdersLinesList,
-    closeProductionOrder
+    closeProductionOrder,
+    fetchProductionOrderDocumentStats
 };
 

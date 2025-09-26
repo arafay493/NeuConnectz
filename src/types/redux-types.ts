@@ -214,6 +214,14 @@ export interface SAPStateType {
 
     listOfProductionOrderLines: Array<ProductionOrderLinesDataType>;
     productionOrderLinesCount: number;
+    productionOrdersDocumentStates: {
+        productionNumber: number,
+        inventoryTransferRequests: number,
+        inventoryTransfers: number,
+        transferReceipts: number,
+        issuances: number,
+        receivings: number
+    } | null
 };
 
 export interface GRN_Props {
