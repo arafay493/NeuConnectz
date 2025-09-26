@@ -57,6 +57,7 @@ import TableModalComponent from "../table-modal/TableModalComponent";
 import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
 import { useDisclosure } from "@mantine/hooks";
+import ITRViewDetailsModal from "../modals/itr-view-details-modal/ITRViewDetailsModal";
 
 export interface ProductionOrderDataType {
   absoluteEntry: number;
@@ -97,6 +98,11 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   // Note: Table modal state...!
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
   const [isClosePOModalOpen, setIsClosePOModalOpen] = useState(false);
+  const [isITRPOModalOpen, setIsITRPOModalOpen] = useState(false);
+  const [isITPOModalOpen, setIsITPOModalOpen] = useState(false);
+  const [isTRPOModalOpen, setIsTRPOModalOpen] = useState(false);
+  const [isICPOModalOpen, setIsICPOModalOpen] = useState(false);
+  const [isRPOModalOpen, setIsRPOModalOpen] = useState(false);
   const [rowData, setRowData] = useState<ProductionOrderDataType | null>(null);
 
   // Pagination values for Api call
@@ -654,6 +660,25 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     }
   }
 
+  const handleViewDetails = (row: any, label: string) => {
+    if (label === "ITR") {
+      setIsITRPOModalOpen(true)
+    }
+    else if (label === "IT") {
+      setIsITPOModalOpen(true)
+    }
+    else if (label === "TR") {
+      setIsTRPOModalOpen(true)
+    }
+    else if (label === "Issuance") {
+      setIsICPOModalOpen(true)
+    }
+    else if (label === "Receving") {
+      setIsRPOModalOpen(true)
+    }
+    // console.log("🚀 ~ handleViewDetails ~ row:", row)
+  }
+
   return (
     <Stack
       p={24}
@@ -673,6 +698,18 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         open={isClosePOModalOpen}
         onClose={() => setIsClosePOModalOpen(false)}
         docEntry={rowData?.absoluteEntry}
+      />
+
+      {/* ITRViewDetailsModal   */}
+      <ITRViewDetailsModal
+        opened={isITRPOModalOpen}
+        handleModalClose={() => setIsITRPOModalOpen(false)}
+      // handleConfirm={() => {
+      //   setDeleteModalOpened(false)
+      //   setSelectedUser(null)
+      // }}
+      // handleCancel={() => setDeleteModalOpened(false)}
+      // description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
       />
 
       {/* Header Section */}
@@ -1027,7 +1064,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                                       radius={8}
                                       size="xs"
                                       w={120}
-                                    // onClick={() => getProductionOrderLinesList(rowData)}
+                                      onClick={() => handleViewDetails(row, item?.label)}
                                     >
                                       View Details
                                     </Button>

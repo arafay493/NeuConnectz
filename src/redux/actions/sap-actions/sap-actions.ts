@@ -441,7 +441,7 @@ const fetchRecieptFromProductionList = createAsyncThunk(
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
-        console.log("Fetch all reciept from production api response: ", response);
+        // console.log("Fetch all reciept from production api response: ", response);
 
         const { status, data } = response;
 
