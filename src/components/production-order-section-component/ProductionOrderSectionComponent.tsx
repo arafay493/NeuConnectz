@@ -58,6 +58,10 @@ import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-red
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
 import { useDisclosure } from "@mantine/hooks";
 import ITRViewDetailsModal from "../modals/itr-view-details-modal/ITRViewDetailsModal";
+import ITViewDetailsModal from "../modals/it-view-details-modal/ITViewDetailsModal";
+import TRViewDetailsModal from "../modals/tr-view-details-modal/TRViewDetailsModal";
+import IssuenceViewDetailsModal from "../modals/issuance-view-details-modal/IssuenceViewDetailsModal";
+import RecevingViewDetailsModal from "../modals/receving-view-details-modal/RecevingViewDetailsModal";
 
 export interface ProductionOrderDataType {
   absoluteEntry: number;
@@ -104,6 +108,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const [isICPOModalOpen, setIsICPOModalOpen] = useState(false);
   const [isRPOModalOpen, setIsRPOModalOpen] = useState(false);
   const [rowData, setRowData] = useState<ProductionOrderDataType | null>(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
   // Pagination values for Api call
   const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -647,6 +652,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     const isExpanded = row.getIsExpanded()
     const toggle = row.getToggleExpandedHandler();
     toggle();
+    setSelectedRow(row?.original)
     // setIsLoading(true)
     if (!isExpanded) {
       dispatch(
@@ -679,6 +685,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     // console.log("🚀 ~ handleViewDetails ~ row:", row)
   }
 
+  const handleClosePOModals = () => {
+    setIsITRPOModalOpen(false)
+    setIsITPOModalOpen(false)
+    setIsTRPOModalOpen(false)
+    setIsICPOModalOpen(false)
+    setIsRPOModalOpen(false)
+  }
+
   return (
     <Stack
       p={24}
@@ -703,13 +717,36 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       {/* ITRViewDetailsModal   */}
       <ITRViewDetailsModal
         opened={isITRPOModalOpen}
-        handleModalClose={() => setIsITRPOModalOpen(false)}
-      // handleConfirm={() => {
-      //   setDeleteModalOpened(false)
-      //   setSelectedUser(null)
-      // }}
-      // handleCancel={() => setDeleteModalOpened(false)}
-      // description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
+        handleModalClose={handleClosePOModals}
+        row={selectedRow}
+      />
+
+      {/* ITViewDetailsModal   */}
+      <ITViewDetailsModal
+        opened={isITPOModalOpen}
+        handleModalClose={handleClosePOModals}
+        row={selectedRow}
+      />
+
+      {/* TRViewDetailsModal   */}
+      <TRViewDetailsModal
+        opened={isTRPOModalOpen}
+        handleModalClose={handleClosePOModals}
+        row={selectedRow}
+      />
+
+      {/* IssuenceViewDetailsModal   */}
+      <IssuenceViewDetailsModal
+        opened={isICPOModalOpen}
+        handleModalClose={handleClosePOModals}
+        row={selectedRow}
+      />
+
+      {/* RecevingViewDetailsModal   */}
+      <RecevingViewDetailsModal
+        opened={isRPOModalOpen}
+        handleModalClose={handleClosePOModals}
+        row={selectedRow}
       />
 
       {/* Header Section */}
