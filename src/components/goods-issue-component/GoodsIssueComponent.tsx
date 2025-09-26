@@ -2,14 +2,14 @@
 
 "use client";
 
-import React, { useState, memo, useEffect } from 'react';
+import React, { useState, memo, useEffect, useRef } from 'react';
 import { Box, Button, Group, Stack, Text } from '@mantine/core';
 import { useMediaQuery } from "@mantine/hooks"
 import { IconBuildingWarehouse, IconCalendarMonth } from "@tabler/icons-react"
 import TitleComponent from '@/components/common/component-title';
 import { customStyles } from '@/styles/custom-theme';
 import styles from '../../components/grn-movement/GRNMovementFilterBar.module.css'
-import { DatePickerInput } from "@mantine/dates"
+import { DateInput, DatePickerInput } from "@mantine/dates"
 import GoodsIssuePosted from '../goods-issue-posted/GoodsIssuePosted';
 import GoodsIssueUnPosted from "../goods-issue-unposted/GoodsIssueUnPosted"
 
@@ -21,9 +21,13 @@ const GoodsIssueComponent = () => {
     const isLargeScreen = useMediaQuery('(min-width: 1200px)');
 
     // Note: handling states here...!
-    const [tab, setTab] = useState<'Posted' | 'Unposted'>('Posted');
+    const [tab, setTab] = useState<'Unposted' | 'Posted'>('Unposted');
     const [selectDate, setSelectDate] = useState<string | null>(null);
     const [opened, setOpened] = useState(false);
+
+    // refs
+    // const datePickerRef = useRef<HTMLButtonElement | null>(null)
+    // const datePickerRef = useRef<HTMLInputElement | null>(null)
 
     // Note: THis hook will run tab change...!
     useEffect(() => {
@@ -45,7 +49,7 @@ const GoodsIssueComponent = () => {
                 marginBottom: '32px',
                 position: 'relative'
             }}>
-                {(['Posted', 'Unposted'] as const).map((tabOption) => (
+                {(['Unposted' , 'Posted'] as const).map((tabOption) => (
                     <button
                         key={tabOption}
                         onClick={() => setTab(tabOption)}
@@ -91,7 +95,10 @@ const GoodsIssueComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Date</Text>
                         <div className={styles.colFour}>
                             <DatePickerInput
-                                rightSection={<IconCalendarMonth size={24} />}
+                                // ref={datePickerRef}
+                                rightSection={<IconCalendarMonth size={24} 
+                                // onClick={() => datePickerRef.current?.focus()}
+                                />}
                                 placeholder="DD/MM/YY"
                                 value={selectDate}
                                 onChange={(value: string | null) => setSelectDate(value)}
@@ -122,8 +129,8 @@ const GoodsIssueComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Posted' && (<GoodsIssuePosted apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
                 {tab === 'Unposted' && (<GoodsIssueUnPosted apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
+                {tab === 'Posted' && (<GoodsIssuePosted apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
             </div>
         </Box>
     );
