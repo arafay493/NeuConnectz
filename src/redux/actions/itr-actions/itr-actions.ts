@@ -26,7 +26,7 @@ const fetchAllItrData = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
 
         const { status, data } = response;
 
@@ -56,7 +56,7 @@ const fetchAllTrData = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
         console.log('Res: ', response);
 
         const { status, data } = response;
@@ -85,7 +85,7 @@ const fetchAllItData = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, authToken, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
 
         const { status, data } = response;
 

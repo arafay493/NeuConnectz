@@ -25,7 +25,7 @@ const fetchAllWareHouses = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', authToken, params);
+        const response = await apiGet('/neu-connect/v2/IWarehouseFeature/ListAllWarehouses', authToken, params);
 
         const { status, data } = response;
 

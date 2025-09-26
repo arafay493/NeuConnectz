@@ -116,8 +116,8 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const apiUrl = !type ? `/neu-connect/v2/${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
-            `/neu-connect/v2/${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
+        const apiUrl = !type ? `/neu-connect/v2${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
+            `/neu-connect/v2${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
 
         const response = await apiGet(apiUrl, token, params);
 
@@ -151,7 +151,7 @@ const fetchAll_GRNS = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
 
         const { status, data } = response;
 
@@ -183,7 +183,7 @@ const fetchAll_PENDING_GRNS = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
 
         const { status, data } = response;
 
@@ -211,11 +211,12 @@ const fetchAll_INTEGRATED_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
+        console.log("🚀 ~ apiUrl:", apiUrl)
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
 
         const { status, data } = response;
 
@@ -369,7 +370,7 @@ const fetchAllProductionOrders = createAsyncThunk(
         if (lastCount !== undefined) params.pageSize = lastCount;
         if (skipRecords !== undefined) params.pageNumber = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
         // console.log("Fetch all production orders api response: ", response);
 
         const { status, data } = response;
@@ -400,7 +401,7 @@ const fetchIssuesForProductionList = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
         // console.log("Fetch all isseus for production api response: ", response);
 
         const { status, data } = response;
@@ -438,7 +439,7 @@ const fetchRecieptFromProductionList = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
         console.log("Fetch all reciept from production api response: ", response);
 
         const { status, data } = response;

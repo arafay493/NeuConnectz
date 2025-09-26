@@ -27,7 +27,7 @@ const fetchAllGoodsIssue = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet(`/neu-connect/v2/${apiUrl}`, token, params);
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
         console.log("Fetch all Goods Issue api response: ", response);
 
         const { status, data } = response;
