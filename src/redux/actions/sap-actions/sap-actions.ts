@@ -14,7 +14,8 @@ import {
     FETCH_ALL_ISSUES_FOR_PRODUCTION,
     FETCH_ALL_RECIEPT_FROM_PRODUCTION,
     FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA,
-    FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES
+    FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES,
+    FETCH_LIST_AGAINST_PO
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 import { ResHandler } from "@/types/api-types";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
@@ -546,6 +547,37 @@ const fetchProductionOrderDocumentStats = createAsyncThunk(
     }
 );
 
+// Note: Action function fetch production orders list...!
+const fetchAgainstPoNumber = createAsyncThunk(
+    "sap/fetchAgainstPoNumber",
+    async (
+        { token, poNumber, sapStatus = "Integrated", apiUrl }:
+            {
+                token: string,
+                poNumber: number,
+                sapStatus?:  string,
+                apiUrl: string
+            },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number | string } = {};
+        if (poNumber !== undefined) params.poNumber = poNumber;
+        if (sapStatus !== undefined) params.sapStatus = sapStatus;
+
+        const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
+        // console.log("🚀 ~ response:", response)
+        // console.log("Fetch all production orders api response: ", response);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_LIST_AGAINST_PO({
+                listAgainstPo: data?.data,
+            }));
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     checkSAPConfigExist,
@@ -563,6 +595,7 @@ export {
     fetchRecieptFromProductionList,
     fetchProductionOrdersLinesList,
     closeProductionOrder,
-    fetchProductionOrderDocumentStats
+    fetchProductionOrderDocumentStats,
+    fetchAgainstPoNumber
 };
 

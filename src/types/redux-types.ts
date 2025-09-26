@@ -221,7 +221,10 @@ export interface SAPStateType {
         transferReceipts: number,
         issuances: number,
         receivings: number
-    } | null
+    } | null;
+    listAgainstPo: {
+        
+    } | null;
 };
 
 export interface GRN_Props {

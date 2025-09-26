@@ -49,6 +49,7 @@ import { localAssets } from "@/lib/file-paths/file-paths";
 import classes from "./po.module.css";
 import { useAppSelector, useAppDispatch, store } from "@/redux/store";
 import {
+  fetchAgainstPoNumber,
   fetchAllProductionOrders,
   fetchProductionOrderDocumentStats,
   fetchProductionOrdersLinesList,
@@ -667,8 +668,19 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   }
 
   const handleViewDetails = (row: any, label: string) => {
+    let apiUrl = ""
     if (label === "ITR") {
+      apiUrl = "/IInventoryTransferRequestFeature/ListAllItrsAgainstPoNumber"
       setIsITRPOModalOpen(true)
+      dispatch(
+        fetchAgainstPoNumber({
+          token: authenticatedUser?.token || "",
+          poNumber: row.original?.documentNumber,
+          apiUrl: apiUrl
+        })
+      ).finally(() => {
+        setIsLoading(false);
+      });
     }
     else if (label === "IT") {
       setIsITPOModalOpen(true)

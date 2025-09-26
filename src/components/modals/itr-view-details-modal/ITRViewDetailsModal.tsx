@@ -118,6 +118,12 @@ export default function ITRViewDetailsModal({
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => {
         return wareHouseStates;
     });
+    const { listAgainstPo } = useAppSelector(
+        ({ sapStates }) => {
+            return sapStates;
+        }
+    );
+
     const { itrData, itrDataCount, itrErrorState } = useAppSelector(
         ({ itrStates }) => {
             return itrStates;
@@ -389,11 +395,12 @@ export default function ITRViewDetailsModal({
                 // ),
             },
         ],
-        [itrData]
+        [listAgainstPo]
     );
 
     const table = useReactTable({
-        data: itrData || [], // Handle undefined/null case
+        // data: listAgainstPo || [], // Handle undefined/null case
+        data: Array.isArray(listAgainstPo) ? listAgainstPo : [], // Handle undefined/null case
         columns,
         getCoreRowModel: getCoreRowModel(),
         // Remove client-side filtering and sorting for server-side pagination
