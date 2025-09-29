@@ -1,9 +1,8 @@
 'use client';
 import TitleComponent from '../common/component-title'
 import { ActionIcon, Box, Button, Card, Grid, GridCol, Group, NumberInput, Select, Stack, Text, TextInput } from '@mantine/core'
-import { IconBuilding, IconMinus, IconPlus, IconSearch, IconPackage, IconBox } from '@tabler/icons-react'
+import { IconBuilding, IconMinus, IconPlus, IconPackage, IconBox } from '@tabler/icons-react'
 import { useEffect, useState, useCallback } from 'react';
-import CheckboxDropdownSelect from '../common/checkbox-dropdown/CheckboxDropdownSelect';
 import { customStyles } from '@/styles/custom-theme';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';

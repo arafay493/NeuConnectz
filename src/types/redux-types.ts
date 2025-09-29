@@ -417,6 +417,7 @@ export interface GenerateBarcodeProps {
 export interface ProductionOrderStateProps {
     data: Array<ListProductionOrder> | null;
     totalCount: number;
+    loading: boolean
 }
 
 export interface ListProductionOrder {

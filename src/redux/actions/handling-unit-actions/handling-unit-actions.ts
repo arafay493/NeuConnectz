@@ -26,8 +26,6 @@ const fetchHandlingUnits = createAsyncThunk(
 
             const { status, data } = response;
 
-            console.log("response", data.data);
-
             if (status == 201 || status == 200) {
                 dispatch(FETCH_HANDLING_UNIT_DATA(data?.data));
             } else {

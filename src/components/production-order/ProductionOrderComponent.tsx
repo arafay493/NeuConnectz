@@ -9,9 +9,10 @@ import { PaginationState } from "@tanstack/react-table"
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { listProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
+import LoaderComponent from "@/components/common/loader/loader";
 
 const ProductionOrderComponent = () => {
-    const { data, totalCount } = useAppSelector(({ productionOrderStates }) => productionOrderStates);
+    const { data, totalCount, loading } = useAppSelector(({ productionOrderStates }) => productionOrderStates);
 
     console.log("ProductionOrderComponent -> data, totalCount", data, totalCount);
 
@@ -39,7 +40,7 @@ const ProductionOrderComponent = () => {
     }, [dispatch, pagination.pageSize, pagination.pageIndex]);
 
     return (
-        <Box>
+        <Box style={{ position: 'relative' }}>
             <TitleComponent
                 title="Production Order"
                 description="Create and manage Production Order for your products."
@@ -55,7 +56,12 @@ const ProductionOrderComponent = () => {
                 totalCount={totalCount}
                 onSendBarcode={handleScanProductionOrder}
             />
-        </Box>
+            {
+                loading && (
+                    <LoaderComponent />
+                )
+            }
+        </Box >
     )
 }
 

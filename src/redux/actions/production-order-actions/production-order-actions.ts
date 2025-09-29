@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from "@/lib/api-service";
-import { FETCH_PRODUCTION_ORDER_DATA, FETCH_PRODUCTION_ORDER_DATA_BY_ID } from "@/redux/reducers/production-order-reducer/production-order-reducer";
+import { FETCH_PRODUCTION_ORDER_DATA, FETCH_PRODUCTION_ORDER_DATA_BY_ID, SET_PRODUCTION_ORDER_LOADING } from "@/redux/reducers/production-order-reducer/production-order-reducer";
 import { ResHandler } from "@/types/api-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -10,6 +10,7 @@ const listProductionOrder = createAsyncThunk(
             lastCount?: number,
             skipRecords?: number
         }, { dispatch }) => {
+        dispatch(SET_PRODUCTION_ORDER_LOADING(true));
 
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
@@ -24,7 +25,9 @@ const listProductionOrder = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_PRODUCTION_ORDER_DATA(data?.data));
-        };
+        } else {
+            dispatch(SET_PRODUCTION_ORDER_LOADING(false));
+        }
 
         return response;
     }

@@ -5,15 +5,21 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState: ProductionOrderStateProps = {
     data: [],
     totalCount: 0,
+    loading: false
 };
 
 const generateBarcode = createSlice({
     name: "generateBarcode",
     initialState,
     reducers: {
+        SET_PRODUCTION_ORDER_LOADING: (state, action) => {
+            state.loading = action.payload;
+        },
+
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PRODUCTION_ORDER_DATA: (state) => {
             state.data = [];
             state.totalCount = 0;
+            state.loading = false;
         },
 
         FETCH_PRODUCTION_ORDER_DATA: (state, action: PayloadAction<any>) => {
@@ -28,6 +34,7 @@ const generateBarcode = createSlice({
                 state.data = null;
                 state.totalCount = 0;
             }
+            state.loading = false;
         },
 
         FETCH_PRODUCTION_ORDER_DATA_BY_ID: (state, action: PayloadAction<any>) => {
@@ -37,12 +44,14 @@ const generateBarcode = createSlice({
         CLEAR_ALL_PRODUCTION_ORDER_STATES: (state) => {
             state.data = null;
             state.totalCount = 0;
+            state.loading = false;
         },
     }
 });
 
 export const
     {
+        SET_PRODUCTION_ORDER_LOADING,
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PRODUCTION_ORDER_DATA,
         FETCH_PRODUCTION_ORDER_DATA,
         FETCH_PRODUCTION_ORDER_DATA_BY_ID,
