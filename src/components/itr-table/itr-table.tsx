@@ -51,6 +51,7 @@ import StockMovementFilterBar, {
 } from "../stock-movement/StockMovementFilterBar";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 import classes from "../production-order-section-component/po.module.css";
+import TanStackTable from "../tanStackTable/TanStackTable";
 
 // Note: ITR Data type based on actual Redux state structure
 type ITRDataType = {

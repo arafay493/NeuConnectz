@@ -551,21 +551,24 @@ const fetchProductionOrderDocumentStats = createAsyncThunk(
 const fetchAgainstPoNumber = createAsyncThunk(
     "sap/fetchAgainstPoNumber",
     async (
-        { token, poNumber, sapStatus = "Integrated", apiUrl }:
+        { token, poNumber, sapStatus = "Integrated", apiUrl, lastCount, skipRecords }:
             {
                 token: string,
                 poNumber: number,
-                sapStatus?:  string,
-                apiUrl: string
+                sapStatus?: string,
+                apiUrl: string,
+                lastCount: number,
+                skipRecords: number,
             },
         { dispatch }
     ) => {
         const params: { [key: string]: number | string } = {};
         if (poNumber !== undefined) params.poNumber = poNumber;
         if (sapStatus !== undefined) params.sapStatus = sapStatus;
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
-        // console.log("🚀 ~ response:", response)
         // console.log("Fetch all production orders api response: ", response);
 
         const { status, data } = response;
