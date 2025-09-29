@@ -89,14 +89,14 @@ const cardsData = [
     //     integratedValue: "",
     //     lastIntegrationDate: ""
     // },
-    {
-        title: "Goods Receipt Notes",
-        label: "GRN",
-        pendingValue: "totalGrnPending",
-        integratedValue: "totalGrnIntegrated",
-        lastIntegrationDate: "lastGrnIntegrationDate",
-        color: "#5BB0FF"
-    },
+    // {
+    //     title: "Goods Receipt Notes",
+    //     label: "GRN",
+    //     pendingValue: "totalGrnPending",
+    //     integratedValue: "totalGrnIntegrated",
+    //     lastIntegrationDate: "lastGrnIntegrationDate",
+    //     color: "#5BB0FF"
+    // },
 
     {
         title: "Issue For Production",
@@ -1800,7 +1800,7 @@ const IntegrationComponent = () => {
                             Stock Movement
                         </Button>
 
-                        <Button
+                        {/* <Button
                             variant="transparent"
                             // className={headerBtnType === "GRN" ? "myFilledButton" : "myOutlineButton"}
                             radius={0}
@@ -1814,7 +1814,7 @@ const IntegrationComponent = () => {
                             }}
                         >
                             GRN
-                        </Button>
+                        </Button> */}
                     </Group>
 
                     <Group>

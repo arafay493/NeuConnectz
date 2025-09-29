@@ -49,7 +49,7 @@ const GoodsIssueComponent = () => {
                 marginBottom: '32px',
                 position: 'relative'
             }}>
-                {(['Unposted' , 'Posted'] as const).map((tabOption) => (
+                {(['Unposted', 'Posted'] as const).map((tabOption) => (
                     <button
                         key={tabOption}
                         onClick={() => setTab(tabOption)}
@@ -91,12 +91,18 @@ const GoodsIssueComponent = () => {
                         gap={4}
                         w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
                         maw={isSmallScreen ? '100%' : 350}
+                        style={{
+                            display: 'flex',
+                            flexDirection: isLargeScreen ? 'row' : 'column',
+                            alignItems: isLargeScreen ? 'center' : 'flex-start',
+                            justifyContent: isLargeScreen ? 'space-between' : 'flex-start',
+                        }}
                     >
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Date</Text>
                         <div className={styles.colFour}>
                             <DatePickerInput
                                 // ref={datePickerRef}
-                                rightSection={<IconCalendarMonth size={24} 
+                                rightSection={<IconCalendarMonth size={24}
                                 // onClick={() => datePickerRef.current?.focus()}
                                 />}
                                 placeholder="DD/MM/YY"

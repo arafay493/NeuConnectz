@@ -223,7 +223,7 @@ export interface SAPStateType {
         receivings: number
     } | null;
     listAgainstPo: {
-        
+
     } | null;
 };
 
@@ -547,7 +547,8 @@ export interface GenerateListGoodsIssue {
     quantity: number,
     resource: string,
     uoM: string,
-    barCode: string
+    barCode: string,
+    postedDate: string,
 }
 
 export interface GoodsIssueListStateProps {

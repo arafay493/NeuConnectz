@@ -36,7 +36,8 @@ export interface GoodsIssueDataType {
     quantity: number,
     resource: string,
     uoM: string,
-    barCode: string
+    barCode: string,
+    postedDate: string,
 }
 
 type ApiProp = {
@@ -272,6 +273,18 @@ const GoodsIssuePosted: FC<ApiProp> = ({ apiUrl }) => {
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Warehouse', (listGoodIssue || []).map(item => String(item.whsCode)), 150, 220),
+            },
+            {
+                accessorKey: 'postedDate',
+                header: 'Posting Date',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() ? new Date(getValue() as string).toLocaleDateString() : '-'}
+                    </Text>
+                ),
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Posting Date', (listGoodIssue || []).map(item => item.postedDate), 150, 220),
             },
         ],
         [listGoodIssue]
