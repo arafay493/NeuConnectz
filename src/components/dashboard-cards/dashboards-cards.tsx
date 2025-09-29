@@ -60,13 +60,10 @@ const DashboardCards = () => {
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    console.log("Dashboard Stats: ", dashboardAnalyticsData);
-
+    
     // Note: Function to show stats values...!
     const getStatsValue = (penAndIntValue: string) => {
-        // console.log("Pending and Integrated value: ", penAndIntValue);
         const mergeObj = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-        // console.log('Merge Obj: ', mergeObj);
         const statsObj = mergeObj || {};
         const statsValue = statsObj ? statsObj[penAndIntValue as keyof typeof statsObj] : 0;
         return statsValue;

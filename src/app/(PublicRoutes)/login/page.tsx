@@ -46,13 +46,16 @@ const LoginScreen = () => {
 
     // Note: Login api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log("Login response: ", response);
+        const errorResponseCodes = {
+            400: "Invalid Password",
+            404: "User Not Found",
+            500: "Internal Server Error"
+        };
 
         if (response && response.status === 200) {
             setLoading(false); // Note: Stop loading...!
 
             const { token, refreshToken } = response?.data?.data;
-
             // Use AuthService to set tokens
             AuthService.setTokens(token, refreshToken);
 
@@ -66,9 +69,9 @@ const LoginScreen = () => {
             return;
         }
 
-        if (response.status === 404 || response.status === 500) {
+        if (response.status === 404 || response.status === 500 || response.status === 400) {
             setLoading(false); // Note: Stop loading...!
-            showNotificationToast("Login Failed", response?.data?.error, customStyles.colors.red);
+            showNotificationToast("Login Failed", errorResponseCodes[response.status as keyof typeof errorResponseCodes], customStyles.colors.red);
             return;
         }
 
@@ -98,7 +101,7 @@ const LoginScreen = () => {
             email,
             password
         };
-        // console.log("Login data: ", dataObj);
+
         dispatch(logInUser({
             loginData: dataObj,
             resHandler: handleResponse

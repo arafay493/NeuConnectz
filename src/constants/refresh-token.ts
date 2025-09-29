@@ -14,14 +14,12 @@ export const handleRefreshToken = async (message: string): Promise<boolean> => {
             return false;
         }
 
-        const response = await apiPost('/auth/refresh-token', {
+        const response = await apiPost(`/auth${process.env.NEXT_PUBLIC_AUTH_REFRESH_TOKEN}`, {
             accessToken,
             refreshToken
         });
 
         const { status, data } = response;
-
-        console.log("Response from refresh token API: ", response);
 
         if (status === 200) {
             // Update tokens using AuthService
@@ -33,9 +31,7 @@ export const handleRefreshToken = async (message: string): Promise<boolean> => {
         }
 
         if (status === 401) {
-            console.log(message);
             logout("Session Expired", message);
-            window.location.reload();
             return false;
         }
 

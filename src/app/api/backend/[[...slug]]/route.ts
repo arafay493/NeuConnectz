@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from 'next/server';
 async function proxyRequest(req: NextRequest, method: string) {
     let targetBackend: string | undefined = '';
 
+    console.log("Request URL:", req.nextUrl.href);
+
     // Decide which backend to use based on path
     if (req.nextUrl.pathname.startsWith(process.env.AUTH_API_URL!)) {
         targetBackend = API_ENDPOINTS.auth;
-    } else if (req.nextUrl.pathname.startsWith(process.env.REFRESH_AUTH_API_URL!)) {
-        targetBackend = API_ENDPOINTS.refreshToken;
     } else if (req.nextUrl.pathname.startsWith(process.env.ZCAPI_API_URL!)) {
         targetBackend = API_ENDPOINTS.neuConnect;
     } else if (req.nextUrl.pathname.startsWith(process.env.TT_API_URL!)) {
@@ -19,8 +19,9 @@ async function proxyRequest(req: NextRequest, method: string) {
     }
 
     // Remove the "/api/backend/{type}" part
-    const url = targetBackend + req.nextUrl.pathname.replace(/^\/api\/backend\/(auth\/login|auth\/refresh-token|neu-connect\/v2|trace-and-track\/v2)/, '') + req.nextUrl.search;
+    const url = targetBackend + req.nextUrl.pathname.replace(/^\/api\/backend\/(auth|neu-connect\/v2|trace-and-track\/v2)/, '') + req.nextUrl.search;
 
+    // Forward the request to the target backend
     const headers = Object.fromEntries(req.headers.entries());
     delete headers.host;
 

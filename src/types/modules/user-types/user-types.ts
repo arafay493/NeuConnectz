@@ -10,7 +10,7 @@ export interface CreateUserDataType {
     phone: string,
     email: string;
     password: string;
-    department: string,
+    departmentId: string,
     role: string
 };
 

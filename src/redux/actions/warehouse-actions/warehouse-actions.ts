@@ -13,9 +13,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 const fetchAllWareHouses = createAsyncThunk(
     "warehouse/fetchAllWareHouses",
     async (
-        { authToken, lastCount, skipRecords }:
+        { lastCount, skipRecords }:
             {
-                authToken: string,
                 lastCount?: number,
                 skipRecords?: number
             },
@@ -25,7 +24,7 @@ const fetchAllWareHouses = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
-        const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', authToken, params);
+        const response = await apiGet('/neu-connect/v2//IWarehouseFeature/ListAllWarehouses', '', params);
 
         const { status, data } = response;
 

@@ -425,7 +425,6 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         if (toWarehouse) params.append('toWarehouseCode', toWarehouse);
         if (selectDate) params.append('docDate', selectDate);
 
-        // console.log(`Filter params: ${params.toString()}`);
         setFilteredParams(params.toString());
         return params.toString();
     };

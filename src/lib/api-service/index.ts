@@ -17,9 +17,6 @@ export const apiGet = async (endpoint: string, authToken?: string, params?: { [k
     } catch (error: any) {
         const { status, data } = error?.response || {};
 
-        console.log("Error from API: ", error);
-        console.log("Error response data: ", data);
-
         // Handle 401 - Unauthorized
         if (status === 401) {
             handleRefreshToken(error.message);

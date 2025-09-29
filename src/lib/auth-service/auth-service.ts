@@ -1,5 +1,3 @@
-/***** Centralized Authentication Service *****/
-
 import { setCookie, getCookie, deleteCookie } from "cookies-next";
 
 class AuthService {
@@ -11,27 +9,12 @@ class AuthService {
     static setTokens(accessToken: string, refreshToken?: string): void {
         try {
             // Set tokens as HTTP-only cookies for security
-            setCookie(this.TOKEN_KEY, accessToken, {
-                httpOnly: false, // Set to true in production with proper setup
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 24 * 1, // 1 days
-            });
+            setCookie(this.TOKEN_KEY, accessToken);
 
-            setCookie(this.USER_AUTH_KEY, "true", {
-                httpOnly: false,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 24 * 1, // 1 days
-            });
+            setCookie(this.USER_AUTH_KEY, "true");
 
             if (refreshToken) {
-                setCookie(this.REFRESH_TOKEN_KEY, refreshToken, {
-                    httpOnly: false,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    maxAge: 60 * 60 * 24 * 30, // 30 days
-                });
+                setCookie(this.REFRESH_TOKEN_KEY, refreshToken);
             }
         } catch (error) {
             console.error("Error setting tokens:", error);

@@ -6,8 +6,8 @@ const customStyles: CustomStyles = {
     colors: {
         white: "#fff",
         black: "#000",
-        red: "red",
-        green: "green",
+        red: "#ff0000",
+        green: "#3cd856",
         _408CCE: "#408CCE",
         _4D4D4D: "#4D4D4D",
         _909090: "#909090",

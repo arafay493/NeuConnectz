@@ -10,8 +10,28 @@ const dateFilterFn = (row: any, columnId: string, value: string): boolean => {
     if (!value) return true;
     const cellValue = row.getValue(columnId);
     if (!cellValue) return false;
-    const dateValue = new Date(cellValue as string).toLocaleDateString();
-    return dateValue.toLowerCase().includes(value.toLowerCase());
+
+    const searchValue = value.toLowerCase();
+    const date = new Date(cellValue as string);
+
+    // Format the date the same way as displayed in the table (formatDate function)
+    const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+
+    // Also check against various date parts for better search experience
+    const year = date.getFullYear().toString();
+    const month = date.toLocaleDateString('en-US', { month: 'short' }).toLowerCase();
+    const monthLong = date.toLocaleDateString('en-US', { month: 'long' }).toLowerCase();
+    const day = date.getDate().toString();
+
+    return formattedDate.toLowerCase().includes(searchValue) ||
+        year.includes(value) ||
+        month.includes(searchValue) ||
+        monthLong.includes(searchValue) ||
+        day.includes(value);
 };
 
 const numberFilterFn = (row: any, columnId: string, value: string): boolean => {

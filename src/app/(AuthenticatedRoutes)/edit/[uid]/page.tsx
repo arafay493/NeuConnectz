@@ -52,8 +52,7 @@ const EditUserScreen = () => {
   // Note: Handle routing here...!
   const router = useRouter();
   const { uid } = useParams();
-  // console.log('Uid: ', uid);
-
+  
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
 
@@ -62,23 +61,17 @@ const EditUserScreen = () => {
   const { listRoles } = useAppSelector(({ rolesStates }) => { return rolesStates });
   const { usersList } = useAppSelector(({ userStates }) => userStates);
   const token = authenticatedUser?.token as string;
-  // console.log('Users: ', usersList.users);
-  // console.log("User: ", authenticatedUser);
-  // console.log("Roles: ", listRoles);
-
+  
   // Note: Handle on change...!
   const handleChange = (field: string, value: any) => {
-    // console.log(`Field: ${field}, Value: ${value}`);
     setUserData((prev) => ({ ...prev, [field]: value }));
   };
 
   // Note: Image on chnage handler...!
   const handleImageChange = (file: File | null) => {
     if (file) {
-      // console.log('File: ', file);
       const reader = new FileReader();
-      // console.log('Image reader result: ', reader);
-
+      
       reader.onloadend = () => {
         setUserData({
           ...userData,
@@ -152,9 +145,7 @@ const EditUserScreen = () => {
   useEffect(() => {
     if (usersList.users.length > 0 && authenticatedUser && uid) {
       const targetUser = [...usersList.users].find((item) => { return item?.userId == uid });
-      // console.log("Target user: ", targetUser);
-
-      console.log('Uid: ', uid);
+      
       setUserData({
         userName: targetUser?.userName || "",
         email: targetUser?.email || "",

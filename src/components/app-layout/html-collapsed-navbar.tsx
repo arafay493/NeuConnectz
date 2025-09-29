@@ -1,27 +1,24 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import NextImage from 'next/image';
+import { logout } from '@/constants/logout';
+import { drawerRoutes } from '@/constants/routes';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import { customStyles } from '@/styles/custom-theme';
+import { DrawerRoute } from "@/types/route-types";
 import {
-    Group,
-    NavLink,
-    ActionIcon,
-    Stack,
-    Image,
-    Divider,
     Box,
+    Divider,
+    Group,
+    Image,
+    Stack
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-    IconLogout,
-    IconChevronRight,
-    IconLayoutSidebar
+    IconLogout
 } from '@tabler/icons-react';
-import { DrawerRoute } from "@/types/route-types";
-import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
-import { logout } from '@/constants/logout';
-import { customStyles } from '@/styles/custom-theme';
-import { localAssets } from '@/lib/file-paths/file-paths';
+import NextImage from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from "react";
 
 interface HtmlCollapsedNavbarProps {
     activeTab: number;
@@ -39,6 +36,28 @@ const HtmlCollapsedNavbar = ({
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
     const router = useRouter();
+
+    // Note: Calculate active tab based on current pathname
+    const getActiveTabFromPath = () => {
+        // First try exact match
+        const exactIndex = drawerRoutes.findIndex(route => route.route === pathName);
+        if (exactIndex !== -1) return exactIndex;
+
+        // If no exact match, try to find parent route for nested routes
+        const parentIndex = drawerRoutes.findIndex(route =>
+            pathName.startsWith(route.route + '/') || pathName === route.route
+        );
+        return parentIndex !== -1 ? parentIndex : 0; // Default to first route if no match
+    };
+
+    const currentActiveTab = getActiveTabFromPath();
+
+    // Note: Sync with parent component when route changes
+    useEffect(() => {
+        if (currentActiveTab !== activeTab) {
+            setActiveTab(currentActiveTab);
+        }
+    }, [pathName, currentActiveTab, activeTab, setActiveTab]);
 
     // Note: Handle navigation...!
     const handleNavigation = (route: string, index: number) => {
@@ -68,17 +87,17 @@ const HtmlCollapsedNavbar = ({
                 cursor: 'pointer',
                 width: 'fit-content',
                 padding: `12px 16px`,
-                backgroundColor: activeTab === index ? customStyles.colors._1B59F81A : 'transparent',
-                color: activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D,
+                backgroundColor: currentActiveTab === index ? customStyles.colors._1B59F81A : 'transparent',
+                color: currentActiveTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D,
             }}
             onMouseEnter={(e) => {
-                if (activeTab !== index) {
+                if (currentActiveTab !== index) {
                     e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
                 }
                 e.currentTarget.style.transform = 'scale(1.05)';
             }}
             onMouseLeave={(e) => {
-                if (activeTab !== index) {
+                if (currentActiveTab !== index) {
                     e.currentTarget.style.backgroundColor = 'transparent';
                 }
                 e.currentTarget.style.transform = 'scale(1)';

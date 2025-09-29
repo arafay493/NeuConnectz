@@ -7,6 +7,7 @@ import {
     FETCH_ALL_GRNS,
     FETCH_ALL_INTEGRATED_GRNS,
     FETCH_ALL_ITR_IT_TRS,
+    FETCH_ALL_ITEM_CODES,
     FETCH_ALL_PENDING_GRNS,
     FETCH_ALL_VENDOR_CODES,
     GET_SAP_STAGING_DATA_COUNTS,
@@ -306,7 +307,6 @@ const exportDataToCsvFile = createAsyncThunk(
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
 
-            console.log(`CSV file downloaded successfully: ${filename}`);
             return { success: true, filename, recordCount: formattedCsvText.split('\n').length - 1 };
         } catch (error) {
             console.log("Something went wrong while exporting data to csv: ", error);
@@ -328,6 +328,26 @@ const fetchAllVendorCodes = createAsyncThunk(
     }
 );
 
+const listItemCodes = createAsyncThunk(
+    "sap/listItemCodes",
+    async ({ keywords }: {
+        keywords?: string
+    }, { dispatch }) => {
+        const params: { [key: string]: string } = {};
+        if (keywords !== undefined) params.keywords = keywords;
+
+        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_ITEM_CODES}`, '', params);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_ITEM_CODES(data?.data));
+        };
+
+        return response;
+    }
+);
+
 // Note: Action function to get sap staging data counts...!
 const handleGetSapStagingDataCounts = createAsyncThunk(
     "sap/handleGetSapStagingDataCounts",
@@ -343,6 +363,6 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
 );
 
 export {
-    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_GRNS, fetchAll_INTEGRATED_GRNS, fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP
+    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_GRNS, fetchAll_INTEGRATED_GRNS, fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP, listItemCodes
 };
 

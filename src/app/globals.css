@@ -17,12 +17,12 @@
 .filledButton {
     background-color: var(--_1B59F8);
     color: var(--white);
-    transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out, border 0.3s ease-in-out;
 }
 
 .filledDisabledButton {
-    background-color: var(--_909090);
-    color: var(--white);
+    background-color: #e9ecef;
+    color: #adb5bd;
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
 }
 
@@ -67,11 +67,10 @@
 /* custom Scroll Bar */
 .scroll-bar {
     scrollbar-width: 12px;
-    scrollbar-color: var(--_1B59F8) var(--_F5F7FA);
 }
 
 .scroll-bar::-webkit-scrollbar {
-    width: 12px;
+    width: 6px;
 }
 
 .scroll-bar::-webkit-scrollbar-track {
@@ -79,13 +78,13 @@
 }
 
 .scroll-bar::-webkit-scrollbar-thumb {
-    background-color: var(--_1B59F8);
+    background-color: var(--_909090);
     border-radius: 12px;
 }
 
-.scroll-bar::-webkit-scrollbar-thumb:hover {
+/* .scroll-bar::-webkit-scrollbar-thumb:hover {
     background-color: var(--_1B59F8);
-}
+} */
 
 .pagination-icon {
     border: 1px solid var(--_E1E7EC);
@@ -111,6 +110,7 @@
 
 .show-scroll-bar-overflow:hover {
     overflow-y: auto;
+    overflow-x: auto;
 }
 
 /* Loading animation for table skeleton */

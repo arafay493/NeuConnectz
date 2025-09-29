@@ -19,7 +19,6 @@ const dashboardSlice = createSlice({
         },
 
         FETCH_DASHBOARD_ANALYTICS: (state, action: PayloadAction<any>) => {
-            // console.log("Dashboard analytics in reducer: ", action.payload);
             state.dashboardErrorState = "";
             state.dashboardAnalyticsData = action?.payload;
         },
