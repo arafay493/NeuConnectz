@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from "@/lib/api-service";
-import { FETCH_GENERATE_BARCODE_DATA } from "@/redux/reducers/generate-barcode-reducer/generate-barcode-reducer";
+import { FETCH_GENERATE_BARCODE_DATA, SET_GENERATE_BARCODE_LOADING } from "@/redux/reducers/generate-barcode-reducer/generate-barcode-reducer";
 import { ResHandler } from "@/types/api-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -10,6 +10,7 @@ const fetchGeneratedBarcodeData = createAsyncThunk(
             lastCount?: number,
             skipRecords?: number
         }, { dispatch }) => {
+        dispatch(SET_GENERATE_BARCODE_LOADING(true));
 
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
@@ -24,7 +25,9 @@ const fetchGeneratedBarcodeData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_GENERATE_BARCODE_DATA(data?.data));
-        };
+        } else {
+            dispatch(SET_GENERATE_BARCODE_LOADING(false));
+        }
 
         return response;
     }

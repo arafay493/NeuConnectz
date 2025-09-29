@@ -406,6 +406,7 @@ export interface QuantityDifferenceData {
 export interface GenerateBarcodeStateProps {
     generateBarcodeData: Array<GenerateBarcodeProps> | null;
     totalCount: number;
+    loading: boolean
 }
 export interface GenerateBarcodeProps {
     id: string;

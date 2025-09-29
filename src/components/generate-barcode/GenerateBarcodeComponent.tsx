@@ -14,6 +14,7 @@ import { IconPlus } from '@tabler/icons-react';
 import { PaginationState } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
 import GeneratedBarcodeTableComponent from './GeneratedBarcodeTableComponent';
+import LoaderComponent from '../common/loader/loader';
 
 const GenerateBarcodeComponent = () => {
     const [generateModalOpened, { open: openGenerateModal, close: closeGenerateModal }] = useDisclosure(false);
@@ -34,7 +35,7 @@ const GenerateBarcodeComponent = () => {
         openConfirmationModal();
     };
 
-    const { generateBarcodeData, totalCount } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; })
+    const { generateBarcodeData, totalCount, loading } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; })
 
     const responseHandler = (status: number) => {
         if (status === 201) {
@@ -77,7 +78,7 @@ const GenerateBarcodeComponent = () => {
     }, [pagination.pageIndex, pagination.pageSize, dispatch])
 
     return (
-        <Box>
+        <Box style={{ position: 'relative' }}>
             <TitleComponent
                 title="Generate Barcode"
                 description="Create and manage barcode for your products."
@@ -131,6 +132,12 @@ const GenerateBarcodeComponent = () => {
                     description={`Are you sure you want to generate ${quantity || '0'} barcode${quantity && Number(quantity) > 1 ? 's' : ''}? You will not be able to delete.`}
                 />
             </ModalComponent>
+
+            {
+                loading && (
+                    <LoaderComponent />
+                )
+            }
         </Box>
     )
 }
