@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -83,7 +83,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             >
                 <Stack gap={0}>
                     <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
-                        Inventory Transfer Request
+                        {title}
                     </Title>
                 </Stack>
                 <Group gap="xs">

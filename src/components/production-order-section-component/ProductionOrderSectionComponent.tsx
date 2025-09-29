@@ -88,6 +88,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
 
   // Note: Handling states here...!
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAgainstPO, setIsLoadingAgainstPO] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
   const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
@@ -677,6 +678,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     if (label === "ITR") {
       apiUrl = "/IInventoryTransferRequestFeature/ListAllItrsAgainstPoNumber"
       setIsITRPOModalOpen(true)
+      setIsLoadingAgainstPO(true)
       dispatch(
         fetchAgainstPoNumber({
           token: authenticatedUser?.token || "",
@@ -686,11 +688,23 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
           skipRecords: skipRecordAgainstPO,
         })
       ).finally(() => {
-        setIsLoading(false);
+        setIsLoadingAgainstPO(false);
       });
     }
     else if (label === "IT") {
+      apiUrl = "/IInventoryTransferRequestFeature/ListAllItsAgainstPoNumber"
       setIsITPOModalOpen(true)
+      dispatch(
+        fetchAgainstPoNumber({
+          token: authenticatedUser?.token || "",
+          poNumber: row.original?.documentNumber,
+          apiUrl: apiUrl,
+          lastCount: paginationAgainstPO.pageSize,
+          skipRecords: skipRecordAgainstPO,
+        })
+      ).finally(() => {
+        setIsLoadingAgainstPO(false);
+      });
     }
     else if (label === "TR") {
       setIsTRPOModalOpen(true)
@@ -738,9 +752,10 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isITRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
-        isLoading={isLoading}
+        isLoading={isLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
+        title = {"Inventory Transfer Request"}
       />
 
       {/* ITViewDetailsModal   */}
@@ -748,6 +763,10 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isITPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title = {"Inventory Transfer"}
       />
 
       {/* TRViewDetailsModal   */}

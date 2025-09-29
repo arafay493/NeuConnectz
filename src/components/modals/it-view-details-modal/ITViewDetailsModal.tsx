@@ -1,29 +1,29 @@
 import {
     Modal,
-    Button,
     Group,
     Text,
-    Stack,
-    Center,
     Flex,
     Divider,
-    ActionIcon,
     SimpleGrid,
-    Box
+    Box,
 } from "@mantine/core";
 import {
-    IconAlertCircle,
     IconCircleX,
 } from "@tabler/icons-react";
+import { useAppSelector } from "@/redux/store";
+import { useState } from "react";
+import TanStackTable from "@/components/tanStackTable/TanStackTable";
+import ITR_Columns from "@/components/columns/ITR_Columns";
 
 
 interface ModalProps {
     opened: boolean;
     handleModalClose: () => void;
     row: any
-    // handleConfirm: () => void;
-    // handleCancel: () => void;
-    // description: string
+    isLoading: boolean
+    pagination: any
+    setPagination: any,
+    title: string
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -40,14 +40,24 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 
-export default function ITViewDetailsModal({
+export default function ITRViewDetailsModal({
     opened,
     handleModalClose,
-    row
-    // handleConfirm,
-    // handleCancel,
-    // description
+    row,
+    isLoading,
+    pagination,
+    setPagination,
+    title
 }: ModalProps) {
+
+    const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
+        ({ sapStates }) => {
+            return sapStates;
+        }
+    );
+
+    const columns = ITR_Columns({ pagination, listAgainstPo })
+
     return (
         <Modal
             opened={opened}
@@ -65,21 +75,10 @@ export default function ITViewDetailsModal({
                     <Text fw={400} fz="lg">
                         Preview
                     </Text>
-                    {/* <Divider mt="sm" /> */}
                 </Flex>
             }
         >
-            {/* Header with close button */}
-            {/* <Group justify="space-between" align="flex-start">
-                <Text fw={600} size="md">Preview</Text>
-                <ActionIcon onClick={handleModalClose} variant="subtle" color="#ED1C24" size="lg">
-                    <IconCircleX />
-                </ActionIcon>
-            </Group> */}
 
-            <Divider my="sm" />
-
-            {/* Document details */}
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
                     <InfoRow label="Document No" value={String(row?.documentNumber)} />
@@ -93,9 +92,19 @@ export default function ITViewDetailsModal({
                     <InfoRow label="Warehouse" value={row?.warehouse} />
                 </SimpleGrid>
             </Box>
-            <Stack gap="sm" align="start">
-                
-            </Stack>
+
+            <Divider my="sm" />
+
+            {/* <TanStackTable
+                data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
+                dataCount={totalRecordsAgainstPo}
+                columns={columns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title = {title}
+            /> */}
         </Modal >
     );
 }

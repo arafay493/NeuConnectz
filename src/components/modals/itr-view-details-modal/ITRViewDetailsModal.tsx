@@ -22,7 +22,8 @@ interface ModalProps {
     row: any
     isLoading: boolean
     pagination: any
-    setPagination: any
+    setPagination: any,
+    title: string
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -39,13 +40,14 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 
-export default function ITRViewDetailsModal({
+export default function ITViewDetailsModal({
     opened,
     handleModalClose,
     row,
     isLoading,
     pagination,
-    setPagination
+    setPagination,
+    title
 }: ModalProps) {
 
     const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
@@ -101,6 +103,7 @@ export default function ITRViewDetailsModal({
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
+                title = {title}
             />
         </Modal >
     );
