@@ -423,7 +423,7 @@ const UnpostedGRNTable = () => {
 
     // Note: Fetch All Warehouse List
     useEffect(() => {
-        dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
+        dispatch(fetchAllWareHouses({}))
     }, [dispatch, authenticatedUser?.token])
 
     // Transform warehouse data for Select component

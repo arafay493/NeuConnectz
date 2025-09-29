@@ -52,7 +52,7 @@ const ReconciliationComponent = () => {
     const { inventoryTransferItems, transferReceiptItems } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
 
     useEffect(() => {
-        dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
+        dispatch(fetchAllWareHouses({}))
     }, [])
 
     const handleInventoryTransferDataChange = (row: InventoryTransferItems) => {

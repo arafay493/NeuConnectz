@@ -490,7 +490,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
     // Note: Fetch All Warehouse List
     useEffect(() => {
-        dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
+        dispatch(fetchAllWareHouses({}))
     }, [dispatch, authenticatedUser?.token])
 
     // Auto-apply filters when any filter value changes (optional - remove this useEffect if you want manual apply only)

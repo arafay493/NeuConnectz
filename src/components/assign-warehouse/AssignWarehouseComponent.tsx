@@ -435,7 +435,6 @@ const AssignWarehouseComponent = () => {
             const skipRecord = pagination.pageIndex * pagination.pageSize;
 
             dispatch(fetchAllWareHouses({
-                authToken: authenticatedUser?.token as string,
                 lastCount: pagination.pageSize, // Use page size for server-side pagination
                 skipRecords: skipRecord
             })).finally(() => {
