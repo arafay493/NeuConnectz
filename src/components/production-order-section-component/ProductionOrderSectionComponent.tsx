@@ -731,6 +731,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isITRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoading}
       />
 
       {/* ITViewDetailsModal   */}

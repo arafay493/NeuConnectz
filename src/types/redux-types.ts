@@ -225,6 +225,7 @@ export interface SAPStateType {
     listAgainstPo: {
         
     } | null;
+    totalRecordsAgainstPo: number
 };
 
 export interface GRN_Props {

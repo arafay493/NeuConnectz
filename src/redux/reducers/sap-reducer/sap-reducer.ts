@@ -22,7 +22,8 @@ const initialState: SAPStateType = {
     listOfProductionOrderLines: [],
     productionOrderLinesCount: 0,
     productionOrdersDocumentStates: null,
-    listAgainstPo: []
+    listAgainstPo: [],
+    totalRecordsAgainstPo: 0
 };
 
 const SAPReducer = createSlice({
@@ -108,6 +109,7 @@ const SAPReducer = createSlice({
 
         FETCH_LIST_AGAINST_PO: (state, action: PayloadAction<any>) => {
             state.listAgainstPo = action?.payload?.listAgainstPo?.data;
+            state.totalRecordsAgainstPo = action?.payload?.listAgainstPo?.totalRecords;
         },
 
         FETCH_ALL_ISSUES_FOR_PRODUCTION: (state, action: PayloadAction<any>) => {
