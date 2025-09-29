@@ -113,6 +113,8 @@ export interface SAPStateType {
     list_GRNS_Data: Array<GRN_Props>;
     list_Pending_GRNS_Data: Array<GRN_Props>;
     list_Integrated_GRNS_Data: Array<GRN_Props>;
+    list_Item_Code_Data: Array<ItemDataProps> | null;
+    totalItemCodeCount: number;
     sapErrorState: string;
     isSAPConfigExist: boolean,
     vendorCodeList: {
@@ -412,6 +414,52 @@ export interface GenerateBarcodeProps {
     createdDate: string;
 }
 
+export interface ProductionOrderStateProps {
+    data: Array<ListProductionOrder> | null;
+    totalCount: number;
+}
+
+export interface ListProductionOrder {
+    id: string;
+    qty: number;
+    actualQty: number;
+    itemCode: string;
+    itemName: string;
+    unitOfMeasurement: string;
+    productionLine: string;
+    warehouse: string;
+    status: string;
+}
+
+export interface ScanProductionOrderProps extends ListProductionOrder {
+    stages: Stages[];
+}
+
+export interface AddHandlingUnit {
+    name: string;
+    stage: Stages;
+}
+
+export interface HandlingUnitStateProps {
+    handlingUnit: Array<HandlingUnitProps> | null;
+    totalCount: number;
+    loading: boolean;
+}
+
+export interface HandlingUnitProps {
+    groupId: string;
+    groupName: string;
+    groupStages: Stages;
+}
+
+interface Stages {
+    id?: string,
+    name: string,
+    level: number,
+    description: string | null,
+    capacity: number,
+    subStages: Stages[]
+}
 
 
 export interface GenerateListDepartmentStateProps {
@@ -427,4 +475,33 @@ export interface GenerateListDepartmentProps {
     createdDate: string,
     updatedDate: string,
     isActive: boolean
+}
+
+export interface ItemDataProps {
+    id: string;
+    itemCode: string;
+    itemName: string;
+    ordrMulti: number | null;
+    groupCode: number;
+    ugpEntry: number;
+    pUoMEntry: number | null;
+    sUoMEntry: number | null;
+    iUoMEntry: number | null;
+    uomCode: string | null;
+    baseQty: number | null;
+    altQty: number | null;
+    uoms: Array<UomProps>;
+    createdBy: string | null;
+    updatedBy: string | null;
+    createdDate: string;
+    updatedDate: string;
+    isActive: boolean;
+    isArchived: boolean;
+}
+
+export interface UomProps {
+    uomEntry: number;
+    uomCode: string;
+    baseQty: number;
+    altQty: number;
 }

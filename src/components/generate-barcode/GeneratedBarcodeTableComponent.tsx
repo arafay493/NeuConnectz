@@ -19,13 +19,11 @@ interface GeneratedBarcodeTableComponentProps {
     generateBarcodeData: Array<GenerateBarcodeProps> | null;
     pagination: PaginationState;
     setPagination: Dispatch<SetStateAction<PaginationState>>;
-    totalCount?: number; // Add total count from server
+    totalCount: number; // Add total count from server
     onSendBarcode: (id: string, email?: string) => void;
 }
 
 const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPagination, totalCount, onSendBarcode }: GeneratedBarcodeTableComponentProps) => {
-    // Use totalCount from props if available, otherwise fall back to data length
-    const actualTotalCount = totalCount || generateBarcodeData?.length || 0;
     // Note: Filter States
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -265,7 +263,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
         // Pagination configuration
         onPaginationChange: setPagination,
         manualPagination: true, // Keep server-side pagination
-        pageCount: Math.ceil(actualTotalCount / pagination.pageSize),
+        pageCount: Math.ceil(totalCount / pagination.pageSize),
         state: {
             sorting,
             globalFilter,
@@ -280,7 +278,6 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
 
     return (
         <>
-
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
@@ -539,7 +536,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {actualTotalCount > 0 ? skipRecord + 1 : 0} to {Math.min(skipRecord + pagination.pageSize, actualTotalCount)} of {actualTotalCount} entries
+                            Showing {totalCount > 0 ? skipRecord + 1 : 0} to {Math.min(skipRecord + pagination.pageSize, totalCount)} of {totalCount} entries
                         </Text>
                     </Group>
                 </Group>

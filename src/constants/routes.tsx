@@ -19,7 +19,7 @@ import { Routes, DrawerRoute } from "@/types/route-types";
 const unAuthenticatedRoutes: String[] = ["/login"];
 
 // Note: Authenticated routes...!
-const authenticatedRoutes: String[] = [
+const authenticatedRoutes: string[] = [
     "/dashboard",
     "/stock-movement",
     "/reconciliation",
@@ -38,8 +38,10 @@ const authenticatedRoutes: String[] = [
     "/grn-movement",
     "/generate-barcode",
     "/production-order",
+    "/production-order/add-order",
     "/handling-unit",
-    "/handling-unit/add-unit"
+    "/handling-unit/add-unit",
+    "/production-order/scan/:dynamicPath"
 ];
 
 // Note: Defining all routes...!
@@ -64,8 +66,10 @@ const routes: Routes = {
     grnMovement: "/grn-movement",
     generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
+    addProductionOrder: "/production-order/add-order",
     handlingUnit: "/handling-unit",
     addHandlingUnit: "/handling-unit/add-unit",
+    scanProductionOrder: "/production-order/scan/:dynamicPath"
 };
 
 // Note: Defining drawer routes...!

@@ -1,22 +1,23 @@
-# Build stage for Next.js
+# ----------------------
+# Build stage
+# ----------------------
 FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Install dependencies only when needed
 COPY package*.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy frontend source code
+# Copy source code
 COPY . .
 
 # Build the Next.js application
 RUN npm run build
 
-# Expose Next.js port
+# Expose port
 EXPOSE 3000
 
-# Start the Next.js application
+# Start the app
 CMD ["npm", "start"]

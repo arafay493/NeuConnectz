@@ -7,6 +7,8 @@ const initialState: SAPStateType = {
     list_Pending_GRNS_Data: [],
     list_GRNS_Data: [],
     list_Integrated_GRNS_Data: [],
+    list_Item_Code_Data: [],
+    totalItemCodeCount: 0,
     sapErrorState: "",
     isSAPConfigExist: false,
     vendorCodeList: [],
@@ -37,6 +39,19 @@ const SAPReducer = createSlice({
             state.list_Integrated_GRNS_Data = [];
             state.listAll_ITR_IT_TRS = action?.payload?.listData;
             state.listAll_ITR_IT_TRS_Count = action?.payload?.listCount;
+        },
+
+        FETCH_ALL_ITEM_CODES: (state, action: PayloadAction<any>) => {
+            if (action?.payload?.items && Array.isArray(action?.payload?.items)) {
+                state.list_Item_Code_Data = action.payload.items;
+                state.totalItemCodeCount = action?.payload?.totalCount || 0;
+            } else if (Array.isArray(action?.payload)) {
+                state.list_Item_Code_Data = action.payload;
+                state.totalItemCodeCount = action.payload.length;
+            } else {
+                state.list_Item_Code_Data = null;
+                state.totalItemCodeCount = 0;
+            }
         },
 
         FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
@@ -85,6 +100,7 @@ export const
         CHECK_SAP_CONFIG_EXIST,
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
+        FETCH_ALL_ITEM_CODES,
         FETCH_ALL_GRNS,
         FETCH_ALL_INTEGRATED_GRNS,
         FETCH_ALL_PENDING_GRNS,

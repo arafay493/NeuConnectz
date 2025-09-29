@@ -1,9 +1,9 @@
+import { ProductionOrderStateProps } from "@/types/redux-types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { GenerateBarcodeStateProps } from "@/types/redux-types";
 
 // Note: Reducer states...!
-const initialState: GenerateBarcodeStateProps = {
-    generateBarcodeData: null,
+const initialState: ProductionOrderStateProps = {
+    data: [],
     totalCount: 0,
 };
 
@@ -11,27 +11,31 @@ const generateBarcode = createSlice({
     name: "generateBarcode",
     initialState,
     reducers: {
-        UNAUTHORIZE_USER_TRYING_TO_ACCESS_GENERATE_BARCODE_DATA: (state) => {
-            state.generateBarcodeData = null;
+        UNAUTHORIZE_USER_TRYING_TO_ACCESS_PRODUCTION_ORDER_DATA: (state) => {
+            state.data = [];
             state.totalCount = 0;
         },
 
-        FETCH_GENERATE_BARCODE_DATA: (state, action: PayloadAction<any>) => {
+        FETCH_PRODUCTION_ORDER_DATA: (state, action: PayloadAction<any>) => {
             // Handle both paginated response { data: [...], totalCount: number } and simple array
             if (action?.payload?.batches && Array.isArray(action?.payload?.batches)) {
-                state.generateBarcodeData = action.payload.batches;
+                state.data = action.payload.batches;
                 state.totalCount = action?.payload?.totalCount || 0;
             } else if (Array.isArray(action?.payload)) {
-                state.generateBarcodeData = action.payload;
+                state.data = action.payload;
                 state.totalCount = action.payload.length;
             } else {
-                state.generateBarcodeData = null;
+                state.data = null;
                 state.totalCount = 0;
             }
         },
 
-        CLEAR_ALL_GENERATE_BARCODE_STATES: (state) => {
-            state.generateBarcodeData = null;
+        FETCH_PRODUCTION_ORDER_DATA_BY_ID: (state, action: PayloadAction<any>) => {
+            state.data = action.payload;
+        },
+
+        CLEAR_ALL_PRODUCTION_ORDER_STATES: (state) => {
+            state.data = null;
             state.totalCount = 0;
         },
     }
@@ -39,8 +43,9 @@ const generateBarcode = createSlice({
 
 export const
     {
-        UNAUTHORIZE_USER_TRYING_TO_ACCESS_GENERATE_BARCODE_DATA,
-        FETCH_GENERATE_BARCODE_DATA,
-        CLEAR_ALL_GENERATE_BARCODE_STATES
+        UNAUTHORIZE_USER_TRYING_TO_ACCESS_PRODUCTION_ORDER_DATA,
+        FETCH_PRODUCTION_ORDER_DATA,
+        FETCH_PRODUCTION_ORDER_DATA_BY_ID,
+        CLEAR_ALL_PRODUCTION_ORDER_STATES
     } = generateBarcode.actions;
 export default generateBarcode.reducer;

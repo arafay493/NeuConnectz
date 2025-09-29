@@ -2,7 +2,7 @@
 
 'use client';
 
-import { authenticatedRoutes, drawerRoutes, routes } from '@/constants/routes';
+import { authenticatedRoutes, drawerRoutes, routeExists, routes } from '@/constants/routes';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import {
@@ -81,10 +81,18 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
 
     // Note: Handling the activeTab based on pathName...!
     useEffect(() => {
-        const currentIndex = drawerRoutes.findIndex(route => route.route === pathName);
-        if (currentIndex !== -1) {
-            setActiveTab(currentIndex);
+        // First try exact match
+        let currentIndex = drawerRoutes.findIndex(route => route.route === pathName);
+
+        // If no exact match found, try to find parent route for nested routes
+        if (currentIndex === -1) {
+            currentIndex = drawerRoutes.findIndex(route =>
+                pathName.startsWith(route.route + '/') || pathName === route.route
+            );
         }
+
+        // Set active tab, default to 0 if no match found
+        setActiveTab(currentIndex !== -1 ? currentIndex : 0);
     }, [pathName]);
 
     // Note: Handling the logout...!
@@ -93,10 +101,9 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
         router.push(routes.login);
     };
 
-    // Note: Show layout only on authenticated routes...!
-    const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string);
+    const dynamicRoute = routeExists(pathName, authenticatedRoutes);
 
-    if (!showLayout) {
+    if (!dynamicRoute) {
         return <>{children}</>;
     }
 

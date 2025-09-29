@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 async function proxyRequest(req: NextRequest, method: string) {
     let targetBackend: string | undefined = '';
 
+    console.log("Request URL:", req.nextUrl.href);
+
     // Decide which backend to use based on path
     if (req.nextUrl.pathname.startsWith(process.env.AUTH_API_URL!)) {
         targetBackend = API_ENDPOINTS.auth;

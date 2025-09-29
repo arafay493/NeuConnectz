@@ -8,7 +8,7 @@ import { dateFilterFn, numberFilterFn, stringFilterFn } from "@/constants/table-
 import { formatDate } from "@/lib/date-formatter";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import { customStyles } from "@/styles/custom-theme";
-import { GenerateBarcodeProps } from "@/types/redux-types";
+import { GenerateBarcodeProps, ListProductionOrder } from "@/types/redux-types";
 import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
@@ -16,16 +16,16 @@ import NextImage from 'next/image';
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 interface ProductionOrderTableComponentProps {
-    generateBarcodeData: Array<GenerateBarcodeProps> | null;
+    productionOrderList: Array<ListProductionOrder> | null;
     pagination: PaginationState;
     setPagination: Dispatch<SetStateAction<PaginationState>>;
     totalCount?: number; // Add total count from server
-    onSendBarcode?: (id: string, email?: string) => void;
+    onSendBarcode?: (id: string) => void;
 }
 
-const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPagination, totalCount, onSendBarcode }: ProductionOrderTableComponentProps) => {
+const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPagination, totalCount, onSendBarcode }: ProductionOrderTableComponentProps) => {
     // Use totalCount from props if available, otherwise fall back to data length
-    const actualTotalCount = totalCount || generateBarcodeData?.length || 0;
+    const actualTotalCount = totalCount || productionOrderList?.length || 0;
     // Note: Filter States
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -81,7 +81,7 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
     };
 
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<GenerateBarcodeProps>[]>(
+    const columns = useMemo<ColumnDef<ListProductionOrder>[]>(
         () => [
             {
                 header: 'S.No',
@@ -98,7 +98,7 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
             },
             {
                 accessorKey: 'id',
-                header: 'Batch ID',
+                header: 'Production ID',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
@@ -106,7 +106,67 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('BatchId', (generateBarcodeData || []).map(item => item.id), 150, 400),
+                size: calculateColumnWidth('BatchId', (productionOrderList || []).map(item => item.id), 150, 400),
+            },
+            {
+                accessorKey: 'itemCode',
+                header: 'Item Code',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Item Code', (productionOrderList || []).map(item => String(item.itemCode)), 180, 450),
+            },
+            {
+                accessorKey: 'itemName',
+                header: 'Item Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Item Name', (productionOrderList || []).map(item => String(item.itemName)), 180, 450),
+            },
+            {
+                accessorKey: 'unitOfMeasurement',
+                header: 'UOM',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('UOM', (productionOrderList || []).map(item => String(item.unitOfMeasurement)), 180, 450),
+            },
+            {
+                accessorKey: 'productionLine',
+                header: 'Production Line',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Production Line', (productionOrderList || []).map(item => String(item.productionLine)), 300, 450),
+            },
+            {
+                accessorKey: 'warehouse',
+                header: 'Warehouse',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                filterFn: numberFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Warehouse', (productionOrderList || []).map(item => String(item.warehouse)), 180, 450),
             },
             {
                 accessorKey: 'qty',
@@ -118,25 +178,37 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
                 ),
                 filterFn: numberFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Quantity', (generateBarcodeData || []).map(item => String(item.qty)), 180, 450),
+                size: calculateColumnWidth('Quantity', (productionOrderList || []).map(item => String(item.qty)), 180, 450),
             },
             {
-                accessorKey: 'createdDate',
-                header: 'Date',
+                accessorKey: 'actualQty',
+                header: 'Actual Qty',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {formatDate(getValue() as string)}
+                        {getValue() as string}
                     </Text>
                 ),
-                filterFn: dateFilterFn,
+                filterFn: numberFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('Date', (generateBarcodeData || []).map(item => item.createdDate), 120, 200),
+                size: calculateColumnWidth('Quantity', (productionOrderList || []).map(item => String(item.actualQty)), 180, 450),
             },
+            // {
+            //     accessorKey: 'createdDate',
+            //     header: 'Date',
+            //     cell: ({ getValue }) => (
+            //         <Text c={customStyles.colors._909090} fw={500} >
+            //             {formatDate(getValue() as string)}
+            //         </Text>
+            //     ),
+            //     filterFn: dateFilterFn,
+            //     enableColumnFilter: true,
+            //     size: calculateColumnWidth('Date', (productionOrderList || []).map(item => item.createdDate), 120, 200),
+            // },
             {
                 accessorKey: 'status',
                 header: 'Status',
                 cell: ({ getValue }) => {
-                    const status = getValue() as string === 'Code Generated';
+                    const status = getValue() as string === 'open';
 
                     return (
                         <Badge
@@ -185,18 +257,18 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
                             }}
                             onClick={() => onSendBarcode?.(id)}
                         >
-                            Email
+                            Scan
                         </Button>
                     )
                 },
                 size: calculateColumnWidth('Action', ['Edit'], 100, 120)
             }
         ],
-        [generateBarcodeData, pagination.pageIndex, pagination.pageSize] // Add proper dependencies
+        [productionOrderList, pagination.pageIndex, pagination.pageSize] // Add proper dependencies
     );
 
     const table = useReactTable({
-        data: generateBarcodeData || [],
+        data: productionOrderList || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -285,7 +357,7 @@ const ProductionOrderTableComponent = ({ generateBarcodeData, pagination, setPag
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: '0 12px 24px 12px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,

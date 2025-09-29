@@ -23,8 +23,10 @@ export type Routes = {
     grnMovement: string;
     generateBarcode: string;
     productionOrder: string;
+    addProductionOrder: string;
     handlingUnit: string;
     addHandlingUnit: string;
+    scanProductionOrder: string;
 };
 
 export type DrawerRoute = {

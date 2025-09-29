@@ -1,14 +1,16 @@
 'use client';
 
-import { Box, Stack, Card, Group, Text, TextInput, Button, ActionIcon, Select } from '@mantine/core'
-import TitleComponent from '../common/component-title'
-import { IconMinus, IconChevronDown } from '@tabler/icons-react'
-import { useState } from 'react'
-import { customStyles } from '@/styles/custom-theme'
+import { customStyles } from '@/styles/custom-theme';
+import { ActionIcon, Box, Button, Card, Group, Select, Stack, Text, TextInput } from '@mantine/core';
+import { IconMinus } from '@tabler/icons-react';
+import { useMemo, useState } from 'react';
+import TitleComponent from '../common/component-title';
+import { addHandlingUnit } from '@/redux/actions/handling-unit-actions/handling-unit-actions';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { useAppDispatch } from '@/redux/store';
 
 interface BaseUnit {
     name: string;
-    volume: string;
 }
 
 interface HandlingUnit {
@@ -26,29 +28,40 @@ interface GroupPreviewItem {
 }
 
 const AddHandlingUnitComponent = () => {
-    // State for form sections
-    const [isGroupDetailsOpen, setIsGroupDetailsOpen] = useState(true)
-    const [isBaseLevelOpen, setIsBaseLevelOpen] = useState(false)
-    const [isHandlingUnitOpen, setIsHandlingUnitOpen] = useState(false)
+    const dispatch = useAppDispatch();
+    // Simplified section state - only one active section at a time
+    const [activeSection, setActiveSection] = useState<'group' | 'base' | 'handling' | null>('group')
 
+    const [isGroupPreviewVisible, setIsGroupPreviewVisible] = useState(true)
     // Form data states
     const [groupName, setGroupName] = useState('')
     const [baseUnits, setBaseUnits] = useState<BaseUnit[]>([])
     const [handlingUnits, setHandlingUnits] = useState<HandlingUnit[]>([])
 
     // Current form inputs
-    const [currentBaseUnit, setCurrentBaseUnit] = useState<BaseUnit>({ name: '', volume: '' })
+    const [currentBaseUnit, setCurrentBaseUnit] = useState<BaseUnit>({ name: '' })
     const [currentHandlingUnit, setCurrentHandlingUnit] = useState<HandlingUnit>({
         name: '',
         containedWith: '',
         quantity: ''
     })
 
-    // Dynamic data for preview - starts empty
-    const [groupPreview, setGroupPreview] = useState<GroupPreviewItem[]>([])
+    const handleGroupPreviewToggle = () => {
+        setIsGroupPreviewVisible(!isGroupPreviewVisible)
+    }
 
-    // Helper function to build proper hierarchical structure
-    const buildGroupPreview = () => {
+    // Reset all form data
+    const resetForm = () => {
+        setGroupName('')
+        setBaseUnits([])
+        setHandlingUnits([])
+        setCurrentBaseUnit({ name: '' })
+        setCurrentHandlingUnit({ name: '', containedWith: '', quantity: '' })
+        setActiveSection('group')
+    }
+
+    // Memoized preview data - recalculates only when dependencies change
+    const groupPreviewData = useMemo(() => {
         if (!groupName.trim()) return []
 
         const group: GroupPreviewItem = {
@@ -57,85 +70,223 @@ const AddHandlingUnitComponent = () => {
             children: []
         }
 
-        // Build nested hierarchy: each handling unit becomes child of previous
-        let currentParent = group
+        // Create a map to store all units for easy lookup
+        const unitsMap = new Map<string, GroupPreviewItem>()
 
-        // Add base units first (they are the foundation)
-        if (baseUnits.length > 0) {
-            baseUnits.forEach(baseUnit => {
-                const baseItem: GroupPreviewItem = {
-                    name: baseUnit.name,
-                    type: 'base',
-                    units: baseUnit.volume,
-                    children: []
-                }
-                currentParent.children?.push(baseItem)
-                currentParent = baseItem // This becomes the parent for handling units
-            })
-        }
-
-        // Add handling units in sequence, each containing the previous
-        handlingUnits.forEach(handlingUnit => {
-            const handlingItem: GroupPreviewItem = {
-                name: handlingUnit.name,
-                type: 'handling',
-                quantity: handlingUnit.quantity,
-                units: handlingUnit.containedWith + 's',
-                children: currentParent.children ? [...currentParent.children] : []
+        // Add base units first
+        baseUnits.forEach(baseUnit => {
+            const baseItem: GroupPreviewItem = {
+                name: baseUnit.name,
+                type: 'base',
+                units: '1',
+                children: []
             }
-
-            // Replace current parent's children with this handling unit
-            currentParent.children = [handlingItem]
-            currentParent = handlingItem
+            unitsMap.set(baseUnit.name.toLowerCase(), baseItem)
+            group.children?.push(baseItem)
         })
 
+        // Add handling units based on their "Contained With" relationship, sorted by quantity
+        handlingUnits
+            .sort((a, b) => parseInt(a.quantity) - parseInt(b.quantity)) // Sort by quantity ascending
+            .forEach(handlingUnit => {
+                const handlingItem: GroupPreviewItem = {
+                    name: handlingUnit.name,
+                    type: 'handling',
+                    quantity: handlingUnit.quantity,
+                    units: handlingUnit.containedWith + 's',
+                    children: []
+                }
+
+                // Find the parent unit (what this handling unit is contained with)
+                const parentUnit = unitsMap.get(handlingUnit.containedWith.toLowerCase())
+
+                if (parentUnit) {
+                    // Add this handling unit as a child of its parent
+                    parentUnit.children?.push(handlingItem)
+                    // Sort children by quantity after adding
+                    if (parentUnit.children) {
+                        parentUnit.children.sort((a, b) => {
+                            const aQty = parseInt(a.quantity || '0')
+                            const bQty = parseInt(b.quantity || '0')
+                            return aQty - bQty
+                        })
+                    }
+                } else {
+                    // If parent not found, add to group level (fallback)
+                    group.children?.push(handlingItem)
+                }
+
+                // Add this handling unit to the map for future references
+                unitsMap.set(handlingUnit.name.toLowerCase(), handlingItem)
+            })
+
         return [group]
-    }
+    }, [groupName, baseUnits, handlingUnits])
+
+    // Memoized API payload - recalculates only when dependencies change  
+    const apiPayload = useMemo(() => {
+        if (!groupName.trim() || baseUnits.length === 0) return null
+
+        const baseUnit = baseUnits[0] // Assuming first base unit is the main stage
+
+        const buildSubStages = (parentName: string, currentLevel: number = 2): any[] => {
+            return handlingUnits
+                .filter(hu => hu.containedWith.toLowerCase() === parentName.toLowerCase())
+                .sort((a, b) => parseInt(a.quantity) - parseInt(b.quantity)) // Sort by quantity ascending
+                .map((hu, index) => {
+                    return {
+                        name: hu.name,
+                        level: currentLevel,
+                        description: hu.name,
+                        capacity: parseInt(hu.quantity),
+                        subStages: buildSubStages(hu.name, currentLevel + 1)
+                    }
+                })
+        }
+
+        const stage = {
+            name: baseUnit.name,
+            level: 1,
+            description: baseUnit.name,
+            capacity: 1,
+            subStages: buildSubStages(baseUnit.name, 2)
+        }
+
+        return {
+            name: groupName,
+            stage: stage
+        }
+    }, [groupName, baseUnits, handlingUnits])
+
+    // Memoized options for "Contained With" select - now only base units for first level
+    const availableUnits = useMemo(() => [
+        // Include base units as options
+        ...baseUnits.map(unit => ({
+            value: unit.name.toLowerCase(),
+            label: unit.name
+        }))
+    ], [baseUnits])
+
+    // Computed validation states
+    const isGroupNameValid = groupName.trim().length > 0
+    const isBaseUnitValid = currentBaseUnit.name.trim().length > 0
+    const isHandlingUnitValid = currentHandlingUnit.name.trim().length > 0 &&
+        currentHandlingUnit.containedWith.trim().length > 0 &&
+        currentHandlingUnit.quantity.trim().length > 0
 
     const handleNextFromGroupDetails = () => {
-        if (groupName.trim()) {
-            setIsGroupDetailsOpen(false)
-            setIsBaseLevelOpen(true)
-            // Update preview immediately
-            setGroupPreview(buildGroupPreview())
+        if (isGroupNameValid) {
+            setActiveSection('base')
         }
     }
 
     const handleAddBaseUnit = () => {
-        if (currentBaseUnit.name.trim() && currentBaseUnit.volume.trim()) {
+        if (isBaseUnitValid) {
             setBaseUnits([...baseUnits, currentBaseUnit])
-            // setCurrentBaseUnit({ name: '', volume: '' })
-            setIsBaseLevelOpen(false)
-            setIsHandlingUnitOpen(true)
-            // Update preview with new base unit
-            setGroupPreview(buildGroupPreview())
+            // Auto-select the base unit in the "Contained With" field
+            setCurrentHandlingUnit(prev => ({
+                ...prev,
+                containedWith: currentBaseUnit.name
+            }))
+            setActiveSection('handling')
         }
     }
 
     const handleAddHandlingUnit = () => {
-        if (currentHandlingUnit.name.trim() && currentHandlingUnit.containedWith.trim() && currentHandlingUnit.quantity.trim()) {
+        if (isHandlingUnitValid) {
             setHandlingUnits([...handlingUnits, currentHandlingUnit])
-            setCurrentHandlingUnit({ name: '', containedWith: '', quantity: '' })
-            // Update preview with new handling unit
-            setGroupPreview(buildGroupPreview())
+            setCurrentHandlingUnit({ name: '', containedWith: currentBaseUnit.name, quantity: '' })
         }
     }
 
     const handleToggleSection = (section: 'group' | 'base' | 'handling') => {
-        // Only allow opening previous sections if they have data
+        // Only allow opening sections based on progression
         if (section === 'group') {
-            setIsGroupDetailsOpen(!isGroupDetailsOpen)
-            if (isGroupDetailsOpen) {
-                setIsBaseLevelOpen(false)
-                setIsHandlingUnitOpen(false)
-            }
-        } else if (section === 'base' && groupName.trim()) {
-            setIsBaseLevelOpen(!isBaseLevelOpen)
-            if (isBaseLevelOpen) {
-                setIsHandlingUnitOpen(false)
-            }
+            setActiveSection(activeSection === 'group' ? null : 'group')
+        } else if (section === 'base' && isGroupNameValid) {
+            setActiveSection(activeSection === 'base' ? null : 'base')
         } else if (section === 'handling' && baseUnits.length > 0) {
-            setIsHandlingUnitOpen(!isHandlingUnitOpen)
+            setActiveSection(activeSection === 'handling' ? null : 'handling')
+        }
+    }
+
+    // Delete handlers for individual items
+    const handleDeleteBaseUnit = (unitName: string) => {
+        // Remove the base unit
+        const updatedBaseUnits = baseUnits.filter(unit => unit.name !== unitName)
+        setBaseUnits(updatedBaseUnits)
+
+        // Get all handling units that will be affected by this deletion
+        const getChildUnits = (parentName: string): string[] => {
+            const children = handlingUnits
+                .filter(hu => hu.containedWith.toLowerCase() === parentName.toLowerCase())
+                .map(hu => hu.name)
+
+            const allChildren = [...children]
+            children.forEach(child => {
+                allChildren.push(...getChildUnits(child))
+            })
+
+            return allChildren
+        }
+
+        const unitsToDelete = getChildUnits(unitName)
+
+        // Remove all affected handling units
+        const updatedHandlingUnits = handlingUnits.filter(unit =>
+            !unitsToDelete.includes(unit.name)
+        )
+        setHandlingUnits(updatedHandlingUnits)
+    }
+
+    const handleDeleteHandlingUnit = (unitName: string) => {
+        // Get all units that will be affected by this deletion (the unit itself + its children)
+        const getChildUnits = (parentName: string): string[] => {
+            const children = handlingUnits
+                .filter(hu => hu.containedWith.toLowerCase() === parentName.toLowerCase())
+                .map(hu => hu.name)
+
+            const allChildren = [...children]
+            children.forEach(child => {
+                allChildren.push(...getChildUnits(child))
+            })
+
+            return allChildren
+        }
+
+        const unitsToDelete = [unitName, ...getChildUnits(unitName)]
+
+        // Remove the handling unit and any units that were contained with it (cascading delete)
+        const updatedHandlingUnits = handlingUnits.filter(unit =>
+            !unitsToDelete.includes(unit.name)
+        )
+        setHandlingUnits(updatedHandlingUnits)
+    }
+
+    // Handle response from API
+    const handleResponse = (status: number) => {
+        const errorResponseCodes = {
+            400: "Bad Request - Invalid data provided",
+            500: "Server Error - Please try again later",
+            409: "Conflict - Handling Unit with this name already exists"
+        }
+
+        if (status === 200 || status === 201) {
+            showNotificationToast("Handling Unit Added", "Handling Unit added successfully", customStyles.colors._408CCE);
+            resetForm();
+            return;
+        }
+
+        if (errorResponseCodes[status as keyof typeof errorResponseCodes]) {
+            showNotificationToast("Error Adding Handling Unit", errorResponseCodes[status as keyof typeof errorResponseCodes], customStyles.colors.red);
+            return;
+        }
+    }
+
+    // Add handling unit to API
+    const onAddHandlingUnit = () => {
+        if (apiPayload) {
+            dispatch(addHandlingUnit({ body: apiPayload, resHandler: handleResponse }))
         }
     }
 
@@ -146,6 +297,9 @@ const AddHandlingUnitComponent = () => {
             return '└── '
         }
 
+        // Check if this item has children (for cascading delete warning)
+        const hasChildren = item.children && item.children.length > 0
+
         const indentStyle = {
             paddingLeft: `${level * 24}px`,
             borderLeft: level > 0 ? `2px solid ${customStyles.colors._E1E7EC}` : 'none',
@@ -153,55 +307,87 @@ const AddHandlingUnitComponent = () => {
         }
 
         return (
-            <Box key={`${item.name}-${level}`}>
+            <Stack gap={4} key={`${item.name}-${level}`}>
                 <Box style={indentStyle} py={4}>
-                    <Group align="center" gap={8}>
-                        <Text
-                            size={level === 0 ? "xl" : "md"}
-                            fw={level === 0 ? 600 : 500}
-                            c={customStyles.colors._4D4D4D}
-                            style={{
-                                fontFamily: 'monospace',
-                                whiteSpace: 'pre'
-                            }}
-                        >
-                            {getTreePrefix(level)}{item.name}
-                        </Text>
-                        {item.quantity && item.units ? (
-                            <Text size="sm" c={customStyles.colors._909090}>
-                                ({item.quantity} {item.units})
-                            </Text>
-                        ) : item.units && (
-                            <Text size="sm" c={customStyles.colors._909090}>
-                                ({item.units})
-                            </Text>
-                        )}
-                        {level === 0 && (
-                            <ActionIcon
-                                variant="light"
-                                size="md"
-                                c={customStyles.colors._1B59F8}
-                                onClick={() => {
-                                    // Handle remove group
-                                    setGroupName('')
-                                    setBaseUnits([])
-                                    setHandlingUnits([])
-                                    setGroupPreview([])
-                                    setIsBaseLevelOpen(false)
-                                    setIsHandlingUnitOpen(false)
+                    <Group align="center" gap={8} justify="space-between">
+                        <Group align="center" gap={8}>
+                            <Text
+                                size={level === 0 ? "xl" : "md"}
+                                fw={level === 0 ? 600 : 500}
+                                c={customStyles.colors._4D4D4D}
+                                style={{
+                                    fontFamily: 'monospace',
+                                    whiteSpace: 'pre'
                                 }}
-                                ml="auto"
                             >
-                                <IconMinus size={16} />
-                            </ActionIcon>
-                        )}
+                                {getTreePrefix(level)}{item.name}
+                            </Text>
+                            {item.quantity && item.units ? (
+                                <Text size="sm" c={customStyles.colors._909090}>
+                                    ({item.quantity} {item.units})
+                                </Text>
+                            ) : item.units && (
+                                <Text size="sm" c={customStyles.colors._909090}>
+                                    ({item.units})
+                                </Text>
+                            )}
+                        </Group>
+
+                        <Group gap={4}>
+                            {/* Delete button for individual items (base and handling units) */}
+                            {level > 0 && (
+                                <ActionIcon
+                                    variant="light"
+                                    size="sm"
+                                    color="red"
+                                    onClick={() => {
+                                        if (item.type === 'base') {
+                                            handleDeleteBaseUnit(item.name)
+                                        } else if (item.type === 'handling') {
+                                            handleDeleteHandlingUnit(item.name)
+                                        }
+                                    }}
+                                    title={hasChildren
+                                        ? `Delete ${item.name} and all its children`
+                                        : `Delete ${item.name}`
+                                    }
+                                    style={{
+                                        transition: 'all 0.2s ease',
+                                        opacity: 0.7
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.opacity = '1'
+                                        e.currentTarget.style.transform = 'scale(1.1)'
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.opacity = '0.7'
+                                        e.currentTarget.style.transform = 'scale(1)'
+                                    }}
+                                >
+                                    <IconMinus size={14} />
+                                </ActionIcon>
+                            )}
+
+                            {/* Reset all button for group level (level 0) */}
+                            {level === 0 && (
+                                <ActionIcon
+                                    variant="light"
+                                    size="md"
+                                    color={customStyles.colors.red}
+                                    onClick={resetForm}
+                                    title="Reset all"
+                                >
+                                    <IconMinus size={16} />
+                                </ActionIcon>
+                            )}
+                        </Group>
                     </Group>
                 </Box>
                 {/* Render children */}
                 {item.children && item.children.map(child =>
                     renderGroupPreviewItem(child, level + 1)
                 )}
-            </Box>
+            </Stack>
         )
     }
 
@@ -234,7 +420,7 @@ const AddHandlingUnitComponent = () => {
                             </ActionIcon>
                         </Group>
 
-                        {isGroupDetailsOpen && (
+                        {activeSection === 'group' && (
                             <Box
                                 p={16}
                                 bg={customStyles.colors._F5F7FA}
@@ -255,11 +441,11 @@ const AddHandlingUnitComponent = () => {
                                     <Group justify="flex-end">
                                         <Button
                                             variant="transparent"
-                                            className={!groupName.trim() ? "filledButtonDisabled" : "filledButton"}
+                                            className={!isGroupNameValid ? "filledButtonDisabled" : "filledButton"}
                                             size="sm"
                                             radius={8}
                                             onClick={handleNextFromGroupDetails}
-                                            disabled={!groupName.trim()}
+                                            disabled={!isGroupNameValid}
                                         >
                                             Next
                                         </Button>
@@ -277,8 +463,8 @@ const AddHandlingUnitComponent = () => {
                             justify="space-between"
                             align="center"
                             style={{
-                                cursor: groupName.trim() ? 'pointer' : 'not-allowed',
-                                opacity: groupName.trim() ? 1 : 0.6
+                                cursor: isGroupNameValid ? 'pointer' : 'not-allowed',
+                                opacity: isGroupNameValid ? 1 : 0.6
                             }}
                             onClick={() => handleToggleSection('base')}
                         >
@@ -289,13 +475,13 @@ const AddHandlingUnitComponent = () => {
                                 variant="light"
                                 size="md"
                                 c={customStyles.colors._1B59F8}
-                                disabled={!groupName.trim()}
+                                disabled={!isGroupNameValid}
                             >
                                 <IconMinus size={16} />
                             </ActionIcon>
                         </Group>
 
-                        {isBaseLevelOpen && (
+                        {activeSection === 'base' && (
                             <Box
                                 p={16}
                                 bg={customStyles.colors._F5F7FA}
@@ -304,40 +490,26 @@ const AddHandlingUnitComponent = () => {
                                 }}
                             >
                                 <Stack gap="md">
-                                    <Group grow>
-                                        <TextInput
-                                            radius={8}
-                                            size='md'
-                                            label="Base Unit Name"
-                                            placeholder="e.g., Bottle, Piece, Item"
-                                            value={currentBaseUnit.name}
-                                            onChange={(e) => setCurrentBaseUnit(prev => ({
-                                                ...prev,
-                                                name: e.target.value
-                                            }))}
-                                            required
-                                        />
-                                        <TextInput
-                                            radius={8}
-                                            size='md'
-                                            label="Volume (Liters)"
-                                            placeholder="5 Liter"
-                                            value={currentBaseUnit.volume}
-                                            onChange={(e) => setCurrentBaseUnit(prev => ({
-                                                ...prev,
-                                                volume: e.target.value
-                                            }))}
-                                            required
-                                        />
-                                    </Group>
+                                    <TextInput
+                                        radius={8}
+                                        size='md'
+                                        label="Base Unit Name"
+                                        placeholder="e.g., Bottle, Piece, Item"
+                                        value={currentBaseUnit.name}
+                                        onChange={(e) => setCurrentBaseUnit(prev => ({
+                                            ...prev,
+                                            name: e.target.value
+                                        }))}
+                                        required
+                                    />
                                     <Group justify="flex-end">
                                         <Button
                                             variant="transparent"
-                                            className={!currentBaseUnit.name.trim() || !currentBaseUnit.volume.trim() ? "filledButtonDisabled" : "filledButton"}
+                                            className={!isBaseUnitValid ? "filledButtonDisabled" : "filledButton"}
                                             size="sm"
                                             radius={8}
                                             onClick={handleAddBaseUnit}
-                                            disabled={!currentBaseUnit.name.trim() || !currentBaseUnit.volume.trim()}
+                                            disabled={!isBaseUnitValid}
                                         >
                                             Add Base Unit
                                         </Button>
@@ -373,7 +545,7 @@ const AddHandlingUnitComponent = () => {
                             </ActionIcon>
                         </Group>
 
-                        {isHandlingUnitOpen && (
+                        {activeSection === 'handling' && (
                             <Box
                                 p={16}
                                 bg={customStyles.colors._F5F7FA}
@@ -396,36 +568,20 @@ const AddHandlingUnitComponent = () => {
                                             required
                                         />
 
-                                        <Select
+                                        <TextInput
                                             radius={8}
                                             size='md'
                                             label="Contained With"
-                                            placeholder="Select Parent Unit"
-                                            data={[
-                                                // Include base units as options
-                                                ...baseUnits.map(unit => ({
-                                                    value: unit.name.toLowerCase(),
-                                                    label: unit.name
-                                                })),
-                                                // Include previously created handling units
-                                                ...handlingUnits.map(unit => ({
-                                                    value: unit.name.toLowerCase(),
-                                                    label: unit.name
-                                                }))
-                                            ]}
+                                            placeholder="Base Unit"
                                             value={currentHandlingUnit.containedWith}
-                                            onChange={(value) => setCurrentHandlingUnit(prev => ({
-                                                ...prev,
-                                                containedWith: value || ''
-                                            }))}
+                                            readOnly
                                             required
-                                            clearable
                                         />
                                     </Group>
                                     <TextInput
                                         radius={8}
                                         size='md'
-                                        label="Quantity of Base/Child Units"
+                                        label="Quantity"
                                         placeholder="Enter Quantity"
                                         value={currentHandlingUnit.quantity}
                                         onChange={(e) => setCurrentHandlingUnit(prev => ({
@@ -437,19 +593,11 @@ const AddHandlingUnitComponent = () => {
                                     <Group justify="flex-end">
                                         <Button
                                             variant="transparent"
-                                            className={
-                                                !currentHandlingUnit.name.trim() ||
-                                                    !currentHandlingUnit.containedWith.trim() ||
-                                                    !currentHandlingUnit.quantity.trim() ? "filledButtonDisabled" : "filledButton"
-                                            }
+                                            className={!isHandlingUnitValid ? "filledButtonDisabled" : "filledButton"}
                                             size="sm"
                                             radius={8}
                                             onClick={handleAddHandlingUnit}
-                                            disabled={
-                                                !currentHandlingUnit.name.trim() ||
-                                                !currentHandlingUnit.containedWith.trim() ||
-                                                !currentHandlingUnit.quantity.trim()
-                                            }
+                                            disabled={!isHandlingUnitValid}
                                         >
                                             Add Handling Unit
                                         </Button>
@@ -464,50 +612,43 @@ const AddHandlingUnitComponent = () => {
                 {groupName.trim() && (
                     <Card radius={8} p={24} style={{ backgroundColor: customStyles.colors.white }}>
                         <Stack gap="md">
-                            <Text size="lg" fw={600} c={customStyles.colors._4D4D4D}>
-                                Grouping Preview
-                            </Text>
-                            <Box
-                                p="md"
-                                style={{
-                                    backgroundColor: customStyles.colors._F5F7FA,
-                                    borderRadius: '8px',
-                                }}
-                            >
-                                {buildGroupPreview().map(item => renderGroupPreviewItem(item))}
-                            </Box>
+                            <Group justify="space-between" align="center">
+                                <Text size="lg" fw={600} c={customStyles.colors._4D4D4D}>
+                                    Grouping Preview
+                                </Text>
+                                <ActionIcon
+                                    variant="light"
+                                    size="md"
+                                    c={customStyles.colors._1B59F8}
+                                    onClick={handleGroupPreviewToggle}
+                                    title="Reset all"
+                                >
+                                    <IconMinus size={16} />
+                                </ActionIcon>
+                            </Group>
+                            {
+                                isGroupPreviewVisible && <Box
+                                    p="md"
+                                    style={{
+                                        backgroundColor: customStyles.colors._F5F7FA,
+                                        borderRadius: '8px',
+                                    }}
+                                >
+                                    {groupPreviewData.map(item => renderGroupPreviewItem(item))}
+                                </Box>
+                            }
                             {(baseUnits.length > 0 || handlingUnits.length > 0) && (
                                 <Group justify="space-between" mt="lg">
                                     <Button
                                         variant="outline"
                                         color="red"
-                                        onClick={() => {
-                                            // Handle cancel - reset all form data
-                                            setGroupName('')
-                                            setBaseUnits([])
-                                            setHandlingUnits([])
-                                            setCurrentBaseUnit({ name: '', volume: '' })
-                                            setCurrentHandlingUnit({ name: '', containedWith: '', quantity: '' })
-                                            setGroupPreview([])
-                                            setIsGroupDetailsOpen(true)
-                                            setIsBaseLevelOpen(false)
-                                            setIsHandlingUnitOpen(false)
-                                        }}
+                                        onClick={resetForm}
                                     >
                                         Cancel
                                     </Button>
                                     <Button
                                         color={customStyles.colors._1B59F8}
-                                        onClick={() => {
-                                            // Handle create
-                                            const finalGroupStructure = buildGroupPreview()
-                                            console.log('Creating handling unit...', {
-                                                groupName,
-                                                baseUnits,
-                                                handlingUnits,
-                                                finalStructure: finalGroupStructure
-                                            })
-                                        }}
+                                        onClick={onAddHandlingUnit}
                                     >
                                         Create
                                     </Button>

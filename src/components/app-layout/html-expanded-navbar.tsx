@@ -1,26 +1,26 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import NextImage from 'next/image';
+import { logout } from '@/constants/logout';
+import { drawerRoutes, routeExists, authenticatedRoutes } from '@/constants/routes';
+import { localAssets } from '@/lib/file-paths/file-paths';
+import { customStyles } from '@/styles/custom-theme';
+import { DrawerRoute } from "@/types/route-types";
 import {
-    Group,
-    NavLink,
     ActionIcon,
-    Stack,
-    Image,
     Divider,
+    Group,
+    Image,
+    NavLink,
+    Stack,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import {
-    IconLogout,
-    IconChevronLeft,
-    IconLayoutSidebar
+    IconLayoutSidebar,
+    IconLogout
 } from '@tabler/icons-react';
-import { DrawerRoute } from "@/types/route-types";
-import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
-import { logout } from '@/constants/logout';
-import { customStyles } from '@/styles/custom-theme';
-import { localAssets } from '@/lib/file-paths/file-paths';
+import NextImage from 'next/image';
+import { usePathname, useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 
 interface HtmlExpandedNavbarProps {
     activeTab: number;
@@ -39,6 +39,48 @@ const HtmlExpandedNavbar = ({
     const pathName = usePathname();
     const router = useRouter();
 
+    // Note: Calculate active tab based on current pathname using routeExists function
+    const getActiveTabFromPath = () => {
+        // First try exact match
+        const exactIndex = drawerRoutes.findIndex(route => route.route === pathName);
+        if (exactIndex !== -1) return exactIndex;
+
+        // Use routeExists function for more sophisticated matching
+        // Create an array of just the drawer route paths for routeExists
+        const drawerRoutePaths = drawerRoutes.map(route => route.route);
+
+        // Check if current path exists in any of the drawer routes (handles dynamic routes)
+        if (routeExists(pathName, drawerRoutePaths)) {
+            // Find which drawer route matches using the same logic as routeExists
+            const matchingIndex = drawerRoutes.findIndex(route => {
+                const regex = new RegExp("^" + route.route.replace(/:[^/]+/g, "[^/]+") + "$");
+                return regex.test(pathName);
+            });
+            if (matchingIndex !== -1) return matchingIndex;
+        }
+
+        // Fallback: try to find parent route for nested routes
+        const parentIndex = drawerRoutes.findIndex(route =>
+            pathName.startsWith(route.route + '/') || pathName === route.route
+        );
+
+        // Final fallback: check if this is even an authenticated route
+        if (parentIndex === -1 && !routeExists(pathName, authenticatedRoutes.map(route => String(route)))) {
+            return -1; // Don't highlight anything for non-authenticated routes
+        }
+
+        return parentIndex !== -1 ? parentIndex : 0; // Default to first route if authenticated
+    };
+
+    const currentActiveTab = getActiveTabFromPath();
+
+    // Note: Sync with parent component when route changes
+    useEffect(() => {
+        if (currentActiveTab !== activeTab) {
+            setActiveTab(currentActiveTab);
+        }
+    }, [pathName, currentActiveTab, activeTab, setActiveTab]);
+
     // Note: Handle navigation...!
     const handleNavigation = (route: string, index: number) => {
         setActiveTab(index);
@@ -52,12 +94,12 @@ const HtmlExpandedNavbar = ({
     const renderNavLink = (item: DrawerRoute, index: number) => (
         <NavLink
             onMouseEnter={(e) => {
-                if (activeTab !== index) {
+                if (currentActiveTab !== index) {
                     e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
                 }
             }}
             onMouseLeave={(e) => {
-                if (activeTab !== index) {
+                if (currentActiveTab !== index) {
                     e.currentTarget.style.backgroundColor = 'transparent';
                 }
             }}
@@ -66,9 +108,9 @@ const HtmlExpandedNavbar = ({
             label={item?.label}
             // variant="light"
             p="12px 16px"
-            bg={activeTab === index ? customStyles.colors._1B59F81A : ''}
-            c={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
-            active={activeTab === index}
+            bg={currentActiveTab === index ? customStyles.colors._1B59F81A : ''}
+            c={currentActiveTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+            active={currentActiveTab === index}
             onClick={() => handleNavigation(item.route, index)}
             w='100%'
             title={item?.label}
