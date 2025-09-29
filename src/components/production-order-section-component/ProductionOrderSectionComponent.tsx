@@ -95,7 +95,11 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10, // Adjusted to a more reasonable default
+    pageSize: 10,
+  });
+  const [paginationAgainstPO, setPaginationAgainstPO] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5,
   });
   const [expanded, setExpanded] = useState({});
   const [opened, { toggle }] = useDisclosure(false);
@@ -113,6 +117,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
 
   // Pagination values for Api call
   const skipRecord = pagination.pageIndex * pagination.pageSize;
+  const skipRecordAgainstPO = paginationAgainstPO.pageIndex * paginationAgainstPO.pageSize;
 
   // Note: Handeling redux here...!
   const dispatch = useAppDispatch();
@@ -676,7 +681,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         fetchAgainstPoNumber({
           token: authenticatedUser?.token || "",
           poNumber: row.original?.documentNumber,
-          apiUrl: apiUrl
+          apiUrl: apiUrl,
+          lastCount: paginationAgainstPO.pageSize,
+          skipRecords: skipRecordAgainstPO,
         })
       ).finally(() => {
         setIsLoading(false);
@@ -732,6 +739,8 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose={handleClosePOModals}
         row={selectedRow}
         isLoading={isLoading}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
       />
 
       {/* ITViewDetailsModal   */}

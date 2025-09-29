@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -16,10 +16,6 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    });
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const table = useReactTable({
         data: data || [],
@@ -124,11 +120,12 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         />
                     )}
                     <IconColumns cursor="pointer" size={24} />
-                    <IconBorderCorners cursor="pointer" size={24} onClick={() => setIsFullscreen(!isFullscreen)} />
+                    <IconBorderCorners cursor="pointer" size={24}
+                    // onClick={() => setIsFullscreen(!isFullscreen)} 
+                    />
                 </Group>
             </Group>
-            <Box w="100%" mah={isInsideModalTable ? 300 : 700} className={"custom-scroll"} style={{ overflow: "auto" }
-            }>
+            <Box w="100%" className={"custom-scroll"} style={{ overflow: "auto" }}>
                 <table
                     style={{
                         width: "100%",
@@ -308,13 +305,12 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             </Box>
 
             {/* Pagination */}
-            <Box
+            {/* <Box
                 mt={12}
                 bg={customStyles.colors.white}
                 style={{ borderRadius: "16px", padding: "12px 24px" }}
             >
                 <Group justify="space-between" align="center">
-                    {/* Left side - Page navigation */}
                     <Group justify="flex-start" align="center" gap="xs">
                         <ActionIcon
                             className={
@@ -379,7 +375,6 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         </Text>
                     </Group>
 
-                    {/* Right side - Page size selector and info */}
                     <Group gap="md" align="center">
                         <Group gap="xs" align="center">
                             <Text size="sm" c={customStyles.colors._909090}>
@@ -419,7 +414,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         </Text>
                     </Group>
                 </Group>
-            </Box>
+            </Box> */}
         </Stack>
     )
 }

@@ -1,9 +1,7 @@
-import { customStyles } from "@/styles/custom-theme";
 import {
     Modal,
     Group,
     Text,
-    Stack,
     Flex,
     Divider,
     SimpleGrid,
@@ -12,7 +10,7 @@ import {
 import {
     IconCircleX,
 } from "@tabler/icons-react";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useAppSelector } from "@/redux/store";
 import { useState } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
 import ITR_Columns from "@/components/columns/ITR_Columns";
@@ -23,9 +21,8 @@ interface ModalProps {
     handleModalClose: () => void;
     row: any
     isLoading: boolean
-    // handleConfirm: () => void;
-    // handleCancel: () => void;
-    // description: string
+    pagination: any
+    setPagination: any
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -46,33 +43,16 @@ export default function ITRViewDetailsModal({
     opened,
     handleModalClose,
     row,
-    isLoading
+    isLoading,
+    pagination,
+    setPagination
 }: ModalProps) {
-    const [toWarehouse, setToWarehouse] = useState("");
-    const [fromWarehouse, setFromWarehouse] = useState("");
-    const [selectDate, setSelectDate] = useState<string | null>(null);
-    const [sapStatus, setSapStatus] = useState();
-    const [docStatus, setDocStatus] = useState();
-    const [filteredParams, setFilteredParams] = useState("");
-    const [pagination, setPagination] = useState({
-        pageIndex: 0,
-        pageSize: 10,
-    });
-
-    // // Pagination values for Api call
-    // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
     const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
         ({ sapStates }) => {
             return sapStates;
         }
     );
-
-    // const { itrData, itrDataCount, itrErrorState } = useAppSelector(
-    //     ({ itrStates }) => {
-    //         return itrStates;
-    //     }
-    // );
 
     const columns = ITR_Columns({ pagination, listAgainstPo })
 
@@ -93,17 +73,9 @@ export default function ITRViewDetailsModal({
                     <Text fw={400} fz="lg">
                         Preview
                     </Text>
-                    {/* <Divider mt="sm" /> */}
                 </Flex>
             }
         >
-            {/* Header with close button */}
-            {/* <Group justify="space-between" align="flex-start">
-                <Text fw={600} size="md">Preview</Text>
-                <ActionIcon onClick={handleModalClose} variant="subtle" color="#ED1C24" size="lg">
-                    <IconCircleX />
-                </ActionIcon>
-            </Group> */}
 
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
@@ -123,10 +95,12 @@ export default function ITRViewDetailsModal({
 
             <TanStackTable
                 data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
-                dataCount={Math.ceil(totalRecordsAgainstPo / pagination.pageSize)}
+                dataCount={totalRecordsAgainstPo}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
             />
         </Modal >
     );
