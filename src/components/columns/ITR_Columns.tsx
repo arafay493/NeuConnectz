@@ -179,27 +179,27 @@ const ITR_Columns = ({ pagination, list }: any) => {
             //     ),
             //     enableColumnFilter: true,
             // },
-            // {
-            //     accessorKey: "docDate",
-            //     header: "Doc Date",
-            //     minSize: 140,
-            //     // cell: ({ getValue }: any) => (
-            //     // <Text c={customStyles.colors._909090} fw={500}>
-            //     //     {new Date(getValue() as string).toLocaleDateString()}
-            //     // </Text>
-            //     // ),
-            //     cell: ({ getValue }: any) => {
-            //         const rawDate = getValue() as string;
-            //         const formattedDate = dayjs(rawDate).format("DD/MM/YYYY");
+            {
+                accessorKey: "createdDate",
+                header: "Doc Date",
+                minSize: 140,
+                // cell: ({ getValue }: any) => (
+                // <Text c={customStyles.colors._909090} fw={500}>
+                //     {new Date(getValue() as string).toLocaleDateString()}
+                // </Text>
+                // ),
+                cell: ({ getValue }: any) => {
+                    const rawDate = getValue() as string;
+                    const formattedDate = dayjs(rawDate).format("DD/MM/YYYY");
 
-            //         return (
-            //             <Text c={customStyles.colors._909090} fw={500}>
-            //                 {formattedDate}
-            //             </Text>
-            //         );
-            //     },
-            //     enableColumnFilter: true,
-            // },
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {formattedDate}
+                        </Text>
+                    );
+                },
+                enableColumnFilter: true,
+            },
         ],
         [list, pagination]
     );
