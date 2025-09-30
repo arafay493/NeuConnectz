@@ -1406,7 +1406,7 @@ const IntegrationComponent = () => {
 
     // Note: post request to SAP api response handler...!
     const handleResponse = (response: any): void => {
-        // console.log('Res in component: ', response);
+        console.log('Res in component: ', response);
 
         if (response && response.status == 201) {
             if (response?.data?.data?.success) {
@@ -1486,6 +1486,7 @@ const IntegrationComponent = () => {
             const itrPendingVal = statsData['totalItrPending']
 
             if (itrPendingVal != undefined && itrPendingVal > 0) {
+                setDataLoading(false);
                 showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
                 return;
             }
