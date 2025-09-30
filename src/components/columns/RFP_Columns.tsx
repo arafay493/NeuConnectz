@@ -92,17 +92,17 @@ const RFP_Columns = ({ pagination, recieptFromProductionList }: any) => {
         ),
         enableColumnFilter: true,
       },
-      {
-        accessorKey: 'baseQuantiy',
-        header: 'Base Qty',
-        minSize: 150,
-        cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() != null ? String(getValue()) : '-'}
-          </Text>
-        ),
-        enableColumnFilter: true,
-      },
+    //   {
+    //     accessorKey: 'baseQuantiy',
+    //     header: 'Base Qty',
+    //     minSize: 150,
+    //     cell: ({ getValue }) => (
+    //       <Text c={customStyles.colors._909090} fw={500}>
+    //         {getValue() != null ? String(getValue()) : '-'}
+    //       </Text>
+    //     ),
+    //     enableColumnFilter: true,
+    //   },
       {
         accessorKey: 'postedDate',
         header: 'Posting Date',
@@ -116,17 +116,17 @@ const RFP_Columns = ({ pagination, recieptFromProductionList }: any) => {
         ),
         enableColumnFilter: true,
       },
-      {
-        id: 'transcType',
-        header: 'Transc Type',
-        minSize: 150,
-        cell: () => (
-          <Text c={customStyles.colors._909090} fw={500}>
-            -
-          </Text>
-        ),
-        enableColumnFilter: true,
-      },
+    //   {
+    //     id: 'transcType',
+    //     header: 'Transc Type',
+    //     minSize: 150,
+    //     cell: () => (
+    //       <Text c={customStyles.colors._909090} fw={500}>
+    //         -
+    //       </Text>
+    //     ),
+    //     enableColumnFilter: true,
+    //   },
     ],
     [recieptFromProductionList, pagination]
   );

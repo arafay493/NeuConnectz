@@ -1,5 +1,6 @@
 import { customStyles } from '@/styles/custom-theme';
 import { Text } from '@mantine/core';
+import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
 const IFP_Columns = ({ pagination, list }: any) => {
@@ -69,6 +70,21 @@ const IFP_Columns = ({ pagination, list }: any) => {
                 ),
                 enableColumnFilter: true,
             },
+            // {
+            //     accessorKey: 'uom',
+            //     header: 'UOM',
+            //     minSize: 200,
+            //     cell: ({ getValue }: any) => (
+            //         <Text
+            //             c={customStyles.colors._909090}
+            //             fw={500}
+            //             style={{ whiteSpace: 'nowrap' }}
+            //         >
+            //             {String(getValue())}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
             {
                 accessorKey: 'wareHouseCode',
                 header: 'WHS',
@@ -106,13 +122,22 @@ const IFP_Columns = ({ pagination, list }: any) => {
                 accessorKey: 'postedDate',
                 header: 'Post Date',
                 minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue
-                            ? new Date(getValue as string).toLocaleDateString()
-                            : '-'}
-                    </Text>
-                ),
+                // cell: ({ getValue }: any) => (
+                //     <Text c={customStyles.colors._909090} fw={500}>
+                //         {getValue
+                //             ? new Date(getValue as string).toLocaleDateString()
+                //             : '-'}
+                //     </Text>
+                // ),
+                cell: ({ getValue }: any) => {
+                    const rawDate = getValue() as string;
+
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {rawDate ? dayjs(rawDate).format("DD/MM/YYYY") : "-"}
+                        </Text>
+                    );
+                },
                 enableColumnFilter: true,
             },
         ],

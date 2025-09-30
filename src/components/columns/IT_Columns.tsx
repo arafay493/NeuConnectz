@@ -23,11 +23,82 @@ const IT_Columns = ({ pagination, list }: any) => {
             },
             {
                 accessorKey: 'docNum',
-                header: 'Doc Num',
+                header: 'Doc No',
                 minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {String(getValue())}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'itemCode',
+                header: 'Item Code',
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'itemName',
+                header: 'Item Description',
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'receivedQuantity',
+                header: 'Quantity',
+                minSize: 120,
+                cell: ({ row }: any) => {
+                    const { receivedQuantity } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {receivedQuantity != null
+                                ? Number(receivedQuantity).toFixed(2)
+                                : '-'}
+                        </Text>
+                    );
+                },
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'uom',
+                header: 'UOM',
+                minSize: 120,
+                cell: ({ getValue }: any) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {String(getValue())}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'groupCode',
+                header: 'Group Code',
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : '-'}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'groupName',
+                header: 'Group Name',
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() != null ? String(getValue()) : '-'}
                     </Text>
                 ),
                 enableColumnFilter: true,
@@ -65,77 +136,17 @@ const IT_Columns = ({ pagination, list }: any) => {
                 ),
                 enableColumnFilter: true,
             },
-            {
-                accessorKey: 'docStatus',
-                header: 'Doc Status',
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: 'itemCode',
-                header: 'Item Code',
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: 'itemName',
-                header: 'Item Description',
-                minSize: 200,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: 'groupCode',
-                header: 'Group Code',
-                minSize: 200,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() != null ? String(getValue()) : '-'}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: 'groupName',
-                header: 'Group Name',
-                minSize: 200,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() != null ? String(getValue()) : '-'}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: 'receivedQuantity',
-                header: 'Quantity',
-                minSize: 120,
-                cell: ({ row }: any) => {
-                    const { receivedQuantity } = row?.original;
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500}>
-                            {receivedQuantity != null
-                                ? Number(receivedQuantity).toFixed(2)
-                                : '-'}
-                        </Text>
-                    );
-                },
-                enableColumnFilter: true,
-            },
+            // {
+            //     accessorKey: 'docStatus',
+            //     header: 'Doc Status',
+            //     minSize: 150,
+            //     cell: ({ getValue }: any) => (
+            //         <Text c={customStyles.colors._909090} fw={500}>
+            //             {getValue() as string}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
             {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
@@ -169,17 +180,17 @@ const IT_Columns = ({ pagination, list }: any) => {
                 ),
                 enableColumnFilter: true,
             },
-            {
-                accessorKey: 'sapStatus',
-                header: 'SAP Status',
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
+            // {
+            //     accessorKey: 'sapStatus',
+            //     header: 'SAP Status',
+            //     minSize: 180,
+            //     cell: ({ getValue }: any) => (
+            //         <Text c={customStyles.colors._909090} fw={500}>
+            //             {getValue() as string}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
         ],
         [list, pagination]
     );
