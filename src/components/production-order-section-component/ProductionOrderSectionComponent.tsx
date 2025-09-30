@@ -696,6 +696,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       setIsTRPOModalOpen(true)
     }
     else if (label === "Issuance") {
+      apiUrl = "/IProductionOrderFeature/ListAllIssueForProductionWithDetails"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsICPOModalOpen(true)
     }
     else if (label === "Receving") {
@@ -775,6 +778,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isICPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Issuance"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl = {apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* RecevingViewDetailsModal   */}
