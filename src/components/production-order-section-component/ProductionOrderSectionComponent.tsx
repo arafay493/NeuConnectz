@@ -702,6 +702,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       setIsICPOModalOpen(true)
     }
     else if (label === "Receving") {
+      apiUrl = "/IReceiptFromProductionFeature/ListAllRecieptFromProduction"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsRPOModalOpen(true)
     }
     // console.log("🚀 ~ handleViewDetails ~ row:", row)
@@ -793,6 +796,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Receving"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl = {apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* Header Section */}
