@@ -331,6 +331,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
 
                         <Group gap="xs" align="center">
                             <Select
+                                comboboxProps={{ withinPortal: false }}
                                 w={80}
                                 radius={8}
                                 rightSection={<IconChevronDown size={18} />}
@@ -380,6 +381,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                 Show
                             </Text>
                             <Select
+                                comboboxProps={{ withinPortal: false }}
                                 w={80}
                                 radius={8}
                                 rightSection={<IconChevronDown size={18} />}
