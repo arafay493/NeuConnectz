@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -16,7 +16,6 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const skipRecord = pagination.pageIndex * pagination.pageSize;
     const table = useReactTable({
         data: data || [],
         columns: columns || [],
@@ -305,7 +304,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             </Box>
 
             {/* Pagination */}
-            {/* <Box
+            <Box
                 mt={12}
                 bg={customStyles.colors.white}
                 style={{ borderRadius: "16px", padding: "12px 24px" }}
@@ -414,7 +413,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         </Text>
                     </Group>
                 </Group>
-            </Box> */}
+            </Box>
         </Stack>
     )
 }

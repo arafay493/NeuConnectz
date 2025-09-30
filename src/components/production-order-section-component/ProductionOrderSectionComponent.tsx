@@ -89,6 +89,8 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   // Note: Handling states here...!
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAgainstPO, setIsLoadingAgainstPO] = useState(false);
+  const [apiUrlAgainstPO, setApiUrlAgainstPO] = useState<string>("");
+  const [poNumber, setPoNumber] = useState<number>(0);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
   const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
@@ -677,36 +679,20 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     let apiUrl = ""
     if (label === "ITR") {
       apiUrl = "/IInventoryTransferRequestFeature/ListAllItrsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsITRPOModalOpen(true)
-      setIsLoadingAgainstPO(true)
-      dispatch(
-        fetchAgainstPoNumber({
-          token: authenticatedUser?.token || "",
-          poNumber: row.original?.documentNumber,
-          apiUrl: apiUrl,
-          lastCount: paginationAgainstPO.pageSize,
-          skipRecords: skipRecordAgainstPO,
-        })
-      ).finally(() => {
-        setIsLoadingAgainstPO(false);
-      });
     }
     else if (label === "IT") {
-      apiUrl = "/IInventoryTransferRequestFeature/ListAllItsAgainstPoNumber"
+      apiUrl = "/IInventoryTransferFeature/ListAllItsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsITPOModalOpen(true)
-      dispatch(
-        fetchAgainstPoNumber({
-          token: authenticatedUser?.token || "",
-          poNumber: row.original?.documentNumber,
-          apiUrl: apiUrl,
-          lastCount: paginationAgainstPO.pageSize,
-          skipRecords: skipRecordAgainstPO,
-        })
-      ).finally(() => {
-        setIsLoadingAgainstPO(false);
-      });
     }
     else if (label === "TR") {
+      // apiUrl = "/IInventoryTransferRequestFeature/ListAllItsAgainstPoNumber"
+      // setApiUrlAgainstPO(apiUrl)
+      // setPoNumber(row.original?.documentNumber)
       setIsTRPOModalOpen(true)
     }
     else if (label === "Issuance") {
@@ -753,9 +739,13 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose={handleClosePOModals}
         row={selectedRow}
         isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
-        title = {"Inventory Transfer Request"}
+        title={"Inventory Transfer Request"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl = {apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* ITViewDetailsModal   */}
@@ -766,7 +756,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         isLoading={isLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
-        title = {"Inventory Transfer"}
+        title={"Inventory Transfer"}
       />
 
       {/* TRViewDetailsModal   */}
