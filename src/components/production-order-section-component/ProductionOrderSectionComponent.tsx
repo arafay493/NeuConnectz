@@ -754,9 +754,13 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose={handleClosePOModals}
         row={selectedRow}
         isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
         title={"Inventory Transfer"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl = {apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* TRViewDetailsModal   */}

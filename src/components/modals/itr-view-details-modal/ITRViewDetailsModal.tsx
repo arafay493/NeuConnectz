@@ -45,7 +45,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 
-export default function ITViewDetailsModal({
+export default function ITRViewDetailsModal({
     opened,
     handleModalClose,
     row,
