@@ -27,6 +27,7 @@ export type Routes = {
     handlingUnit: string;
     addHandlingUnit: string;
     scanProductionOrder: string;
+    assignHandlingUnit: string;
 };
 
 export type DrawerRoute = {

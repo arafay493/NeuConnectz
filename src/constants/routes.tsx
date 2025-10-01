@@ -11,7 +11,8 @@ import {
     IconLayoutDashboardFilled,
     IconBarcode,
     IconContainer,
-    IconBox
+    IconBox,
+    IconPackage
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 
@@ -41,7 +42,8 @@ const authenticatedRoutes: string[] = [
     "/production-order/add-order",
     "/handling-unit",
     "/handling-unit/add-unit",
-    "/production-order/scan/:dynamicPath"
+    "/production-order/scan/:dynamicPath",
+    "/assign-handling-unit",
 ];
 
 // Note: Defining all routes...!
@@ -69,7 +71,8 @@ const routes: Routes = {
     addProductionOrder: "/production-order/add-order",
     handlingUnit: "/handling-unit",
     addHandlingUnit: "/handling-unit/add-unit",
-    scanProductionOrder: "/production-order/scan/:dynamicPath"
+    scanProductionOrder: "/production-order/scan/:dynamicPath",
+    assignHandlingUnit: "/assign-handling-unit"
 };
 
 // Note: Defining drawer routes...!
@@ -153,6 +156,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBox color='currentColor' size={24} />,
         label: "Handling Unit",
         route: routes.handlingUnit
+    },
+    {
+        icon: <IconPackage color='currentColor' size={24} />,
+        label: "Assign Handling Unit",
+        route: routes.assignHandlingUnit
     },
     {
         icon: <IconContainer color='currentColor' size={24} />,

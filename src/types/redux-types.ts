@@ -114,6 +114,7 @@ export interface SAPStateType {
     list_Pending_GRNS_Data: Array<GRN_Props>;
     list_Integrated_GRNS_Data: Array<GRN_Props>;
     list_Item_Code_Data: Array<ItemDataProps> | null;
+    list_item_Code_Data_By_Group_Id: ItemDataByHandlingUnitId | null;
     totalItemCodeCount: number;
     sapErrorState: string;
     isSAPConfigExist: boolean,
@@ -134,6 +135,11 @@ export interface SAPStateType {
     totalGRNS_DataCounts: number;
     listAll_ITR_IT_TRS_Count: number;
 };
+
+export interface ItemDataByHandlingUnitId {
+    groupId: string;
+    itemIds: string[];
+}
 
 export interface GRN_Props {
     createdBy: string;

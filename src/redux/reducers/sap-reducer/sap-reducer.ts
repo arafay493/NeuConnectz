@@ -8,6 +8,7 @@ const initialState: SAPStateType = {
     list_GRNS_Data: [],
     list_Integrated_GRNS_Data: [],
     list_Item_Code_Data: [],
+    list_item_Code_Data_By_Group_Id: null,
     totalItemCodeCount: 0,
     sapErrorState: "",
     isSAPConfigExist: false,
@@ -44,7 +45,7 @@ const SAPReducer = createSlice({
         FETCH_ALL_ITEM_CODES: (state, action: PayloadAction<any>) => {
             if (action?.payload?.items && Array.isArray(action?.payload?.items)) {
                 state.list_Item_Code_Data = action.payload.items;
-                state.totalItemCodeCount = action?.payload?.totalCount || 0;
+                state.totalItemCodeCount = action?.payload?.totalRecords || 0;
             } else if (Array.isArray(action?.payload)) {
                 state.list_Item_Code_Data = action.payload;
                 state.totalItemCodeCount = action.payload.length;
@@ -52,6 +53,10 @@ const SAPReducer = createSlice({
                 state.list_Item_Code_Data = null;
                 state.totalItemCodeCount = 0;
             }
+        },
+
+        FETCH_ITEM_BY_GROUP_ID: (state, action: PayloadAction<any>) => {
+            state.list_item_Code_Data_By_Group_Id = action.payload;
         },
 
         FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
@@ -75,6 +80,8 @@ const SAPReducer = createSlice({
             state.list_Integrated_GRNS_Data = action?.payload?.grnsData;
             state.totalGRNS_DataCounts = action?.payload?.totalGRNSCount
         },
+
+
 
         FETCH_ALL_VENDOR_CODES: (state, action: PayloadAction<any>) => {
             state.vendorCodeList = action?.payload;
@@ -101,6 +108,7 @@ export const
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
         FETCH_ALL_ITR_IT_TRS,
         FETCH_ALL_ITEM_CODES,
+        FETCH_ITEM_BY_GROUP_ID,
         FETCH_ALL_GRNS,
         FETCH_ALL_INTEGRATED_GRNS,
         FETCH_ALL_PENDING_GRNS,
