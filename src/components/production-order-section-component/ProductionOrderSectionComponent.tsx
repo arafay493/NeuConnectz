@@ -690,9 +690,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       setIsITPOModalOpen(true)
     }
     else if (label === "TR") {
-      // apiUrl = "/IInventoryTransferRequestFeature/ListAllItsAgainstPoNumber"
-      // setApiUrlAgainstPO(apiUrl)
-      // setPoNumber(row.original?.documentNumber)
+      apiUrl = "/ITransferReceiveFeature/ListAllTrsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsTRPOModalOpen(true)
     }
     else if (label === "Issuance") {
@@ -774,6 +774,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isTRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Transfer Receipt"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl = {apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* IssuenceViewDetailsModal   */}
