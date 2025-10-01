@@ -57,7 +57,7 @@ import {
 import TableModalComponent from "../table-modal/TableModalComponent";
 import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA, CLEAR_LIST_AGAINST_PO } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import ITRViewDetailsModal from "../modals/itr-view-details-modal/ITRViewDetailsModal";
 import ITViewDetailsModal from "../modals/it-view-details-modal/ITViewDetailsModal";
 import TRViewDetailsModal from "../modals/tr-view-details-modal/TRViewDetailsModal";
@@ -85,6 +85,12 @@ type ApiProp = {
 
 const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   // console.log("API URL:", apiUrl);
+  // breakpoints
+  const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
+  const isTablet = useMediaQuery("(max-width: 768px)");     // tablets
+  const isLaptop = useMediaQuery("(max-width: 1024px)");    // small laptops
+  const isDesktop = useMediaQuery("(max-width: 1280px)");   // normal desktops
+  const isLargeDesktop = useMediaQuery("(min-width: 1281px)"); // big screens
 
   // Note: Handling states here...!
   const [isLoading, setIsLoading] = useState(false);
@@ -1161,7 +1167,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                       >
                         <div
                           style={{
-                            maxWidth: !isSidebarOpen ? "75vw" : "85vw",
+                            maxWidth: !isSidebarOpen && isLargeDesktop ? "75vw" : isSidebarOpen && (isDesktop || isLaptop) ? "80vw" : !isSidebarOpen && (isDesktop || isLaptop) ? "63vw" : !isSidebarOpen && isTablet ? "70vw" : "85vw",
                             width: "100%",
                             position: "sticky",
                             left: 0,
