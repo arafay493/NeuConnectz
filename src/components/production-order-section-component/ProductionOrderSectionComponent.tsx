@@ -716,6 +716,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     setIsTRPOModalOpen(false)
     setIsICPOModalOpen(false)
     setIsRPOModalOpen(false)
+
+    // Clear States of PO Modals
+    setPaginationAgainstPO({
+      pageIndex: 0,
+      pageSize: 5,
+    })
+    setApiUrlAgainstPO("")
+    setPoNumber(0)
   }
 
   return (
@@ -750,7 +758,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setPagination={setPaginationAgainstPO}
         title={"Inventory Transfer Request"}
         skipRecord={skipRecordAgainstPO}
-        apiUrl = {apiUrlAgainstPO}
+        apiUrl={apiUrlAgainstPO}
         poNumber={poNumber}
       />
 
@@ -765,7 +773,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setPagination={setPaginationAgainstPO}
         title={"Inventory Transfer"}
         skipRecord={skipRecordAgainstPO}
-        apiUrl = {apiUrlAgainstPO}
+        apiUrl={apiUrlAgainstPO}
         poNumber={poNumber}
       />
 
@@ -780,7 +788,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setPagination={setPaginationAgainstPO}
         title={"Transfer Receipt"}
         skipRecord={skipRecordAgainstPO}
-        apiUrl = {apiUrlAgainstPO}
+        apiUrl={apiUrlAgainstPO}
         poNumber={poNumber}
       />
 
@@ -795,7 +803,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setPagination={setPaginationAgainstPO}
         title={"Issuance"}
         skipRecord={skipRecordAgainstPO}
-        apiUrl = {apiUrlAgainstPO}
+        apiUrl={apiUrlAgainstPO}
         poNumber={poNumber}
       />
 
@@ -810,7 +818,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         setPagination={setPaginationAgainstPO}
         title={"Receving"}
         skipRecord={skipRecordAgainstPO}
-        apiUrl = {apiUrlAgainstPO}
+        apiUrl={apiUrlAgainstPO}
         poNumber={poNumber}
       />
 
