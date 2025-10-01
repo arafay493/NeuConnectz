@@ -95,6 +95,9 @@ const SAPReducer = createSlice({
             state.recieptFromProductionCount = 0;
             state.listOfProductionOrderLines = [];
             state.productionOrderLinesCount = 0;
+            state.productionOrdersDocumentStates = null;
+            state.listAgainstPo = [];
+            state.totalRecordsAgainstPo = 0;
         },
 
         FETCH_ALL_PRODUCTION_ORDERS: (state, action: PayloadAction<any>) => {
@@ -110,6 +113,11 @@ const SAPReducer = createSlice({
         FETCH_LIST_AGAINST_PO: (state, action: PayloadAction<any>) => {
             state.listAgainstPo = action?.payload?.listAgainstPo?.data;
             state.totalRecordsAgainstPo = action?.payload?.listAgainstPo?.totalRecords;
+        },
+
+        CLEAR_LIST_AGAINST_PO: (state) => {
+            state.listAgainstPo = [];
+            state.totalRecordsAgainstPo = 0;
         },
 
         FETCH_ALL_ISSUES_FOR_PRODUCTION: (state, action: PayloadAction<any>) => {
@@ -155,6 +163,7 @@ export const
         FETCH_ALL_PRODUCTION_ORDERS_LINES_DATA,
         CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA,
         FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES,
-        FETCH_LIST_AGAINST_PO
+        FETCH_LIST_AGAINST_PO,
+        CLEAR_LIST_AGAINST_PO
     } = SAPReducer.actions;
 export default SAPReducer.reducer;

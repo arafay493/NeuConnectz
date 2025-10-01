@@ -55,7 +55,7 @@ import {
   fetchProductionOrdersLinesList,
 } from "@/redux/actions/sap-actions/sap-actions";
 import TableModalComponent from "../table-modal/TableModalComponent";
-import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-reducer/sap-reducer";
+import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA, CLEAR_LIST_AGAINST_PO } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
 import { useDisclosure } from "@mantine/hooks";
 import ITRViewDetailsModal from "../modals/itr-view-details-modal/ITRViewDetailsModal";
@@ -726,6 +726,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     })
     setApiUrlAgainstPO("")
     setPoNumber(0)
+    dispatch(CLEAR_LIST_AGAINST_PO())
   }
 
   return (
