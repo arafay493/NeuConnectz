@@ -105,7 +105,6 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     pageSize: 5,
   });
   const [expanded, setExpanded] = useState({});
-  const [opened, { toggle }] = useDisclosure(false);
 
   // Note: Table modal state...!
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
@@ -126,6 +125,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => {
     return authStates;
+  });
+  const { isSidebarOpen } = useAppSelector(({ sidebarStates }) => {
+    return sidebarStates;
   });
   const { productionOrdersList, productionOrdersCount, productionOrdersDocumentStates } = useAppSelector(
     ({ sapStates }) => {
@@ -1141,58 +1143,58 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                           padding: "16px",
                         }}
                       >
-                        <Collapse in={row.getIsExpanded()} transitionDuration={1000}>
-                          <Stack gap="md">
-                            {cardsData.map((item, index) => (
-                              <Card
-                                key={index}
-                                withBorder
-                                radius="lg"
-                                // shadow="xs"
-                                w="100%"
-                                p="lg"
-                                style={{ borderColor: "#e0e0e0" }}
-                              >
-                                <Group align="center" justify="between">
-                                  <Group flex={1}>
-                                    <Text fw={600} size="sm">
-                                      {item.title}
-                                    </Text>
-                                  </Group>
-                                  <Group>
-                                    <Group gap={3}>
-                                      <Text size="xs" display={"flex"} fw={"bold"}>
-                                        Total No of {item.label} Created : {" "}
-                                      </Text>
-                                      <Text size="xs" c={"dimmed"} fw={"bold"}>
-                                        {item.totalCreated}
+                        <div
+                          style={{
+                            maxWidth: !isSidebarOpen ? "75vw" : "85vw",
+                            width: "100%",
+                            position: "sticky",
+                            left: 0,
+                            zIndex: 2,
+                          }}
+                        >
+                          <Collapse in={row.getIsExpanded()} transitionDuration={1000}>
+                            <Stack gap="md">
+                              {cardsData.map((item, index) => (
+                                <Card
+                                  key={index}
+                                  withBorder
+                                  radius="lg"
+                                  w="100%"
+                                  p="lg"
+                                  style={{ borderColor: "#e0e0e0" }}
+                                >
+                                  <Group align="center" justify="between">
+                                    <Group flex={1}>
+                                      <Text fw={600} size="sm">
+                                        {item.title}
                                       </Text>
                                     </Group>
-                                    <Button
-                                      variant="transparent"
-                                      className={"outlineButton"}
-                                      radius={8}
-                                      size="xs"
-                                      w={120}
-                                      onClick={() => handleViewDetails(row, item?.label)}
-                                    >
-                                      View Details
-                                    </Button>
+                                    <Group>
+                                      <Group gap={3}>
+                                        <Text size="xs" display={"flex"} fw={"bold"}>
+                                          Total No of {item.label} Created : {" "}
+                                        </Text>
+                                        <Text size="xs" c={"dimmed"} fw={"bold"}>
+                                          {item.totalCreated}
+                                        </Text>
+                                      </Group>
+                                      <Button
+                                        variant="transparent"
+                                        className={"outlineButton"}
+                                        radius={8}
+                                        size="xs"
+                                        w={120}
+                                        onClick={() => handleViewDetails(row, item?.label)}
+                                      >
+                                        View Details
+                                      </Button>
+                                    </Group>
                                   </Group>
-                                </Group>
-                              </Card>
-                            ))}
-                          </Stack>
-                          {/* <div style={{ padding: "16px" }}>
-                            <Stack gap="xs">
-                              <Text fw={600}>Details</Text>
-                              <Text>Doc No: {row.original.documentNumber}</Text>
-                              <Text>Item Code: {row.original.itemNo}</Text>
-                              <Text>Quantity: {row.original.quantity}</Text>
-                              <Text>Status: {row.original.productionOrderStatus}</Text>
+                                </Card>
+                              ))}
                             </Stack>
-                          </div> */}
-                        </Collapse>
+                          </Collapse>
+                        </div>
                       </td>
                     </tr>
                   )}

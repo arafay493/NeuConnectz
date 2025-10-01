@@ -15,6 +15,7 @@ import DashboardReducer from "./dashboard-reducer/dashboard-reducer";
 import reconciliationReducer from '@/redux/reducers/reconciliation-reducer/reconciliation-reducer';
 import generateBarcodeReducer from '@/redux/reducers/generate-barcode-reducer/generate-barcode-reducer';
 import goodsIssueReducer from "@/redux/reducers/gi-reducer/gi-reducer";
+import sidebarReducer from "@/redux/reducers/sidebar-reducer/sidebar-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -34,7 +35,8 @@ const rootReducer = combineReducers({
     itrStates: itrReducer,
     reconciliationStates: reconciliationReducer,
     generateBarcodeStates: generateBarcodeReducer,
-    gIStates: goodsIssueReducer
+    gIStates: goodsIssueReducer,
+    sidebarStates: sidebarReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);
