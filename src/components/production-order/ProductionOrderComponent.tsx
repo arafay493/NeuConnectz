@@ -13,6 +13,7 @@ import { DatePickerInput } from "@mantine/dates"
 import ProductionOrderSectionComponent from '../production-order-section-component/ProductionOrderSectionComponent';
 import IssueForProductionComponent from '../issue-for-production-component/IssueForProductionComponent';
 import ReceiptForProductionComponent from '../receipt-for-production-component/ReceiptForProductionComponent';
+import ProductionOrderFilterBar from './ProductionOrderFilterBar';
 
 const ProductionOrderComponent = () => {
 
@@ -68,8 +69,25 @@ const ProductionOrderComponent = () => {
                 ))}
             </div>
 
+            <ProductionOrderFilterBar
+                // docStatus={docStatus}
+                // setDocStatus={setDocStatus}
+                // sapStatus={sapStatus}
+                // setSapStatus={setSapStatus}
+                // fromWarehouse={fromWarehouse}
+                // handleFromWarehouseChange={handleFromWarehouseChange}
+                // toWarehouse={toWarehouse}
+                // handleToWarehouseChange={handleToWarehouseChange}
+                // selectDate={selectDate}
+                // setSelectDate={setSelectDate}
+                // selectWarehouseData={selectWarehouseData}
+                // sapType="ITR"
+                // sapTypeApiUrl={process.env.NEXT_PUBLIC_EXPORT_ITR_TO_EXCEL || ""}
+                // isFilterParams={filteredParams}
+            />
+
             {/* Note: Date selection and export to CSV section */}
-            <Group
+            {/* <Group
                 p={isSmallScreen ? 16 : 24}
                 justify={isSmallScreen ? 'flex-start' : customStyles.alignment.spaceBetween}
                 align={isSmallScreen ? 'stretch' : 'flex-end'}
@@ -119,7 +137,7 @@ const ProductionOrderComponent = () => {
                         Export To CSV
                     </Button>
                 </div>
-            </Group>
+            </Group> */}
 
             {/* Custom Tab Panels */}
             <div>
