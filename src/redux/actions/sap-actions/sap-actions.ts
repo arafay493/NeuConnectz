@@ -11,7 +11,8 @@ import {
     FETCH_ALL_PENDING_GRNS,
     FETCH_ALL_VENDOR_CODES,
     GET_SAP_STAGING_DATA_COUNTS,
-    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA
+    UNAUTHORIZE_USER_TRYING_TO_ACCESS_SAP_DATA,
+    FETCH_ITEM_BY_GROUP_ID
 } from "@/redux/reducers/sap-reducer/sap-reducer";
 import { ResHandler } from "@/types/api-types";
 import { AddSAPConfigDataType } from "@/types/modules/sap-types/sap-types";
@@ -330,11 +331,15 @@ const fetchAllVendorCodes = createAsyncThunk(
 
 const listItemCodes = createAsyncThunk(
     "sap/listItemCodes",
-    async ({ keywords }: {
+    async ({ keywords, lastCount = 10, skipRecords = 0 }: {
         keywords?: string
+        lastCount?: number,
+        skipRecords?: number
     }, { dispatch }) => {
         const params: { [key: string]: string } = {};
         if (keywords !== undefined) params.keywords = keywords;
+        if (lastCount !== undefined) params.lastCount = String(lastCount);
+        if (skipRecords !== undefined) params.skipRecords = String(skipRecords);
 
         const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_ITEM_CODES}`, '', params);
 
@@ -343,6 +348,21 @@ const listItemCodes = createAsyncThunk(
         if (status == 200) {
             dispatch(FETCH_ALL_ITEM_CODES(data?.data));
         };
+
+        return response;
+    }
+);
+
+const getItemByGroupId = createAsyncThunk(
+    "sap/getItemByGroupId",
+    async ({ groupId }: { groupId: string }, { dispatch }) => {
+        const response = await apiGet(`/trace-and-track/v2${process.env.NEXT_PUBLIC_GET_ITEM_BY_USER_ID}/${groupId}`);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ITEM_BY_GROUP_ID(data?.data));
+        }
 
         return response;
     }
@@ -363,6 +383,6 @@ const handleGetSapStagingDataCounts = createAsyncThunk(
 );
 
 export {
-    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_GRNS, fetchAll_INTEGRATED_GRNS, fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP, listItemCodes
+    addSAPConfiguration, checkSAPConfigExist, exportDataToCsvFile, fetchAll_GRNS, fetchAll_INTEGRATED_GRNS, fetchAll_PENDING_GRNS, fetchAllITR_IT_TRS, fetchAllVendorCodes, getSAPData, handleGetSapStagingDataCounts, postRequestToSAP, listItemCodes, getItemByGroupId
 };
 

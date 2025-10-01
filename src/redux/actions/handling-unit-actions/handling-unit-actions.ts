@@ -52,7 +52,18 @@ const addHandlingUnit = createAsyncThunk(
     }
 );
 
+const assignHandlingUnitToItems = createAsyncThunk(
+    "handlingUnit/assignHandlingUnitToItems",
+    async ({ body, resHandler }: { body: { groupId: string, itemIds: string[] }, resHandler: (status: number) => void }, { dispatch }) => {
+        const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ASSIGN_GROUP_TO_ITEMS}`, body);
+        const { status, data } = response;
+
+        resHandler(status);
+    }
+);
+
 export {
     addHandlingUnit,
-    fetchHandlingUnits
+    fetchHandlingUnits,
+    assignHandlingUnitToItems
 };
