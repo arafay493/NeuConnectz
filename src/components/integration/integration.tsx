@@ -1486,6 +1486,7 @@ const IntegrationComponent = () => {
             const itrPendingVal = statsData['totalItrPending']
 
             if (itrPendingVal != undefined && itrPendingVal > 0) {
+                setDataLoading(false);
                 showNotificationToast("Warning", "Please post ITR first!", customStyles.colors.red);
                 return;
             }

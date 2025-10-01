@@ -76,7 +76,7 @@ const postRequestToSAP = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost(`/neu-connect/v2/${apiUrl}`, { userName: type }, token);
+            const response = await apiPost(`/neu-connect/v2${apiUrl}`, { userName: type }, token);
             console.log('SAP Api Res: ', response);
 
             const { status, data } = response;
@@ -404,14 +404,15 @@ const fetchIssuesForProductionList = createAsyncThunk(
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
+        console.log("🚀 ~ response:", response)
         // console.log("Fetch all isseus for production api response: ", response);
 
         const { status, data } = response;
 
         if (status == 200) {
             dispatch(FETCH_ALL_ISSUES_FOR_PRODUCTION({
-                issuesForProductionData: data?.data?.issueForProduction,
-                totalIssuesForProductionCount: data?.data?.totalCount
+                issuesForProductionData: data?.data?.data,
+                totalIssuesForProductionCount: data?.data?.totalRecords
             }));
         }
 
@@ -448,8 +449,8 @@ const fetchRecieptFromProductionList = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_ALL_RECIEPT_FROM_PRODUCTION({
-                recieptFromProductionData: data?.data?.recieptFormProduction,
-                totalRecieptFromProductionCount: data?.data?.totalCount
+                recieptFromProductionData: data?.data?.data,
+                totalRecieptFromProductionCount: data?.data?.totalRecords
             }));
         }
 
