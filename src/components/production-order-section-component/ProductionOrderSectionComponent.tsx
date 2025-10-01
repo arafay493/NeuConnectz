@@ -520,39 +520,54 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
           const rowData = row.original;
           // console.log("row data: ", rowData);
           return (
-            <div
+            <Button
+              variant="transparent"
+              // className={'outlineButton'}
+              radius={8}
+              size="sm"
+              w={"100%"}
               style={{
-                display: "flex",
-                flexDirection: "row",
+                color: "#4A4A4A",
+                backgroundColor: "#E1E7EC",
+                marginLeft: 8,
               }}
+              onClick={() => closeProductionOrder(rowData)}
             >
-              <Button
-                variant="transparent"
-                className={"outlineButton"}
-                radius={8}
-                size="sm"
-                w={120}
-                onClick={() => getProductionOrderLinesList(rowData)}
-              >
-                View Details
-              </Button>
+              Close
+            </Button>
+            // <div
+            //   style={{
+            //     display: "flex",
+            //     flexDirection: "row",
+            //   }}
+            // >
+            //   <Button
+            //     variant="transparent"
+            //     className={"outlineButton"}
+            //     radius={8}
+            //     size="sm"
+            //     w={120}
+            //     onClick={() => getProductionOrderLinesList(rowData)}
+            //   >
+            //     View Details
+            //   </Button>
 
-              <Button
-                variant="transparent"
-                // className={'outlineButton'}
-                radius={8}
-                size="sm"
-                w={120}
-                style={{
-                  color: "#4A4A4A",
-                  backgroundColor: "#E1E7EC",
-                  marginLeft: 8,
-                }}
-                onClick={() => closeProductionOrder(rowData)}
-              >
-                Close
-              </Button>
-            </div>
+            //   <Button
+            //     variant="transparent"
+            //     // className={'outlineButton'}
+            //     radius={8}
+            //     size="sm"
+            //     w={"100%"}
+            //     style={{
+            //       color: "#4A4A4A",
+            //       backgroundColor: "#E1E7EC",
+            //       marginLeft: 8,
+            //     }}
+            //     onClick={() => closeProductionOrder(rowData)}
+            //   >
+            //     Close
+            //   </Button>
+            // </div>
           );
         },
         filterFn: stringFilterFn,
