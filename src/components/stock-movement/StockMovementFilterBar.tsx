@@ -10,7 +10,7 @@ import { IconBuildingWarehouse, IconCalendarMonth } from "@tabler/icons-react";
 import { FC } from "react";
 
 export type SapStatusProp = 'Pending' | 'Updated' | 'Integrated'
-export type DocStatusProp = 'Pending' | 'Open' | 'Closed'
+export type DocStatusProp = 'Open' | 'Closed' | 'Drafted' | 'Completed'
 
 interface StockMovementFilterBarProps {
     toWarehouse: string | null;
@@ -95,7 +95,7 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
                 <Text size="md" mb={8} fw={500}>Doc Status</Text>
                 <Select
                     placeholder="Select Doc Status"
-                    data={['Open', 'Closed', 'Pending']}
+                    data={sapType === "ITR" ? ['Open', 'Closed'] : ["Drafted", "Completed"]}
                     value={docStatus}
                     onChange={(value) => setDocStatus(value as DocStatusProp | undefined)}
                     clearable
