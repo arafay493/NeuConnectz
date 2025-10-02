@@ -1,6 +1,7 @@
 import { apiGet, apiPost } from "@/lib/api-service";
 import { FETCH_PRODUCTION_ORDER_DATA, FETCH_PRODUCTION_ORDER_DATA_BY_ID, SET_PRODUCTION_ORDER_LOADING } from "@/redux/reducers/production-order-reducer/production-order-reducer";
 import { ResHandler } from "@/types/api-types";
+import { ListProductionOrder } from "@/types/redux-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const listProductionOrder = createAsyncThunk(
@@ -50,16 +51,18 @@ const fetchProductionById = createAsyncThunk(
 
 const addProductionOrder = createAsyncThunk(
     "generateBarcode/addProductionOrder",
-    async ({ qty, resHandler }: { qty: number; resHandler: ResHandler }, { dispatch }) => {
-        const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ADD_PRODUCTION_ORDER}`, { qty });
+    async ({ body, resHandler }: { body: ListProductionOrder; resHandler: ResHandler }, { dispatch }) => {
+        const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ADD_PRODUCTION_ORDER}`, body);
 
         const { status, data } = response;
 
         resHandler(status);
+
+        // dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID());
     }
 );
 
 export {
-    addProductionOrder, listProductionOrder, fetchProductionById
+    addProductionOrder, fetchProductionById, listProductionOrder
 };
 

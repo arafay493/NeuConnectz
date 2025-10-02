@@ -428,7 +428,8 @@ export interface ProductionOrderStateProps {
 }
 
 export interface ListProductionOrder {
-    id: string;
+    id?: string;
+    groupId: string;
     qty: number;
     actualQty: number;
     itemCode: string;
@@ -436,7 +437,7 @@ export interface ListProductionOrder {
     unitOfMeasurement: string;
     productionLine: string;
     warehouse: string;
-    status: string;
+    status?: string;
 }
 
 export interface ScanProductionOrderProps extends ListProductionOrder {
@@ -450,6 +451,7 @@ export interface AddHandlingUnit {
 
 export interface HandlingUnitStateProps {
     handlingUnit: Array<HandlingUnitProps> | null;
+    handlingUnitByItemId: HandlingUnitProps | null;
     totalCount: number;
     loading: boolean;
 }

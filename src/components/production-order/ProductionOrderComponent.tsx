@@ -1,20 +1,18 @@
 'use client';
 
-import { Box } from "@mantine/core"
-import TitleComponent from "../common/component-title"
-import { IconPlus } from "@tabler/icons-react"
-import ProductionOrderTableComponent from "./ProductionOrderTableComponent"
-import { useEffect, useState } from "react"
-import { PaginationState } from "@tanstack/react-table"
-import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { listProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
 import LoaderComponent from "@/components/common/loader/loader";
+import { listProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { Box } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import { PaginationState } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import TitleComponent from "../common/component-title";
+import ProductionOrderTableComponent from "./ProductionOrderTableComponent";
 
 const ProductionOrderComponent = () => {
     const { data, totalCount, loading } = useAppSelector(({ productionOrderStates }) => productionOrderStates);
-
-    console.log("ProductionOrderComponent -> data, totalCount", data, totalCount);
 
     // Note: Router for route changing
     const router = useRouter();

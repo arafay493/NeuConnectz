@@ -1,21 +1,21 @@
 'use client';
 
+import { stringFilterFn } from "@/constants/table-filteration";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { assignHandlingUnitToItems, fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
+import { getItemByGroupId, listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
+import { ItemDataByHandlingUnitId, ItemDataProps } from "@/types/redux-types";
 import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconBuildingWarehouse, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconPackage, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconPackage, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
-import { getItemByGroupId, listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
-import { ItemDataByHandlingUnitId, ItemDataProps } from "@/types/redux-types";
-import { assignHandlingUnitToItems, fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
-import { stringFilterFn } from "@/constants/table-filteration";
 
 const AssignHandlingUnitComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -34,7 +34,6 @@ const AssignHandlingUnitComponent = () => {
     // Item Code List State
     const { list_Item_Code_Data, totalItemCodeCount, list_item_Code_Data_By_Group_Id } = useAppSelector(({ sapStates }) => sapStates);
 
-    console.log("List Item By Handling Unit Id:", list_item_Code_Data_By_Group_Id);
     const { handlingUnit } = useAppSelector(({ handlingUnitStates }) => handlingUnitStates);
 
     // Transform users data for Select component

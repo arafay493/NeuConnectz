@@ -1,7 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiGet, apiPost, apiDelete } from "@/lib/api-service";
+import { apiGet, apiPost } from "@/lib/api-service";
+import { FETCH_HANDLING_UNIT_DATA, GET_HANDLING_UNIT_BY_ITEM_ID, SET_HANDLING_UNIT_LOADING } from "@/redux/reducers/handling-unit-reducer/handling-unit-reducer";
 import { AddHandlingUnit } from "@/types/redux-types";
-import { FETCH_HANDLING_UNIT_DATA, SET_HANDLING_UNIT_LOADING } from "@/redux/reducers/handling-unit-reducer/handling-unit-reducer";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchHandlingUnits = createAsyncThunk(
     "handlingUnit/fetchHandlingUnits",
@@ -40,6 +40,21 @@ const fetchHandlingUnits = createAsyncThunk(
             throw error;
         }
     }
+);
+
+const getHandlingUnitByItemId = createAsyncThunk(
+    "handlingUnit/getHandlingUnitByItemId",
+    async ({ itemId }: { itemId: string }, { dispatch }) => {
+        const response = await apiGet(`trace-and-track/v2${process.env.NEXT_PUBLIC_GET_GROUP_BY_ITEM}/${itemId}`);
+
+        const { status, data } = response;
+
+        if (status == 201 || status == 200) {
+            dispatch(GET_HANDLING_UNIT_BY_ITEM_ID(data?.data));
+        }
+
+        return response;
+    }
 )
 
 const addHandlingUnit = createAsyncThunk(
@@ -63,7 +78,7 @@ const assignHandlingUnitToItems = createAsyncThunk(
 );
 
 export {
-    addHandlingUnit,
-    fetchHandlingUnits,
-    assignHandlingUnitToItems
+    addHandlingUnit, assignHandlingUnitToItems, fetchHandlingUnits,
+    getHandlingUnitByItemId
 };
+

@@ -1,39 +1,37 @@
 'use client';
-import TitleComponent from '../common/component-title'
-import { ActionIcon, Box, Button, Card, Grid, GridCol, Group, NumberInput, Select, Stack, Text, TextInput } from '@mantine/core'
-import { IconBuilding, IconMinus, IconPlus, IconPackage, IconBox } from '@tabler/icons-react'
-import { useEffect, useState, useCallback } from 'react';
-import { customStyles } from '@/styles/custom-theme';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { getHandlingUnitByItemId } from '@/redux/actions/handling-unit-actions/handling-unit-actions';
+import { addProductionOrder } from '@/redux/actions/production-order-actions/production-order-actions';
 import { listItemCodes } from '@/redux/actions/sap-actions/sap-actions';
-import { fetchHandlingUnits } from '@/redux/actions/handling-unit-actions/handling-unit-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { RESET_HANDLING_UNIT_BY_ITEM_ID } from '@/redux/reducers/handling-unit-reducer/handling-unit-reducer';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { customStyles } from '@/styles/custom-theme';
+import { ItemDataProps, ListProductionOrder } from '@/types/redux-types';
+import { ActionIcon, Box, Button, Card, Grid, GridCol, Group, NumberInput, Select, Stack, Text, TextInput } from '@mantine/core';
+import { IconBox, IconBuilding, IconMinus, IconPackage, IconPlus } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import TitleComponent from '../common/component-title';
 
-interface ProductionOrderFormData {
-    qty: number;
-    groupId: string;
-    actualQty: number;
-    itemCode: string;
-    itemName: string;
-    unitOfMeasurement: string;
-    productionLine: string;
-    warehouse: string;
-    selectedStageId: string;
+const initialFormData: ListProductionOrder = {
+    groupId: '',
+    qty: 0,
+    actualQty: 0,
+    itemCode: '',
+    itemName: '',
+    productionLine: '',
+    unitOfMeasurement: '',
+    warehouse: '',
 }
 
 const AddProductionOrderComponent = () => {
-    const [formData, setFormData] = useState<ProductionOrderFormData>({
-        groupId: '',
-        qty: 0,
-        actualQty: 0,
-        itemCode: '',
-        itemName: '',
-        productionLine: '',
-        unitOfMeasurement: '',
-        warehouse: '',
-        selectedStageId: ''
-    });
+    const [formData, setFormData] = useState<ListProductionOrder>(initialFormData);
+
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [itemSelected, setItemSelected] = useState<ItemDataProps | null>(null);
+
+    const router = useRouter();
 
     const dispatch = useAppDispatch()
 
@@ -46,8 +44,7 @@ const AddProductionOrderComponent = () => {
     const { list_Item_Code_Data } = useAppSelector(({ sapStates }) => sapStates);
 
     // Handling Unit States
-    const { handlingUnit, totalCount } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; })
-
+    const { handlingUnitByItemId } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; })
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({
@@ -56,14 +53,103 @@ const AddProductionOrderComponent = () => {
         }));
     };
 
+    // // Helper function to get all stage IDs in hierarchical order
+    // const getAllStageIds = (handlingUnit: any): string[] => {
+    //     if (!handlingUnit) return [];
+
+    //     const stageIds = [handlingUnit.groupStages.id];
+
+    //     const collectSubStageIds = (subStages: any[]): string[] => {
+    //         let ids: string[] = [];
+    //         subStages.forEach(subStage => {
+    //             ids.push(subStage.id);
+    //             if (subStage.subStages && subStage.subStages.length > 0) {
+    //                 ids = ids.concat(collectSubStageIds(subStage.subStages));
+    //             }
+    //         });
+    //         return ids;
+    //     };
+
+    //     if (handlingUnit.groupStages.subStages) {
+    //         stageIds.push(...collectSubStageIds(handlingUnit.groupStages.subStages));
+    //     }
+
+    //     return stageIds;
+    // };
+
+    // // Helper function to get parent stages for a given stage ID
+    // const getParentStages = (targetStageId: string, handlingUnit: any): string[] => {
+    //     if (!handlingUnit) return [];
+
+    //     const allStageIds = getAllStageIds(handlingUnit);
+    //     const targetIndex = allStageIds.indexOf(targetStageId);
+
+    //     if (targetIndex === -1) return [];
+
+    //     // Return all stages up to and including the target stage
+    //     return allStageIds.slice(0, targetIndex + 1);
+    // };
+
+    // const handleStageSelection = (stageId: string) => {
+    //     if (!handlingUnitByItemId) return;
+
+    //     // If clicking on already selected stage, unselect the entire group
+    //     if (formData.selectedStageId === stageId) {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             selectedStageId: ''
+    //         }));
+    //         return;
+    //     }
+
+    //     // Get all parent stages that should be selected
+    //     const stagesToSelect = getParentStages(stageId, handlingUnitByItemId);
+
+    //     // For now, we'll just store the clicked stage ID, but the UI will show hierarchy
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         selectedStageId: stageId
+    //     }));
+    // };
+
+    // // Helper function to check if a stage should be visually selected (highlighted)
+    // const isStageSelected = (stageId: string): boolean => {
+    //     if (!formData.selectedStageId || !handlingUnitByItemId) return false;
+
+    //     const selectedParents = getParentStages(formData.selectedStageId, handlingUnitByItemId);
+    //     return selectedParents.includes(stageId);
+    // };
+
+    // Handle response from API
+    const handleResponse = (status: number) => {
+        const errorResponseCodes = {
+            400: "Bad Request - Invalid data provided",
+            500: "Server Error - Please try again later",
+            409: "Conflict - Production Order with this name already exists"
+        }
+
+        if (status === 200 || status === 201) {
+            showNotificationToast("Production Order Added", "Production Order added successfully", customStyles.colors._408CCE);
+            dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID())
+            setFormData(initialFormData);
+            setItemSelected(null);
+            router.back();
+            return;
+        }
+
+        if (errorResponseCodes[status as keyof typeof errorResponseCodes]) {
+            showNotificationToast("Error Adding Production Order", errorResponseCodes[status as keyof typeof errorResponseCodes], customStyles.colors.red);
+            return;
+        }
+    }
+
     const handleSave = () => {
-        console.log('Save production order:', formData);
-        console.log('Selected Stage ID for payload:', formData.selectedStageId);
-        // API call to save production order with selectedStageId in payload
+        dispatch(addProductionOrder({ body: formData, resHandler: handleResponse }));
     };
 
     const handleCancel = () => {
-        console.log('Cancel');
+        setFormData(initialFormData);
+        router.back();
         // Navigate back or reset form
     };
 
@@ -86,6 +172,7 @@ const AddProductionOrderComponent = () => {
         if (itemCode) {
             // Find the selected item from the list to get item name
             const selectedItem = list_Item_Code_Data?.find(item => item.itemCode === itemCode);
+            setItemSelected(selectedItem || null);
 
             setFormData(prev => ({
                 ...prev,
@@ -110,11 +197,17 @@ const AddProductionOrderComponent = () => {
     useEffect(() => {
         dispatch(fetchAllWareHouses({}))
         dispatch(listItemCodes({}));
-        dispatch(fetchHandlingUnits({
-            // lastCount: pagination.pageSize,
-            // skipRecords: pagination.pageIndex * pagination.pageSize
-        }))
     }, [dispatch])
+
+    useEffect(() => {
+        if (itemSelected) {
+            dispatch(getHandlingUnitByItemId({ itemId: itemSelected.id }))
+        }
+    }, [itemSelected])
+
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, groupId: handlingUnitByItemId?.groupId || '' }));
+    }, [handlingUnitByItemId])
 
     // Cleanup timeout on component unmount
     useEffect(() => {
@@ -124,7 +217,6 @@ const AddProductionOrderComponent = () => {
             }
         };
     }, [searchTimeout])
-
 
     return (
         <Box>
@@ -230,11 +322,13 @@ const AddProductionOrderComponent = () => {
                             </GridCol>
                             <GridCol span={{ base: 12, md: 4 }}>
                                 <Text size="md" mb={8} fw={500}>Actual Quantity</Text>
-                                <TextInput
+                                <NumberInput
                                     size='md'
                                     placeholder="Enter your answer"
                                     value={formData.actualQty}
-                                    onChange={(e) => handleInputChange('actualQuantity', e.target.value)}
+                                    onChange={(value) => handleInputChange('actualQty', value)}
+                                    min={0}
+                                    hideControls
                                     radius={8}
                                 />
                             </GridCol>
@@ -259,18 +353,18 @@ const AddProductionOrderComponent = () => {
                                         withBorder
                                         style={{
                                             cursor: 'pointer',
-                                            border: formData.warehouse === warehouse.id ? `2px solid ${customStyles.colors._1B59F8}` : '1px solid #e9ecef',
-                                            backgroundColor: formData.warehouse === warehouse.id ? '#f3f8fe' : '#fff',
+                                            border: formData.warehouse === warehouse.whsCode ? `2px solid ${customStyles.colors._1B59F8}` : '1px solid #e9ecef',
+                                            backgroundColor: formData.warehouse === warehouse.whsCode ? '#f3f8fe' : '#fff',
                                             transition: 'all 0.2s ease',
                                         }}
-                                        onClick={() => handleInputChange('warehouse', warehouse.id)}
+                                        onClick={() => handleInputChange('warehouse', warehouse.whsCode)}
                                     >
                                         <Stack gap="xs" align="center">
                                             <IconBuilding
                                                 size={32}
-                                                color={formData.warehouse === warehouse.id ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A}
+                                                color={formData.warehouse === warehouse.whsCode ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A}
                                             />
-                                            <Text size="sm" fw={600} c={formData.warehouse === warehouse.id ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A}>
+                                            <Text size="sm" fw={600} c={formData.warehouse === warehouse.whsCode ? customStyles.colors._1B59F8 : customStyles.colors._4A4A4A}>
                                                 {warehouse.whsCode}
                                             </Text>
                                             <Text size="xs" ta="center" c="gray.6">
@@ -284,111 +378,107 @@ const AddProductionOrderComponent = () => {
                     </Box>
                 </Card>
 
-                <Card padding={24} radius={16}>
-                    {/* Handling Units */}
-                    <Box>
-                        <Text size="xl" fw={500} mb="md">Handling Unit</Text>
+                {handlingUnitByItemId && (
+                    <Card padding={24} radius={16}>
+                        {/* Handling Units */}
+                        <Box>
+                            <Text size="xl" fw={500} mb="md">Handling Unit</Text>
+                            <Box style={{ border: `2px solid ${customStyles.colors._1B59F8}`, backgroundColor: customStyles.colors._1B59F81A, borderRadius: '16px', padding: '16px', height: '100%', }}>
+                                <Text size="md" fw={600} mb="sm" c={customStyles.colors._1B59F8}>
+                                    {handlingUnitByItemId.groupName}
+                                </Text>
 
-                        {handlingUnit && handlingUnit.length > 0 && (
-                            <Grid gutter={24}>
-                                {handlingUnit.map((group) => (
-                                    <GridCol key={group.groupId} span={{ base: 12, md: 6 }}>
-                                        <Box style={{ border: `1px solid ${customStyles.colors._ECECEC}`, borderRadius: '16px', padding: '16px', height: '100%', }}>
-                                            <Text size="md" fw={600} mb="sm" c={customStyles.colors._1B59F8}>
-                                                {group.groupName}
-                                            </Text>
+                                {/* Main Stage */}
+                                <Card
+                                    mb={12}
+                                    padding="md"
+                                    radius={8}
+                                    shadow='none'
+                                    withBorder
+                                    style={{
+                                        cursor: 'pointer',
+                                        // border: isStageSelected(handlingUnitByItemId.groupStages.id || '') ? `2px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._ECECEC}`,
+                                        // backgroundColor: isStageSelected(handlingUnitByItemId.groupStages.id || '') ? customStyles.colors._1B59F81A : '#fff',
+                                        border: `1px solid ${customStyles.colors._1B59F8}`,
+                                        // backgroundColor: customStyles.colors._1B59F81A,
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                // onClick={() => handleStageSelection(handlingUnitByItemId.groupStages.id || '')}
+                                >
+                                    <Group justify="space-between">
+                                        <Group gap="sm">
+                                            <IconPackage
+                                                size={24}
+                                                // color={isStageSelected(handlingUnitByItemId.groupStages.id || '') ? customStyles.colors._1B59F8 : customStyles.colors._909090}
+                                                color={customStyles.colors._1B59F8}
+                                            />
+                                            <Box>
+                                                <Text size="sm" fw={600}>
+                                                    {handlingUnitByItemId.groupStages.name}
+                                                </Text>
+                                                <Text size="xs" c="gray.6">
+                                                    Level {handlingUnitByItemId.groupStages.level} • Capacity: {handlingUnitByItemId.groupStages.capacity}
+                                                </Text>
+                                            </Box>
+                                        </Group>
+                                    </Group>
+                                </Card>
 
-                                            {/* Main Stage */}
-                                            <Grid mb="sm">
-                                                <GridCol span={12}>
+                                {/* Sub Stages */}
+                                {handlingUnitByItemId.groupStages.subStages && handlingUnitByItemId.groupStages.subStages.length > 0 && (
+                                    <Box ml="md">
+                                        <Text size="sm" fw={500} mb="xs" c="gray.7">
+                                            Sub Stages:
+                                        </Text>
+                                        <Grid>
+                                            {handlingUnitByItemId.groupStages.subStages.map((subStage: any) => (
+                                                <GridCol key={subStage.id} span={{ base: 12, md: 6 }}>
                                                     <Card
-                                                        padding="md"
+                                                        padding="sm"
                                                         radius="md"
-                                                        shadow='none'
                                                         withBorder
+                                                        shadow='none'
                                                         style={{
                                                             cursor: 'pointer',
-                                                            border: formData.selectedStageId === group.groupStages.id ? `2px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._ECECEC}`,
-                                                            backgroundColor: formData.selectedStageId === group.groupStages.id ? customStyles.colors._1B59F81A : '#fff',
+                                                            // border: isStageSelected(subStage.id) ? `2px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._ECECEC}`,
+                                                            // backgroundColor: isStageSelected(subStage.id) ? customStyles.colors._1B59F81A : '#fff',
+                                                            border: `1px solid ${customStyles.colors._1B59F8}`,
+                                                            // backgroundColor: customStyles.colors._1B59F81A,
                                                             transition: 'all 0.2s ease',
                                                         }}
-                                                        onClick={() => handleInputChange('selectedStageId', group.groupStages.id)}
+                                                    // onClick={() => handleStageSelection(subStage.id)}
                                                     >
-                                                        <Group justify="space-between">
-                                                            <Group gap="sm">
-                                                                <IconPackage
-                                                                    size={24}
-                                                                    color={formData.selectedStageId === group.groupStages.id ? customStyles.colors._1B59F8 : customStyles.colors._909090}
-                                                                />
-                                                                <Box>
-                                                                    <Text size="sm" fw={600}>
-                                                                        {group.groupStages.name}
-                                                                    </Text>
-                                                                    <Text size="xs" c="gray.6">
-                                                                        Level {group.groupStages.level} • Capacity: {group.groupStages.capacity}
-                                                                    </Text>
-                                                                </Box>
-                                                            </Group>
+                                                        <Group gap="sm">
+                                                            <IconBox
+                                                                size={20}
+                                                                // color={isStageSelected(subStage.id) ? customStyles.colors._1B59F8 : customStyles.colors._909090}
+                                                                color={customStyles.colors._1B59F8}
+                                                            />
+                                                            <Box>
+                                                                <Text size="sm" fw={500}>
+                                                                    {subStage.name}
+                                                                </Text>
+                                                                <Text size="xs" c="gray.6">
+                                                                    Level {subStage.level} • Capacity: {subStage.capacity}
+                                                                </Text>
+                                                            </Box>
                                                         </Group>
                                                     </Card>
                                                 </GridCol>
-                                            </Grid>
-
-                                            {/* Sub Stages */}
-                                            {group.groupStages.subStages && group.groupStages.subStages.length > 0 && (
-                                                <Box ml="md">
-                                                    <Text size="sm" fw={500} mb="xs" c="gray.7">
-                                                        Sub Stages:
-                                                    </Text>
-                                                    <Grid>
-                                                        {group.groupStages.subStages.map((subStage: any) => (
-                                                            <GridCol key={subStage.id} span={{ base: 12, md: 6 }}>
-                                                                <Card
-                                                                    padding="sm"
-                                                                    radius="md"
-                                                                    withBorder
-                                                                    shadow='none'
-                                                                    style={{
-                                                                        cursor: 'pointer',
-                                                                        border: formData.selectedStageId === subStage.id ? `2px solid ${customStyles.colors._1B59F8}` : `1px solid ${customStyles.colors._ECECEC}`,
-                                                                        backgroundColor: formData.selectedStageId === subStage.id ? customStyles.colors._1B59F81A : '#fff',
-                                                                        transition: 'all 0.2s ease',
-                                                                    }}
-                                                                    onClick={() => handleInputChange('selectedStageId', subStage.id)}
-                                                                >
-                                                                    <Group gap="sm">
-                                                                        <IconBox
-                                                                            size={20}
-                                                                            color={formData.selectedStageId === subStage.id ? '#4c6ef5' : customStyles.colors._909090}
-                                                                        />
-                                                                        <Box>
-                                                                            <Text size="sm" fw={500}>
-                                                                                {subStage.name}
-                                                                            </Text>
-                                                                            <Text size="xs" c="gray.6">
-                                                                                Level {subStage.level} • Capacity: {subStage.capacity}
-                                                                            </Text>
-                                                                        </Box>
-                                                                    </Group>
-                                                                </Card>
-                                                            </GridCol>
-                                                        ))}
-                                                    </Grid>
-                                                </Box>
-                                            )}
-                                        </Box>
-                                    </GridCol>
-                                ))}
-                            </Grid>
-                        )}
-
-                        {(!handlingUnit || handlingUnit.length === 0) && (
-                            <Text size="sm" c="gray.6" ta="center" py="xl">
-                                No handling units available
-                            </Text>
-                        )}
-                    </Box>
-                </Card>
+                                            ))}
+                                        </Grid>
+                                    </Box>
+                                )}
+                            </Box>
+                            {(!handlingUnitByItemId) && (
+                                <Text size="sm" c="gray.6" ta="center" py="xl">
+                                    No handling units available
+                                </Text>
+                            )}
+                        </Box>
+                    </Card>
+                )
+                }
 
                 {/* Action Buttons */}
                 <Group justify="flex-end" gap="md" pt="md">
