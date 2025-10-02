@@ -120,7 +120,7 @@ export default function SelectUserModal({
             onClose={handleModalClose}
             zIndex={10000}
             closeButtonProps={{
-                icon: <IconCircleX size={70} stroke={2} color="#ED1C24" />,
+                icon: <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 5 }}><IconCircleX size={30} stroke={2} color="#ED1C24" /></Box>,
             }}
             size="95%"
             radius="md"

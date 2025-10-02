@@ -235,7 +235,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
     () => [
       {
         id: "serialNumber", // Use id instead of accessorKey for computed columns
-        header: "S.No",
+        header: "Serial No",
         cell: ({ row }) => {
           // Calculate serial number based on server-side pagination
           const serialNumber =
@@ -248,7 +248,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         },
         filterFn: serialNumberFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth("S.No", ["99999"], 80, 120),
+        size: calculateColumnWidth("S.No", ["99999"], 180, 120),
       },
       {
         accessorKey: "documentNumber",
@@ -603,7 +603,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
             Issue for Production
           </Title>
           <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-            Post materials to production orders and track what’s been issued for manufacturing
+            Track inventory transfers that are pending or successfully synced with SAP.
           </Text>
         </Stack>
 
