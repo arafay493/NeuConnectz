@@ -519,7 +519,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
             Receipt From Production
           </Title>
           <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-            Track finished items recorded from production orders.
+            Track inventory transfers that are pending or successfully synced with SAP.
           </Text>
         </Stack>
 
