@@ -106,7 +106,7 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                 ),
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
-                size: calculateColumnWidth('BatchId', (productionOrderList || []).map(item => item.id), 150, 400),
+                size: calculateColumnWidth('BatchId', (productionOrderList || []).map(item => String(item.id)), 150, 400),
             },
             {
                 accessorKey: 'itemCode',
@@ -255,7 +255,7 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                             style={{
                                 cursor: 'pointer',
                             }}
-                            onClick={() => onSendBarcode?.(id)}
+                            onClick={() => id && onSendBarcode?.(id)}
                         >
                             Scan
                         </Button>
