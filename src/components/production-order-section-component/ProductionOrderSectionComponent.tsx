@@ -858,7 +858,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
             Production Order
           </Title>
           <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-            Check production order records with status updates.
+            Track inventory transfers that are pending or successfully synced with SAP.
           </Text>
         </Stack>
 
@@ -1187,14 +1187,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                                 >
                                   <Group align="center" justify="between">
                                     <Group flex={1}>
-                                      <Text fw={600} size="sm">
+                                      <Text fw={600} size="md" color="#4d4d4d">
                                         {item.title}
                                       </Text>
                                     </Group>
                                     <Group>
                                       <Group gap={3}>
-                                        <Text size="xs" display={"flex"} fw={"bold"}>
-                                          Total No of {item.label} Created : {" "}
+                                        <Text size="xs" display={"flex"} fw={"bold"} color="#4d4d4d">
+                                          Total No of Items : {" "}
                                         </Text>
                                         <Text size="xs" c={"dimmed"} fw={"bold"}>
                                           {item.totalCreated}
