@@ -423,6 +423,8 @@ export interface GenerateBarcodeProps {
 
 export interface ProductionOrderStateProps {
     data: Array<ListProductionOrder> | null;
+    productionOrderById: ProductionOrderDetailProps | null;
+    scannedProductionOrder: ProductionOrderDetailProps | null;
     totalCount: number;
     loading: boolean
 }
@@ -514,4 +516,36 @@ export interface UomProps {
     uomCode: string;
     baseQty: number;
     altQty: number;
+}
+
+// Production Order Types
+export interface ProductionOrderCodeProps {
+    id: string | null;
+    code: string;
+    parentCode: string | null;
+    isObject: boolean;
+}
+
+export interface ProductionOrderStageProps {
+    stageId: string;
+    stageName: string;
+    stageQty: number;
+    level: number;
+    scanned: number;
+    total: number;
+    codes: Array<ProductionOrderCodeProps>;
+}
+
+export interface ProductionOrderDetailProps {
+    id: string;
+    qty: number;
+    actualQty: number;
+    itemCode: string;
+    itemName: string;
+    unitOfMeasurement: string;
+    productionLine: string;
+    warehouse: string;
+    status: string;
+    stages: Array<ProductionOrderStageProps>;
+    groupId: string;
 }
