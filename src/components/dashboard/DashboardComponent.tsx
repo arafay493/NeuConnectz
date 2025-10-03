@@ -42,7 +42,7 @@ interface SelectedUserProps {
   isActive: boolean
 }
 
-const DashboardComponent = () => {
+const DashboardComponent = ({ dashboard, handleShowDashboard }: any) => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const isMediumScreen = useMediaQuery("(max-width: 1200px)");
   const {
@@ -208,6 +208,7 @@ const DashboardComponent = () => {
         users={usersList?.users || []}
         selectedUser={selectedUser}
         handleSelectUser={handleSelectUser}
+        handleShowDashboard = {handleShowDashboard}
       />
       <DeleteModal
         opened={deleteModalOpened}

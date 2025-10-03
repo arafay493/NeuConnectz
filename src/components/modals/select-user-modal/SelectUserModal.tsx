@@ -1,3 +1,5 @@
+"use client"
+
 import {
     Modal,
     Box,
@@ -54,6 +56,7 @@ interface SelectUserModalProps {
     users: User[];
     selectedUser: any
     handleSelectUser: (a: any) => void;
+    handleShowDashboard: (a: string) => void
 }
 
 interface SelectedUserProps {
@@ -75,7 +78,8 @@ export default function SelectUserModal({
     handleModalClose,
     users,
     selectedUser,
-    handleSelectUser
+    handleSelectUser,
+    handleShowDashboard
 }: SelectUserModalProps) {
     const [search, setSearch] = useState("");
     // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
@@ -142,6 +146,7 @@ export default function SelectUserModal({
                         <Tabs.Tab value="all" variant="light" style={activeTab === "all" ? activeTabStyles : nonActiveTabStyles}>All</Tabs.Tab>
                         <Tabs.Tab value="active" style={activeTab === "active" ? activeTabStyles : nonActiveTabStyles}>Active</Tabs.Tab>
                         <Tabs.Tab value="inactive" style={activeTab === "inactive" ? activeTabStyles : nonActiveTabStyles}>Inactive</Tabs.Tab>
+                        <Button value="ITR Dashboard" style={[nonActiveTabStyles, { width: 138 }]} onClick={() => handleShowDashboard("ITR_Dashboard")}>ITR Dashboard</Button>
                     </Tabs.List>
                 </Tabs>
 

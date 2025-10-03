@@ -1,23 +1,20 @@
 // Note: Dashboard screen...!
-
-import React from "react";
-
-import { SimpleGrid, Box } from "@mantine/core";
-
-// Note: Importing required components...!
-import DashboardsCards from "@/components/dashboard-cards/dashboards-cards";
-import ProgressBarCard from "@/components/progress-bar/progress-bar";
-import BarChart from "@/components/bar-chart/bar-chart";
-import ProductStackedBarChart from "@/components/product-stacked-bar-chart/product-stacked-bar-chart";
-import DonutChart from "@/components/donut-chart/donut-chart";
-import { customStyles } from "@/styles/custom-theme";
+"use client"
+import React, { useState } from "react";
 import { DashboardComponent } from "@/components/dashboard";
 import ITR_DashboardComponent from "@/components/dashboard/ITR_DashboardComponent";
 
 const DashboardScreen = () => {
+  const [dashboard, setDashboard] = useState("dashboard")
+
+  const handleShowDashboard = (val: string) => {
+    setDashboard(val)
+  }
   return (
-    <DashboardComponent />
-    // <ITR_DashboardComponent />
+    <>
+      {dashboard === "dashboard" && <DashboardComponent dashboard={dashboard} handleShowDashboard={handleShowDashboard} />}
+      {dashboard === "ITR_Dashboard" && <ITR_DashboardComponent />}
+    </>
     // <Box>
     //   {/* Note: Dashboard cards component */}
     //   <DashboardsCards />

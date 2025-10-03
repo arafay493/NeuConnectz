@@ -1,4 +1,5 @@
-import { Box, Grid, GridCol, Group, Select, Stack, Text } from '@mantine/core'
+"use client"
+import { Box, Grid, GridCol, Group, Select, Text } from '@mantine/core'
 import React from 'react'
 import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
