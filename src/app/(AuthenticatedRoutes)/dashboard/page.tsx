@@ -12,10 +12,12 @@ import ProductStackedBarChart from "@/components/product-stacked-bar-chart/produ
 import DonutChart from "@/components/donut-chart/donut-chart";
 import { customStyles } from "@/styles/custom-theme";
 import { DashboardComponent } from "@/components/dashboard";
+import ITR_DashboardComponent from "@/components/dashboard/ITR_DashboardComponent";
 
 const DashboardScreen = () => {
   return (
     <DashboardComponent />
+    // <ITR_DashboardComponent />
     // <Box>
     //   {/* Note: Dashboard cards component */}
     //   <DashboardsCards />
