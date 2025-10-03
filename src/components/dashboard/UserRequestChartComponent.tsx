@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { Group, Select, Text } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
@@ -118,29 +119,41 @@ const CustomTooltip = ({ active, payload, coordinate }: any) => {
 };
 
 const UserRequestChartComponent = () => {
+    const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
+        return dashboardStates;
+    });
+    const groupData = userITRCountList.reduce((acc: any, curr) => {
+        const found: any = acc.find((item: any) => item?.userName === curr.userName);
+        if (found) {
+            found.itrCount += curr.itrCount;
+        } else {
+            acc.push({ userName: curr.userName, itrCount: curr.itrCount });
+        }
+        return acc;
+    }, []);
     return (
         <ResponsiveContainer width="100%" height="100%" >
-            <BarChart width={250} data={groupedData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+            <BarChart width={250} data={groupData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="userName" width={"auto"} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#4D4D4D" }} />
                 <YAxis
-                    width={"auto"}
-                    dataKey="userRequests"
+                    width={30}
+                    dataKey="itrCount"
                     axisLine={false}
                     tickLine={false}
                     tick={{ fontSize: 10, fill: "#4D4D4D" }}
                     interval={4}
-                    domain={[0, maxValue]}
+                    // domain={[0, maxValue]}
                     allowDecimals={false}
-                    tickCount={Math.max(...groupedData.map((d: any) => d.userRequests)) + 1}
+                    tickCount={Math.max(...groupData.map((d: any) => d.itrCount)) + 1}
                     ticks={Array.from(
-                        { length: Math.max(...groupedData.map((d: any) => d.userRequests)) + 1 },
+                        { length: Math.max(...groupData.map((d: any) => d.itrCount)) + 1 },
                         (_, i) => i
                     )}
                     tickMargin={10}
                 />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(27, 89, 248, 0.05)" }} />
-                <Bar dataKey="userRequests" fill="#1B59F8" maxBarSize={20} radius={[5, 5, 5, 5]} />
+                <Bar dataKey="itrCount" fill="#1B59F8" maxBarSize={20} radius={[5, 5, 5, 5]} />
             </BarChart>
         </ResponsiveContainer>
     )

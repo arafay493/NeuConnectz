@@ -6,7 +6,8 @@ import { DashboardStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: DashboardStateType = {
     dashboardAnalyticsData: null,
-    dashboardErrorState: ""
+    dashboardErrorState: "",
+    userITRCountList: []
 };
 
 const dashboardSlice = createSlice({
@@ -23,6 +24,10 @@ const dashboardSlice = createSlice({
             state.dashboardAnalyticsData = action?.payload;
         },
 
+        FETCH_ITR_DASHBOARD_USER_COUNT_LIST: (state, action: PayloadAction<any>) => {
+            state.userITRCountList = action?.payload;
+        },
+
         CLEAR_ALL_DASHBOARD_STATES: (state) => {
             state.dashboardAnalyticsData = null;
             state.dashboardErrorState = "";
@@ -34,6 +39,7 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_DASHBOARD_DATA,
         FETCH_DASHBOARD_ANALYTICS,
+        FETCH_ITR_DASHBOARD_USER_COUNT_LIST,
         CLEAR_ALL_DASHBOARD_STATES
     } = dashboardSlice.actions;
 export default dashboardSlice.reducer;

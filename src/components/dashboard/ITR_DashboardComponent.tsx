@@ -1,12 +1,27 @@
 "use client"
 import { Box, Grid, GridCol, Group, Select, Text } from '@mantine/core'
-import React from 'react'
+import React, { useEffect } from 'react'
 import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
 import { customStyles } from '@/styles/custom-theme'
 import { IconChevronDown } from '@tabler/icons-react'
+import { fetchITRDashboardUserCountList } from '@/redux/actions/dashboard-actions/dashboard-actions'
+import { useAppDispatch, useAppSelector } from '@/redux/store'
 
 const ITR_DashboardComponent = () => {
+    const { authenticatedUser } = useAppSelector(({ authStates }) => {
+        return authStates;
+    });
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        if (!authenticatedUser?.token) return;
+
+        dispatch(
+            fetchITRDashboardUserCountList({
+                authToken: authenticatedUser.token,
+            })
+        );
+    }, [authenticatedUser?.token, dispatch]);
     return (
         <Box>
             {/* <Stack justify='between' display={"flex"} >
@@ -23,12 +38,12 @@ const ITR_DashboardComponent = () => {
                 <GridCol span={4} bg={"white"} mih={450} p={20} style={{ borderRadius: 10 }}>
                     {/* <RequestPerPeriodComponent /> */}
                     <Group
-                    
+
                         justify="space-between"
                         mb="md"
                         wrap="wrap"
-                        gap="sm"
-                        // style = {{border: "2px solid black"}}
+                        // gap="sm"
+                    // style = {{border: "2px solid black"}}
                     >
                         <Text size="sm" fw={400} c={customStyles.colors._4D4D4D}>
                             User Requests

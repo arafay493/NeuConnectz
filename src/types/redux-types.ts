@@ -477,6 +477,10 @@ export interface DashboardStateType {
             totalTrPending: number,
         }
     } | null;
+    userITRCountList: {
+        userName: string;
+        itrCount: number;
+    }[];
 }
 
 // Note: Reconciliation Types
