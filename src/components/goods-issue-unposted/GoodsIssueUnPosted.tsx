@@ -217,36 +217,6 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
                 // size: calculateColumnWidth('Item Name', (listGoodIssue || []).map(item => item.itemName), 150, 220),
             },
             {
-                accessorKey: 'barCode',
-                header: 'Barcode',
-                cell: ({ getValue, row }) => {
-                    const { barCode } = row?.original;
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500}>
-                            {barCode ? barCode : "-"}
-                        </Text>
-                    )
-                },
-                filterFn: dateFilterFn,
-                enableColumnFilter: true,
-                size: calculateColumnWidth('Barcode', (listGoodIssue || []).map(item => new Date(item.barCode).toLocaleDateString()), 150, 220),
-            },
-            {
-                accessorKey: 'uoM',
-                header: 'UOM',
-                cell: ({ getValue, row }) => {
-                    // const val = row.original.uom != null ? row.original.uom : 'N/A';
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500}>
-                            {getValue() as string}
-                        </Text>
-                    )
-                },
-                filterFn: stringFilterFn,
-                enableColumnFilter: true,
-                size: calculateColumnWidth('UOM', (listGoodIssue || []).map(item => item.uoM), 150, 220),
-            },
-            {
                 accessorKey: 'quantity',
                 header: 'Quantity',
                 cell: ({ getValue, row }) => {
@@ -260,6 +230,36 @@ const GoodsIssueUnPosted: FC<ApiProp> = ({ apiUrl }) => {
                 filterFn: numberFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('Quantity', (listGoodIssue || []).map(item => String(item.quantity)), 120, 150),
+            },
+            {
+                accessorKey: 'uoM',
+                header: 'Unit of Measure',
+                cell: ({ getValue, row }) => {
+                    // const val = row.original.uom != null ? row.original.uom : 'N/A';
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {getValue() as string}
+                        </Text>
+                    )
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Unit of Measure', (listGoodIssue || []).map(item => item.uoM), 200, 250),
+            },
+            {
+                accessorKey: 'barCode',
+                header: 'Barcode',
+                cell: ({ getValue, row }) => {
+                    const { barCode } = row?.original;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {barCode ? barCode : "-"}
+                        </Text>
+                    )
+                },
+                filterFn: dateFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Barcode', (listGoodIssue || []).map(item => new Date(item.barCode).toLocaleDateString()), 150, 220),
             },
             {
                 accessorKey: 'whsCode',

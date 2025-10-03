@@ -120,7 +120,8 @@ export interface ProductionOrderDataType {
     quantity: number,
     remainingQuantity: number,
     uom: string,
-    warehouse: string
+    warehouse: string,
+    createdDate: string,
 }
 
 export interface IssuesForProductionDataType {

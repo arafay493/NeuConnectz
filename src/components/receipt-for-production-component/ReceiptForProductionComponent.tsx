@@ -315,7 +315,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
       },
       {
         accessorKey: "postedDate",
-        header: "Posting Date",
+        header: "Created Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
             {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
@@ -323,7 +323,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth('Posting Date', (recieptFromProductionList || []).map(item => item.postedDate), 200, 220),
+        size: calculateColumnWidth('Created Date', (recieptFromProductionList || []).map(item => item.postedDate), 200, 220),
       },
       {
         accessorKey: "",

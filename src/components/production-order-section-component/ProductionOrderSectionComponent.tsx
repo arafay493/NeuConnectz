@@ -498,6 +498,23 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
+        accessorKey: "createdDate",
+        header: "Created Date",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {new Date(getValue() as string).toLocaleDateString()}
+          </Text>
+        ),
+        filterFn: stringFilterFn,
+        enableColumnFilter: true,
+        size: calculateColumnWidth(
+          "Created Date",
+          (productionOrdersList || []).map((item) => item.warehouse),
+          200,
+          220
+        ),
+      },
+      {
         accessorKey: "productionOrderStatus",
         header: "Status",
         cell: ({ getValue, row }) => {

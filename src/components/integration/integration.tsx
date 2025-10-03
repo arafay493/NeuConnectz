@@ -1788,7 +1788,7 @@ const IntegrationComponent = () => {
                             borderRadius: "5px"
                         }}
                     >
-                        <Button
+                        {/* <Button
                             variant="transparent"
                             radius={0}
                             size="md"
@@ -1799,7 +1799,7 @@ const IntegrationComponent = () => {
                             }}
                         >
                             Stock Movement
-                        </Button>
+                        </Button> */}
 
                         {/* <Button
                             variant="transparent"

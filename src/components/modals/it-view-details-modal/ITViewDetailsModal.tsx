@@ -126,6 +126,7 @@ export default function ITViewDetailsModal({
                     <InfoRow label="Planned Date" value={new Date(row?.plannedDate as string).toLocaleDateString()} />
                     <InfoRow label="Origin No" value={String(row?.originNo)} />
                     <InfoRow label="Warehouse" value={row?.warehouse} />
+                    <InfoRow label="Status" value={row?.status} />
                 </SimpleGrid>
             </Box>
 

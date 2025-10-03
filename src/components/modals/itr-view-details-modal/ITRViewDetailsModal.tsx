@@ -59,6 +59,8 @@ export default function ITRViewDetailsModal({
     poNumber
 }: ModalProps) {
 
+    console.log('row in ITRViewDetailsModal:', row);
+
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
@@ -125,6 +127,7 @@ export default function ITRViewDetailsModal({
                     <InfoRow label="Planned Date" value={new Date(row?.plannedDate as string).toLocaleDateString()} />
                     <InfoRow label="Origin No" value={String(row?.originNo)} />
                     <InfoRow label="Warehouse" value={row?.warehouse} />
+                    <InfoRow label="Status" value={row?.status} />
                 </SimpleGrid>
             </Box>
 

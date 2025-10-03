@@ -349,7 +349,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       },
       {
         accessorKey: "plannedQuantity",
-        header: "Plan Qty",
+        header: "Planned Qty",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
             {getValue() as string}
@@ -357,11 +357,11 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth('Plan Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+        size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
       },
       {
         accessorKey: "postedDate",
-        header: "Post Date",
+        header: "Created Date",
         cell: ({ getValue }) => {
           return (
             <Text c={customStyles.colors._909090} fw={500}>
@@ -371,7 +371,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         },
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth('Posting Date', (issuesForProductionList || []).map(item => item.postedDate), 150, 220),
+        size: calculateColumnWidth('Created Date', (issuesForProductionList || []).map(item => item.postedDate), 150, 220),
       },
       // {
       //   header: "Action",
