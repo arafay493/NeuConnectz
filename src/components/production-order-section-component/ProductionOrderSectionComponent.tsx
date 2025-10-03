@@ -55,9 +55,9 @@ import {
   fetchProductionOrdersLinesList,
 } from "@/redux/actions/sap-actions/sap-actions";
 import TableModalComponent from "../table-modal/TableModalComponent";
-import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA } from "@/redux/reducers/sap-reducer/sap-reducer";
+import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA, CLEAR_LIST_AGAINST_PO } from "@/redux/reducers/sap-reducer/sap-reducer";
 import CloseProductionOrderComponent from "../close-production-order/CloseProductionOrder";
-import { useDisclosure } from "@mantine/hooks";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import ITRViewDetailsModal from "../modals/itr-view-details-modal/ITRViewDetailsModal";
 import ITViewDetailsModal from "../modals/it-view-details-modal/ITViewDetailsModal";
 import TRViewDetailsModal from "../modals/tr-view-details-modal/TRViewDetailsModal";
@@ -85,10 +85,18 @@ type ApiProp = {
 
 const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   // console.log("API URL:", apiUrl);
+  // breakpoints
+  const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
+  const isTablet = useMediaQuery("(max-width: 768px)");     // tablets
+  const isLaptop = useMediaQuery("(max-width: 1024px)");    // small laptops
+  const isDesktop = useMediaQuery("(max-width: 1280px)");   // normal desktops
+  const isLargeDesktop = useMediaQuery("(min-width: 1281px)"); // big screens
 
   // Note: Handling states here...!
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAgainstPO, setIsLoadingAgainstPO] = useState(false);
+  const [apiUrlAgainstPO, setApiUrlAgainstPO] = useState<string>("");
+  const [poNumber, setPoNumber] = useState<number>(0);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
   const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
@@ -103,7 +111,6 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     pageSize: 5,
   });
   const [expanded, setExpanded] = useState({});
-  const [opened, { toggle }] = useDisclosure(false);
 
   // Note: Table modal state...!
   const [isTableModalOpen, setIsTableModalOpen] = useState(false);
@@ -124,6 +131,9 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const dispatch = useAppDispatch();
   const { authenticatedUser } = useAppSelector(({ authStates }) => {
     return authStates;
+  });
+  const { isSidebarOpen } = useAppSelector(({ sidebarStates }) => {
+    return sidebarStates;
   });
   const { productionOrdersList, productionOrdersCount, productionOrdersDocumentStates } = useAppSelector(
     ({ sapStates }) => {
@@ -516,39 +526,54 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
           const rowData = row.original;
           // console.log("row data: ", rowData);
           return (
-            <div
+            <Button
+              variant="transparent"
+              // className={'outlineButton'}
+              radius={8}
+              size="sm"
+              w={"100%"}
               style={{
-                display: "flex",
-                flexDirection: "row",
+                color: "#4A4A4A",
+                backgroundColor: "#E1E7EC",
+                marginLeft: 8,
               }}
+              onClick={() => closeProductionOrder(rowData)}
             >
-              <Button
-                variant="transparent"
-                className={"outlineButton"}
-                radius={8}
-                size="sm"
-                w={120}
-                onClick={() => getProductionOrderLinesList(rowData)}
-              >
-                View Details
-              </Button>
+              Close
+            </Button>
+            // <div
+            //   style={{
+            //     display: "flex",
+            //     flexDirection: "row",
+            //   }}
+            // >
+            //   <Button
+            //     variant="transparent"
+            //     className={"outlineButton"}
+            //     radius={8}
+            //     size="sm"
+            //     w={120}
+            //     onClick={() => getProductionOrderLinesList(rowData)}
+            //   >
+            //     View Details
+            //   </Button>
 
-              <Button
-                variant="transparent"
-                // className={'outlineButton'}
-                radius={8}
-                size="sm"
-                w={120}
-                style={{
-                  color: "#4A4A4A",
-                  backgroundColor: "#E1E7EC",
-                  marginLeft: 8,
-                }}
-                onClick={() => closeProductionOrder(rowData)}
-              >
-                Close
-              </Button>
-            </div>
+            //   <Button
+            //     variant="transparent"
+            //     // className={'outlineButton'}
+            //     radius={8}
+            //     size="sm"
+            //     w={"100%"}
+            //     style={{
+            //       color: "#4A4A4A",
+            //       backgroundColor: "#E1E7EC",
+            //       marginLeft: 8,
+            //     }}
+            //     onClick={() => closeProductionOrder(rowData)}
+            //   >
+            //     Close
+            //   </Button>
+            // </div>
           );
         },
         filterFn: stringFilterFn,
@@ -677,42 +702,32 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     let apiUrl = ""
     if (label === "ITR") {
       apiUrl = "/IInventoryTransferRequestFeature/ListAllItrsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsITRPOModalOpen(true)
-      setIsLoadingAgainstPO(true)
-      dispatch(
-        fetchAgainstPoNumber({
-          token: authenticatedUser?.token || "",
-          poNumber: row.original?.documentNumber,
-          apiUrl: apiUrl,
-          lastCount: paginationAgainstPO.pageSize,
-          skipRecords: skipRecordAgainstPO,
-        })
-      ).finally(() => {
-        setIsLoadingAgainstPO(false);
-      });
     }
     else if (label === "IT") {
-      apiUrl = "/IInventoryTransferRequestFeature/ListAllItsAgainstPoNumber"
+      apiUrl = "/IInventoryTransferFeature/ListAllItsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsITPOModalOpen(true)
-      dispatch(
-        fetchAgainstPoNumber({
-          token: authenticatedUser?.token || "",
-          poNumber: row.original?.documentNumber,
-          apiUrl: apiUrl,
-          lastCount: paginationAgainstPO.pageSize,
-          skipRecords: skipRecordAgainstPO,
-        })
-      ).finally(() => {
-        setIsLoadingAgainstPO(false);
-      });
     }
     else if (label === "TR") {
+      apiUrl = "/ITransferReceiveFeature/ListAllTrsAgainstPoNumber"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsTRPOModalOpen(true)
     }
     else if (label === "Issuance") {
+      apiUrl = "/IProductionOrderFeature/ListAllIssueForProductionWithDetails"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsICPOModalOpen(true)
     }
     else if (label === "Receving") {
+      apiUrl = "/IReceiptFromProductionFeature/ListAllRecieptFromProduction"
+      setApiUrlAgainstPO(apiUrl)
+      setPoNumber(row.original?.documentNumber)
       setIsRPOModalOpen(true)
     }
     // console.log("🚀 ~ handleViewDetails ~ row:", row)
@@ -724,6 +739,15 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     setIsTRPOModalOpen(false)
     setIsICPOModalOpen(false)
     setIsRPOModalOpen(false)
+
+    // Clear States of PO Modals
+    setPaginationAgainstPO({
+      pageIndex: 0,
+      pageSize: 5,
+    })
+    setApiUrlAgainstPO("")
+    setPoNumber(0)
+    dispatch(CLEAR_LIST_AGAINST_PO())
   }
 
   return (
@@ -753,9 +777,13 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose={handleClosePOModals}
         row={selectedRow}
         isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
-        title = {"Inventory Transfer Request"}
+        title={"Inventory Transfer Request"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl={apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* ITViewDetailsModal   */}
@@ -764,9 +792,13 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose={handleClosePOModals}
         row={selectedRow}
         isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
         pagination={paginationAgainstPO}
         setPagination={setPaginationAgainstPO}
-        title = {"Inventory Transfer"}
+        title={"Inventory Transfer"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl={apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* TRViewDetailsModal   */}
@@ -774,6 +806,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isTRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Transfer Receipt"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl={apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* IssuenceViewDetailsModal   */}
@@ -781,6 +821,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isICPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Issuance"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl={apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* RecevingViewDetailsModal   */}
@@ -788,6 +836,14 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         opened={isRPOModalOpen}
         handleModalClose={handleClosePOModals}
         row={selectedRow}
+        isLoading={isLoadingAgainstPO}
+        setIsLoading={setIsLoadingAgainstPO}
+        pagination={paginationAgainstPO}
+        setPagination={setPaginationAgainstPO}
+        title={"Receving"}
+        skipRecord={skipRecordAgainstPO}
+        apiUrl={apiUrlAgainstPO}
+        poNumber={poNumber}
       />
 
       {/* Header Section */}
@@ -802,7 +858,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
             Production Order
           </Title>
           <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-            Check production order records with status updates.
+            Track inventory transfers that are pending or successfully synced with SAP.
           </Text>
         </Stack>
 
@@ -1109,58 +1165,58 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
                           padding: "16px",
                         }}
                       >
-                        <Collapse in={row.getIsExpanded()} transitionDuration={1000}>
-                          <Stack gap="md">
-                            {cardsData.map((item, index) => (
-                              <Card
-                                key={index}
-                                withBorder
-                                radius="lg"
-                                // shadow="xs"
-                                w="100%"
-                                p="lg"
-                                style={{ borderColor: "#e0e0e0" }}
-                              >
-                                <Group align="center" justify="between">
-                                  <Group flex={1}>
-                                    <Text fw={600} size="sm">
-                                      {item.title}
-                                    </Text>
-                                  </Group>
-                                  <Group>
-                                    <Group gap={3}>
-                                      <Text size="xs" display={"flex"} fw={"bold"}>
-                                        Total No of {item.label} Created : {" "}
-                                      </Text>
-                                      <Text size="xs" c={"dimmed"} fw={"bold"}>
-                                        {item.totalCreated}
+                        <div
+                          style={{
+                            maxWidth: !isSidebarOpen && isLargeDesktop ? "75vw" : isSidebarOpen && (isDesktop || isLaptop) ? "80vw" : !isSidebarOpen && (isDesktop || isLaptop) ? "63vw" : !isSidebarOpen && isTablet ? "70vw" : "85vw",
+                            width: "100%",
+                            position: "sticky",
+                            left: 0,
+                            zIndex: 2,
+                          }}
+                        >
+                          <Collapse in={row.getIsExpanded()} transitionDuration={1000}>
+                            <Stack gap="md">
+                              {cardsData.map((item, index) => (
+                                <Card
+                                  key={index}
+                                  withBorder
+                                  radius="lg"
+                                  w="100%"
+                                  p="lg"
+                                  style={{ borderColor: "#e0e0e0" }}
+                                >
+                                  <Group align="center" justify="between">
+                                    <Group flex={1}>
+                                      <Text fw={600} size="md" color="#4d4d4d">
+                                        {item.title}
                                       </Text>
                                     </Group>
-                                    <Button
-                                      variant="transparent"
-                                      className={"outlineButton"}
-                                      radius={8}
-                                      size="xs"
-                                      w={120}
-                                      onClick={() => handleViewDetails(row, item?.label)}
-                                    >
-                                      View Details
-                                    </Button>
+                                    <Group>
+                                      <Group gap={3}>
+                                        <Text size="xs" display={"flex"} fw={"bold"} color="#4d4d4d">
+                                          Total No of Items : {" "}
+                                        </Text>
+                                        <Text size="xs" c={"dimmed"} fw={"bold"}>
+                                          {item.totalCreated}
+                                        </Text>
+                                      </Group>
+                                      <Button
+                                        variant="transparent"
+                                        className={"outlineButton"}
+                                        radius={8}
+                                        size="xs"
+                                        w={120}
+                                        onClick={() => handleViewDetails(row, item?.label)}
+                                      >
+                                        View Details
+                                      </Button>
+                                    </Group>
                                   </Group>
-                                </Group>
-                              </Card>
-                            ))}
-                          </Stack>
-                          {/* <div style={{ padding: "16px" }}>
-                            <Stack gap="xs">
-                              <Text fw={600}>Details</Text>
-                              <Text>Doc No: {row.original.documentNumber}</Text>
-                              <Text>Item Code: {row.original.itemNo}</Text>
-                              <Text>Quantity: {row.original.quantity}</Text>
-                              <Text>Status: {row.original.productionOrderStatus}</Text>
+                                </Card>
+                              ))}
                             </Stack>
-                          </div> */}
-                        </Collapse>
+                          </Collapse>
+                        </div>
                       </td>
                     </tr>
                   )}

@@ -1,29 +1,35 @@
 import {
     Modal,
-    Button,
     Group,
     Text,
-    Stack,
-    Center,
     Flex,
     Divider,
-    ActionIcon,
     SimpleGrid,
-    Box
+    Box,
 } from "@mantine/core";
 import {
-    IconAlertCircle,
     IconCircleX,
 } from "@tabler/icons-react";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useEffect, useState } from "react";
+import TanStackTable from "@/components/tanStackTable/TanStackTable";
+import ITR_Columns from "@/components/columns/ITR_Columns";
+import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
+import RFP_Columns from "@/components/columns/RFP_Columns";
 
 
 interface ModalProps {
     opened: boolean;
     handleModalClose: () => void;
     row: any
-    // handleConfirm: () => void;
-    // handleCancel: () => void;
-    // description: string
+    isLoading: boolean
+    pagination: any
+    setPagination: any,
+    title: string,
+    skipRecord: number,
+    setIsLoading: any,
+    apiUrl: string,
+    poNumber: number
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -40,21 +46,61 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 
-export default function RecevingViewDetailsModal({
+export default function RecievingViewDetailsModal({
     opened,
     handleModalClose,
-    row
-    // handleConfirm,
-    // handleCancel,
-    // description
+    row,
+    isLoading,
+    pagination,
+    setPagination,
+    title,
+    skipRecord,
+    setIsLoading,
+    apiUrl,
+    poNumber
 }: ModalProps) {
+
+    const { authenticatedUser } = useAppSelector(({ authStates }) => {
+        return authStates;
+    });
+    const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
+        ({ sapStates }) => {
+            return sapStates;
+        }
+    );
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (authenticatedUser?.token && opened) {
+            setIsLoading(true)
+            dispatch(
+                fetchAgainstPoNumber({
+                    token: authenticatedUser?.token || "",
+                    poNumber: poNumber,
+                    apiUrl: apiUrl,
+                    lastCount: pagination.pageSize,
+                    skipRecords: skipRecord,
+                })
+            ).finally(() => {
+                setIsLoading(false);
+            });
+        }
+    }, [
+        pagination.pageIndex,
+        pagination.pageSize,
+        apiUrl,
+        poNumber
+    ]);
+
+    const columns = RFP_Columns({ pagination, listAgainstPo })
+
     return (
         <Modal
             opened={opened}
             onClose={handleModalClose}
             zIndex={10000}
             closeButtonProps={{
-                icon: <IconCircleX size={70} stroke={2} color="#ED1C24" />,
+                icon: <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 5 }}><IconCircleX size={30} stroke={2} color="#ED1C24" /></Box>,
             }}
             centered
             // withCloseButton={false}
@@ -65,21 +111,10 @@ export default function RecevingViewDetailsModal({
                     <Text fw={400} fz="lg">
                         Preview
                     </Text>
-                    {/* <Divider mt="sm" /> */}
                 </Flex>
             }
         >
-            {/* Header with close button */}
-            {/* <Group justify="space-between" align="flex-start">
-                <Text fw={600} size="md">Preview</Text>
-                <ActionIcon onClick={handleModalClose} variant="subtle" color="#ED1C24" size="lg">
-                    <IconCircleX />
-                </ActionIcon>
-            </Group> */}
 
-            <Divider my="sm" />
-
-            {/* Document details */}
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
                     <InfoRow label="Document No" value={String(row?.documentNumber)} />
@@ -93,9 +128,20 @@ export default function RecevingViewDetailsModal({
                     <InfoRow label="Warehouse" value={row?.warehouse} />
                 </SimpleGrid>
             </Box>
-            <Stack gap="sm" align="start">
-                
-            </Stack>
+
+            <Divider my="sm" />
+
+            <TanStackTable
+                data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
+                dataCount={totalRecordsAgainstPo}
+                columns={columns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={title}
+                skipRecord={skipRecord}
+            />
         </Modal >
     );
 }

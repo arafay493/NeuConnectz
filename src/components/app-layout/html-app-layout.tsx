@@ -26,6 +26,7 @@ import {
 } from 'react';
 import HtmlCollapsedNavbar from './html-collapsed-navbar';
 import HtmlExpandedNavbar from './html-expanded-navbar';
+import { toggleSidebar } from '@/redux/reducers/sidebar-reducer/sidebar-reducer';
 
 const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
 
@@ -77,6 +78,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     // Note: Save nav state to localStorage...!
     useEffect(() => {
         localStorage.setItem('navCollapsed', JSON.stringify(collapsed));
+        dispatch(toggleSidebar(collapsed))
     }, [collapsed]);
 
     // Note: Handling the activeTab based on pathName...!

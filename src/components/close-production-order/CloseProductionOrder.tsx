@@ -63,6 +63,7 @@ const CloseProductionOrderComponent: FC<CloseProductionOrderComponentProp> = ({ 
             withCloseButton={false}
             size={"auto"}
             radius="md"
+            zIndex={1000}
         >
             <Stack gap="sm" align="start">
                 {/* Warning Icon */}

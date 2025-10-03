@@ -10,10 +10,11 @@ import {
 import {
     IconCircleX,
 } from "@tabler/icons-react";
-import { useAppSelector } from "@/redux/store";
-import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useEffect, useState } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
 import ITR_Columns from "@/components/columns/ITR_Columns";
+import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
 
 
 interface ModalProps {
@@ -23,7 +24,11 @@ interface ModalProps {
     isLoading: boolean
     pagination: any
     setPagination: any,
-    title: string
+    title: string,
+    skipRecord: number,
+    setIsLoading: any,
+    apiUrl: string,
+    poNumber: number
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -40,21 +45,51 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 
-export default function ITViewDetailsModal({
+export default function ITRViewDetailsModal({
     opened,
     handleModalClose,
     row,
     isLoading,
     pagination,
     setPagination,
-    title
+    title,
+    skipRecord,
+    setIsLoading,
+    apiUrl,
+    poNumber
 }: ModalProps) {
 
+    const { authenticatedUser } = useAppSelector(({ authStates }) => {
+        return authStates;
+    });
     const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
         ({ sapStates }) => {
             return sapStates;
         }
     );
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (authenticatedUser?.token && opened) {
+            setIsLoading(true)
+            dispatch(
+                fetchAgainstPoNumber({
+                    token: authenticatedUser?.token || "",
+                    poNumber: poNumber,
+                    apiUrl: apiUrl,
+                    lastCount: pagination.pageSize,
+                    skipRecords: skipRecord,
+                })
+            ).finally(() => {
+                setIsLoading(false);
+            });
+        }
+    }, [
+        pagination.pageIndex,
+        pagination.pageSize,
+        apiUrl,
+        poNumber
+    ]);
 
     const columns = ITR_Columns({ pagination, listAgainstPo })
 
@@ -64,7 +99,7 @@ export default function ITViewDetailsModal({
             onClose={handleModalClose}
             zIndex={10000}
             closeButtonProps={{
-                icon: <IconCircleX size={70} stroke={2} color="#ED1C24" />,
+                icon: <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 5 }}><IconCircleX size={30} stroke={2} color="#ED1C24" /></Box>,
             }}
             centered
             // withCloseButton={false}
@@ -103,7 +138,8 @@ export default function ITViewDetailsModal({
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
-                title = {title}
+                title={title}
+                skipRecord={skipRecord}
             />
         </Modal >
     );

@@ -314,22 +314,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
-        accessorKey: "baseQuantiy",
-        header: "Base Qty",
-        cell: ({ getValue, row }) => {
-          return (
-            <Text c={customStyles.colors._909090} fw={500}>
-              {/* {val as string}- */}
-              {getValue() as string}
-            </Text>
-          );
-        },
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        // size: calculateColumnWidth('Base Qty', (recieptFromProductionList || []).map(item => item.), 150, 220),
-      },
-      {
-        accessorKey: "",
+        accessorKey: "postedDate",
         header: "Posting Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
@@ -338,9 +323,8 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth('Posting Date', (recieptFromProductionList || []).map(item => item.postedDate), 150, 220),
+        size: calculateColumnWidth('Posting Date', (recieptFromProductionList || []).map(item => item.postedDate), 200, 220),
       },
-
       {
         accessorKey: "",
         header: "Transc Type",
@@ -535,7 +519,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
             Receipt From Production
           </Title>
           <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-            Track finished items recorded from production orders.
+            Track inventory transfers that are pending or successfully synced with SAP.
           </Text>
         </Stack>
 

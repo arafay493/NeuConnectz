@@ -244,7 +244,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
-        accessorKey: "docDate",
+        accessorKey: "createdDate",
         header: "Doc Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
@@ -256,7 +256,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         size: calculateColumnWidth(
           "Document Date",
           (itrData || []).map((item) =>
-            new Date(item.docDate).toLocaleDateString()
+            new Date(item.createdDate).toLocaleDateString()
           ),
           150,
           220
