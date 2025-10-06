@@ -7,8 +7,15 @@ import { customStyles } from '@/styles/custom-theme'
 import { IconChevronDown } from '@tabler/icons-react'
 import { fetchITRDashboardUserCountList } from '@/redux/actions/dashboard-actions/dashboard-actions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
+import { useMediaQuery } from '@mantine/hooks'
+import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
 
 const ITR_DashboardComponent = () => {
+    const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
+    const isTablet = useMediaQuery("(max-width: 768px)");     // tablets
+    const isLaptop = useMediaQuery("(max-width: 1024px)");    // small laptops
+    const isDesktop = useMediaQuery("(max-width: 1280px)");   // normal desktops
+    const isLargeDesktop = useMediaQuery("(min-width: 1281px)"); // big screens
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
@@ -35,39 +42,11 @@ const ITR_DashboardComponent = () => {
                 </Stack>
             </Stack> */}
             <Grid gutter="md" justify='space-between'>
-                <GridCol span={4} bg={"white"} mih={450} p={20} style={{ borderRadius: 10 }}>
-                    {/* <RequestPerPeriodComponent /> */}
-                    <Group
-
-                        justify="space-between"
-                        mb="md"
-                        wrap="wrap"
-                        // gap="sm"
-                    // style = {{border: "2px solid black"}}
-                    >
-                        <Text size="sm" fw={400} c={customStyles.colors._4D4D4D}>
-                            User Requests
-                        </Text>
-                        <Group gap="sm">
-                            <Select
-                                w={{ base: "100%", sm: 130 }}
-                                data={["This Week", "This Month", "This Quarter"]}
-                                defaultValue="This Week"
-                                size="sm"
-                                rightSection={<IconChevronDown size={16} />}
-                                styles={{
-                                    input: {
-                                        border: `1px solid ${customStyles.colors._E1E7EC}`,
-                                        color: customStyles.colors._909090,
-                                        fontSize: 14
-                                    },
-                                }}
-                            />
-                        </Group>
-                    </Group>
-                    <Box w={"100%"} h={430}>
-                        <UserRequestChartComponent />
-                    </Box>
+                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <UserRequestChartComponent />
+                </GridCol>
+                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
+                    <UserRequestPerPeriodChartComponent />
                 </GridCol>
             </Grid>
         </Box>

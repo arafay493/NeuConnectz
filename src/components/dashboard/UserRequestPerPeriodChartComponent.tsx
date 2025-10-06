@@ -118,7 +118,7 @@ const CustomTooltip = ({ active, payload, coordinate }: any) => {
     return null;
 };
 
-const UserRequestChartComponent = () => {
+const UserRequestPerPeriodChartComponent = () => {
     const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
         return dashboardStates;
     });
@@ -190,4 +190,4 @@ const UserRequestChartComponent = () => {
     )
 }
 
-export default UserRequestChartComponent
+export default UserRequestPerPeriodChartComponent
