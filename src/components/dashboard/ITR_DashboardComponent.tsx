@@ -11,6 +11,7 @@ import { useMediaQuery } from '@mantine/hooks'
 import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
 import SumOfTotalRequestByWarehouseChartComponent from './SumOfTotalRequestByWarehouseChartComponent'
 import TotalRequestChartComponent from './TotalRequestChartComponent'
+import AvgCloseHours from './AvgCloseHours'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -52,6 +53,9 @@ const ITR_DashboardComponent = () => {
                 </GridCol> */}
                 <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <UserRequestChartComponent />
+                </GridCol>
+                <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <AvgCloseHours />
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByWarehouseChartComponent />
