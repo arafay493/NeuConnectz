@@ -9,10 +9,11 @@ import { fetchITRDashboardUserCountList } from '@/redux/actions/dashboard-action
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
-import SumOfTotalRequestByWarehouseChartComponent from './SumOfTotalRequestByWarehouseChartComponent'
+import SumOfTotalRequestByToWarehouseChartComponent from './SumOfTotalRequestByToWarehouseChartComponent'
 import TotalRequestChartComponent from './TotalRequestChartComponent'
 import AvgCloseHours from './AvgCloseHours'
 import QuantityChartComponent from './QuantityChartComponent'
+import SumOfTotalRequestByFromWarehouseChartComponent from './SumOfTotalRequestByFromWarehouseChartComponent'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -58,10 +59,13 @@ const ITR_DashboardComponent = () => {
                 <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <AvgCloseHours />
                 </GridCol>
-                <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
-                    <SumOfTotalRequestByWarehouseChartComponent />
+                <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <SumOfTotalRequestByToWarehouseChartComponent />
                 </GridCol>
-                <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
+                <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <SumOfTotalRequestByFromWarehouseChartComponent />
+                </GridCol>
+                <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <QuantityChartComponent />
                 </GridCol>
             </Grid>

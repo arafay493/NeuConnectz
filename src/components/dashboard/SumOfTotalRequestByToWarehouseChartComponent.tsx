@@ -25,89 +25,149 @@ import { Bar, BarChart, CartesianGrid, Customized, ResponsiveContainer, Tooltip,
 const data = [
     {
         period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
         totalRequests: 1
-    },
-    {
-        period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-GW-SM",
-        warehouseName: "General Warehouse SM",
-        totalRequests: 5
-    },
-    {
-        period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 4
     },
     {
         period: "2025-09-30T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 5
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 2
     },
     {
-        period: "2025-10-01T00:00:00Z",
-        fromWarehouseCode: "W-GW-SM",
-        warehouseName: "General Warehouse SM",
+        period: "2025-09-30T00:00:00Z",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
         totalRequests: 1
     },
     {
+        period: "2025-09-30T00:00:00Z",
+        toWarehouseCode: "W-SKR-01",
+        warehouseName: "Main Warehouse - Sukkur",
+        totalRequests: 2
+    },
+    {
         period: "2025-10-01T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 7
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 3
+    },
+    {
+        period: "2025-10-01T00:00:00Z",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
+        totalRequests: 5
     },
     {
         period: "2025-10-02T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-FG-SM",
-        warehouseName: "Finished Good Warehouse SM",
-        totalRequests: 7
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 5
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-PL-SM",
-        warehouseName: "Plates Warehouse SM",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-RM-KG",
-        warehouseName: "Raw Material Warehouse KG",
-        totalRequests: 8
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-SKR-01",
+        toWarehouseCode: "W-SKR-01",
         warehouseName: "Main Warehouse - Sukkur",
         totalRequests: 1
     },
     {
-        period: "2025-10-04T00:00:00Z",
-        fromWarehouseCode: "W-FG-SM",
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-FG-SM",
         warehouseName: "Finished Good Warehouse SM",
+        totalRequests: 2
+    },
+    {
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 6
+    },
+    {
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-KHI-KG",
+        warehouseName: "Main Warehouse - Korangi",
+        totalRequests: 7
+    },
+    {
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-RM-KG",
+        warehouseName: "Raw Material Warehouse KG",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-03T00:00:00Z",
+        toWarehouseCode: "W-SKR-01",
+        warehouseName: "Main Warehouse - Sukkur",
+        totalRequests: 5
+    },
+    {
+        period: "2025-10-04T00:00:00Z",
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 2
+    },
+    {
+        period: "2025-10-04T00:00:00Z",
+        toWarehouseCode: "W-KHI-KG",
+        warehouseName: "Main Warehouse - Korangi",
         totalRequests: 1
     },
     {
         period: "2025-10-04T00:00:00Z",
-        fromWarehouseCode: "W-RM-KG",
-        warehouseName: "Raw Material Warehouse KG",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-06T00:00:00Z",
+        toWarehouseCode: "W-FG-SM",
+        warehouseName: "Finished Good Warehouse SM",
         totalRequests: 3
+    },
+    {
+        period: "2025-10-06T00:00:00Z",
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 4
+    },
+    {
+        period: "2025-10-06T00:00:00Z",
+        toWarehouseCode: "W-KHI-KG",
+        warehouseName: "Main Warehouse - Korangi",
+        totalRequests: 5
+    },
+    {
+        period: "2025-10-06T00:00:00Z",
+        toWarehouseCode: "W-PRD-SM",
+        warehouseName: "Production Floor - Sabzi Mandi",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-06T00:00:00Z",
+        toWarehouseCode: "W-SKR-01",
+        warehouseName: "Main Warehouse - Sukkur",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-07T00:00:00Z",
+        toWarehouseCode: "W-KHI-HB",
+        warehouseName: "Madni Warehouse - Hawke's Bay",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-07T00:00:00Z",
+        toWarehouseCode: "W-KHI-KG",
+        warehouseName: "Main Warehouse - Korangi",
+        totalRequests: 1
+    },
+    {
+        period: "2025-10-07T00:00:00Z",
+        toWarehouseCode: "W-SKR-01",
+        warehouseName: "Main Warehouse - Sukkur",
+        totalRequests: 5
     }
-];
+]
 
 const formattedData = data
     .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
@@ -117,7 +177,7 @@ const formattedData = data
     }));
 
 const chartData = data.map((item) => ({
-    warehouseCode: item.fromWarehouseCode,
+    warehouseCode: item.toWarehouseCode,
     // period: item.period.split("T")[0],
     period: item.period,
     totalRequests: item.totalRequests,
@@ -209,7 +269,7 @@ const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
                 fontWeight={500}
                 style={{ marginRight: 20 }}
             >
-                {item.fromWarehouseCode}
+                {item.toWarehouseCode}
             </text>
             {/* <text
                 x={0}
@@ -329,7 +389,7 @@ const CustomGroupLabel = ({ xAxis, data }: any) => {
 
 
 
-const SumOfTotalRequestByWarehouseChartComponent = () => {
+const SumOfTotalRequestByToWarehouseChartComponent = () => {
     // const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
     //     return dashboardStates;
     // });
@@ -343,7 +403,7 @@ const SumOfTotalRequestByWarehouseChartComponent = () => {
     //     return acc;
     // }, []);
 
-    
+
     return (
         <>
             <Group
@@ -354,7 +414,7 @@ const SumOfTotalRequestByWarehouseChartComponent = () => {
             // style = {{border: "2px solid black"}}
             >
                 <Text size="sm" fw={400} c={customStyles.colors._4D4D4D}>
-                    Sum of Total Requests by Source Warehouse
+                    Sum of Total Requests by to Warehouse
                 </Text>
                 <Group gap="sm">
                     <Select
@@ -472,29 +532,4 @@ const SumOfTotalRequestByWarehouseChartComponent = () => {
     )
 }
 
-export default SumOfTotalRequestByWarehouseChartComponent
-
-
-
-
-
-
-
-
-
-// "use client"
-
-
-// import React from 'react'
-
-// const SumOfTotalRequestByWarehouseChartComponent = () => {
-//     return (
-//         <div>
-
-//         </div>
-//     )
-
-
-// }
-
-// export default SumOfTotalRequestByWarehouseChartComponent
+export default SumOfTotalRequestByToWarehouseChartComponent

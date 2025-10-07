@@ -287,7 +287,7 @@ const QuantityChartComponent = () => {
                                 <stop offset="100%" stopColor="#1B59F8" stopOpacity={0} />
                             </linearGradient>
                         </defs>
-                        <Area type="monotone" dataKey="quantity" stroke="#1B59F8" fill="url(#colorUv)" strokeDasharray="3 3" activeDot={{
+                        <Area dataKey="quantity" stroke="#1B59F8" fill="url(#colorUv)" strokeDasharray="3 3" activeDot={{
                             r: 5,
                             fill: "#fff",
                             stroke: "#1B59F8",
