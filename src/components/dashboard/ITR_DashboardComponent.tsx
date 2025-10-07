@@ -5,7 +5,7 @@ import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
 import { customStyles } from '@/styles/custom-theme'
 import { IconChevronDown } from '@tabler/icons-react'
-import { fetchITRDashboardUserCountList } from '@/redux/actions/dashboard-actions/dashboard-actions'
+import { fetchITRDashboardDailyTranferKPI, fetchITRDashboardQuantity, fetchITRDashboardRequestsByDestinationWarehouse, fetchITRDashboardRequestsBySourceWarehouse, fetchITRDashboardUserCountList, fetchITRDashboardAverageCloseTime } from '@/redux/actions/dashboard-actions/dashboard-actions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
@@ -30,6 +30,31 @@ const ITR_DashboardComponent = () => {
 
         dispatch(
             fetchITRDashboardUserCountList({
+                authToken: authenticatedUser.token,
+            })
+        );
+        dispatch(
+            fetchITRDashboardDailyTranferKPI({
+                authToken: authenticatedUser.token,
+            })
+        );
+        dispatch(
+            fetchITRDashboardQuantity({
+                authToken: authenticatedUser.token,
+            })
+        );
+        dispatch(
+            fetchITRDashboardRequestsByDestinationWarehouse({
+                authToken: authenticatedUser.token,
+            })
+        );
+        dispatch(
+            fetchITRDashboardRequestsBySourceWarehouse({
+                authToken: authenticatedUser.token,
+            })
+        );
+        dispatch(
+            fetchITRDashboardAverageCloseTime({
                 authToken: authenticatedUser.token,
             })
         );
