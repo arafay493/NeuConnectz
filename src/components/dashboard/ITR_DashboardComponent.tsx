@@ -12,6 +12,7 @@ import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartCompo
 import SumOfTotalRequestByWarehouseChartComponent from './SumOfTotalRequestByWarehouseChartComponent'
 import TotalRequestChartComponent from './TotalRequestChartComponent'
 import AvgCloseHours from './AvgCloseHours'
+import QuantityChartComponent from './QuantityChartComponent'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -59,6 +60,9 @@ const ITR_DashboardComponent = () => {
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByWarehouseChartComponent />
+                </GridCol>
+                <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
+                    <QuantityChartComponent />
                 </GridCol>
             </Grid>
         </Box>
