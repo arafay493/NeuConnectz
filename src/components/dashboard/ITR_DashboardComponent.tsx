@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
 import SumOfTotalRequestByWarehouseChartComponent from './SumOfTotalRequestByWarehouseChartComponent'
+import TotalRequestChartComponent from './TotalRequestChartComponent'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -43,12 +44,15 @@ const ITR_DashboardComponent = () => {
                 </Stack>
             </Stack> */}
             <Grid gutter="md" justify='space-between'>
-                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
-                    <UserRequestChartComponent />
+                <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <TotalRequestChartComponent />
                 </GridCol>
                 {/* <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
                     <UserRequestPerPeriodChartComponent />
                 </GridCol> */}
+                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <UserRequestChartComponent />
+                </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByWarehouseChartComponent />
                 </GridCol>
