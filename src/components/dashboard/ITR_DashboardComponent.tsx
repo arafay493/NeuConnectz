@@ -9,6 +9,7 @@ import { fetchITRDashboardUserCountList } from '@/redux/actions/dashboard-action
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import UserRequestPerPeriodChartComponent from './UserRequestPerPeriodChartComponent'
+import SumOfTotalRequestByWarehouseChartComponent from './SumOfTotalRequestByWarehouseChartComponent'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -45,8 +46,11 @@ const ITR_DashboardComponent = () => {
                 <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <UserRequestChartComponent />
                 </GridCol>
-                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
+                {/* <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
                     <UserRequestPerPeriodChartComponent />
+                </GridCol> */}
+                <GridCol span={12} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
+                    <SumOfTotalRequestByWarehouseChartComponent />
                 </GridCol>
             </Grid>
         </Box>

@@ -7,74 +7,74 @@ import { IconChevronDown } from '@tabler/icons-react';
 import React from 'react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-// const data = [
-//     {
-//         period: "2025-09-29T00:00:00Z",
-//         createdBy: "gCRpy5kovs",
-//         userName: "harisbashir",
-//         userRequests: 2
-//     },
-//     {
-//         period: "2025-09-29T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 1
-//     },
-//     {
-//         period: "2025-09-30T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 18
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 43
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "ahmed",
-//         userRequests: 13
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sufiyan",
-//         userRequests: 4
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "zain",
-//         userRequests: 2
-//     },
-//     {
-//         period: "2025-10-02T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 1
-//     },
-//     {
-//         period: "2025-10-02T00:00:00Z",
-//         createdBy: "xQ9q6cmmdj",
-//         userName: "nabeela",
-//         userRequests: 3
-//     }
-// ]
+const data = [
+    {
+        period: "2025-09-29T00:00:00Z",
+        createdBy: "gCRpy5kovs",
+        userName: "harisbashir",
+        userRequests: 2
+    },
+    {
+        period: "2025-09-29T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "sagartesting",
+        userRequests: 1
+    },
+    {
+        period: "2025-09-30T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "sagartesting",
+        userRequests: 18
+    },
+    {
+        period: "2025-10-01T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "sagartesting",
+        userRequests: 43
+    },
+    {
+        period: "2025-10-01T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "ahmed",
+        userRequests: 13
+    },
+    {
+        period: "2025-10-01T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "sufiyan",
+        userRequests: 4
+    },
+    {
+        period: "2025-10-01T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "zain",
+        userRequests: 2
+    },
+    {
+        period: "2025-10-02T00:00:00Z",
+        createdBy: "uAaXF8NPEW",
+        userName: "sagartesting",
+        userRequests: 1
+    },
+    {
+        period: "2025-10-02T00:00:00Z",
+        createdBy: "xQ9q6cmmdj",
+        userName: "nabeela",
+        userRequests: 3
+    }
+]
 
-// const groupedData = data.reduce((acc: any, curr) => {
-//     const found: any = acc.find((item: any) => item?.userName === curr.userName);
-//     if (found) {
-//         found.userRequests += curr.userRequests;
-//     } else {
-//         acc.push({ userName: curr.userName, userRequests: curr.userRequests });
-//     }
-//     return acc;
-// }, []);
+const groupedData = data.reduce((acc: any, curr) => {
+    const found: any = acc.find((item: any) => item?.userName === curr.userName);
+    if (found) {
+        found.userRequests += curr.userRequests;
+    } else {
+        acc.push({ userName: curr.userName, userRequests: curr.userRequests });
+    }
+    return acc;
+}, []);
 
-// const maxValue = Math.max(...groupedData.map((d: any) => d.userRequests));
+const maxValue = Math.max(...groupedData.map((d: any) => d.userRequests));
 const CustomTooltip = ({ active, payload, coordinate }: any) => {
     const value = payload[0]?.value;
     if (active && payload && payload.length) {
