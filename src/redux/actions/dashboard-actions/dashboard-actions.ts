@@ -62,8 +62,11 @@ const fetchITRDashboardDailyTranferKPI = createAsyncThunk(
 
 const fetchITRDashboardQuantity = createAsyncThunk(
     "dashboard/fetchITRDashboardQuantity",
-    async ({ authToken }: { authToken: string }, { dispatch }) => {
-        const response = await apiGet(`/neu-connect/v2/IItrDashboardFeature/GetItemRequestsPerPeriod`, authToken);
+    async ({ authToken, startDate, endDate }: { authToken: string, startDate?: string, endDate?: string }, { dispatch }) => {
+        const params: { [key: string]: string } = {};
+        if (startDate !== undefined) params.startDate = startDate;
+        if (endDate !== undefined) params.endDate = endDate;
+        const response = await apiGet(`/neu-connect/v2/IItrDashboardFeature/GetItemRequestsPerPeriod`, authToken, params);
 
         const { status, data } = response;
 

@@ -4,7 +4,11 @@ import { IconChevronDown } from '@tabler/icons-react'
 import React from 'react'
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-const QuantityChartComponent = () => {
+interface propTypes {
+    handleFilterChange: (filterType: string, dashboardType: string) => void
+}
+
+const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
     const data = [
         {
             "period": "2025-09-29T00:00:00Z",
@@ -182,8 +186,14 @@ const QuantityChartComponent = () => {
                 <Group gap="sm">
                     <Select
                         w={{ base: "100%", sm: 130 }}
-                        data={["This Week", "This Month", "This Quarter"]}
-                        defaultValue="This Week"
+                        // data={["This Week", "This Month", "This Quarter"]}
+                        data={[
+                            { value: 'week', label: 'This Week' },
+                            { value: 'month', label: 'This Month' },
+                            { value: 'quarter', label: 'This Quarter' },
+                        ]}
+                        onChange={() => handleFilterChange("week", "quantity")}
+                        defaultValue="week"
                         size="sm"
                         rightSection={<IconChevronDown size={16} />}
                         styles={{

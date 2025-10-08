@@ -1,6 +1,6 @@
 "use client"
 import { Box, Grid, GridCol, Group, Select, Text } from '@mantine/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
 import { customStyles } from '@/styles/custom-theme'
@@ -14,6 +14,7 @@ import TotalRequestChartComponent from './TotalRequestChartComponent'
 import AvgCloseHours from './AvgCloseHours'
 import QuantityChartComponent from './QuantityChartComponent'
 import SumOfTotalRequestByFromWarehouseChartComponent from './SumOfTotalRequestByFromWarehouseChartComponent'
+import { getDateRange } from '@/utils/getDateRange'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -40,7 +41,7 @@ const ITR_DashboardComponent = () => {
         );
         dispatch(
             fetchITRDashboardQuantity({
-                authToken: authenticatedUser.token,
+                authToken: authenticatedUser?.token || "",
             })
         );
         dispatch(
@@ -59,39 +60,47 @@ const ITR_DashboardComponent = () => {
             })
         );
     }, [authenticatedUser?.token, dispatch]);
+
+    const handleFilterChange = (filterType: string, dashboardType: string) => {
+        const { startDate, endDate } = getDateRange(filterType);
+        // console.log("🚀 ~ handleFilterChange ~ startDate:", startDate)
+
+        // switch (dashboardType) {
+        //     case "quantity":
+        //         dispatch(
+        //             fetchITRDashboardQuantity({
+        //                 authToken: authenticatedUser?.token || "",
+        //                 startDate,
+        //                 endDate,
+        //             })
+        //         );
+        //         break;
+
+        //     default:
+        //         break;
+        // }
+
+    };
     return (
         <Box>
-            {/* <Stack justify='between' display={"flex"} >
-                <Stack>
-                    <Group></Group>
-                    <Group bg={"white"}>1</Group>
-                </Stack>
-                <Stack>
-                    <Group></Group>
-                    <Group bg={"white"}>2</Group>
-                </Stack>
-            </Stack> */}
             <Grid gutter="md" justify='space-between'>
                 <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <TotalRequestChartComponent />
-                </GridCol>
-                {/* <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} style={{ borderRadius: 10 }}>
-                    <UserRequestPerPeriodChartComponent />
-                </GridCol> */}
-                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
-                    <UserRequestChartComponent />
-                </GridCol>
-                <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
-                    <AvgCloseHours />
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByToWarehouseChartComponent />
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
-                    <SumOfTotalRequestByFromWarehouseChartComponent />
+                    <QuantityChartComponent handleFilterChange = {handleFilterChange}/>
+                </GridCol>
+                <GridCol span={isMobile ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <AvgCloseHours />
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
-                    <QuantityChartComponent />
+                    <SumOfTotalRequestByFromWarehouseChartComponent />
+                </GridCol>
+                <GridCol span={isMobile ? 12 : isTablet ? 6 : 4} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                    <UserRequestChartComponent />
                 </GridCol>
             </Grid>
         </Box>
