@@ -51,6 +51,8 @@ const generateBarcode = createSlice({
         CLEAR_ALL_PRODUCTION_ORDER_STATES: (state) => {
             state.data = null;
             state.totalCount = 0;
+            state.productionOrderById = null;
+            state.scannedProductionOrder = null;
             state.loading = false;
         },
     }
@@ -63,6 +65,6 @@ export const
         FETCH_PRODUCTION_ORDER_DATA,
         FETCH_PRODUCTION_ORDER_DATA_BY_ID,
         SCAN_PRODUCTION_ORDER,
-        CLEAR_ALL_PRODUCTION_ORDER_STATES
+        CLEAR_ALL_PRODUCTION_ORDER_STATES,
     } = generateBarcode.actions;
 export default generateBarcode.reducer;

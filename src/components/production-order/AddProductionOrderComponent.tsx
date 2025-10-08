@@ -242,7 +242,7 @@ const AddProductionOrderComponent = () => {
                                 <Select
                                     data={list_Item_Code_Data ? list_Item_Code_Data.map(item => ({
                                         value: item.itemCode,
-                                        label: `${item.itemCode} - ${item.itemName}`
+                                        label: `${item.itemCode}`
                                     })) : []}
                                     size='md'
                                     placeholder="Select or Search Item Code"

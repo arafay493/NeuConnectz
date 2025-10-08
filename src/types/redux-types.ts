@@ -424,7 +424,7 @@ export interface GenerateBarcodeProps {
 export interface ProductionOrderStateProps {
     data: Array<ListProductionOrder> | null;
     productionOrderById: ProductionOrderDetailProps | null;
-    scannedProductionOrder: ProductionOrderDetailProps | null;
+    scannedProductionOrder: Array<ScanProductionOrderProps> | null;
     totalCount: number;
     loading: boolean
 }
@@ -442,8 +442,14 @@ export interface ListProductionOrder {
     status?: string;
 }
 
-export interface ScanProductionOrderProps extends ListProductionOrder {
-    stages: Stages[];
+export interface ScanProductionOrderProps {
+    codes: Array<ProductionOrderCodeProps>;
+    level: number;
+    scanned: number;
+    stageId: string;
+    stageName: string;
+    stageQty: number;
+    total: number;
 }
 
 export interface AddHandlingUnit {
