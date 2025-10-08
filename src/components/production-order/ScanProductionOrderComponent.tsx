@@ -5,6 +5,7 @@ import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { fetchProductionById, scanProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
+import { ScanProductionOrderProps } from "@/types/redux-types";
 import {
     ActionIcon,
     Badge,
@@ -34,8 +35,10 @@ import LoaderComponent from "../common/loader/loader";
 const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     const dispatch = useAppDispatch();
 
-    const { productionOrderById, loading, scannedProductionOrder } = useAppSelector(({ productionOrderStates }) => productionOrderStates);
+    const { productionOrderById, scannedProductionOrder } = useAppSelector(({ productionOrderStates }) => productionOrderStates);
     const [activeTab, setActiveTab] = useState('manual')
+    const [loading, setLoading] = useState<boolean>(true)
+    const [currentScannedCode, setCurrentScannedCode] = useState<Array<ScanProductionOrderProps> | null>(null)
     const [expandedItems, setExpandedItems] = useState<string[]>([])
     const [scannedValue, setScannedValue] = useState<string>('')
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -52,39 +55,9 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         return total > 0 ? Math.round((scanned / total) * 100) : 0;
     };
 
-    // Merge scanned data with original production order data
-    const getMergedStages = () => {
-        if (!productionOrderById?.stages) return [];
-
-        const originalStages = [...productionOrderById.stages];
-
-        if (scannedProductionOrder?.stages) {
-            // Create a map of scanned stages for quick lookup
-            const scannedStagesMap = new Map(
-                scannedProductionOrder.stages.map(stage => [stage.stageId, stage])
-            );
-
-            // Update original stages with scanned data
-            return originalStages.map(originalStage => {
-                const scannedStage = scannedStagesMap.get(originalStage.stageId);
-                if (scannedStage) {
-                    // Merge the scanned data with original stage
-                    return {
-                        ...originalStage,
-                        scanned: scannedStage.scanned,
-                        total: scannedStage.total,
-                        codes: scannedStage.codes
-                    };
-                }
-                return originalStage;
-            });
-        }
-
-        return originalStages;
-    };
-
-    // Get stages sorted by level (ascending order)
-    const sortedStages = getMergedStages().sort((a, b) => a.level - b.level);
+    // Simple sorted stages - just use production order data directly
+    const sortedStages = productionOrderById?.stages ?
+        [...productionOrderById.stages].sort((a, b) => a.level - b.level) : [];
 
     const toggleExpanded = (stageId: string) => {
         setExpandedItems(prev =>
@@ -93,6 +66,195 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                 : [...prev, stageId]
         );
     }
+
+    const handlePrint = async (stageType: 'box' | 'pallet', code: string | null, itemNumber?: number) => {
+        try {
+            if (!code) {
+                showNotificationToast("Print Error", "No code provided for printing", customStyles.colors.red);
+                return;
+            }
+
+            const displayItemNumber = itemNumber ? ` ${itemNumber}` : '';
+            console.log(`Starting print process for ${stageType}${displayItemNumber} with code:`, code);
+
+            // Step 1: Check if Browser Print service is available
+            let serviceResponse;
+            try {
+                serviceResponse = await fetch("http://127.0.0.1:9100/available", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+            } catch (fetchError) {
+                throw new Error("Browser Print service is not running. Please start Zebra Browser Print application.");
+            }
+
+            if (!serviceResponse.ok) {
+                throw new Error(`Browser Print service error: ${serviceResponse.status} ${serviceResponse.statusText}`);
+            }
+
+            // Step 2: Get available printers
+            const availableDevices = await serviceResponse.json();
+            console.log("Available devices:", availableDevices);
+
+            if (!availableDevices || availableDevices.length === 0) {
+                throw new Error("No printers found. Please ensure your Zebra printer is connected and recognized by Browser Print.");
+            }
+
+            // Step 3: Use the first available device
+            const selectedDevice = availableDevices.printer[0];
+            console.log("Selected device for printing:", selectedDevice);
+
+            // Step 4: Get production order and stage information
+            const itemName = productionOrderById?.itemName || 'Unknown Item';
+
+            // First check if scanned production order data exists, otherwise use original data
+            let currentStage;
+            let stageData;
+
+            if (currentScannedCode && currentScannedCode.length > 0) {
+                // Use scanned production order data
+                currentStage = currentScannedCode.find(stage =>
+                    stage.stageName.toLowerCase() === stageType.toLowerCase()
+                );
+                console.log("Using scanned production order data:", currentStage);
+            } else {
+                // Fall back to original production order data
+                stageData = productionOrderById?.stages?.find(stage =>
+                    stage.stageName.toLowerCase() === stageType.toLowerCase()
+                );
+                console.log("Using original production order data:", stageData);
+            }
+
+            console.log("Current stage details:", currentStage || stageData);
+
+            let bottleQuantity = 0;
+            if (stageType === 'box') {
+                // For box, get the bottle stage quantity
+                bottleQuantity = currentStage?.stageQty || stageData?.stageQty || 0;
+
+            } else if (stageType === 'pallet') {
+                // For pallet, get the total bottle quantity from all boxes
+                bottleQuantity = currentStage?.stageQty || stageData?.stageQty || 0;
+            }
+
+            // Step 5: Create appropriate ZPL data based on stage type
+            let zplData = '';
+
+            if (stageType === 'box') {
+                const stageName = currentStage?.stageName || stageData?.stageName || 'Box';
+                const itemDisplayName = itemNumber ? `Box: ${itemNumber}` : stageName;
+                const scanned = currentStage?.scanned || stageData?.scanned || 0;
+                const total = currentStage?.total || stageData?.total || 1;
+
+                const quantityDisplay = itemNumber ? `${itemNumber}/${total}` : `${scanned}/${total}`;
+
+                zplData = `
+                            ^XA
+                            ^CF0,30
+                            ^FO60,30^FDItem: ${itemName}^FS
+                            
+
+                            ^FO60,70^FD${itemDisplayName}^FS
+                            ^FO300,70^FDBox Qty: ${quantityDisplay}^FS
+                            ^FO600,70^FDTotal Bottles: ${bottleQuantity}^FS
+                            
+                            ^FX Barcode section (centered)
+                            ^BY3,2,100
+                            ^FO160,150^BC^FD${code}^FS
+                            ^XZ
+                            `;
+            } else if (stageType === 'pallet') {
+                // Get box data from either scanned or original data
+                let boxStage, boxStageData;
+                if (currentScannedCode && currentScannedCode.length > 0) {
+                    boxStage = currentScannedCode.find(stage =>
+                        stage.stageName.toLowerCase() === 'box'
+                    );
+                } else {
+                    boxStageData = productionOrderById?.stages?.find(stage =>
+                        stage.stageName.toLowerCase() === 'box'
+                    );
+                }
+
+                const boxCount = boxStage?.scanned || boxStageData?.scanned || 0;
+                const stageName = currentStage?.stageName || stageData?.stageName || 'Pallet';
+                const itemDisplayName = itemNumber ? `Pallet: ${itemNumber}` : stageName;
+                const scanned = currentStage?.scanned || stageData?.scanned || 0;
+                const total = currentStage?.total || stageData?.total || 1;
+                const stageQty = currentStage?.stageQty || stageData?.stageQty || 0;
+
+                console.log("Box count for pallet label:", boxCount);
+
+                const quantityDisplay = itemNumber ? `${itemNumber}/${total}` : `${scanned}/${total}`;
+
+                zplData = `
+                            ^XA
+                            ^CF0,30
+                            ^FO60,30^FDItem: ${itemName}^FS
+                            
+                            ^FO60,70^FD${itemDisplayName}^FS
+                            ^FO300,70^FDPallet Qty: ${quantityDisplay}^FS
+                            ^FO600,70^FDTotal Bottles: ${bottleQuantity}^FS
+                            
+
+                            ^FX Barcode section (centered)
+                            ^BY3,2,100
+                            ^FO150,160^BC^FD${code}^FS
+                            ^XZ
+                            `;
+            }
+
+            console.log(`ZPL Data for ${stageType}:`, zplData);
+
+            // Step 6: Send print command
+            const printResponse = await fetch("http://127.0.0.1:9100/write", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    device: selectedDevice,
+                    data: zplData
+                })
+            });
+
+            if (!printResponse.ok) {
+                const errorText = await printResponse.text();
+                console.error("Print response error:", errorText);
+                throw new Error(`Print request failed: ${printResponse.status} - ${errorText}`);
+            }
+
+            const printResult = await printResponse.text();
+
+            // Check if the result contains error messages
+            if (printResult && printResult.toLowerCase().includes("error")) {
+                throw new Error(printResult);
+            }
+
+            const successMessage = itemNumber
+                ? `${stageType.charAt(0).toUpperCase() + stageType.slice(1)} ${itemNumber} label printed successfully`
+                : `${stageType.charAt(0).toUpperCase() + stageType.slice(1)} label printed successfully`;
+            showNotificationToast("Print Success", successMessage, customStyles.colors.green);
+
+        } catch (error) {
+            console.error("Error in handlePrint:", error);
+
+            const errorMessage = error instanceof Error ? error.message : "Unknown printing error occurred";
+
+            // Handle specific error types
+            if (errorMessage.includes("Unauthorized device")) {
+                showNotificationToast("Authorization Error", "Printer device not authorized. Please restart Browser Print and try again.", customStyles.colors.red);
+            } else if (errorMessage.includes("Browser Print service")) {
+                showNotificationToast("Service Error", errorMessage, customStyles.colors.red);
+            } else if (errorMessage.includes("No printers found")) {
+                showNotificationToast("Printer Error", errorMessage, customStyles.colors.red);
+            } else {
+                showNotificationToast("Print Error", `Failed to print ${stageType}: ${errorMessage}`, customStyles.colors.red);
+            }
+        }
+    };
 
     // Handle response from API
     const handleResponse = (status: number) => {
@@ -107,8 +269,6 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
             showNotificationToast("Production Order Scanned", "Production Order scanned successfully", customStyles.colors._408CCE);
             setIsScanning(false);
             setScannedValue('');
-            // Refresh the production order data to get updated scan counts
-            dispatch(fetchProductionById({ id: productionOrderId }));
             return;
         }
 
@@ -160,7 +320,8 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     }, [])
 
     useEffect(() => {
-        dispatch(fetchProductionById({ id: productionOrderId }))
+        dispatch(fetchProductionById({ id: productionOrderId }));
+        setLoading(false);
     }, [dispatch])
 
     useEffect(() => {
@@ -170,6 +331,36 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         }
     }, [productionOrderById])
 
+    useEffect(() => {
+        if (!currentScannedCode || currentScannedCode.length === 0) return;
+        const isBoxCompleted = currentScannedCode?.find(scannedStage => scannedStage.stageName.toLocaleLowerCase() === 'box');
+        const isPalletCompleted = currentScannedCode?.find(scannedStage => scannedStage.stageName.toLocaleLowerCase() === 'pallet');
+
+        if (isBoxCompleted) {
+            const boxStage = currentScannedCode
+                ?.find(stage => stage.stageName.toLowerCase() === 'box');
+            const boxCode = boxStage?.codes?.[0]?.code || "";
+            const boxNumber = boxStage?.scanned || 1; // Use the current scanned count as the box number
+            console.log(`Box ${boxNumber} completed, printing label with code:`, boxCode)
+            handlePrint('box', boxCode, boxNumber);
+        }
+
+        if (isPalletCompleted) {
+            const palletStage = currentScannedCode
+                ?.find(stage => stage.stageName.toLowerCase() === 'pallet');
+            const palletCode = palletStage?.codes?.[0]?.code || "";
+            const palletNumber = palletStage?.scanned || 1; // Use the current scanned count as the pallet number
+            console.log(`Pallet ${palletNumber} completed, printing label with code:`, palletCode)
+            handlePrint('pallet', palletCode, palletNumber);
+        }
+
+        setCurrentScannedCode(null)
+    }, [currentScannedCode])
+
+    useEffect(() => {
+        setCurrentScannedCode(scannedProductionOrder)
+        dispatch(fetchProductionById({ id: productionOrderId }));
+    }, [scannedProductionOrder])
     // Auto-focus input when scanning is complete
     useEffect(() => {
         if (!isScanning && !isProductionOrderComplete && inputRef.current) {
@@ -261,17 +452,14 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
 
                                 <Box style={{ flex: 1, overflowY: 'auto', paddingRight: '4px' }}>
                                     <Stack gap="md">
-                                        {loading ? (
-                                            <Text>Loading...</Text>
-                                        ) : sortedStages.length > 0 ? (
+                                        {sortedStages.length > 0 ? (
                                             sortedStages.map((stage, index) => {
                                                 const progress = calculateProgress(stage.scanned, stage.total);
                                                 const isExpanded = expandedItems.includes(stage.stageId);
 
-                                                // Check if this stage has recent scans
-                                                const hasRecentScans = scannedProductionOrder?.stages?.some(
-                                                    scannedStage => scannedStage.stageId === stage.stageId
-                                                );
+                                                // Check if this stage has recent scans - only if scannedProductionOrder exists
+                                                const hasRecentScans = scannedProductionOrder?.some(scannedStage => scannedStage.stageId === stage.stageId);
+
                                                 const isCompleted = progress === 100;
 
                                                 return (
@@ -346,7 +534,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                                     transition: 'all 0.3s ease'
                                                                 }}
                                                             >
-                                                                {stage.codes.map((code, codeIndex) => (
+                                                                {stage.codes.map((code: any, codeIndex: number) => (
                                                                     <Box
                                                                         key={`${stage.stageId}-${codeIndex}`}
                                                                         p="sm"
@@ -372,6 +560,19 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                                                 >
                                                                                     {code.isObject ? "scanned" : "Code"}
                                                                                 </Badge>
+                                                                                {/* Add print button for box and pallet stages */}
+                                                                                {(stage.stageName.toLowerCase() === 'box' || stage.stageName.toLowerCase() === 'pallet') && code.isObject && (
+                                                                                    <ActionIcon
+                                                                                        variant="light"
+                                                                                        size="sm"
+                                                                                        color="blue"
+                                                                                        onClick={() => handlePrint(stage.stageName.toLowerCase() as 'box' | 'pallet', code.code, codeIndex + 1)}
+                                                                                        title={`Print ${stage.stageName} ${codeIndex + 1} label`}
+                                                                                        style={{ cursor: 'pointer' }}
+                                                                                    >
+                                                                                        <IconBarcode size={14} />
+                                                                                    </ActionIcon>
+                                                                                )}
                                                                             </Group>
                                                                         </Group>
                                                                         <Group justify="space-between" mt="xs">
@@ -412,15 +613,17 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                     </Stack>
                                 </Box>
 
-                                <Button
+                                {/* <Button
                                     className="filledButton"
                                     variant="transparent"
                                     fullWidth
                                     size="md"
+                                    my={8}
                                     radius={8}
+                                    onClick={() => handlePrint('box', String(Date.now()))}
                                 >
                                     Generate QR Code
-                                </Button>
+                                </Button> */}
                             </Stack>
                         </Card>
                     </GridCol>
@@ -441,6 +644,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                     value={activeTab}
                                     onChange={(value) => value && setActiveTab(value)}
                                     style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+                                    c={customStyles.colors._1B59F8}
                                     variant="pills"
                                     radius="md"
                                 >
@@ -547,8 +751,8 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                 }}
                                             />
 
-                                            {/* Show recent scan results */}
-                                            {scannedProductionOrder?.stages && scannedProductionOrder.stages.length > 0 && (
+                                            {/* Show recent scan results - only when there are actual updates */}
+                                            {scannedProductionOrder && scannedProductionOrder.length > 0 && (
                                                 <Box
                                                     p="md"
                                                     style={{
@@ -562,7 +766,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                         <Text size="sm" fw={500} c="#28a745">Recent Scans</Text>
                                                     </Group>
                                                     <Stack gap="xs">
-                                                        {scannedProductionOrder.stages.map((stage) => (
+                                                        {scannedProductionOrder.map((stage) => (
                                                             <Group key={stage.stageId} justify="space-between">
                                                                 <Text size="xs" c="dimmed">
                                                                     {stage.stageName}: {stage.scanned}/{stage.total}
