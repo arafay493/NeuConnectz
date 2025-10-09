@@ -1,3 +1,4 @@
+import { useAppSelector } from '@/redux/store'
 import { customStyles } from '@/styles/custom-theme'
 import { Box, Group, Select, Text } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -12,157 +13,135 @@ import {
 } from 'recharts'
 
 const AvgCloseHours = () => {
+    const { ITRAvgCloseTime } = useAppSelector(({ dashboardStates }) => {
+        return dashboardStates;
+    });
+
     // const data = [
-    //     { "period": "2025-09-29T14:00:00", "avgCloseHours": 89.21868532583335, "unit": "Hr" },
-    //     { "period": "2025-09-30T05:00:00", "avgCloseHours": 30.759357235555555, "unit": "Hr" },
-    //     { "period": "2025-09-30T06:00:00", "avgCloseHours": 29.84012363833333, "unit": "Hr" },
-    //     { "period": "2025-09-30T11:00:00", "avgCloseHours": 75.94780860944444, "unit": "Hr" },
-    //     { "period": "2025-09-30T12:00:00", "avgCloseHours": 103.76567504694444, "unit": "Hr" },
-    //     { "period": "2025-10-01T05:00:00", "avgCloseHours": 122.43809141041666, "unit": "Hr" },
-    //     { "period": "2025-10-01T06:00:00", "avgCloseHours": 121.77135872402778, "unit": "Hr" },
-    //     { "period": "2025-10-01T07:00:00", "avgCloseHours": 120.87712687555555, "unit": "Hr" },
-    //     { "period": "2025-10-01T10:00:00", "avgCloseHours": 117.47102748638889, "unit": "Hr" },
-    //     { "period": "2025-10-01T11:00:00", "avgCloseHours": 116.92363739027778, "unit": "Hr" },
-    //     { "period": "2025-10-02T05:00:00", "avgCloseHours": 98.43670014833333, "unit": "Hr" },
-    //     { "period": "2025-10-03T07:00:00", "avgCloseHours": 72.66837207472221, "unit": "Hr" },
-    //     { "period": "2025-10-03T10:00:00", "avgCloseHours": 70.25295474944444, "unit": "Hr" },
-    //     { "period": "2025-10-03T11:00:00", "avgCloseHours": 69.16220710333333, "unit": "Hr" },
-    //     { "period": "2025-10-03T13:00:00", "avgCloseHours": 67.03596405138889, "unit": "Hr" },
-    //     { "period": "2025-10-03T15:00:00", "avgCloseHours": 64.82421502972223, "unit": "Hr" },
-    //     { "period": "2025-10-03T18:00:00", "avgCloseHours": 73.12048460097222, "unit": "Hr" },
-    //     { "period": "2025-10-03T19:00:00", "avgCloseHours": 64.00647553757936, "unit": "Hr" },
-    //     { "period": "2025-10-03T20:00:00", "avgCloseHours": 71.831997175, "unit": "Hr" },
-    //     { "period": "2025-10-04T05:00:00", "avgCloseHours": 51.13514255569444, "unit": "Hr" },
-    //     { "period": "2025-10-04T07:00:00", "avgCloseHours": 48.638363885, "unit": "Hr" },
-    //     { "period": "2025-10-06T08:00:00", "avgCloseHours": 1.8645339741666667, "unit": "Hr" },
-    //     { "period": "2025-10-06T14:00:00", "avgCloseHours": 0.19758003816666667, "unit": "Hr" },
-    //     { "period": "2025-10-07T07:00:00", "avgCloseHours": 0.07075420962962962, "unit": "Hr" }
+    //     {
+    //         period: "2025-09-29T14:00:00",
+    //         avgCloseHours: 89.21868532583335,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-09-30T05:00:00",
+    //         avgCloseHours: 30.759357235555555,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-09-30T06:00:00",
+    //         avgCloseHours: 29.84012363833333,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-09-30T11:00:00",
+    //         avgCloseHours: 75.94780860944444,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-09-30T12:00:00",
+    //         avgCloseHours: 103.76567504694444,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-01T05:00:00",
+    //         avgCloseHours: 122.43809141041666,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-01T06:00:00",
+    //         avgCloseHours: 121.77135872402778,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-01T07:00:00",
+    //         avgCloseHours: 120.87712687555555,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-01T10:00:00",
+    //         avgCloseHours: 117.47102748638889,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-01T11:00:00",
+    //         avgCloseHours: 116.92363739027778,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-02T05:00:00",
+    //         avgCloseHours: 98.43670014833333,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T07:00:00",
+    //         avgCloseHours: 72.66837207472221,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T10:00:00",
+    //         avgCloseHours: 70.25295474944444,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T11:00:00",
+    //         avgCloseHours: 69.16220710333333,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T13:00:00",
+    //         avgCloseHours: 67.03596405138889,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T15:00:00",
+    //         avgCloseHours: 64.82421502972223,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T18:00:00",
+    //         avgCloseHours: 73.12048460097222,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T19:00:00",
+    //         avgCloseHours: 64.00647553757936,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-03T20:00:00",
+    //         avgCloseHours: 71.831997175,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-04T05:00:00",
+    //         avgCloseHours: 51.13514255569444,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-04T07:00:00",
+    //         avgCloseHours: 48.638363885,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-06T08:00:00",
+    //         avgCloseHours: 1.8645339741666667,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-06T14:00:00",
+    //         avgCloseHours: 0.19758003816666667,
+    //         unit: "Hr"
+    //     },
+    //     {
+    //         period: "2025-10-07T07:00:00",
+    //         avgCloseHours: 0.07075420962962962,
+    //         unit: "Hr"
+    //     }
     // ]
-    const data = [
-        {
-            period: "2025-09-29T14:00:00",
-            avgCloseHours: 89.21868532583335,
-            unit: "Hr"
-        },
-        {
-            period: "2025-09-30T05:00:00",
-            avgCloseHours: 30.759357235555555,
-            unit: "Hr"
-        },
-        {
-            period: "2025-09-30T06:00:00",
-            avgCloseHours: 29.84012363833333,
-            unit: "Hr"
-        },
-        {
-            period: "2025-09-30T11:00:00",
-            avgCloseHours: 75.94780860944444,
-            unit: "Hr"
-        },
-        {
-            period: "2025-09-30T12:00:00",
-            avgCloseHours: 103.76567504694444,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-01T05:00:00",
-            avgCloseHours: 122.43809141041666,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-01T06:00:00",
-            avgCloseHours: 121.77135872402778,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-01T07:00:00",
-            avgCloseHours: 120.87712687555555,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-01T10:00:00",
-            avgCloseHours: 117.47102748638889,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-01T11:00:00",
-            avgCloseHours: 116.92363739027778,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-02T05:00:00",
-            avgCloseHours: 98.43670014833333,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T07:00:00",
-            avgCloseHours: 72.66837207472221,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T10:00:00",
-            avgCloseHours: 70.25295474944444,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T11:00:00",
-            avgCloseHours: 69.16220710333333,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T13:00:00",
-            avgCloseHours: 67.03596405138889,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T15:00:00",
-            avgCloseHours: 64.82421502972223,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T18:00:00",
-            avgCloseHours: 73.12048460097222,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T19:00:00",
-            avgCloseHours: 64.00647553757936,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-03T20:00:00",
-            avgCloseHours: 71.831997175,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-04T05:00:00",
-            avgCloseHours: 51.13514255569444,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-04T07:00:00",
-            avgCloseHours: 48.638363885,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-06T08:00:00",
-            avgCloseHours: 1.8645339741666667,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-06T14:00:00",
-            avgCloseHours: 0.19758003816666667,
-            unit: "Hr"
-        },
-        {
-            period: "2025-10-07T07:00:00",
-            avgCloseHours: 0.07075420962962962,
-            unit: "Hr"
-        }
-    ]
 
     // Format data for chart (convert date to readable label)
-    const formattedData = data.map((d, i) => ({
+    const formattedData = ITRAvgCloseTime.map((d, i) => ({
         ...d,
         uniqueKey: `${i}`,
         dateLabel: new Date(d.period).toLocaleString("en-GB", {

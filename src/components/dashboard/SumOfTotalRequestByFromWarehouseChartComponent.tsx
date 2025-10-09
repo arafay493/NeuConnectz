@@ -7,210 +7,202 @@ import { IconChevronDown } from '@tabler/icons-react';
 import React from 'react'
 import { Bar, BarChart, CartesianGrid, Customized, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-// const data = [
-//     { period: "2025-09-29T00:00:00Z", fromWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 1 },
-//     { period: "2025-09-30T00:00:00Z", fromWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
-//     { period: "2025-10-01T00:00:00Z", fromWarehouseCode: "W-GW-SM", warehouseName: "General Warehouse SM", totalRequests: 1 },
-//     { period: "2025-10-01T00:00:00Z", fromWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 7 },
-//     { period: "2025-10-02T00:00:00Z", fromWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 1 },
-//     { period: "2025-10-03T00:00:00Z", fromWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 7 },
-//     { period: "2025-10-03T00:00:00Z", fromWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
-//     // { period: "2025-10-03T00:00:00Z", fromWarehouseCode: "W-PL-SM", warehouseName: "Plates Warehouse SM", totalRequests: 1 },
-//     // { period: "2025-10-03T00:00:00Z", fromWarehouseCode: "W-RM-KG", warehouseName: "Raw Material Warehouse KG", totalRequests: 8 },
-//     // { period: "2025-10-03T00:00:00Z", fromWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
-//     // { period: "2025-10-04T00:00:00Z", fromWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 1 },
-//     // { period: "2025-10-04T00:00:00Z", fromWarehouseCode: "W-RM-KG", warehouseName: "Raw Material Warehouse KG", totalRequests: 3 }
-// ];
 
-const data = [
-    {
-        period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 1
-    },
-    {
-        period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-GW-SM",
-        warehouseName: "General Warehouse SM",
-        totalRequests: 5
-    },
-    {
-        period: "2025-09-29T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 4
-    },
-    {
-        period: "2025-09-30T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 5
-    },
-    {
-        period: "2025-10-01T00:00:00Z",
-        fromWarehouseCode: "W-GW-SM",
-        warehouseName: "General Warehouse SM",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-01T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 7
-    },
-    {
-        period: "2025-10-02T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-FG-SM",
-        warehouseName: "Finished Good Warehouse SM",
-        totalRequests: 7
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-KHI-KG",
-        warehouseName: "Main Warehouse - Korangi",
-        totalRequests: 5
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-PL-SM",
-        warehouseName: "Plates Warehouse SM",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-RM-KG",
-        warehouseName: "Raw Material Warehouse KG",
-        totalRequests: 8
-    },
-    {
-        period: "2025-10-03T00:00:00Z",
-        fromWarehouseCode: "W-SKR-01",
-        warehouseName: "Main Warehouse - Sukkur",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-04T00:00:00Z",
-        fromWarehouseCode: "W-FG-SM",
-        warehouseName: "Finished Good Warehouse SM",
-        totalRequests: 1
-    },
-    {
-        period: "2025-10-04T00:00:00Z",
-        fromWarehouseCode: "W-RM-KG",
-        warehouseName: "Raw Material Warehouse KG",
-        totalRequests: 3
-    }
-];
 
-const formattedData = data
-    .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
-    .map((item, index) => ({
-        ...item,
-        uniqueKey: `${index}`, // ensure uniqueness
-    }));
 
-const chartData = data.map((item) => ({
-    warehouseCode: item.fromWarehouseCode,
-    // period: item.period.split("T")[0],
-    period: item.period,
-    totalRequests: item.totalRequests,
-}));
-
-const groupData = data.reduce((acc: any, curr: any) => {
-    if (!acc[curr.period]) {
-        acc[curr.period] = [];
-    }
-    acc[curr.period].push({
-        fromWarehouseCode: curr.fromWarehouseCode,
-        warehouseName: curr.warehouseName,
-        totalRequests: curr.totalRequests,
+const SumOfTotalRequestByFromWarehouseChartComponent = () => {
+    const { ITRRequestsFromWarehouse } = useAppSelector(({ dashboardStates }) => {
+        return dashboardStates;
     });
-    return acc;
-}, {});
 
-const groupDataArr = Object.entries(groupData)
+    // const data = [
+    //     {
+    //         period: "2025-09-29T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-09-29T00:00:00Z",
+    //         fromWarehouseCode: "W-GW-SM",
+    //         warehouseName: "General Warehouse SM",
+    //         totalRequests: 5
+    //     },
+    //     {
+    //         period: "2025-09-29T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 4
+    //     },
+    //     {
+    //         period: "2025-09-30T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 5
+    //     },
+    //     {
+    //         period: "2025-10-01T00:00:00Z",
+    //         fromWarehouseCode: "W-GW-SM",
+    //         warehouseName: "General Warehouse SM",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-10-01T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 7
+    //     },
+    //     {
+    //         period: "2025-10-02T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-10-03T00:00:00Z",
+    //         fromWarehouseCode: "W-FG-SM",
+    //         warehouseName: "Finished Good Warehouse SM",
+    //         totalRequests: 7
+    //     },
+    //     {
+    //         period: "2025-10-03T00:00:00Z",
+    //         fromWarehouseCode: "W-KHI-KG",
+    //         warehouseName: "Main Warehouse - Korangi",
+    //         totalRequests: 5
+    //     },
+    //     {
+    //         period: "2025-10-03T00:00:00Z",
+    //         fromWarehouseCode: "W-PL-SM",
+    //         warehouseName: "Plates Warehouse SM",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-10-03T00:00:00Z",
+    //         fromWarehouseCode: "W-RM-KG",
+    //         warehouseName: "Raw Material Warehouse KG",
+    //         totalRequests: 8
+    //     },
+    //     {
+    //         period: "2025-10-03T00:00:00Z",
+    //         fromWarehouseCode: "W-SKR-01",
+    //         warehouseName: "Main Warehouse - Sukkur",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-10-04T00:00:00Z",
+    //         fromWarehouseCode: "W-FG-SM",
+    //         warehouseName: "Finished Good Warehouse SM",
+    //         totalRequests: 1
+    //     },
+    //     {
+    //         period: "2025-10-04T00:00:00Z",
+    //         fromWarehouseCode: "W-RM-KG",
+    //         warehouseName: "Raw Material Warehouse KG",
+    //         totalRequests: 3
+    //     }
+    // ];
 
-console.log(groupDataArr);
+    const formattedData = ITRRequestsFromWarehouse
+        // .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
+        .map((item, index) => ({
+            ...item,
+            uniqueKey: `${index}`, // ensure uniqueness
+        }));
 
-// const maxValue = Math.max(...groupData.map((d: any) => d.userRequests));
-const CustomTooltip = ({ active, payload, coordinate }: any) => {
-    // console.log("🚀 ~ CustomTooltip ~ payload:", payload)
-    // const currentPayload = formattedData.find(p => p.uniqueKey === payload[0]?.payload.uniqueKey);
-    // const value = currentPayload?.totalRequests;
-    const value = payload[0]?.value;
-    if (active && payload && payload.length) {
-        return (
-            <div
-                style={{
-                    position: "absolute",
-                    left: coordinate.x,
-                    top: coordinate.y - 40, // move tooltip above bar
-                    // top: 0, // move tooltip above bar
-                    transform: "translateX(-50%)", // center align with bar
-                    background: "#D9D9D9",
-                    borderRadius: 8,
-                    padding: "6px 10px",
-                    // boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    color: customStyles.colors._1B59F8,
-                    pointerEvents: "none",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    width: 50,
-                    textAlign: "center"
-                }}
-            >
-                {value}
+    // const chartData = data.map((item) => ({
+    //     warehouseCode: item.fromWarehouseCode,
+    //     // period: item.period.split("T")[0],
+    //     period: item.period,
+    //     totalRequests: item.totalRequests,
+    // }));
+
+    // const groupData = data.reduce((acc: any, curr: any) => {
+    //     if (!acc[curr.period]) {
+    //         acc[curr.period] = [];
+    //     }
+    //     acc[curr.period].push({
+    //         fromWarehouseCode: curr.fromWarehouseCode,
+    //         warehouseName: curr.warehouseName,
+    //         totalRequests: curr.totalRequests,
+    //     });
+    //     return acc;
+    // }, {});
+
+    // const groupDataArr = Object.entries(groupData)
+
+
+    // const maxValue = Math.max(...groupData.map((d: any) => d.userRequests));
+    const CustomTooltip = ({ active, payload, coordinate }: any) => {
+        // console.log("🚀 ~ CustomTooltip ~ payload:", payload)
+        // const currentPayload = formattedData.find(p => p.uniqueKey === payload[0]?.payload.uniqueKey);
+        // const value = currentPayload?.totalRequests;
+        const value = payload[0]?.value;
+        if (active && payload && payload.length) {
+            return (
                 <div
                     style={{
                         position: "absolute",
-                        bottom: -3,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(45deg)",
-                        width: 6,
-                        height: 6,
+                        left: coordinate.x,
+                        top: coordinate.y - 40, // move tooltip above bar
+                        // top: 0, // move tooltip above bar
+                        transform: "translateX(-50%)", // center align with bar
                         background: "#D9D9D9",
-                        boxShadow: "-2px 2px 5px rgba(0,0,0,0.05)",
-
+                        borderRadius: 8,
+                        padding: "6px 10px",
+                        // boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        color: customStyles.colors._1B59F8,
+                        pointerEvents: "none",
+                        fontSize: 12,
+                        fontWeight: 500,
+                        width: 50,
+                        textAlign: "center"
                     }}
-                />
-            </div>
-        );
-    }
-    return null;
-};
+                >
+                    {value}
+                    <div
+                        style={{
+                            position: "absolute",
+                            bottom: -3,
+                            left: "50%",
+                            transform: "translateX(-50%) rotate(45deg)",
+                            width: 6,
+                            height: 6,
+                            background: "#D9D9D9",
+                            boxShadow: "-2px 2px 5px rgba(0,0,0,0.05)",
 
-const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
-    const item = formattedData.find(d => d.uniqueKey === payload.value);
-    const current = data[index];
-    const prev = data[index - 1];
-    const next = data[index + 1];
+                        }}
+                    />
+                </div>
+            );
+        }
+        return null;
+    };
 
-    const showDivider = next && next.period !== current.period;
-    // console.log("🚀 ~ CustomAxisTick ~ showDivider:", showDivider, data)
-    if (!item) return null;
+    const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
+        const item = formattedData.find(d => d.uniqueKey === payload.value);
+        const current = data[index];
+        const prev = data[index - 1];
+        const next = data[index + 1];
 
-    return (
-        <g transform={`translate(${x},${y})`}>
-            <text
-                x={0}
-                y={0}
-                dy={10}
-                textAnchor="middle"
-                fill="#4D4D4D"
-                fontSize={10}
-                fontWeight={500}
-                style={{ marginRight: 20 }}
-            >
-                {item.fromWarehouseCode}
-            </text>
-            {/* <text
+        const showDivider = next && next.period !== current.period;
+        // console.log("🚀 ~ CustomAxisTick ~ showDivider:", showDivider, data)
+        if (!item) return null;
+
+        return (
+            <g transform={`translate(${x},${y})`}>
+                <text
+                    x={0}
+                    y={0}
+                    dy={10}
+                    textAnchor="middle"
+                    fill="#4D4D4D"
+                    fontSize={10}
+                    fontWeight={500}
+                    style={{ marginRight: 20 }}
+                >
+                    {item.fromWarehouseCode}
+                </text>
+                {/* <text
                 x={0}
                 y={12}
                 dy={10}
@@ -222,8 +214,8 @@ const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
             >
                 {new Date(item.period).toLocaleDateString()}
             </text> */}
-            {/* Divider line between date groups */}
-            {/* {showDivider && (
+                {/* Divider line between date groups */}
+                {/* {showDivider && (
                 <line
                     x1={25}
                     y1={0}
@@ -233,116 +225,80 @@ const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
                     strokeWidth={1}
                 />
             )} */}
-        </g>
-    );
-};
+            </g>
+        );
+    };
 
-// function CustomizedTick(props: any) {
-//     const { x, y, stroke, payload } = props;
-//     return (
-//         <g transform={`translate(${x},${y})`}>
-//             <text x={0} y={0} dy={16} fill="#666">
-//                 <tspan textAnchor="middle" x="0">
-//                     Line 1
-//                 </tspan>
-//                 <tspan textAnchor="middle" x="0" dy="20">
-//                     Line 2
-//                 </tspan>
-//                 <tspan textAnchor="middle" x="0" dy="40">
-//                     Line 3
-//                 </tspan>
-//             </text>
-//         </g>
-//     );
-// }
 
-const CustomGroupedPeriodTick = ({ x, y, payload, data }: any) => {
-    const currentPeriod = payload.value;
+    const CustomGroupedPeriodTick = ({ x, y, payload, data }: any) => {
+        const currentPeriod = payload.value;
 
-    // Find all bars for this period
-    const samePeriodItems = data.filter((d: any) => d.period === currentPeriod);
-    if (!samePeriodItems.length) return null;
+        // Find all bars for this period
+        const samePeriodItems = data.filter((d: any) => d.period === currentPeriod);
+        if (!samePeriodItems.length) return null;
 
-    // Get all indices of this period
-    const allPeriods = data.map((d: any) => d.period);
-    const firstIndex = allPeriods.indexOf(currentPeriod);
-    const lastIndex = allPeriods.lastIndexOf(currentPeriod);
+        // Get all indices of this period
+        const allPeriods = data.map((d: any) => d.period);
+        const firstIndex = allPeriods.indexOf(currentPeriod);
+        const lastIndex = allPeriods.lastIndexOf(currentPeriod);
 
-    // Compute center between first and last bar positions
-    const xScale = payload.coordinate;
-    const totalBars = allPeriods.length;
-    const barWidth = (payload.coordinate * totalBars) / totalBars; // approximate width
-    const centerX = (xScale * (firstIndex + lastIndex + 1)) / 2;
+        // Compute center between first and last bar positions
+        const xScale = payload.coordinate;
+        const totalBars = allPeriods.length;
+        const barWidth = (payload.coordinate * totalBars) / totalBars; // approximate width
+        const centerX = (xScale * (firstIndex + lastIndex + 1)) / 2;
 
-    // Only draw label for the first occurrence (avoid repeats)
-    if (payload.index !== firstIndex) return null;
+        // Only draw label for the first occurrence (avoid repeats)
+        if (payload.index !== firstIndex) return null;
 
-    return (
-        <g transform={`translate(${centerX}, ${y + 20})`}>
-            <text textAnchor="middle" fill="#4D4D4D" fontSize={12}>
-                {new Date(currentPeriod).toLocaleDateString()}
-            </text>
-        </g>
-    );
-};
-
-const CustomGroupLabel = ({ xAxis, data }: any) => {
-    const scale = xAxis.scale; // the X scale function from Recharts
-    const positions: any = [];
-
-    // group by period
-    const grouped = data.reduce((acc: any, item: any, idx: any) => {
-        if (!acc[item.period]) acc[item.period] = [];
-        acc[item.period].push(idx);
-        return acc;
-    }, {});
-
-    // compute center for each group
-    Object.entries(grouped).forEach(([period, indices]: any) => {
-        const first = indices[0];
-        const last = indices[indices.length - 1];
-        const firstX = scale(data[first].uniqueKey);
-        const lastX = scale(data[last].uniqueKey);
-        const centerX = (firstX + lastX) / 2;
-        positions.push({ period, centerX });
-    });
-
-    return (
-        <g>
-            {positions.map((p: any) => (
-                <text
-                    key={p.period}
-                    x={p.centerX}
-                    y={xAxis.y + 25}
-                    textAnchor="middle"
-                    fill="#4D4D4D"
-                    fontSize={12}
-                >
-                    {new Date(p.period).toLocaleDateString()}
+        return (
+            <g transform={`translate(${centerX}, ${y + 20})`}>
+                <text textAnchor="middle" fill="#4D4D4D" fontSize={12}>
+                    {new Date(currentPeriod).toLocaleDateString()}
                 </text>
-            ))}
-        </g>
-    );
-};
+            </g>
+        );
+    };
 
+    const CustomGroupLabel = ({ xAxis, data }: any) => {
+        const scale = xAxis.scale; // the X scale function from Recharts
+        const positions: any = [];
 
+        // group by period
+        const grouped = data.reduce((acc: any, item: any, idx: any) => {
+            if (!acc[item.period]) acc[item.period] = [];
+            acc[item.period].push(idx);
+            return acc;
+        }, {});
 
+        // compute center for each group
+        Object.entries(grouped).forEach(([period, indices]: any) => {
+            const first = indices[0];
+            const last = indices[indices.length - 1];
+            const firstX = scale(data[first].uniqueKey);
+            const lastX = scale(data[last].uniqueKey);
+            const centerX = (firstX + lastX) / 2;
+            positions.push({ period, centerX });
+        });
 
-const SumOfTotalRequestByFromWarehouseChartComponent = () => {
-    // const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
-    //     return dashboardStates;
-    // });
-    // const groupData = userITRCountList.reduce((acc: any, curr) => {
-    //     const found: any = acc.find((item: any) => item?.userName === curr.userName);
-    //     if (found) {
-    //         found.itrCount += curr.itrCount;
-    //     } else {
-    //         acc.push({ userName: curr.userName, itrCount: curr.itrCount });
-    //     }
-    //     return acc;
-    // }, []);
+        return (
+            <g>
+                {positions.map((p: any) => (
+                    <text
+                        key={p.period}
+                        x={p.centerX}
+                        y={xAxis.y + 25}
+                        textAnchor="middle"
+                        fill="#4D4D4D"
+                        fontSize={12}
+                    >
+                        {new Date(p.period).toLocaleDateString()}
+                    </text>
+                ))}
+            </g>
+        );
+    };
 
-    
     return (
         <>
             <Group
@@ -389,7 +345,7 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                             dataKey="uniqueKey"
                             axisLine={false}
                             tickLine={false}
-                            tick={<CustomAxisTick data={data} />}
+                            tick={<CustomAxisTick data={formattedData} />}
                             xAxisId="A"
                         />
                         {/* Bottom axis: centered period labels */}

@@ -179,6 +179,7 @@
 
 
 
+import { useAppSelector } from '@/redux/store'
 import { customStyles } from '@/styles/custom-theme'
 import { Box, Group, Select, Text } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -193,45 +194,11 @@ import {
 } from 'recharts'
 
 const TotalRequestChartComponent = () => {
-    const data = [
-        {
-            period: "2025-09-29T00:00:00Z",
-            totalRequests: 1,
-            dayOfWeek: "1"
-        },
-        {
-            period: "2025-09-30T00:00:00Z",
-            totalRequests: 5,
-            dayOfWeek: "2"
-        },
-        {
-            period: "2025-10-01T00:00:00Z",
-            totalRequests: 8,
-            dayOfWeek: "3"
-        },
-        {
-            period: "2025-10-02T00:00:00Z",
-            totalRequests: 1,
-            dayOfWeek: "4"
-        },
-        {
-            period: "2025-10-03T00:00:00Z",
-            totalRequests: 22,
-            dayOfWeek: "5"
-        },
-        {
-            period: "2025-10-04T00:00:00Z",
-            totalRequests: 4,
-            dayOfWeek: "6"
-        },
-        {
-            period: "2025-10-06T00:00:00Z",
-            totalRequests: 14,
-            dayOfWeek: "1"
-        }
-    ]
+    const { dailyITRTransferKPIs } = useAppSelector(({ dashboardStates }) => {
+        return dashboardStates;
+    });
 
-    const formattedData = data.map((d, i) => ({
+    const formattedData = dailyITRTransferKPIs.map((d, i) => ({
         ...d,
         uniqueKey: `${i}`,
         dateLabel: new Date(d.period).toLocaleDateString("en-GB", {
