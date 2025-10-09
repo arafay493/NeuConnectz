@@ -16,6 +16,7 @@ import QuantityChartComponent from './QuantityChartComponent'
 import SumOfTotalRequestByFromWarehouseChartComponent from './SumOfTotalRequestByFromWarehouseChartComponent'
 import { getDateRange } from '@/utils/getDateRange'
 import SumOfTotalUsageChartComponent from './SumOfTotalUsageChartComponent'
+import Loader from '../loader/loader'
 
 const ITR_DashboardComponent = () => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -26,40 +27,31 @@ const ITR_DashboardComponent = () => {
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
+    const [loading, setLoading] = useState(false)
     const dispatch = useAppDispatch()
     useEffect(() => {
         if (!authenticatedUser?.token) return;
 
-        dispatch(
-            fetchITRDashboardUserCountList({
-                authToken: authenticatedUser.token,
+        const authToken = authenticatedUser.token;
+
+        setLoading(true)
+        Promise.all([
+            dispatch(fetchITRDashboardUserCountList({ authToken })),
+            dispatch(fetchITRDashboardDailyTranferKPI({ authToken })),
+            dispatch(fetchITRDashboardQuantity({ authToken })),
+            dispatch(fetchITRDashboardRequestsByDestinationWarehouse({ authToken })),
+            dispatch(fetchITRDashboardRequestsBySourceWarehouse({ authToken })),
+            dispatch(fetchITRDashboardAverageCloseTime({ authToken })),
+        ])
+            .then((responses) => {
+                console.log("✅ All dashboard APIs completed:", responses);
             })
-        );
-        dispatch(
-            fetchITRDashboardDailyTranferKPI({
-                authToken: authenticatedUser.token,
+            .catch((error) => {
+                console.error("❌ Error while fetching dashboard data:", error);
             })
-        );
-        dispatch(
-            fetchITRDashboardQuantity({
-                authToken: authenticatedUser?.token || "",
-            })
-        );
-        dispatch(
-            fetchITRDashboardRequestsByDestinationWarehouse({
-                authToken: authenticatedUser.token,
-            })
-        );
-        dispatch(
-            fetchITRDashboardRequestsBySourceWarehouse({
-                authToken: authenticatedUser.token,
-            })
-        );
-        dispatch(
-            fetchITRDashboardAverageCloseTime({
-                authToken: authenticatedUser.token,
-            })
-        );
+            .finally(() => {
+                setLoading(false)
+            });
     }, [authenticatedUser?.token, dispatch]);
 
     const handleFilterChange = (filterType: string, dashboardType: string) => {
@@ -82,6 +74,10 @@ const ITR_DashboardComponent = () => {
         // }
 
     };
+
+    if (loading) {
+        return <Loader loadingState={loading} />
+    }
     return (
         <Box>
             <Grid gutter="md" justify='space-between' align='center'>
