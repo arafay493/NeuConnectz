@@ -53,7 +53,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                     style={{
                         position: "absolute",
                         left: coordinate.x,
-                        top: coordinate.y - 40, 
+                        top: coordinate.y - 40,
                         transform: "translateX(-50%)",
                         background: "#D9D9D9",
                         borderRadius: 8,
@@ -103,10 +103,10 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                     y={0}
                     dy={10}
                     textAnchor="middle"
-                    fill="#4D4D4D"
+                    fill="#909090"
                     fontSize={10}
                     fontWeight={500}
-                    style={{ marginRight: 20 }}
+                    style={{ marginRight: 20, color: "#909090" }}
                 >
                     {item.toWarehouseCode}
                 </text>
@@ -294,7 +294,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                             // tick={renderQuarterTick}
                             // height={1}
                             // scale="band"
-                            tick={{ fontSize: 10, fill: "#4D4D4D", textAnchor: "middle" }}
+                            tick={{ fontSize: 10, fill: "#909090", textAnchor: "middle" }}
                             // allowDuplicatedCategory={false} // ensures only one label per quarter
                             // tickFormatter={(q) => q}
                             height={30}
@@ -327,7 +327,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                             dataKey="totalRequests"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fill: "#4D4D4D" }}
+                            tick={{ fontSize: 10, fill: "#909090" }}
                             interval={2}
                             // domain={[0, maxValue]}
                             allowDecimals={false}

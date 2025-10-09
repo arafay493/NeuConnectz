@@ -122,6 +122,12 @@ const UserRequestChartComponent = () => {
     const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
         return dashboardStates;
     });
+    const formattedData = userITRCountList
+        // .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
+        .map((item, index) => ({
+            ...item,
+            uniqueKey: `${index}`, // ensure uniqueness
+        }));
     const groupData = userITRCountList.reduce((acc: any, curr) => {
         const found: any = acc.find((item: any) => item?.userName === curr.userName);
         if (found) {
@@ -160,23 +166,23 @@ const UserRequestChartComponent = () => {
                     />
                 </Group>
             </Group>
-            <Box w={"100%"} h={230}>
+            <Box w={"100%"} h={350}>
                 <ResponsiveContainer width="100%" height="100%" >
-                    <BarChart width={250} data={groupData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                    <BarChart width={250} data={formattedData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="userName" width={"auto"} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#4D4D4D" }} />
+                        <XAxis dataKey="userName" width={"auto"} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#909090" }} />
                         <YAxis
                             width={30}
-                            dataKey="itrCount"
+                            dataKey="uniqueKey"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fill: "#4D4D4D" }}
+                            tick={{ fontSize: 10, fill: "#909090" }}
                             interval={4}
                             // domain={[0, maxValue]}
                             allowDecimals={false}
-                            tickCount={Math.max(...groupData.map((d: any) => d.itrCount)) + 5}
+                            tickCount={Math.max(...formattedData.map((d: any) => d.itrCount)) + 5}
                             ticks={Array.from(
-                                { length: Math.max(...groupData.map((d: any) => d.itrCount)) + 5 },
+                                { length: Math.max(...formattedData.map((d: any) => d.itrCount)) + 5 },
                                 (_, i) => i
                             )}
                             tickMargin={10}

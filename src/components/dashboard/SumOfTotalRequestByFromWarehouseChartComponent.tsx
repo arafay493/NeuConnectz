@@ -195,7 +195,7 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                     y={0}
                     dy={10}
                     textAnchor="middle"
-                    fill="#4D4D4D"
+                    fill="#909090"
                     fontSize={10}
                     fontWeight={500}
                     style={{ marginRight: 20 }}
