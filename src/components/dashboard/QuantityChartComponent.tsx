@@ -15,18 +15,18 @@ const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
     });
 
     // Format data for chart (convert date to readable label)
-    // const formattedData = ITRQuantity.map((d, i) => ({
-    //     ...d,
-    //     uniqueKey: `${i}`,
-    //     dateLabel: new Date(d.period).toLocaleString("en-GB", {
-    //         day: "2-digit",
-    //         month: "2-digit",
-    //         year: "2-digit",
-    //         hour: "2-digit",
-    //         minute: "2-digit",
-    //         hour12: false,
-    //     }),
-    // }))
+    const formattedData = ITRQuantity.map((d, i) => ({
+        ...d,
+        uniqueKey: `${i}`,
+        dateLabel: new Date(d.period).toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        }),
+    }))
 
     // // Custom Tooltip
     // const CustomTooltip = ({ active, payload }: any) => {
@@ -119,7 +119,8 @@ const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
                             axisLine={false}
                             tickLine={false}
                             width={40}
-                            domain={[0, 9999]}
+                            tickCount={Math.max(...ITRQuantity.map((d: any) => d.quantity)) + 20}
+                            // domain={[0, 9999]}
                             tick={{ fontSize: 10, fill: "#909090" }}
                         />
                         <Tooltip />

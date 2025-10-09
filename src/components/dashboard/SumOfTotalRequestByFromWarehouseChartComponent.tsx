@@ -189,7 +189,7 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
         if (!item) return null;
 
         return (
-            <g transform={`translate(${x},${y})`}>
+            <g transform={`translate(${x-7},${50})`}>
                 <text
                     x={0}
                     y={0}
@@ -198,6 +198,7 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                     fill="#909090"
                     fontSize={10}
                     fontWeight={500}
+                    transform="rotate(-90)"
                     style={{ marginRight: 20 }}
                 >
                     {item.fromWarehouseCode}
@@ -363,11 +364,11 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                             axisLine={false}
                             tickLine={false}
                             tickFormatter={(item) => new Date(item).toLocaleDateString()}
-                            // interval={0}
+                            interval={5}
                             // tick={renderQuarterTick}
                             // height={1}
                             // scale="band"
-                            tick={{ fontSize: 10, fill: "#4D4D4D", textAnchor: "middle" }}
+                            tick={{ fontSize: 10, fill: "#909090", textAnchor: "middle" }}
                             // allowDuplicatedCategory={false} // ensures only one label per quarter
                             // tickFormatter={(q) => q}
                             height={30}
@@ -400,13 +401,13 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                             dataKey="totalRequests"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fontSize: 10, fill: "#4D4D4D" }}
-                            interval={2}
+                            tick={{ fontSize: 10, fill: "#909090" }}
+                            interval={5}
                             // domain={[0, maxValue]}
                             allowDecimals={false}
-                            tickCount={Math.max(...formattedData.map((d: any) => d.totalRequests)) + 5}
+                            tickCount={Math.max(...formattedData.map((d: any) => d.totalRequests))  + 20}
                             ticks={Array.from(
-                                { length: Math.max(...formattedData.map((d: any) => d.totalRequests)) + 5 },
+                                { length: Math.max(...formattedData.map((d: any) => d.totalRequests))  + 20 },
                                 (_, i) => i
                             )}
                             tickMargin={10}
