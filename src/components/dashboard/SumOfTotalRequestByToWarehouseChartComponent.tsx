@@ -8,13 +8,95 @@ import React from 'react'
 import { Bar, BarChart, CartesianGrid, Customized, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 
+const data = [
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 8 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 5 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
+
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 3 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 10 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 2 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 7 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 1 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
+
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 5 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+
+    // repeating random variations for 70 total
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 9 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 2 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 4 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 8 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 3 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 1 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 8 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 2 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 10 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 6 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 8 },
+    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
+    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 1 },
+    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
+    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+];
+
+
 const SumOfTotalRequestByToWarehouseChartComponent = () => {
     const { ITRRequestsToWarehouse } = useAppSelector(({ dashboardStates }) => {
         return dashboardStates;
     });
 
-    const formattedData = ITRRequestsToWarehouse
-        // .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
+    const formattedData = [...ITRRequestsToWarehouse]
+        .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
         .map((item, index) => ({
             ...item,
             uniqueKey: `${index}`,
@@ -97,7 +179,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
         if (!item) return null;
 
         return (
-            <g transform={`translate(${x-7},${50})`}>
+            <g transform={`translate(${x - 7},${50})`}>
                 <text
                     x={0}
                     y={0}
@@ -138,93 +220,69 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
         );
     };
 
-    // function CustomizedTick(props: any) {
-    //     const { x, y, stroke, payload } = props;
-    //     return (
-    //         <g transform={`translate(${x},${y})`}>
-    //             <text x={0} y={0} dy={16} fill="#666">
-    //                 <tspan textAnchor="middle" x="0">
-    //                     Line 1
-    //                 </tspan>
-    //                 <tspan textAnchor="middle" x="0" dy="20">
-    //                     Line 2
-    //                 </tspan>
-    //                 <tspan textAnchor="middle" x="0" dy="40">
-    //                     Line 3
-    //                 </tspan>
-    //             </text>
-    //         </g>
-    //     );
-    // }
+    const CustomAxisTick2 = ({ x, y, payload, index, data }: any) => {
+        // Step 1: Unique periods
+        const mappedData = [...new Set(data.map((item: any) => item.period))];
 
-    // const CustomGroupedPeriodTick = ({ x, y, payload, data }: any) => {
-    //     const currentPeriod = payload.value;
+        // Step 2: Find all last indexes for those periods
+        const actualData = mappedData.map((period: any) => {
+            return data.findLastIndex((d: any) => d.period === period);
+        });
 
-    //     // Find all bars for this period
-    //     const samePeriodItems = data.filter((d: any) => d.period === currentPeriod);
-    //     if (!samePeriodItems.length) return null;
+        // Step 3: Get the current tick item
+        const item = data[index];
+        if (!item) return null;
 
-    //     // Get all indices of this period
-    //     const allPeriods = data.map((d: any) => d.period);
-    //     const firstIndex = allPeriods.indexOf(currentPeriod);
-    //     const lastIndex = allPeriods.lastIndexOf(currentPeriod);
+        // Step 4: Check if this tick should show divider or label
+        const isLastTick = index === data.length - 1;
+        console.log("🚀 ~ CustomAxisTick2 ~ isLastTick:", isLastTick)
+        const showDivider = actualData.includes(index) || isLastTick;
+        console.log("🚀 ~ CustomAxisTick2 ~ showDivider:", showDivider)
+        const showDate = actualData.includes(index) || isLastTick;
 
-    //     // Compute center between first and last bar positions
-    //     const xScale = payload.coordinate;
-    //     const totalBars = allPeriods.length;
-    //     const barWidth = (payload.coordinate * totalBars) / totalBars; // approximate width
-    //     const centerX = (xScale * (firstIndex + lastIndex + 1)) / 2;
-
-    //     // Only draw label for the first occurrence (avoid repeats)
-    //     if (payload.index !== firstIndex) return null;
-
-    //     return (
-    //         <g transform={`translate(${centerX}, ${y + 20})`}>
-    //             <text textAnchor="middle" fill="#4D4D4D" fontSize={12}>
-    //                 {new Date(currentPeriod).toLocaleDateString()}
-    //             </text>
-    //         </g>
-    //     );
-    // };
-
-    // const CustomGroupLabel = ({ xAxis, data }: any) => {
-    //     const scale = xAxis.scale; // the X scale function from Recharts
-    //     const positions: any = [];
-
-    //     // group by period
-    //     const grouped = data.reduce((acc: any, item: any, idx: any) => {
-    //         if (!acc[item.period]) acc[item.period] = [];
-    //         acc[item.period].push(idx);
-    //         return acc;
-    //     }, {});
-
-    //     // compute center for each group
-    //     Object.entries(grouped).forEach(([period, indices]: any) => {
-    //         const first = indices[0];
-    //         const last = indices[indices.length - 1];
-    //         const firstX = scale(data[first].uniqueKey);
-    //         const lastX = scale(data[last].uniqueKey);
-    //         const centerX = (firstX + lastX) / 2;
-    //         positions.push({ period, centerX });
-    //     });
-
-    //     return (
-    //         <g>
-    //             {positions.map((p: any) => (
-    //                 <text
-    //                     key={p.period}
-    //                     x={p.centerX}
-    //                     y={xAxis.y + 25}
-    //                     textAnchor="middle"
-    //                     fill="#4D4D4D"
-    //                     fontSize={12}
-    //                 >
-    //                     {new Date(p.period).toLocaleDateString()}
-    //                 </text>
-    //             ))}
-    //         </g>
-    //     );
-    // };
+        return (
+            <g transform={`translate(${x - 7},${y - 20})`}>
+                {showDate && (
+                    <text
+                        x={-10}
+                        y={0}
+                        dy={10}
+                        textAnchor="middle"
+                        fill="#909090"
+                        fontSize={10}
+                        fontWeight={500}
+                        transform="rotate(-45)"
+                        style={{ marginRight: 20, color: "#909090" }}
+                    >
+                        {new Date(item.period).toLocaleDateString()}
+                    </text>
+                )}
+                {/* <text
+                    x={-10}
+                    y={0}
+                    dy={10}
+                    textAnchor="middle"
+                    fill="#909090"
+                    fontSize={10}
+                    fontWeight={500}
+                    transform="rotate(-45)"
+                    style={{ marginRight: 20, color: "#909090" }}
+                >
+                    {new Date(item.period).toLocaleDateString()}
+                </text> */}
+                {showDivider && (
+                    <line
+                        x1={25}
+                        y1={-15}
+                        x2={25}
+                        y2={30}
+                        stroke="#E1E7EC"
+                        strokeWidth={1}
+                    />
+                )}
+            </g>
+        );
+    };
 
 
     return (
@@ -291,15 +349,17 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                             axisLine={false}
                             tickLine={false}
                             tickFormatter={(item) => new Date(item).toLocaleDateString()}
+                            interval={0}
                             // interval={0}
                             // tick={renderQuarterTick}
                             // height={1}
                             // scale="band"
-                            tick={{ fontSize: 10, fill: "#909090", textAnchor: "middle" }}
+                            // tick={{ fontSize: 10, fill: "#909090", textAnchor: "middle" }}
                             // allowDuplicatedCategory={false} // ensures only one label per quarter
                             // tickFormatter={(q) => q}
                             height={30}
-                            allowDuplicatedCategory={false}
+                            tick={<CustomAxisTick2 data={formattedData} />}
+                            // allowDuplicatedCategory={false}
                             xAxisId="B"
                         />
                         {/* <XAxis

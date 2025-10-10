@@ -10,6 +10,7 @@ import {
     XAxis,
     YAxis,
     Tooltip,
+    CartesianGrid,
 } from 'recharts'
 
 const AvgCloseHours = () => {
@@ -92,6 +93,7 @@ const AvgCloseHours = () => {
             <Box w={"100%"} h={350}>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={formattedData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis
                             dataKey="dateLabel"
                             axisLine={false}

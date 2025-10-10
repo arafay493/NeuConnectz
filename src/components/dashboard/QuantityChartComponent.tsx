@@ -104,7 +104,7 @@ const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
                             bottom: 0,
                         }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis
                             dataKey="itemName"
                             axisLine={false}
