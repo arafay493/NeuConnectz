@@ -141,7 +141,6 @@
 //                             tickLine={false}
 //                         /> */}
 //                         {/* <XAxis dataKey="fromWarehouseCode" width={"auto"} tickFormatter={(value) => {
-//                             console.log("🚀 ~ value:", value)
 
 //                             return value
 //                         }} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#4D4D4D" }} /> */}

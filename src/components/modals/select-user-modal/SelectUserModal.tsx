@@ -82,8 +82,6 @@ export default function SelectUserModal({
     handleShowDashboard
 }: SelectUserModalProps) {
     const [search, setSearch] = useState("");
-    // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
-    // console.log("🚀 ~ SelectUserModal ~ selectedUser:", selectedUser)
     const [activeTab, setActiveTab] = useState<string>("all");
 
     // Filtering logic

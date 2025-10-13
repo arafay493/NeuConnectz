@@ -56,7 +56,6 @@ const ITR_DashboardComponent = () => {
 
     const handleFilterChange = (filterType: string, dashboardType: string) => {
         const { startDate, endDate } = getDateRange(filterType);
-        // console.log("🚀 ~ handleFilterChange ~ startDate:", startDate)
 
         // switch (dashboardType) {
         //     case "quantity":

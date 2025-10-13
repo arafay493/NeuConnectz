@@ -125,7 +125,6 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
 
     // const maxValue = Math.max(...groupData.map((d: any) => d.userRequests));
     const CustomTooltip = ({ active, payload, coordinate }: any) => {
-        // console.log("🚀 ~ CustomTooltip ~ payload:", payload)
         // const currentPayload = formattedData.find(p => p.uniqueKey === payload[0]?.payload.uniqueKey);
         // const value = currentPayload?.totalRequests;
         const value = payload[0]?.value;
@@ -170,12 +169,6 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
 
     const CustomAxisTick = ({ x, y, payload, index, data }: any) => {
         const item = formattedData.find(d => d.uniqueKey === payload.value);
-        const current = data[index];
-        const prev = data[index - 1];
-        const next = data[index + 1];
-
-        const showDivider = next && next.period !== current.period;
-        // console.log("🚀 ~ CustomAxisTick ~ showDivider:", showDivider, data)
         if (!item) return null;
 
         return (
@@ -193,29 +186,6 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                 >
                     {item.toWarehouseCode}
                 </text>
-                {/* <text
-                x={0}
-                y={12}
-                dy={10}
-                textAnchor="middle"
-                fill="#999"
-                fontSize={9}
-                width={50}
-                style={{ textWrap: "wrap" }}
-            >
-                {new Date(item.period).toLocaleDateString()}
-            </text> */}
-                {/* Divider line between date groups */}
-                {/* {showDivider && (
-                <line
-                    x1={25}
-                    y1={0}
-                    x2={25}
-                    y2={30}
-                    stroke="#909090"
-                    strokeWidth={1}
-                />
-            )} */}
             </g>
         );
     };
@@ -235,9 +205,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
 
         // Step 4: Check if this tick should show divider or label
         const isLastTick = index === data.length - 1;
-        console.log("🚀 ~ CustomAxisTick2 ~ isLastTick:", isLastTick)
         const showDivider = actualData.includes(index) || isLastTick;
-        console.log("🚀 ~ CustomAxisTick2 ~ showDivider:", showDivider)
         const showDate = actualData.includes(index) || isLastTick;
 
         return (
@@ -379,7 +347,6 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                             tickLine={false}
                         /> */}
                         {/* <XAxis dataKey="fromWarehouseCode" width={"auto"} tickFormatter={(value) => {
-                            console.log("🚀 ~ value:", value)
 
                             return value
                         }} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#4D4D4D" }} /> */}
