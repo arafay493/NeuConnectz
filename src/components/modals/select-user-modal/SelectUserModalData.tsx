@@ -97,13 +97,12 @@ const SelectUserModalData = ({ users, selectedUser, handleSelectUser, handleShow
                         <Tabs.Tab value="all" variant="light" style={activeTab === "all" ? activeTabStyles : nonActiveTabStyles}>All</Tabs.Tab>
                         <Tabs.Tab value="active" style={activeTab === "active" ? activeTabStyles : nonActiveTabStyles}>Active</Tabs.Tab>
                         <Tabs.Tab value="inactive" style={activeTab === "inactive" ? activeTabStyles : nonActiveTabStyles}>Inactive</Tabs.Tab>
-                        <Button value="ITR Dashboard" style={[nonActiveTabStyles, { width: 138 }]} onClick={() => handleShowDashboard("ITR_Dashboard")}>ITR Dashboard</Button>
                     </Tabs.List>
                 </Tabs>
             </Group>
 
             {/* User Grid */}
-            <ScrollArea h={400} >
+            <ScrollArea h={300} >
                 <Group wrap="wrap" gap="md" justify="center">
                     {(!filteredUsers.length) ? (
                         <Stack align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>

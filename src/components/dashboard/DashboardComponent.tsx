@@ -3,20 +3,9 @@
 import { customStyles } from "@/styles/custom-theme";
 import { Box, Button, Grid, Group, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import AppUsageComponent from "./AppUsageComponent";
-import AverageConversionComponent from "./AverageConversionComponent";
 import DashboardPostedDocuments from "./DashboardPostedDocuments";
 import DashboardUnPostedDocuments from "./DashboardUnpostedDocuments";
-import TopTransferItemsChart from "./TopTransferItemsChart";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useEffect, useState } from "react";
-import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashboard-actions";
-import { IconUserCircle, IconUserPlus } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
-import { PaginationState } from "@tanstack/react-table";
-import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
-import DeleteModal from "../modals/delete-modal/DeleteModal";
+import { IconUserCircle } from "@tabler/icons-react";
 
 interface User {
   userId: string;
@@ -42,95 +31,8 @@ interface SelectedUserProps {
   isActive: boolean
 }
 
-const DashboardComponent = ({ dashboard, handleShowDashboard }: any) => {
+const DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModal }: any) => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
-  const isMediumScreen = useMediaQuery("(max-width: 1200px)");
-  const {
-    usersList
-  } = useAppSelector(({ userStates }) => userStates);
-  // Note: State for pagination
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  // Note: Router for switch page
-  const route = useRouter();
-
-  const [opened, setOpened] = useState(false);
-  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
-  // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
-  const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
-
-  // Note: Handeling redux here...!
-  const dispatch = useAppDispatch();
-  const { authenticatedUser } = useAppSelector(({ authStates }) => {
-    return authStates;
-  });
-
-  // useEffect(() => {
-  //   if (authenticatedUser && selectedUser?.userId) {
-  //     dispatch(
-  //       fetchDashboardAnalytics({
-  //         authToken: authenticatedUser?.token,
-  //         userId: selectedUser?.userId,
-  //       })
-  //     );
-  //   }else if (authenticatedUser){
-  //     dispatch(fetchDashboardAnalytics({ authToken: authenticatedUser?.token }));
-  //   }
-  // }, [authenticatedUser, selectedUser?.userId, dispatch]);
-
-  useEffect(() => {
-    if (!authenticatedUser) return;
-
-    dispatch(
-      fetchDashboardAnalytics({
-        authToken: authenticatedUser.token,
-        userId: selectedUser?.userId,
-      })
-    ).finally(() => {
-      setOpened(false)
-    });
-  }, [authenticatedUser, selectedUser?.userId, dispatch]);
-
-  const handleOpenModal = () => {
-    if (authenticatedUser) {
-      setOpened(true)
-      setIsLoading(true)
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
-
-      dispatch(
-        fetchAllUsers({
-          authToken: authenticatedUser?.token,
-          // LastCount: pagination.pageSize,
-          // skipRecord: skipRecord,
-        })
-      ).finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }
-
-  const handleNext = () => {
-
-  }
-
-  const handlePrevious = () => {
-
-  }
-
-  const handleSelectUser = (user: any) => {
-    // setSelectedUser((prevState: any) => {
-    //     const userExist = prevState.find((item: any) => item.userId === user.userId);
-    //     if (userExist) {
-    //         return prevState.filter((item: any) => item.userId !== user.userId);
-    //     }
-    //     return [...prevState, user];
-    // });
-    setSelectedUser((prevState: any) => prevState?.userId === user?.userId ? null : user);
-  };
 
   return (
     <Box>
@@ -200,26 +102,6 @@ const DashboardComponent = ({ dashboard, handleShowDashboard }: any) => {
 
         {/* <AverageConversionComponent /> */}
       </Stack>
-
-      {/* Modals */}
-      <SelectUserModal
-        opened={opened}
-        handleModalClose={() => setOpened(false)}
-        users={usersList?.users || []}
-        selectedUser={selectedUser}
-        handleSelectUser={handleSelectUser}
-        handleShowDashboard = {handleShowDashboard}
-      />
-      <DeleteModal
-        opened={deleteModalOpened}
-        handleModalClose={() => setDeleteModalOpened(false)}
-        handleConfirm={() => {
-          setDeleteModalOpened(false)
-          setSelectedUser(null)
-        }}
-        handleCancel={() => setDeleteModalOpened(false)}
-        description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
-      />
     </Box>
   );
 };

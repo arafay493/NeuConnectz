@@ -139,14 +139,17 @@ export default function SelectUserModal({
                     </Text>
                 </Box>
             }
+
         >
 
             {/* Custom Tab Headers */}
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginBottom: '32px',
-                position: 'relative'
+                marginBottom: 20,
+                position: 'relative',
+                borderTop: "2px solid #E1E7EC",
+                paddingTop: 10
             }}>
                 {(['Select User', 'Select Dashboard'] as const).map((tabOption) => (
                     <button
@@ -173,7 +176,7 @@ export default function SelectUserModal({
             {/* Custom Tab Panels */}
             <div>
                 {tab === 'Select User' && (<SelectUserModalData users={users} handleSelectUser={handleSelectUser} selectedUser={selectedUser} handleShowDashboard={handleShowDashboard} />)}
-                {/* {tab === 'Select Dashboard' && (<SelectDashboardModalData users={users} handleSelectUser={handleSelectUser} selectedUser={selectedUser} handleShowDashboard={handleShowDashboard} />)} */}
+                {tab === 'Select Dashboard' && (<SelectDashboardModalData handleShowDashboard={handleShowDashboard} />)}
             </div>
 
 
