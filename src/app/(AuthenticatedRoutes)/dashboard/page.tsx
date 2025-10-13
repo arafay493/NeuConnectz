@@ -5,7 +5,7 @@ import { DashboardComponent } from "@/components/dashboard";
 import ITR_DashboardComponent from "@/components/dashboard/ITR_DashboardComponent";
 
 const DashboardScreen = () => {
-  const [dashboard, setDashboard] = useState("ITR_Dashboard")
+  const [dashboard, setDashboard] = useState("dashboard")
 
   const handleShowDashboard = (val: string) => {
     setDashboard(val)
