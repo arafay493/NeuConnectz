@@ -6,7 +6,7 @@ import NextImage from 'next/image';
 import React, { useState } from 'react'
 
 const options = [
-    "Dashboard",
+    "Home",
     "Inventory Transfer Request",
     "Transfer Request",
     "User Registration",

@@ -9,6 +9,11 @@ import { PaginationState } from "@tanstack/react-table";
 import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashboard-actions";
 import SelectUserModal from "@/components/modals/select-user-modal/SelectUserModal";
 import DeleteModal from "@/components/modals/delete-modal/DeleteModal";
+import { Box, Button, Group, Stack, Text, Title } from "@mantine/core";
+import { IconUserCircle } from "@tabler/icons-react";
+import { customStyles } from "@/styles/custom-theme";
+import { useMediaQuery } from "@mantine/hooks";
+import DashboardTitleBar from "@/components/dashboard/DashboardTitleBar";
 
 interface SelectedUserProps {
   userId: string,
@@ -25,12 +30,13 @@ interface SelectedUserProps {
 }
 
 const DashboardScreen = () => {
-  const [dashboard, setDashboard] = useState("Dashboard")
+  const [dashboard, setDashboard] = useState("Home")
   const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
   const [opened, setOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
   const [tab, setTab] = useState<'Select User' | 'Select Dashboard'>('Select User');
   const [isLoading, setIsLoading] = useState(false)
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
   // Note: State for pagination
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -103,11 +109,26 @@ const DashboardScreen = () => {
 
   }
 
+  const options = [
+    "Home",
+    "Inventory Transfer Request",
+  ];
+
 
   return (
     <>
-      {dashboard === "Dashboard" && <DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
-      {dashboard === "Inventory Transfer Request" && <ITR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
+      {dashboard === "Home" && <DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} dashboard={dashboard} />}
+      {dashboard === "Inventory Transfer Request" && <ITR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} dashboard={dashboard} />}
+
+      {/* For Empty Dashboard Screen */}
+      {!options.includes(dashboard) && (
+          <Box>
+            <DashboardTitleBar dashboard={dashboard} selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />
+            <Box style={{ textAlign: "center", padding: "60px", color: "#909090" }}>
+              <Text>{dashboard || "Unknown"} Dashboard Coming Soon</Text>
+            </Box>
+          </Box>
+        )}
 
       {/* Modals */}
       <SelectUserModal
@@ -132,53 +153,6 @@ const DashboardScreen = () => {
         description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
       />
     </>
-    // <Box>
-    //   {/* Note: Dashboard cards component */}
-    //   <DashboardsCards />
-
-    //   {/* Note: Progress bar component */}
-    //   <Box style={{ padding: "15px 0px" }}>
-    //     <SimpleGrid
-    //       cols={{ base: 1, sm: 2, md: 2 }}
-    //       spacing={customStyles.deviceSize.lg}
-    //       verticalSpacing={customStyles.deviceSize.lg}
-    //     >
-    //       {/* App Usage Card */}
-    //       <ProgressBarCard
-    //         title="App Usage"
-    //         completedRatio="60%"
-    //         remainingRatio="12%"
-    //         color={customStyles.colors.green}
-    //       />
-
-    //       {/* Active Warehouse Staff Card */}
-    //       <ProgressBarCard
-    //         title="Active Warehouse Staff"
-    //         completedRatio="80"
-    //         color={customStyles.colors._1B59F8}
-    //       />
-    //     </SimpleGrid>
-    //   </Box>
-
-    //   {/* Note: Bar chart component */}
-    //   <BarChart />
-
-    //   {/* Note: Footer charts */}
-    //   <Box style={{ padding: "15px 0px" }}>
-    //     <SimpleGrid
-    //       cols={{ base: 1, sm: 2, md: 2 }}
-    //       spacing={customStyles.deviceSize.lg}
-    //       verticalSpacing={customStyles.deviceSize.lg}
-    //       style={{ justifyContent: "space-between" }}
-    //     >
-    //       {/* Product Stacked Bar Chart */}
-    //       <ProductStackedBarChart />
-
-    //       {/* Donut Chart */}
-    //       <DonutChart />
-    //     </SimpleGrid>
-    //   </Box>
-    // </Box>
   );
 };
 

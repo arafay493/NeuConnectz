@@ -15,8 +15,9 @@ import QuantityChartComponent from './QuantityChartComponent'
 import SumOfTotalRequestByFromWarehouseChartComponent from './SumOfTotalRequestByFromWarehouseChartComponent'
 import { getDateRange } from '@/utils/getDateRange'
 import Loader from '../loader/loader'
+import DashboardTitleBar from './DashboardTitleBar'
 
-const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModal }: any) => {
+const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModal, dashboard }: any) => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
     const isTablet = useMediaQuery("(max-width: 768px)");     // tablets
     const isLaptop = useMediaQuery("(max-width: 1024px)");    // small laptops
@@ -78,51 +79,7 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
     return (
         <Box>
             {/* Title */}
-            <Group mb={24} align="center" justify="space-between">
-                <Stack gap={8}>
-                    <Title
-                        order={isTablet ? 3 : 2}
-                        c={customStyles.colors._4D4D4D}
-                        // size={isSmallScreen ? "h3" : "h2"}
-                        style={{ fontWeight: 700, fontSize: 24 }}
-                    >
-                        Inventory Transfer Request
-                    </Title>
-                    <Text
-                        mb={isTablet ? 16 : 24}
-                        c={customStyles.colors._909090}
-                        // size={isSmallScreen ? "sm" : "md"}
-                        style={{ fontWeight: 500, fontSize: 16 }}
-                    >
-                        Dashboard
-                    </Text>
-                </Stack>
-                <Stack gap={2}>
-                    {selectedUser && <Button
-                        // className="filledButton"
-                        // bg="#E1E7EC"
-                        style={{ color: "red", fontSize: 10, textAlign: "right", width: 50, alignSelf: "end", padding: 0 }}
-                        size="xs"
-                        variant="transparent"
-                        onClick={() => setDeleteModalOpened(true)}
-                    >
-                        Cancel
-                    </Button>}
-                    <Button
-                        leftSection={<IconUserCircle size={24} />}
-                        // className="filledButton"
-                        bg="#E1E7EC"
-                        style={{ color: "#4D4D4D", fontSize: 16 }}
-                        size="md"
-                        px={40}
-                        py={10}
-                        radius={8}
-                        onClick={handleOpenModal}
-                    >
-                        {!selectedUser ? "Select User" : selectedUser.userName}
-                    </Button>
-                </Stack>
-            </Group>
+            <DashboardTitleBar dashboard={dashboard} selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />
             <Grid gutter="md" justify='space-between' align='center'>
                 <GridCol span={isLaptop ? 12 : 6} bg={"white"} mih={230} p={20} mr={2} mb={10} style={{ borderRadius: 10 }}>
                     <TotalRequestChartComponent />
