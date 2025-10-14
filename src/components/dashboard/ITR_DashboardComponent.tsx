@@ -86,7 +86,7 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
                         // size={isSmallScreen ? "h3" : "h2"}
                         style={{ fontWeight: 700, fontSize: 24 }}
                     >
-                        ITR
+                        Inventory Transfer Request
                     </Title>
                     <Text
                         mb={isTablet ? 16 : 24}

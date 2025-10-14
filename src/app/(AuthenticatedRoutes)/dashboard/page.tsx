@@ -25,10 +25,11 @@ interface SelectedUserProps {
 }
 
 const DashboardScreen = () => {
-  const [dashboard, setDashboard] = useState("dashboard")
+  const [dashboard, setDashboard] = useState("Dashboard")
   const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
   const [opened, setOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [tab, setTab] = useState<'Select User' | 'Select Dashboard'>('Select User');
   const [isLoading, setIsLoading] = useState(false)
   // Note: State for pagination
   const [pagination, setPagination] = useState<PaginationState>({
@@ -60,6 +61,7 @@ const DashboardScreen = () => {
   const handleShowDashboard = (val: string) => {
     setDashboard(val)
     setOpened(false)
+    setTab("Select User")
   }
 
 
@@ -92,6 +94,11 @@ const DashboardScreen = () => {
     }
   }
 
+  const handleModalClose = () => {
+    setOpened(false)
+    setTab("Select User")
+  }
+
   const handleNext = () => {
 
   }
@@ -103,17 +110,20 @@ const DashboardScreen = () => {
 
   return (
     <>
-      {dashboard === "dashboard" && <DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
-      {dashboard === "ITR_Dashboard" && <ITR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
+      {dashboard === "Dashboard" && <DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
+      {dashboard === "Inventory Transfer Request" && <ITR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />}
 
       {/* Modals */}
       <SelectUserModal
         opened={opened}
-        handleModalClose={() => setOpened(false)}
+        handleModalClose={handleModalClose}
         users={usersList?.users || []}
         selectedUser={selectedUser}
         handleSelectUser={handleSelectUser}
         handleShowDashboard={handleShowDashboard}
+        dashboard={dashboard}
+        tab={tab}
+        setTab={setTab}
       />
       <DeleteModal
         opened={deleteModalOpened}

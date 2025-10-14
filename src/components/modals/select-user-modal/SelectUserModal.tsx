@@ -58,7 +58,10 @@ interface SelectUserModalProps {
     users: User[];
     selectedUser: any
     handleSelectUser: (a: any) => void;
-    handleShowDashboard: (a: string) => void
+    handleShowDashboard: (a: string) => void,
+    dashboard: string,
+    tab: string,
+    setTab: any
 }
 
 interface SelectedUserProps {
@@ -81,43 +84,12 @@ export default function SelectUserModal({
     users,
     selectedUser,
     handleSelectUser,
-    handleShowDashboard
+    handleShowDashboard,
+    dashboard,
+    tab,
+    setTab
 }: SelectUserModalProps) {
-    const [search, setSearch] = useState("");
-    const [activeTab, setActiveTab] = useState<string>("all");
-    const [tab, setTab] = useState<'Select User' | 'Select Dashboard'>('Select User');
 
-    // Filtering logic
-    const filteredUsers = users.filter((u) => {
-        const matchesSearch = u.userName
-            .toLowerCase()
-            .includes(search.toLowerCase());
-
-        const matchesTab =
-            activeTab === "all"
-                ? true
-                : activeTab === "active"
-                    ? u.isActive
-                    : activeTab === "inactive"
-                        ? !u.isActive
-                        : u.role.toLowerCase() === activeTab.toLowerCase();
-
-        return matchesSearch && matchesTab;
-    });
-
-    const activeTabStyles = {
-        backgroundColor: "#1B59F81A",
-        color: "blue",
-        width: "100px",
-        borderRadius: "5px"
-    }
-
-    const nonActiveTabStyles = {
-        backgroundColor: "#E1E7EC",
-        color: "#4D4D4D",
-        width: "100px",
-        borderRadius: "5px"
-    }
 
     return (
         <Modal
@@ -176,7 +148,7 @@ export default function SelectUserModal({
             {/* Custom Tab Panels */}
             <div>
                 {tab === 'Select User' && (<SelectUserModalData users={users} handleSelectUser={handleSelectUser} selectedUser={selectedUser} handleShowDashboard={handleShowDashboard} />)}
-                {tab === 'Select Dashboard' && (<SelectDashboardModalData handleShowDashboard={handleShowDashboard} />)}
+                {tab === 'Select Dashboard' && (<SelectDashboardModalData handleShowDashboard={handleShowDashboard} dashboard={dashboard} />)}
             </div>
 
 

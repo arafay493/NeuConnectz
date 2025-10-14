@@ -6,6 +6,7 @@ import NextImage from 'next/image';
 import React, { useState } from 'react'
 
 const options = [
+    "Dashboard",
     "Inventory Transfer Request",
     "Transfer Request",
     "User Registration",
@@ -25,7 +26,7 @@ const options = [
     "Content Moderation",
 ];
 
-const SelectDashboardModalData = ({ handleShowDashboard }: any) => {
+const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
     const [search, setSearch] = useState("");
     const [selected, setSelected] = useState<string | null>(null);
 
@@ -95,11 +96,11 @@ const SelectDashboardModalData = ({ handleShowDashboard }: any) => {
                             radius="md"
                             withBorder
                             // onClick={() => setSelected(option)}
-                            onClick={() => handleShowDashboard("ITR_Dashboard")}
+                            onClick={() => handleShowDashboard(option)}
                             style={{
                                 cursor: "pointer",
-                                backgroundColor: selected === option ? "#e7f0ff" : "white",
-                                borderColor: selected === option ? "#1c7ed6" : "#dee2e6",
+                                backgroundColor: dashboard === option ? "#e7f0ff" : "white",
+                                borderColor: dashboard === option ? "#1c7ed6" : "#dee2e6",
                                 transition: "all 0.2s ease",
                             }}
                         >
