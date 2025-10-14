@@ -108,7 +108,7 @@ const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
                                 <Text fw={500}>{option}</Text>
                             </Group>
                             <Text size="sm" c="dimmed">
-                                Select
+                                {dashboard === option ? "Selected" : "Select"}
                             </Text>
                         </Card>
                     ))}

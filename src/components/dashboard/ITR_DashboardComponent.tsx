@@ -151,4 +151,4 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
     )
 }
 
-export default ITR_DashboardComponent
+export default React.memo(ITR_DashboardComponent)

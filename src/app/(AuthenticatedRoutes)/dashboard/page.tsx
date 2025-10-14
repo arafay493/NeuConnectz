@@ -1,6 +1,6 @@
 // Note: Dashboard screen...!
 "use client"
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { DashboardComponent } from "@/components/dashboard";
 import ITR_DashboardComponent from "@/components/dashboard/ITR_DashboardComponent";
 import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
@@ -76,23 +76,19 @@ const DashboardScreen = () => {
     setSelectedUser((prevState: any) => prevState?.userId === user?.userId ? null : user);
   };
 
-  const handleOpenModal = () => {
+  const handleOpenModal = useCallback(() => {
     if (authenticatedUser) {
-      setOpened(true)
-      setIsLoading(true)
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+      setOpened(true);
+      setIsLoading(true);
+      //     const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      dispatch(
-        fetchAllUsers({
-          authToken: authenticatedUser?.token,
-          // LastCount: pagination.pageSize,
-          // skipRecord: skipRecord,
-        })
-      ).finally(() => {
-        setIsLoading(false);
-      });
+      dispatch(fetchAllUsers({
+        authToken: authenticatedUser?.token,
+        //         // LastCount: pagination.pageSize,
+        //         // skipRecord: skipRecord,
+      })).finally(() => setIsLoading(false));
     }
-  }
+  }, [authenticatedUser, dispatch]);
 
   const handleModalClose = () => {
     setOpened(false)

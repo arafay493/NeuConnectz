@@ -90,7 +90,9 @@ const AvgCloseHours = () => {
                 </Group>
             </Group>
 
-            <Box w={"100%"} h={350}>
+            {!formattedData?.length ? <Box w="100%" h={350} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text size="sm" c="dimmed">No data available</Text>
+            </Box> : <Box w={"100%"} h={350}>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={formattedData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -131,8 +133,10 @@ const AvgCloseHours = () => {
                     </LineChart>
                 </ResponsiveContainer>
             </Box>
+            }
+
         </>
     )
 }
 
-export default AvgCloseHours
+export default React.memo(AvgCloseHours)

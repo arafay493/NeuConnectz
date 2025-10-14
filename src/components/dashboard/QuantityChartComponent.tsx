@@ -91,7 +91,9 @@ const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
                 </Group>
             </Group>
 
-            <Box w={"100%"} h={350}>
+            {!formattedData?.length ? <Box w="100%" h={350} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text size="sm" c="dimmed">No data available</Text>
+            </Box> : <Box w={"100%"} h={350}>
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                         width={500}
@@ -139,8 +141,11 @@ const QuantityChartComponent = ({ handleFilterChange }: propTypes) => {
                     </AreaChart>
                 </ResponsiveContainer>
             </Box>
+            }
+
+
         </>
     )
 }
 
-export default QuantityChartComponent
+export default React.memo(QuantityChartComponent)

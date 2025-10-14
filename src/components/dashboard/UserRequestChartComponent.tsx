@@ -7,136 +7,71 @@ import { IconChevronDown } from '@tabler/icons-react';
 import React from 'react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-// const data = [
-//     {
-//         period: "2025-09-29T00:00:00Z",
-//         createdBy: "gCRpy5kovs",
-//         userName: "harisbashir",
-//         userRequests: 2
-//     },
-//     {
-//         period: "2025-09-29T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 1
-//     },
-//     {
-//         period: "2025-09-30T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 18
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 43
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "ahmed",
-//         userRequests: 13
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sufiyan",
-//         userRequests: 4
-//     },
-//     {
-//         period: "2025-10-01T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "zain",
-//         userRequests: 2
-//     },
-//     {
-//         period: "2025-10-02T00:00:00Z",
-//         createdBy: "uAaXF8NPEW",
-//         userName: "sagartesting",
-//         userRequests: 1
-//     },
-//     {
-//         period: "2025-10-02T00:00:00Z",
-//         createdBy: "xQ9q6cmmdj",
-//         userName: "nabeela",
-//         userRequests: 3
-//     }
-// ]
-
-// const groupedData = data.reduce((acc: any, curr) => {
-//     const found: any = acc.find((item: any) => item?.userName === curr.userName);
-//     if (found) {
-//         found.userRequests += curr.userRequests;
-//     } else {
-//         acc.push({ userName: curr.userName, userRequests: curr.userRequests });
-//     }
-//     return acc;
-// }, []);
-
-// const maxValue = Math.max(...groupedData.map((d: any) => d.userRequests));
-const CustomTooltip = ({ active, payload, coordinate }: any) => {
-    const value = payload[0]?.value;
-    if (active && payload && payload.length) {
-        return (
-            <div
-                style={{
-                    position: "absolute",
-                    left: coordinate.x,
-                    top: coordinate.y - 40, // move tooltip above bar
-                    // top: 0, // move tooltip above bar
-                    transform: "translateX(-50%)", // center align with bar
-                    background: "#D9D9D9",
-                    borderRadius: 8,
-                    padding: "6px 10px",
-                    // boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    color: customStyles.colors._1B59F8,
-                    pointerEvents: "none",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    width: 50,
-                    textAlign: "center"
-                }}
-            >
-                {value}
-                <div
-                    style={{
-                        position: "absolute",
-                        bottom: -3,
-                        left: "50%",
-                        transform: "translateX(-50%) rotate(45deg)",
-                        width: 6,
-                        height: 6,
-                        background: "#D9D9D9",
-                        boxShadow: "-2px 2px 5px rgba(0,0,0,0.05)",
-
-                    }}
-                />
-            </div>
-        );
-    }
-    return null;
-};
 
 const UserRequestChartComponent = () => {
     const { userITRCountList } = useAppSelector(({ dashboardStates }) => {
         return dashboardStates;
     });
+
     const formattedData = userITRCountList
         // .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
         .map((item, index) => ({
             ...item,
-            uniqueKey: `${index}`, // ensure uniqueness
+            uniqueKey: `${index}`,
         }));
-    const groupData = userITRCountList.reduce((acc: any, curr) => {
-        const found: any = acc.find((item: any) => item?.userName === curr.userName);
-        if (found) {
-            found.itrCount += curr.itrCount;
-        } else {
-            acc.push({ userName: curr.userName, itrCount: curr.itrCount });
+
+    const CustomTooltip = ({ active, payload, coordinate }: any) => {
+        const value = payload[0]?.value;
+        if (active && payload && payload.length) {
+            return (
+                <div
+                    style={{
+                        position: "absolute",
+                        left: coordinate.x,
+                        top: coordinate.y - 40, // move tooltip above bar
+                        // top: 0, // move tooltip above bar
+                        transform: "translateX(-50%)", // center align with bar
+                        background: "#D9D9D9",
+                        borderRadius: 8,
+                        padding: "6px 10px",
+                        // boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        color: customStyles.colors._1B59F8,
+                        pointerEvents: "none",
+                        fontSize: 12,
+                        fontWeight: 500,
+                        width: 50,
+                        textAlign: "center"
+                    }}
+                >
+                    {value}
+                    <div
+                        style={{
+                            position: "absolute",
+                            bottom: -3,
+                            left: "50%",
+                            transform: "translateX(-50%) rotate(45deg)",
+                            width: 6,
+                            height: 6,
+                            background: "#D9D9D9",
+                            boxShadow: "-2px 2px 5px rgba(0,0,0,0.05)",
+
+                        }}
+                    />
+                </div>
+            );
         }
-        return acc;
-    }, []);
+        return null;
+    };
+
+    // const groupData = userITRCountList.reduce((acc: any, curr) => {
+    //     const found: any = acc.find((item: any) => item?.userName === curr.userName);
+    //     if (found) {
+    //         found.itrCount += curr.itrCount;
+    //     } else {
+    //         acc.push({ userName: curr.userName, itrCount: curr.itrCount });
+    //     }
+    //     return acc;
+    // }, []);
     return (
         <>
             <Group
@@ -166,7 +101,9 @@ const UserRequestChartComponent = () => {
                     />
                 </Group>
             </Group>
-            <Box w={"100%"} h={350}>
+            {!formattedData?.length ? <Box w="100%" h={350} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text size="sm" c="dimmed">No data available</Text>
+            </Box> : <Box w={"100%"} h={350}>
                 <ResponsiveContainer width="100%" height="100%" >
                     <BarChart width={250} data={formattedData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -192,8 +129,10 @@ const UserRequestChartComponent = () => {
                     </BarChart>
                 </ResponsiveContainer>
             </Box>
+            }
+
         </>
     )
 }
 
-export default UserRequestChartComponent
+export default React.memo(UserRequestChartComponent)

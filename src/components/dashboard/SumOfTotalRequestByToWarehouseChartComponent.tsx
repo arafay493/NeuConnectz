@@ -8,86 +8,86 @@ import React from 'react'
 import { Bar, BarChart, CartesianGrid, Customized, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 
-const data = [
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 8 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 5 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
+// const data = [
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 8 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 5 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
 
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 3 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 3 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
 
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 10 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 10 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
 
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 2 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 7 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 2 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 7 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
 
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 8 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
 
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 1 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 1 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 7 },
 
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 5 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 3 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 5 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 1 },
 
-    // repeating random variations for 70 total
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 9 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 2 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 4 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 8 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 3 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 1 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 8 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 2 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 10 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 6 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 8 },
-    { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
-    { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 1 },
-    { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
-    { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
-    { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
-    { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
-    { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
-];
+//     // repeating random variations for 70 total
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 9 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 2 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 5 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 4 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 8 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 3 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 6 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 9 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 1 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 4 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 8 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 2 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 10 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 6 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 2 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 6 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 7 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 5 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 4 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 2 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 8 },
+//     { period: "2025-10-07T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 10 },
+//     { period: "2025-10-08T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 1 },
+//     { period: "2025-10-09T00:00:00Z", toWarehouseCode: "W-KHI-HB", warehouseName: "Madni Warehouse - Hawke's Bay", totalRequests: 9 },
+//     { period: "2025-10-10T00:00:00Z", toWarehouseCode: "W-KHI-KG", warehouseName: "Main Warehouse - Korangi", totalRequests: 6 },
+//     { period: "2025-10-11T00:00:00Z", toWarehouseCode: "W-SKR-01", warehouseName: "Main Warehouse - Sukkur", totalRequests: 5 },
+//     { period: "2025-10-12T00:00:00Z", toWarehouseCode: "W-FG-SM", warehouseName: "Finished Good Warehouse SM", totalRequests: 3 },
+//     { period: "2025-10-13T00:00:00Z", toWarehouseCode: "W-PRD-SM", warehouseName: "Production Floor - Sabzi Mandi", totalRequests: 7 },
+// ];
 
 
 const SumOfTotalRequestByToWarehouseChartComponent = () => {
@@ -212,14 +212,14 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
             <g transform={`translate(${x - 7},${y - 20})`}>
                 {showDate && (
                     <text
-                        x={-10}
+                        x={-20}
                         y={0}
-                        dy={10}
+                        dy={20}
                         textAnchor="middle"
                         fill="#909090"
                         fontSize={10}
                         fontWeight={500}
-                        transform="rotate(-45)"
+                        transform={data.length > 30 ? "rotate(-90)" : "rotate(-45)"}
                         style={{ marginRight: 20, color: "#909090" }}
                     >
                         {new Date(item.period).toLocaleDateString()}
@@ -243,7 +243,7 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                         x1={25}
                         y1={-15}
                         x2={25}
-                        y2={30}
+                        y2={50}
                         stroke="#E1E7EC"
                         strokeWidth={1}
                     />
@@ -282,7 +282,9 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                     />
                 </Group>
             </Group>
-            <Box w={"100%"} h={430}>
+            {!formattedData?.length ? <Box w="100%" h={350} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text size="sm" c="dimmed">No data available</Text>
+            </Box> : <Box w={"100%"} h={430}>
                 <ResponsiveContainer width="100%" height="100%" >
                     <BarChart width={250} data={formattedData} dataKey={(entry) => entry.uniqueKey} margin={{ top: 0, right: 0, left: 0, bottom: 40 }}>
                         {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
@@ -378,8 +380,10 @@ const SumOfTotalRequestByToWarehouseChartComponent = () => {
                     </BarChart>
                 </ResponsiveContainer>
             </Box>
+            }
+
         </>
     )
 }
 
-export default SumOfTotalRequestByToWarehouseChartComponent
+export default React.memo(SumOfTotalRequestByToWarehouseChartComponent)

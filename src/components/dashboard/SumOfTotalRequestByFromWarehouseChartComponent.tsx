@@ -15,123 +15,12 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
         return dashboardStates;
     });
 
-    // const data = [
-    //     {
-    //         period: "2025-09-29T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-09-29T00:00:00Z",
-    //         fromWarehouseCode: "W-GW-SM",
-    //         warehouseName: "General Warehouse SM",
-    //         totalRequests: 5
-    //     },
-    //     {
-    //         period: "2025-09-29T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 4
-    //     },
-    //     {
-    //         period: "2025-09-30T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 5
-    //     },
-    //     {
-    //         period: "2025-10-01T00:00:00Z",
-    //         fromWarehouseCode: "W-GW-SM",
-    //         warehouseName: "General Warehouse SM",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-10-01T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 7
-    //     },
-    //     {
-    //         period: "2025-10-02T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-10-03T00:00:00Z",
-    //         fromWarehouseCode: "W-FG-SM",
-    //         warehouseName: "Finished Good Warehouse SM",
-    //         totalRequests: 7
-    //     },
-    //     {
-    //         period: "2025-10-03T00:00:00Z",
-    //         fromWarehouseCode: "W-KHI-KG",
-    //         warehouseName: "Main Warehouse - Korangi",
-    //         totalRequests: 5
-    //     },
-    //     {
-    //         period: "2025-10-03T00:00:00Z",
-    //         fromWarehouseCode: "W-PL-SM",
-    //         warehouseName: "Plates Warehouse SM",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-10-03T00:00:00Z",
-    //         fromWarehouseCode: "W-RM-KG",
-    //         warehouseName: "Raw Material Warehouse KG",
-    //         totalRequests: 8
-    //     },
-    //     {
-    //         period: "2025-10-03T00:00:00Z",
-    //         fromWarehouseCode: "W-SKR-01",
-    //         warehouseName: "Main Warehouse - Sukkur",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-10-04T00:00:00Z",
-    //         fromWarehouseCode: "W-FG-SM",
-    //         warehouseName: "Finished Good Warehouse SM",
-    //         totalRequests: 1
-    //     },
-    //     {
-    //         period: "2025-10-04T00:00:00Z",
-    //         fromWarehouseCode: "W-RM-KG",
-    //         warehouseName: "Raw Material Warehouse KG",
-    //         totalRequests: 3
-    //     }
-    // ];
-
-    const formattedData = ITRRequestsFromWarehouse
-        // .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
+    const formattedData = [...ITRRequestsFromWarehouse]
+        .sort((a, b) => new Date(a.period).getTime() - new Date(b.period).getTime())
         .map((item, index) => ({
             ...item,
-            uniqueKey: `${index}`, // ensure uniqueness
+            uniqueKey: `${index}`,
         }));
-
-    // const chartData = data.map((item) => ({
-    //     warehouseCode: item.fromWarehouseCode,
-    //     // period: item.period.split("T")[0],
-    //     period: item.period,
-    //     totalRequests: item.totalRequests,
-    // }));
-
-    // const groupData = data.reduce((acc: any, curr: any) => {
-    //     if (!acc[curr.period]) {
-    //         acc[curr.period] = [];
-    //     }
-    //     acc[curr.period].push({
-    //         fromWarehouseCode: curr.fromWarehouseCode,
-    //         warehouseName: curr.warehouseName,
-    //         totalRequests: curr.totalRequests,
-    //     });
-    //     return acc;
-    // }, {});
-
-    // const groupDataArr = Object.entries(groupData)
-
-
-    // const maxValue = Math.max(...groupData.map((d: any) => d.userRequests));
     const CustomTooltip = ({ active, payload, coordinate }: any) => {
         // const currentPayload = formattedData.find(p => p.uniqueKey === payload[0]?.payload.uniqueKey);
         // const value = currentPayload?.totalRequests;
@@ -245,14 +134,14 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
             <g transform={`translate(${x - 7},${y - 20})`}>
                 {showDate && (
                     <text
-                        x={-10}
+                        x={-20}
                         y={0}
-                        dy={10}
+                        dy={20}
                         textAnchor="middle"
                         fill="#909090"
                         fontSize={10}
                         fontWeight={500}
-                        transform="rotate(-45)"
+                        transform={data.length > 30 ? "rotate(-90)" : "rotate(-45)"}
                         style={{ marginRight: 20, color: "#909090" }}
                     >
                         {new Date(item.period).toLocaleDateString()}
@@ -276,7 +165,7 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                         x1={25}
                         y1={-15}
                         x2={25}
-                        y2={30}
+                        y2={50}
                         stroke="#E1E7EC"
                         strokeWidth={1}
                     />
@@ -314,7 +203,9 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                     />
                 </Group>
             </Group>
-            <Box w={"100%"} h={430}>
+            {!formattedData?.length ? <Box w="100%" h={350} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text size="sm" c="dimmed">No data available</Text>
+            </Box> : <Box w={"100%"} h={430}>
                 <ResponsiveContainer width="100%" height="100%" >
                     <BarChart width={250} data={formattedData} dataKey={(entry) => entry.uniqueKey} margin={{ top: 0, right: 0, left: 0, bottom: 40 }}>
                         {/* <CartesianGrid strokeDasharray="3 3" vertical={false} /> */}
@@ -409,8 +300,10 @@ const SumOfTotalRequestByFromWarehouseChartComponent = () => {
                     </BarChart>
                 </ResponsiveContainer>
             </Box>
+            }
+
         </>
     )
 }
 
-export default SumOfTotalRequestByFromWarehouseChartComponent
+export default React.memo(SumOfTotalRequestByFromWarehouseChartComponent)

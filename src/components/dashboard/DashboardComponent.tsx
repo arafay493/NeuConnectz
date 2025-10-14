@@ -6,6 +6,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import DashboardPostedDocuments from "./DashboardPostedDocuments";
 import DashboardUnPostedDocuments from "./DashboardUnpostedDocuments";
 import { IconUserCircle } from "@tabler/icons-react";
+import React from "react";
 
 interface User {
   userId: string;
@@ -106,4 +107,4 @@ const DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModa
   );
 };
 
-export default DashboardComponent;
+export default React.memo(DashboardComponent);
