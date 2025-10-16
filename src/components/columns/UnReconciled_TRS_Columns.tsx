@@ -19,12 +19,17 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'itemName',
                 header: 'Item Name',
-                minSize: 280,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() ?? '-'}
-                    </Text>
-                ),
+                minSize: 80,
+                cell: ({ getValue }: any) => {
+                    const value = getValue() ?? '-';
+                    const truncated =
+                        value.length > 15 ? `${value.substring(0, 15)}...` : value;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500} title={value}>
+                            {truncated}
+                        </Text>
+                    );
+                },
                 enableColumnFilter: true,
             },
             {
@@ -34,6 +39,21 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() != null ? Number(getValue()).toFixed(2) : '-'}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: 'reconciled',
+                header: 'Status',
+                minSize: 50, // 👈 fixed size
+                size: 50,
+                cell: ({ getValue }: any) => (
+                    <Text
+                        c={customStyles.colors._909090}
+                        fw={500}
+                    >
+                        {getValue() ?? '-'}
                     </Text>
                 ),
                 enableColumnFilter: true,

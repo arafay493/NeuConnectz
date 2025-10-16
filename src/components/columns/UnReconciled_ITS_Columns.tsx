@@ -24,7 +24,7 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'itemCode',
                 header: 'Item Code',
-                minSize: 160,
+                minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() ?? '-'}
@@ -35,18 +35,23 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'itemName',
                 header: 'Item Name',
-                minSize: 260,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() ?? '-'}
-                    </Text>
-                ),
+                minSize: 80,
+                cell: ({ getValue }: any) => {
+                    const value = getValue() ?? '-';
+                    const truncated =
+                        value.length > 15 ? `${value.substring(0, 15)}...` : value;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500} title={value}>
+                            {truncated}
+                        </Text>
+                    );
+                },
                 enableColumnFilter: true,
             },
             {
                 accessorKey: 'totalQuantity',
                 header: 'Total Quantity',
-                minSize: 160,
+                minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() != null ? Number(getValue()).toFixed(2) : '-'}
@@ -65,24 +70,21 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             //     ),
             //     enableColumnFilter: true,
             // },
-            // {
-            //     accessorKey: 'reconciled',
-            //     header: 'Reconciled',
-            //     minSize: 140,
-            //     cell: ({ getValue }: any) => (
-            //         <Text
-            //             c={
-            //                 getValue() === 'Yes'
-            //                     ? customStyles.colors.green
-            //                     : customStyles.colors.red
-            //             }
-            //             fw={600}
-            //         >
-            //             {getValue() ?? '-'}
-            //         </Text>
-            //     ),
-            //     enableColumnFilter: true,
-            // },
+            {
+                accessorKey: 'reconciled',
+                header: 'Status',
+                minSize: 50, // 👈 fixed size
+                size: 50,
+                cell: ({ getValue }: any) => (
+                    <Text
+                        c={customStyles.colors._909090}
+                        fw={500}
+                    >
+                        {getValue() ?? '-'}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
         ],
         [list]
     );
