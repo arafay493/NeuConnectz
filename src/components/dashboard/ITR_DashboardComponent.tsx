@@ -16,6 +16,7 @@ import SumOfTotalRequestByFromWarehouseChartComponent from './SumOfTotalRequestB
 import { getDateRange } from '@/utils/getDateRange'
 import Loader from '../loader/loader'
 import DashboardTitleBar from './DashboardTitleBar'
+import SumOfTotalUsageChartComponent from './SumOfTotalUsageChartComponent'
 
 const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModal, dashboard }: any) => {
     const isMobile = useMediaQuery("(max-width: 480px)");     // small phones
@@ -93,9 +94,9 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <QuantityChartComponent handleFilterChange={handleFilterChange} />
                 </GridCol>
-                <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                {/* <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByFromWarehouseChartComponent />
-                </GridCol>
+                </GridCol> */}
                 <GridCol span={isLaptop ? 12 : isTablet ? 8 : 6} bg={"white"} mih={230} p={20} mb={10} style={{ borderRadius: 10 }}>
                     <AvgCloseHours />
                 </GridCol>

@@ -1,8 +1,9 @@
-import { Box, Stack } from "@mantine/core";
+import { Paper, Stack, Group, Text, Title, Divider } from "@mantine/core";
 import React from "react";
 import Chart from "react-apexcharts";
+import type { ApexOptions } from "apexcharts";
 
-const TimeUsageHeatmap = () => {
+const SumOfTotalUsageChartComponent = () => {
     const series = [
         {
             name: "Mon",
@@ -112,7 +113,7 @@ const TimeUsageHeatmap = () => {
     ];
 
 
-    const options = {
+    const options: ApexOptions = {
         chart: {
             type: "heatmap",
             toolbar: {
@@ -170,29 +171,46 @@ const TimeUsageHeatmap = () => {
     };
 
     return (
-        <div className="p-4 bg-white rounded-2xl shadow">
+        <Paper shadow="md" radius="lg" p="lg" withBorder>
+            {/* Chart */}
             <Chart options={options} series={series} type="heatmap" height={450} />
 
+            <Divider my="md" />
+
             {/* Summary Section */}
-            <Stack className="flex justify-around mt-4 text-center">
-                <div>
-                    <h4 className="font-semibold text-gray-700">Today</h4>
-                    <p className="text-lg font-bold">6h 15m</p>
-                    <span className="text-green-500 text-sm">↑ 2.3%</span>
-                </div>
-                <div>
-                    <h4 className="font-semibold text-gray-700">This Week</h4>
-                    <p className="text-lg font-bold">34h 12m</p>
-                    <span className="text-red-500 text-sm">↓ 10.1%</span>
-                </div>
-                <div>
-                    <h4 className="font-semibold text-gray-700">This Month</h4>
-                    <p className="text-lg font-bold">123h 47m</p>
-                    <span className="text-red-500 text-sm">↓ 3.2%</span>
-                </div>
-            </Stack>
-        </div>
+            <Group mt="md">
+                <Stack align="center" gap={4}>
+                    <Text fw={500} c="dimmed">
+                        Today
+                    </Text>
+                    <Title order={4}>6h 15m</Title>
+                    <Text size="sm" c="green">
+                        ↑ 2.3%
+                    </Text>
+                </Stack>
+
+                <Stack align="center" gap={4}>
+                    <Text fw={500} c="dimmed">
+                        This Week
+                    </Text>
+                    <Title order={4}>34h 12m</Title>
+                    <Text size="sm" c="red">
+                        ↓ 10.1%
+                    </Text>
+                </Stack>
+
+                <Stack align="center" gap={4}>
+                    <Text fw={500} c="dimmed">
+                        This Month
+                    </Text>
+                    <Title order={4}>123h 47m</Title>
+                    <Text size="sm" c="red">
+                        ↓ 3.2%
+                    </Text>
+                </Stack>
+            </Group>
+        </Paper>
     );
 };
 
-export default TimeUsageHeatmap;
+export default SumOfTotalUsageChartComponent;
