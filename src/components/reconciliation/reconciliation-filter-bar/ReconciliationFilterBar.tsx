@@ -4,6 +4,9 @@ import { DatePickerInput } from '@mantine/dates';
 import { IconCalendarMonth, IconDatabaseImport } from '@tabler/icons-react';
 import { Dispatch, FC, SetStateAction } from 'react';
 import styles from './ReconciliationFilterBar.module.css';
+import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 interface ReconciliationFilterBarProps {
     warehouseData: WarehousesListData[];
@@ -29,7 +32,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
 
     // Transform warehouse data for Select component
     const selectWarehouseData = warehouseData
-        .filter(warehouse => warehouse.isActive && !warehouse.isArchived)
+        // .filter(warehouse => warehouse.isActive && !warehouse.isArchived)
         .map(warehouse => ({
             value: warehouse.whsCode,
             label: warehouse.whsName
@@ -70,7 +73,18 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     rightSection={<IconCalendarMonth size={24} />}
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string | null) => setSelectDate(value)}
+                    // onChange={(value: string | null) => setSelectDate(value)}
+                    onChange={(value) => {
+                        if (value) {
+                            // Convert to UTC ISO string
+                            // const utcDate = dayjs(value).utc().format(); // e.g. 2025-10-16T12:04:25.252Z
+                            // console.log("🚀 ~ ReconciliationFilterBar ~ utcDate:", utcDate)
+                            const localDate = dayjs(value).format("YYYY-MM-DDT00:00:00.000[Z]");
+                            setSelectDate(localDate);
+                        } else {
+                            setSelectDate(null);
+                        }
+                    }}
                     radius={8}
                     size='md'
                     clearable

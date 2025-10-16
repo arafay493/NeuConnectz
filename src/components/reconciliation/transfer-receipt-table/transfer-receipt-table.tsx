@@ -1,4 +1,5 @@
 'use client';
+import UnReconciled_TRs_Columns from '@/components/columns/UnReconciled_TRS_Columns';
 // Note: Transfer Receipt Table Component using TanStack React Table...!
 
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
@@ -31,7 +32,8 @@ interface TransferReceiptTableProps {
     selectedItems?: TransferReceiptItems[];
 }
 
-const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
+// const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
+const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [] }: any) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -47,48 +49,50 @@ const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowCl
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
+    const columns = UnReconciled_TRs_Columns(data)
+
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<TransferReceiptItems>[]>(
-        () => [
-            {
-                accessorKey: 'itemCode',
-                header: 'Item Code',
-                cell: ({ getValue }) => {
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
-                            {getValue() as string}
-                        </Text>
-                    );
-                },
-                size: 150,
-            },
-            {
-                accessorKey: 'itemName',
-                header: 'Item Name',
-                cell: ({ getValue, }) => {
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
-                            {getValue() as string}
-                        </Text>
-                    );
-                },
-                size: 300,
-            },
-            {
-                accessorKey: 'quantity',
-                header: 'Quantity',
-                cell: ({ getValue, row }) => {
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500} style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                            {getValue() as number}
-                        </Text>
-                    );
-                },
-                size: 120,
-            },
-        ],
-        [selectedItems]
-    );
+    // const columns = useMemo<ColumnDef<TransferReceiptItems>[]>(
+    //     () => [
+    //         {
+    //             accessorKey: 'itemCode',
+    //             header: 'Item Code',
+    //             cell: ({ getValue }) => {
+    //                 return (
+    //                     <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
+    //                         {getValue() as string}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 150,
+    //         },
+    //         {
+    //             accessorKey: 'itemName',
+    //             header: 'Item Name',
+    //             cell: ({ getValue, }) => {
+    //                 return (
+    //                     <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
+    //                         {getValue() as string}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 300,
+    //         },
+    //         {
+    //             accessorKey: 'quantity',
+    //             header: 'Quantity',
+    //             cell: ({ getValue, row }) => {
+    //                 return (
+    //                     <Text c={customStyles.colors._909090} fw={500} style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+    //                         {getValue() as number}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 120,
+    //         },
+    //     ],
+    //     [selectedItems]
+    // );
 
     const table = useReactTable({
         data,
@@ -219,7 +223,7 @@ const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowCl
                                 backgroundColor: 'white'
                             }}>
                             {table.getRowModel().rows.map((row, index) => {
-                                const isSelected = selectedItems.some(item => item.itemCode === row.original.itemCode);
+                                const isSelected = selectedItems.some((item: any) => item.itemCode === row.original.itemCode);
                                 return (
                                     <Group key={row.id}
                                         onClick={() => handleRowClick && handleRowClick(row.original)}

@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchReconciliationData } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
@@ -38,7 +38,21 @@ const ReconciliationComponent = () => {
             showNotificationToast('Cannot Reconcile', 'From and To Warehouses cannot be the same.', customStyles.colors.red);
         }
 
-        dispatch(fetchReconciliationData({
+        // dispatch(fetchReconciliationData({
+        //     authToken: authenticatedUser?.token as string,
+        //     fromWarehouseCode: fromWarehouse ?? '',
+        //     toWarehouseCode: toWarehouse ?? '',
+        //     date: selectDate ?? ''
+        // }))
+
+        dispatch(fetchUnReconciledITSData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? ''
+        }))
+
+        dispatch(fetchUnReconciledTRSData({
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
@@ -49,7 +63,8 @@ const ReconciliationComponent = () => {
     // Note: Auth Selector for Api Call
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-    const { inventoryTransferItems, transferReceiptItems } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
+    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
+    console.log("🚀 ~ ReconciliationComponent ~ unReconciledITs:", unReconciledTRs)
 
     useEffect(() => {
         dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
@@ -157,7 +172,7 @@ const ReconciliationComponent = () => {
 
 
             {/* Reconciliation Not Found Component */}
-            {(!inventoryTransferItems.length && !transferReceiptItems.length) ? (
+            {(!unReconciledITs.length && !unReconciledTRs.length) ? (
                 <Stack h={550} align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
                     <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
                     <Title order={2} c={customStyles.colors._4D4D4D}>No Data Found</Title>
@@ -171,13 +186,15 @@ const ReconciliationComponent = () => {
                     {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
                     <InventoryTransferReceiptTables
                         inventoryTransfer={<InventoryTransferTable
-                            data={inventoryTransferItems}
-                            handleRowClick={handleInventoryTransferDataChange}
+                            data={unReconciledITs}
+                            // handleRowClick={handleInventoryTransferDataChange}
+                            handleRowClick={() => {}}
                             selectedItems={inventoryTransferData}
                         />}
                         transferReceipt={<TransferReceiptTable
-                            data={transferReceiptItems}
-                            handleRowClick={handleTransferReceiptDataChange}
+                            data={unReconciledTRs}
+                            // handleRowClick={handleTransferReceiptDataChange}
+                            handleRowClick={() => {}}
                             selectedItems={transferReceiptData}
                         />}
                     />
