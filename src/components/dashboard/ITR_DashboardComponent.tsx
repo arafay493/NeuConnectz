@@ -101,9 +101,9 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
                     <AvgCloseHours />
                 </GridCol>
 
-                {/* <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
+                <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <SumOfTotalUsageChartComponent />
-                </GridCol> */}
+                </GridCol>
             </Grid>
         </Box>
     )
