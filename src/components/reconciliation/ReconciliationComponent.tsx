@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
@@ -60,11 +60,28 @@ const ReconciliationComponent = () => {
         }))
     }
 
+    const handleResponse = (res: any) => {
+
+    }
+
+    const handleAutoReconcile = () => {
+        if (toWarehouse === fromWarehouse) {
+            showNotificationToast('Cannot Reconcile', 'From and To Warehouses cannot be the same.', customStyles.colors.red);
+        }
+
+        dispatch(postAutoReconcile({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? '',
+            resHandler: handleResponse
+        }))
+    }
+
     // Note: Auth Selector for Api Call
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
     const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
-    console.log("🚀 ~ ReconciliationComponent ~ unReconciledITs:", unReconciledTRs)
 
     useEffect(() => {
         dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
@@ -188,19 +205,19 @@ const ReconciliationComponent = () => {
                         inventoryTransfer={<InventoryTransferTable
                             data={unReconciledITs}
                             // handleRowClick={handleInventoryTransferDataChange}
-                            handleRowClick={() => {}}
+                            handleRowClick={() => { }}
                             selectedItems={inventoryTransferData}
                         />}
                         transferReceipt={<TransferReceiptTable
                             data={unReconciledTRs}
                             // handleRowClick={handleTransferReceiptDataChange}
-                            handleRowClick={() => {}}
+                            handleRowClick={() => { }}
                             selectedItems={transferReceiptData}
                         />}
                     />
 
                     {/* Reconciliation Action Bar */}
-                    <ReconciliationActionBar />
+                    <ReconciliationActionBar handleAutoReconcile={handleAutoReconcile} />
 
                     {/* Reconciliation Quantity Difference Table */}
                     <ReconciliationQuantityDifferenceTable
