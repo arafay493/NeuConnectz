@@ -747,7 +747,6 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
       setPoNumber(row.original?.documentNumber)
       setIsRPOModalOpen(true)
     }
-    // console.log("🚀 ~ handleViewDetails ~ row:", row)
   }
 
   const handleClosePOModals = () => {

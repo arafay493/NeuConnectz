@@ -213,7 +213,6 @@ const fetchAll_INTEGRATED_GRNS = createAsyncThunk(
             },
         { dispatch }
     ) => {
-        console.log("🚀 ~ apiUrl:", apiUrl)
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.lastCount = lastCount;
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
@@ -404,7 +403,6 @@ const fetchIssuesForProductionList = createAsyncThunk(
         if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
-        console.log("🚀 ~ response:", response)
         // console.log("Fetch all isseus for production api response: ", response);
 
         const { status, data } = response;
@@ -538,7 +536,6 @@ const fetchProductionOrderDocumentStats = createAsyncThunk(
         // console.log("Fetch all production orders api response: ", response);
 
         const { status, data } = response;
-        // console.log("🚀 ~ response1:", data)
 
         if (status == 200) {
             dispatch(FETCH_PRODUCTION_ORDERS_DOCUMENT_STATES({

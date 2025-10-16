@@ -478,6 +478,38 @@ export interface DashboardStateType {
             totalTrPending: number,
         }
     } | null;
+    userITRCountList: {
+        userName: string;
+        itrCount: number;
+    }[];
+    dailyITRTransferKPIs: {
+        period: string,
+        totalRequests: number,
+        dayOfWeek: string
+    }[];
+    ITRQuantity: {
+        period: string,
+        itemName: string,
+        uniqueItems: number,
+        quantity: number
+    }[];
+    ITRRequestsToWarehouse: {
+        period: string,
+        toWarehouseCode: string,
+        warehouseName: string,
+        totalRequests: number
+    }[];
+    ITRRequestsFromWarehouse: {
+        period: string,
+        fromWarehouseCode: string,
+        warehouseName: string,
+        totalRequests: number
+    }[];
+    ITRAvgCloseTime: {
+        period: string,
+        avgCloseHours: number
+        unit: string
+    }[];
 }
 
 // Note: Reconciliation Types

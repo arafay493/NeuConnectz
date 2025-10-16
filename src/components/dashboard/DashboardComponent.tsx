@@ -3,20 +3,11 @@
 import { customStyles } from "@/styles/custom-theme";
 import { Box, Button, Grid, Group, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import AppUsageComponent from "./AppUsageComponent";
-import AverageConversionComponent from "./AverageConversionComponent";
 import DashboardPostedDocuments from "./DashboardPostedDocuments";
 import DashboardUnPostedDocuments from "./DashboardUnpostedDocuments";
-import TopTransferItemsChart from "./TopTransferItemsChart";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useEffect, useState } from "react";
-import { fetchDashboardAnalytics } from "@/redux/actions/dashboard-actions/dashboard-actions";
-import { IconUserCircle, IconUserPlus } from "@tabler/icons-react";
-import { useRouter } from "next/navigation";
-import SelectUserModal from "../modals/select-user-modal/SelectUserModal";
-import { PaginationState } from "@tanstack/react-table";
-import { fetchAllUsers } from "@/redux/actions/user-actions/user-actions";
-import DeleteModal from "../modals/delete-modal/DeleteModal";
+import { IconUserCircle } from "@tabler/icons-react";
+import React from "react";
+import DashboardTitleBar from "./DashboardTitleBar";
 
 interface User {
   userId: string;
@@ -42,144 +33,13 @@ interface SelectedUserProps {
   isActive: boolean
 }
 
-const DashboardComponent = () => {
+const DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenModal, dashboard }: any) => {
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
-  const isMediumScreen = useMediaQuery("(max-width: 1200px)");
-  const {
-    usersList
-  } = useAppSelector(({ userStates }) => userStates);
-  // Note: State for pagination
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  // Note: Router for switch page
-  const route = useRouter();
-
-  const [opened, setOpened] = useState(false);
-  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
-  // const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
-  const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
-
-  // Note: Handeling redux here...!
-  const dispatch = useAppDispatch();
-  const { authenticatedUser } = useAppSelector(({ authStates }) => {
-    return authStates;
-  });
-
-  // useEffect(() => {
-  //   if (authenticatedUser && selectedUser?.userId) {
-  //     dispatch(
-  //       fetchDashboardAnalytics({
-  //         authToken: authenticatedUser?.token,
-  //         userId: selectedUser?.userId,
-  //       })
-  //     );
-  //   }else if (authenticatedUser){
-  //     dispatch(fetchDashboardAnalytics({ authToken: authenticatedUser?.token }));
-  //   }
-  // }, [authenticatedUser, selectedUser?.userId, dispatch]);
-
-  useEffect(() => {
-    if (!authenticatedUser) return;
-
-    dispatch(
-      fetchDashboardAnalytics({
-        authToken: authenticatedUser.token,
-        userId: selectedUser?.userId,
-      })
-    ).finally(() => {
-      setOpened(false)
-    });
-  }, [authenticatedUser, selectedUser?.userId, dispatch]);
-
-  const handleOpenModal = () => {
-    if (authenticatedUser) {
-      setOpened(true)
-      setIsLoading(true)
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
-
-      dispatch(
-        fetchAllUsers({
-          authToken: authenticatedUser?.token,
-          // LastCount: pagination.pageSize,
-          // skipRecord: skipRecord,
-        })
-      ).finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }
-
-  const handleNext = () => {
-
-  }
-
-  const handlePrevious = () => {
-
-  }
-
-  const handleSelectUser = (user: any) => {
-    // setSelectedUser((prevState: any) => {
-    //     const userExist = prevState.find((item: any) => item.userId === user.userId);
-    //     if (userExist) {
-    //         return prevState.filter((item: any) => item.userId !== user.userId);
-    //     }
-    //     return [...prevState, user];
-    // });
-    setSelectedUser((prevState: any) => prevState?.userId === user?.userId ? null : user);
-  };
 
   return (
     <Box>
       {/* Title */}
-      <Group mb={24} align="center" justify="space-between">
-        <Stack gap={8}>
-          <Title
-            order={isSmallScreen ? 3 : 2}
-            c={customStyles.colors._4D4D4D}
-            // size={isSmallScreen ? "h3" : "h2"}
-            style={{ fontWeight: 700, fontSize: 24 }}
-          >
-            Home
-          </Title>
-          <Text
-            mb={isSmallScreen ? 16 : 24}
-            c={customStyles.colors._909090}
-            // size={isSmallScreen ? "sm" : "md"}
-            style={{ fontWeight: 500, fontSize: 16 }}
-          >
-            Dashboard
-          </Text>
-        </Stack>
-        <Stack gap={2}>
-          {selectedUser && <Button
-            // className="filledButton"
-            // bg="#E1E7EC"
-            style={{ color: "red", fontSize: 10, textAlign: "right", width: 50, alignSelf: "end", padding: 0 }}
-            size="xs"
-            variant="transparent"
-            onClick={() => setDeleteModalOpened(true)}
-          >
-            Cancel
-          </Button>}
-          <Button
-            leftSection={<IconUserCircle size={24} />}
-            // className="filledButton"
-            bg="#E1E7EC"
-            style={{ color: "#4D4D4D", fontSize: 16 }}
-            size="md"
-            px={40}
-            py={10}
-            radius={8}
-            onClick={handleOpenModal}
-          >
-            {!selectedUser ? "Select User" : selectedUser.userName}
-          </Button>
-        </Stack>
-      </Group>
+      <DashboardTitleBar dashboard={dashboard} selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} />
 
       <Stack gap={24}>
         {/* Posted Documents Cards Component */}
@@ -200,27 +60,8 @@ const DashboardComponent = () => {
 
         {/* <AverageConversionComponent /> */}
       </Stack>
-
-      {/* Modals */}
-      <SelectUserModal
-        opened={opened}
-        handleModalClose={() => setOpened(false)}
-        users={usersList?.users || []}
-        selectedUser={selectedUser}
-        handleSelectUser={handleSelectUser}
-      />
-      <DeleteModal
-        opened={deleteModalOpened}
-        handleModalClose={() => setDeleteModalOpened(false)}
-        handleConfirm={() => {
-          setDeleteModalOpened(false)
-          setSelectedUser(null)
-        }}
-        handleCancel={() => setDeleteModalOpened(false)}
-        description={"Exiting the selected user will take you back to the general dashboard. Do you want to continue?"}
-      />
     </Box>
   );
 };
 
-export default DashboardComponent;
+export default React.memo(DashboardComponent);
