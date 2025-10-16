@@ -679,7 +679,7 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
 
   // Transform warehouse data for Select component
   const selectWarehouseData = wareHousesList.data
-    .filter((warehouse) => warehouse.isActive && !warehouse.isArchived)
+    // .filter((warehouse) => warehouse.isActive && !warehouse.isArchived)
     .map((warehouse) => ({
       value: warehouse.whsCode,
       label: warehouse.whsName,
