@@ -183,8 +183,27 @@ const ReconciliationComponent = () => {
     const selectItemCodesData = itemCodes
         .map((data: any) => ({
             value: data?.itemCode,
-            label: data?.itemName + " ( " + data?.itemCode + " ) "
+            label: data?.itemName + " ( " + data?.itemCode + " )"
         }));
+
+    const handleSetItemCode = (val: string) => {
+        setItemCode(val ?? '')
+        dispatch(fetchUnReconciledITSData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? '',
+            itemCode: val ?? null,
+        }))
+
+        dispatch(fetchUnReconciledTRSData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? '',
+            itemCode: val ?? "",
+        }))
+    }
     return (
         <Box>
             <Group justify='space-between'>
@@ -243,17 +262,20 @@ const ReconciliationComponent = () => {
                     </Stack>
                 ) : (
                     <>
-                        <Select
-                            placeholder="Select warehouse"
-                            data={selectItemCodesData}
-                            value={itemCode}
-                            onChange={(value) => setItemCode(value ?? '')}
-                            clearable
-                            radius={8}
-                            size='md'
-                            searchable
-                            width={"100%"}
-                        />
+                        <Stack>
+                            <Text mt={4} fw={500}>Search By Item Code</Text>
+                            <Select
+                                placeholder="Select Itemcode"
+                                data={selectItemCodesData}
+                                value={itemCode}
+                                onChange={(value: any) => handleSetItemCode(value)}
+                                clearable
+                                radius={8}
+                                size='md'
+                                searchable
+                                width={"100%"}
+                            />
+                        </Stack>
                         {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
                         <InventoryTransferReceiptTables
                             inventoryTransfer={<InventoryTransferTable

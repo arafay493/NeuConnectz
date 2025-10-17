@@ -8,6 +8,7 @@ interface FetchReconciliationTableProps {
     fromWarehouseCode: string;
     toWarehouseCode: string;
     date: string;
+    itemCode?: string | null
 }
 
 // Note: Action function to fetch all warehouses...!
@@ -33,12 +34,13 @@ const fetchReconciliationData = createAsyncThunk(
 
 const fetchUnReconciledITSData = createAsyncThunk(
     "reconciliation/fetchUnReconciledITSData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
 
         const params = {
             fromWarehouseCode,
             toWarehouseCode,
-            dateTime: date
+            dateTime: date,
+            itemCode: itemCode || ""
         }
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetUnreconciledITs`, authToken, params)
@@ -53,12 +55,13 @@ const fetchUnReconciledITSData = createAsyncThunk(
 
 const fetchUnReconciledTRSData = createAsyncThunk(
     "reconciliation/fetchUnReconciledTRSData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
 
         const params = {
             fromWarehouseCode,
             toWarehouseCode,
-            dateTime: date
+            dateTime: date,
+            itemCode: itemCode || ""
         }
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetUnreconciledTRs`, authToken, params)
@@ -106,7 +109,7 @@ const postAutoReconcile = createAsyncThunk(
         const { status, data } = response;
 
         if (status !== 200) {
-            
+
         };
     }
 );
