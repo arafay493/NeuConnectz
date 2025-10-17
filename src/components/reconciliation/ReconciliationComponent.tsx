@@ -74,7 +74,26 @@ const ReconciliationComponent = () => {
     }
 
     const handleResponse = (res: any) => {
+        dispatch(fetchUnReconciledITSData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? ''
+        }))
 
+        dispatch(fetchUnReconciledTRSData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? ''
+        }))
+
+        dispatch(fetchItemCodesData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? ''
+        }))
     }
 
     const handleAutoReconcile = () => {

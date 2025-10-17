@@ -108,8 +108,8 @@ const postAutoReconcile = createAsyncThunk(
 
         const { status, data } = response;
 
-        if (status !== 200) {
-
+        if (status == 200) {
+            resHandler(data)
         };
     }
 );
