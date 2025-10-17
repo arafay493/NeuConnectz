@@ -537,6 +537,10 @@ export interface UnRecognizedTRs {
     // quantity: number;
 }
 
+export interface ItemCodes {
+    
+}
+
 
 export interface ItTrStateProps {
     inventoryTransferItems: Array<InventoryTransferItems>;
@@ -545,6 +549,7 @@ export interface ItTrStateProps {
     unReconciledITsCount: number;
     unReconciledTRs: Array<UnRecognizedTRs>
     unReconciledTRsCount: number;
+    itemCodes: Array<ItemCodes>
     reconciliationErrorState: string;
 }
 

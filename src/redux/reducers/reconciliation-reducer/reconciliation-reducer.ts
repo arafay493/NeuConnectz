@@ -11,6 +11,7 @@ const initialState: ItTrStateProps = {
     unReconciledITsCount: 0,
     unReconciledTRs: [],
     unReconciledTRsCount: 0,
+    itemCodes: [],
     reconciliationErrorState: ''
 };
 
@@ -42,6 +43,11 @@ const reconciliationSlice = createSlice({
             state.unReconciledTRsCount = action?.payload.totalCount;
         },
 
+        FETCH_ITEM_CODES: (state, action: PayloadAction<any>) => {
+            state.reconciliationErrorState = "";
+            state.itemCodes = action?.payload.data;
+        },
+
         CLEAR_ALL_WAREHOUSE_STATES: (state) => {
             state.inventoryTransferItems = [];
             state.transferReceiptItems = [];
@@ -55,6 +61,7 @@ export const
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA,
         FETCH_RECONCILIATION_DATA,
         FETCH_RECONCILIATION_ITS,
+        FETCH_ITEM_CODES,
         FETCH_RECONCILIATION_TRS
     } = reconciliationSlice.actions;
 

@@ -35,7 +35,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
         // .filter(warehouse => warehouse.isActive && !warehouse.isArchived)
         .map(warehouse => ({
             value: warehouse.whsCode,
-            label: warehouse.whsName
+            label: warehouse.whsName + " ( " + warehouse.whsCode + " ) "
         }));
 
     return (

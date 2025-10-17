@@ -49,7 +49,7 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: 'totalQuantity',
+                accessorKey: 'quantity',
                 header: 'Total Quantity',
                 minSize: 120,
                 cell: ({ getValue }: any) => (

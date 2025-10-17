@@ -1,6 +1,6 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
-import { FETCH_RECONCILIATION_DATA, FETCH_RECONCILIATION_ITS, FETCH_RECONCILIATION_TRS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA } from "@/redux/reducers/reconciliation-reducer/reconciliation-reducer";
+import { FETCH_ITEM_CODES, FETCH_RECONCILIATION_DATA, FETCH_RECONCILIATION_ITS, FETCH_RECONCILIATION_TRS, UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA } from "@/redux/reducers/reconciliation-reducer/reconciliation-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 interface FetchReconciliationTableProps {
@@ -71,6 +71,26 @@ const fetchUnReconciledTRSData = createAsyncThunk(
     }
 );
 
+const fetchItemCodesData = createAsyncThunk(
+    "reconciliation/fetchItemCodesData",
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
+
+        const params = {
+            fromWarehouseCode,
+            toWarehouseCode,
+            dateTime: date
+        }
+
+        const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetReconciliationItems`, authToken, params)
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ITEM_CODES(data?.data));
+        };
+    }
+);
+
 const postAutoReconcile = createAsyncThunk(
     "reconciliation/postAutoReconcile",
     async ({ authToken, fromWarehouseCode, toWarehouseCode, date, resHandler }: any, { dispatch }) => {
@@ -95,5 +115,6 @@ export {
     fetchReconciliationData,
     fetchUnReconciledITSData,
     fetchUnReconciledTRSData,
+    fetchItemCodesData,
     postAutoReconcile
 };

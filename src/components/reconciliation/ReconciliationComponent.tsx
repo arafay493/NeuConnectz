@@ -1,11 +1,11 @@
 'use client';
 
-import { fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { InventoryTransferItems, QuantityDifferenceData, TransferReceiptItems } from '@/types/redux-types';
-import { Box, Button, Group, Image, Stack, Text, Title } from '@mantine/core';
+import { Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import InventoryTransferTable from './inventory-transfer-table/inventory-transfer-table';
@@ -24,6 +24,7 @@ const ReconciliationComponent = () => {
     const [selectDate, setSelectDate] = useState<string | null>(null);
     const [toWarehouse, setToWarehouse] = useState<string | null>(null);
     const [fromWarehouse, setFromWarehouse] = useState<string | null>(null);
+    const [itemCode, setItemCode] = useState<string | null>(null);
 
     // Note: Reconciliation Data States
     const [inventoryTransferData, setInventoryTransferData] = useState<Array<InventoryTransferItems>>([]);
@@ -33,6 +34,10 @@ const ReconciliationComponent = () => {
     const [quantityDifferenceData, setQuantityDifferenceData] = useState<Array<QuantityDifferenceData>>([]);
 
     const dispatch = useDispatch<AppDispatch>();
+    // Note: Auth Selector for Api Call
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
+    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs, itemCodes } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
 
     const handleGetReconciliationData = () => {
         if (toWarehouse === fromWarehouse) {
@@ -59,6 +64,13 @@ const ReconciliationComponent = () => {
             toWarehouseCode: toWarehouse ?? '',
             date: selectDate ?? ''
         }))
+
+        dispatch(fetchItemCodesData({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse ?? '',
+            toWarehouseCode: toWarehouse ?? '',
+            date: selectDate ?? ''
+        }))
     }
 
     const handleResponse = (res: any) => {
@@ -78,11 +90,6 @@ const ReconciliationComponent = () => {
             resHandler: handleResponse
         }))
     }
-
-    // Note: Auth Selector for Api Call
-    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
 
     useEffect(() => {
         dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token as string }))
@@ -171,6 +178,13 @@ const ReconciliationComponent = () => {
         // Calculate quantity difference whenever inventory transfer or transfer receipt data changes
         handleCalculateQuantityDifference();
     }, [handleCalculateQuantityDifference])
+
+    // Transform itemcode data for Select component
+    const selectItemCodesData = itemCodes
+        .map((data: any) => ({
+            value: data?.itemCode,
+            label: data?.itemName + " ( " + data?.itemCode + " ) "
+        }));
     return (
         <Box>
             <Group justify='space-between'>
@@ -229,6 +243,17 @@ const ReconciliationComponent = () => {
                     </Stack>
                 ) : (
                     <>
+                        <Select
+                            placeholder="Select warehouse"
+                            data={selectItemCodesData}
+                            value={itemCode}
+                            onChange={(value) => setItemCode(value ?? '')}
+                            clearable
+                            radius={8}
+                            size='md'
+                            searchable
+                            width={"100%"}
+                        />
                         {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
                         <InventoryTransferReceiptTables
                             inventoryTransfer={<InventoryTransferTable

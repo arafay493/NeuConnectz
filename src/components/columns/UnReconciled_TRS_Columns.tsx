@@ -33,7 +33,7 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: 'totalQuantity',
+                accessorKey: 'quantity',
                 header: 'Total Quantity',
                 minSize: 150,
                 cell: ({ getValue }: any) => (
