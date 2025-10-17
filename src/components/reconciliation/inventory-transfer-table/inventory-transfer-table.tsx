@@ -9,6 +9,7 @@ import { InventoryTransferItems } from '@/types/redux-types';
 import {
     ActionIcon,
     Box,
+    Button,
     Group,
     Stack,
     Text,
@@ -33,7 +34,7 @@ interface InventoryTransferTableProps {
 }
 
 // const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
-const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [] }: any) => {
+const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS , itemCode }: any) => {
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -118,7 +119,7 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [] }: an
                         Inventory Transfer
                     </Title>
                 </Group>
-                <Group gap="xs">
+                {/* <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
                         handleGlobalSearch={() => { }}
@@ -128,7 +129,10 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [] }: an
                     <IconFilter cursor="pointer" onClick={handleTableFiltersVisibility} size={24} />
                     <IconColumns cursor="pointer" size={24} />
                     <IconBorderCorners cursor="pointer" size={24} />
-                </Group>
+                </Group> */}
+                {itemCode ? <Group gap="xs">
+                    <Button onClick={() => handleSelectITS(data)}>Select All</Button>
+                </Group> : null}
             </Group>
 
             {/* Table */}

@@ -9,6 +9,7 @@ import { TransferReceiptItems } from '@/types/redux-types';
 import {
     ActionIcon,
     Box,
+    Button,
     Group,
     Stack,
     Text,
@@ -33,7 +34,7 @@ interface TransferReceiptTableProps {
 }
 
 // const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
-const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [] }: any) => {
+const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handleSelectTRS, itemCode }: any) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -117,7 +118,7 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [] }: any)
                         Transfer Receipt
                     </Title>
                 </Group>
-                <Group gap="xs">
+                {/* <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
                         handleGlobalSearch={() => { }}
@@ -127,7 +128,10 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [] }: any)
                     <IconFilter cursor="pointer" onClick={handleTableFiltersVisibility} size={24} />
                     <IconColumns cursor="pointer" size={24} />
                     <IconBorderCorners cursor="pointer" size={24} />
-                </Group>
+                </Group> */}
+                {itemCode ? <Group gap="xs">
+                    <Button onClick={() => handleSelectTRS(data)}>Select All</Button>
+                </Group> : null}
             </Group>
 
             {/* Table */}

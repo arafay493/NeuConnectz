@@ -19,12 +19,27 @@ import NextImage from 'next/image';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { IconCopyCheck } from '@tabler/icons-react';
 
+type SelectedDataTypes = {
+    itemCode?: string;
+    itemName?: string;
+    itsQuantity?: number;
+    trsQuantity?: number
+};
+
+type mergedDataTypes = {
+    itemCode?: string;
+    itemName?: string;
+    quantity?: number;
+}[];
+
 const ReconciliationComponent = () => {
     // Note: Reconciliation Filter Bar States
     const [selectDate, setSelectDate] = useState<string | null>(null);
     const [toWarehouse, setToWarehouse] = useState<string | null>(null);
     const [fromWarehouse, setFromWarehouse] = useState<string | null>(null);
     const [itemCode, setItemCode] = useState<string | null>(null);
+    const [selectedData, setSelectedData] = useState<SelectedDataTypes>({});
+    console.log("🚀 ~ ReconciliationComponent ~ selectedData:", selectedData)
 
     // Note: Reconciliation Data States
     const [inventoryTransferData, setInventoryTransferData] = useState<Array<InventoryTransferItems>>([]);
@@ -223,6 +238,52 @@ const ReconciliationComponent = () => {
             itemCode: val ?? "",
         }))
     }
+
+    const handleSelectITS = (data: any) => {
+        const merged: mergedDataTypes = Object.values(
+            data.reduce((acc: any, curr: any) => {
+                const key = curr.itemCode;
+                if (!acc[key]) {
+                    acc[key] = { ...curr };
+                } else {
+                    acc[key].quantity += curr.quantity;
+                }
+                return acc;
+            }, {})
+        );
+        const objectedData: SelectedDataTypes = {
+            itemCode: merged?.[0]?.itemCode,
+            itemName: merged?.[0]?.itemName,
+            itsQuantity: merged?.[0]?.quantity,
+        };
+        setSelectedData((prev: any) => ({
+            ...prev,
+            ...objectedData
+        }));
+    }
+
+    const handleSelectTRS = (data: any) => {
+        const merged: mergedDataTypes = Object.values(
+            data.reduce((acc: any, curr: any) => {
+                const key = curr.itemCode;
+                if (!acc[key]) {
+                    acc[key] = { ...curr };
+                } else {
+                    acc[key].quantity += curr.quantity;
+                }
+                return acc;
+            }, {})
+        );
+        const objectedData: SelectedDataTypes = {
+            itemCode: merged?.[0]?.itemCode,
+            itemName: merged?.[0]?.itemName,
+            trsQuantity: merged?.[0]?.quantity,
+        };
+        setSelectedData((prev: any) => ({
+            ...prev,
+            ...objectedData
+        }));
+    }
     return (
         <Box>
             <Group justify='space-between'>
@@ -302,12 +363,16 @@ const ReconciliationComponent = () => {
                                 // handleRowClick={handleInventoryTransferDataChange}
                                 handleRowClick={() => { }}
                                 selectedItems={inventoryTransferData}
+                                handleSelectITS={handleSelectITS}
+                                itemCode={itemCode}
                             />}
                             transferReceipt={<TransferReceiptTable
                                 data={unReconciledTRs}
                                 // handleRowClick={handleTransferReceiptDataChange}
                                 handleRowClick={() => { }}
                                 selectedItems={transferReceiptData}
+                                handleSelectTRS={handleSelectTRS}
+                                itemCode={itemCode}
                             />}
                         />
 
