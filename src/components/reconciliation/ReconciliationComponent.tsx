@@ -5,7 +5,7 @@ import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { InventoryTransferItems, QuantityDifferenceData, TransferReceiptItems } from '@/types/redux-types';
-import { Box, Image, Stack, Text, Title } from '@mantine/core';
+import { Box, Button, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import InventoryTransferTable from './inventory-transfer-table/inventory-transfer-table';
@@ -17,6 +17,7 @@ import TransferReceiptTable from './transfer-receipt-table/transfer-receipt-tabl
 import { localAssets } from '@/lib/file-paths/file-paths';
 import NextImage from 'next/image';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import { IconCopyCheck } from '@tabler/icons-react';
 
 const ReconciliationComponent = () => {
     // Note: Reconciliation Filter Bar States
@@ -172,8 +173,35 @@ const ReconciliationComponent = () => {
     }, [handleCalculateQuantityDifference])
     return (
         <Box>
-            <Title order={2} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 700, fontSize: 24 }}>Reconciliation</Title>
-            <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>Match Inventory Transfers to Transfer Receipts for accurate stock and quantity tracking.</Text>
+            <Group justify='space-between'>
+                <Stack gap={4}>
+                    <Title
+                        order={2}
+                        c={customStyles.colors._4D4D4D}
+                        style={{ fontWeight: 700, fontSize: 24 }}
+                    >
+                        Reconciliation
+                    </Title>
+                    <Text
+                        c={customStyles.colors._909090}
+                        style={{ fontWeight: 500, fontSize: 16 }}
+                    >
+                        Match Inventory Transfers to Transfer Receipts for accurate stock and quantity tracking.
+                    </Text>
+                </Stack>
+                <Group>
+                    <Button
+                        className="filledButton"
+                        variant="transparent"
+                        size="md"
+                        radius={8}
+                        leftSection={<IconCopyCheck size={24} />}
+                        onClick={handleAutoReconcile}
+                    >
+                        Auto Reconcile
+                    </Button>
+                </Group>
+            </Group>
 
             {/* Reconciliation Get Data Filter Bar */}
             <ReconciliationFilterBar
@@ -189,43 +217,45 @@ const ReconciliationComponent = () => {
 
 
             {/* Reconciliation Not Found Component */}
-            {(!unReconciledITs.length && !unReconciledTRs.length) ? (
-                <Stack h={550} align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
-                    <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
-                    <Title order={2} c={customStyles.colors._4D4D4D}>No Data Found</Title>
-                    <Stack align='center' gap={0}>
-                        <Text c={customStyles.colors._909090} size="md">There are no Inventory Transfers or Transfer Receipts to show right now.</Text>
-                        <Text c={customStyles.colors._909090} size="md">Try adjusting your filters or date range to view records.</Text>
+            {
+                (!unReconciledITs.length && !unReconciledTRs.length) ? (
+                    <Stack h={550} align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
+                        <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
+                        <Title order={2} c={customStyles.colors._4D4D4D}>No Data Found</Title>
+                        <Stack align='center' gap={0}>
+                            <Text c={customStyles.colors._909090} size="md">There are no Inventory Transfers or Transfer Receipts to show right now.</Text>
+                            <Text c={customStyles.colors._909090} size="md">Try adjusting your filters or date range to view records.</Text>
+                        </Stack>
                     </Stack>
-                </Stack>
-            ) : (
-                <>
-                    {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
-                    <InventoryTransferReceiptTables
-                        inventoryTransfer={<InventoryTransferTable
-                            data={unReconciledITs}
-                            // handleRowClick={handleInventoryTransferDataChange}
-                            handleRowClick={() => { }}
-                            selectedItems={inventoryTransferData}
-                        />}
-                        transferReceipt={<TransferReceiptTable
-                            data={unReconciledTRs}
-                            // handleRowClick={handleTransferReceiptDataChange}
-                            handleRowClick={() => { }}
-                            selectedItems={transferReceiptData}
-                        />}
-                    />
+                ) : (
+                    <>
+                        {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
+                        <InventoryTransferReceiptTables
+                            inventoryTransfer={<InventoryTransferTable
+                                data={unReconciledITs}
+                                // handleRowClick={handleInventoryTransferDataChange}
+                                handleRowClick={() => { }}
+                                selectedItems={inventoryTransferData}
+                            />}
+                            transferReceipt={<TransferReceiptTable
+                                data={unReconciledTRs}
+                                // handleRowClick={handleTransferReceiptDataChange}
+                                handleRowClick={() => { }}
+                                selectedItems={transferReceiptData}
+                            />}
+                        />
 
-                    {/* Reconciliation Action Bar */}
-                    <ReconciliationActionBar handleAutoReconcile={handleAutoReconcile} />
+                        {/* Reconciliation Action Bar */}
+                        {/* <ReconciliationActionBar handleAutoReconcile={handleAutoReconcile} /> */}
 
-                    {/* Reconciliation Quantity Difference Table */}
-                    <ReconciliationQuantityDifferenceTable
-                        data={quantityDifferenceData}
-                    />
-                </>
-            )}
-        </Box>
+                        {/* Reconciliation Quantity Difference Table */}
+                        <ReconciliationQuantityDifferenceTable
+                            data={quantityDifferenceData}
+                        />
+                    </>
+                )
+            }
+        </Box >
     )
 }
 
