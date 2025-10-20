@@ -19,6 +19,7 @@ import NextImage from 'next/image';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { IconCopyCheck } from '@tabler/icons-react';
 import QuantityDifferenceViewModal from '../modals/quantity-difference-view-modal/QuantityDifferenceViewModal';
+import QuantityDifferenceView2Modal from '../modals/quantity-difference-view2-modal/QuantityDifferenceView2Modal';
 
 type SelectedDataTypes = {
     itemCode?: string;
@@ -291,7 +292,6 @@ const ReconciliationComponent = () => {
             trsQuantity: merged?.[0]?.quantity,
             trIds: trIds
         };
-        // console.log("🚀 ~ handleSelectTRS ~ objectedData:", objectedData)
         setSelectedData((prev: any) => ({
             ...prev,
             ...objectedData
@@ -346,7 +346,9 @@ const ReconciliationComponent = () => {
     return (
         <Box>
             {/* Modals */}
-            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation} handleTransferToLostWarehouse = {handleTransferToLostWarehouse}/>
+            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) > 0) && <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation} handleTransferToLostWarehouse = {handleTransferToLostWarehouse}/>}
+            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) < 0) && <QuantityDifferenceView2Modal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation} handleTransferToLostWarehouse = {handleTransferToLostWarehouse}/>}
+            {/* Modals End */}
             <Group justify='space-between'>
                 <Stack gap={4}>
                     <Title

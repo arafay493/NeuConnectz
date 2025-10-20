@@ -35,7 +35,6 @@ interface InventoryTransferTableProps {
 
 // const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
 const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS, itemCode }: any) => {
-    console.log("🚀 ~ InventoryTransferTable ~ data:", data)
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
