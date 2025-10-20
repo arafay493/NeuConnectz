@@ -114,10 +114,33 @@ const postAutoReconcile = createAsyncThunk(
     }
 );
 
+const postCreateRemainingAdjustedTR = createAsyncThunk(
+    "reconciliation/postCreateRemainingAdjustedTR",
+    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, resHandler }: any, { dispatch }) => {
+
+        const body: any = {
+            fromWareHouseCode: fromWarehouseCode,
+            toWareHouseCode: toWareHouseCode,
+            itemCode: itemCode,
+            quantity: quantity,
+            itIds: itIds
+        }
+
+        const response = await apiPost(`/neu-connect/v2/IReconciliationFeature/CreateRemainingAdjustedTR`, body)
+
+        const { status, data } = response;
+
+        // if (status == 200) {
+        //     resHandler(data)
+        // };
+    }
+);
+
 export {
     fetchReconciliationData,
     fetchUnReconciledITSData,
     fetchUnReconciledTRSData,
     fetchItemCodesData,
-    postAutoReconcile
+    postAutoReconcile,
+    postCreateRemainingAdjustedTR
 };

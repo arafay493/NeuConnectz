@@ -15,12 +15,14 @@ import {
 interface ModalProps {
     opened: boolean;
     handleModalClose: () => void;
+    handleCreateRemainingTranferReciept: () => void
 }
 
 
 export default function QuantityDifferenceViewModal({
     opened,
     handleModalClose,
+    handleCreateRemainingTranferReciept
 }: ModalProps) {
     return (
         <Modal
@@ -46,7 +48,7 @@ export default function QuantityDifferenceViewModal({
         >
             <Stack gap="sm" align="start" m={10}>
                 <Box style={{ border: "1px solid #E1E7EC", borderRadius: 8 }} w={"100%"} p={20}>
-                    <Group>
+                    <Group style={{ cursor: "pointer" }} onClick={handleCreateRemainingTranferReciept}>
                         <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center" }} w={50} h={50}><IconTransform size={20} stroke={2} color="#4D4D4D" /></Box>
                         <Box>
                             <Text fw={600} mb={10} size="16px">

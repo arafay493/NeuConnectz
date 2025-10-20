@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateRemainingAdjustedTR } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
@@ -24,7 +24,9 @@ type SelectedDataTypes = {
     itemCode?: string;
     itemName?: string;
     itsQuantity?: number;
-    trsQuantity?: number
+    trsQuantity?: number;
+    itIds?: any
+    trIds?: any
 };
 
 type mergedDataTypes = {
@@ -256,10 +258,13 @@ const ReconciliationComponent = () => {
                 return acc;
             }, {})
         );
+
+        const itIds: any = data.map((item: any) => item.id)
         const objectedData: SelectedDataTypes = {
             itemCode: merged?.[0]?.itemCode,
             itemName: merged?.[0]?.itemName,
             itsQuantity: merged?.[0]?.quantity,
+            itIds: itIds
         };
         setSelectedData((prev: any) => ({
             ...prev,
@@ -279,11 +284,15 @@ const ReconciliationComponent = () => {
                 return acc;
             }, {})
         );
+
+        const trIds: any = data.map((item: any) => item.id)
         const objectedData: SelectedDataTypes = {
             itemCode: merged?.[0]?.itemCode,
             itemName: merged?.[0]?.itemName,
             trsQuantity: merged?.[0]?.quantity,
+            trIds: trIds
         };
+        // console.log("🚀 ~ handleSelectTRS ~ objectedData:", objectedData)
         setSelectedData((prev: any) => ({
             ...prev,
             ...objectedData
@@ -293,10 +302,21 @@ const ReconciliationComponent = () => {
     const handleModalClose = () => {
         setQuantityDifferenceViewModalOpened(false)
     }
+
+    const handleCreateRemainingTranferReciept = () => {
+        dispatch(postCreateRemainingAdjustedTR({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse,
+            toWareHouseCode: toWarehouse,
+            itemCode: itemCode,
+            quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
+            itIds: selectedData?.itIds
+        }))
+    }
     return (
         <Box>
             {/* Modals */}
-            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} />
+            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} />
             <Group justify='space-between'>
                 <Stack gap={4}>
                     <Title
@@ -393,7 +413,7 @@ const ReconciliationComponent = () => {
                         {/* Reconciliation Quantity Difference Table */}
                         <ReconciliationQuantityDifferenceTable
                             data={[selectedData]}
-                            handleQuantityDifferenceViewModalOpened = {() => setQuantityDifferenceViewModalOpened(true)}
+                            handleQuantityDifferenceViewModalOpened={() => setQuantityDifferenceViewModalOpened(true)}
                         />
                     </>
                 )
