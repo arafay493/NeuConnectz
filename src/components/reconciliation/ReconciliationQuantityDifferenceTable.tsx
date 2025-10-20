@@ -6,7 +6,7 @@ import { TableColumnsFilter } from '@/components/table-filters/TableColumnsFilte
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
 import { QuantityDifferenceData } from '@/types/redux-types';
-import { ActionIcon, Box, Group, Image, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Box, Button, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconColumns, IconFilter, IconSearch } from '@tabler/icons-react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
@@ -16,7 +16,8 @@ interface ReconciliationQuantityDifferenceTableProps {
 }
 
 const ReconciliationQuantityDifferenceTable = ({
-    data
+    data,
+    handleQuantityDifferenceViewModalOpened
 }: any) => {
     // const [data] = useState(() => generateQuantityDifferenceData());
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -112,11 +113,11 @@ const ReconciliationQuantityDifferenceTable = ({
                 accessorKey: 'action',
                 header: 'Actions',
                 cell: ({ getValue }) => (
-                    <Box
+                    <Button
                         style={{
                             background: '#E8F5E8',
                             color: '#2D8F3F',
-                            padding: '4px 12px',
+                            padding: '4px 24px',
                             borderRadius: '20px',
                             fontSize: '12px',
                             fontWeight: 500,
@@ -125,10 +126,11 @@ const ReconciliationQuantityDifferenceTable = ({
                             border: '1px solid #A8D5A8',
 
                         }}
+                        onClick={handleQuantityDifferenceViewModalOpened}
                     >
                         {/* {getValue() as string} */}
                         View
-                    </Box>
+                    </Button>
                 ),
                 size: 100,
                 enableSorting: false,

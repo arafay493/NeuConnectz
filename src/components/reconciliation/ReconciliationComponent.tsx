@@ -18,6 +18,7 @@ import { localAssets } from '@/lib/file-paths/file-paths';
 import NextImage from 'next/image';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { IconCopyCheck } from '@tabler/icons-react';
+import QuantityDifferenceViewModal from '../modals/quantity-difference-view-modal/QuantityDifferenceViewModal';
 
 type SelectedDataTypes = {
     itemCode?: string;
@@ -39,6 +40,7 @@ const ReconciliationComponent = () => {
     const [fromWarehouse, setFromWarehouse] = useState<string | null>(null);
     const [itemCode, setItemCode] = useState<string | null>(null);
     const [selectedData, setSelectedData] = useState<SelectedDataTypes>({});
+    const [quantityDifferenceViewModalOpened, setQuantityDifferenceViewModalOpened] = useState<boolean>(false)
 
     // Note: Reconciliation Data States
     const [inventoryTransferData, setInventoryTransferData] = useState<Array<InventoryTransferItems>>([]);
@@ -208,7 +210,7 @@ const ReconciliationComponent = () => {
     // }, [inventoryTransferData, transferReceiptData]);
 
     const handleCalculateQuantityDifference = () => {
-        
+
     }
 
     // useEffect(() => {
@@ -287,8 +289,14 @@ const ReconciliationComponent = () => {
             ...objectedData
         }));
     }
+
+    const handleModalClose = () => {
+        setQuantityDifferenceViewModalOpened(false)
+    }
     return (
         <Box>
+            {/* Modals */}
+            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} />
             <Group justify='space-between'>
                 <Stack gap={4}>
                     <Title
@@ -385,6 +393,7 @@ const ReconciliationComponent = () => {
                         {/* Reconciliation Quantity Difference Table */}
                         <ReconciliationQuantityDifferenceTable
                             data={[selectedData]}
+                            handleQuantityDifferenceViewModalOpened = {() => setQuantityDifferenceViewModalOpened(true)}
                         />
                     </>
                 )
