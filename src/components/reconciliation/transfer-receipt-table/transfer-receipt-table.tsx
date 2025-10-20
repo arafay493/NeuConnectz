@@ -50,7 +50,7 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
-    const columns = UnReconciled_TRs_Columns(data)
+    const columns = UnReconciled_TRs_Columns(data || [])
 
     // Note: Column definitions for the table
     // const columns = useMemo<ColumnDef<TransferReceiptItems>[]>(
@@ -220,7 +220,7 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
 
                 {/* Scrollable Body - Limited to 6 rows height */}
                 {
-                    data.length === 0 ? (
+                    (data?.length === 0 || data === undefined) ? (
                         <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                             <Text c={customStyles.colors._909090} size="lg">No data available</Text>
                         </Group>

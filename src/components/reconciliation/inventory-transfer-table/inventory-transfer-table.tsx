@@ -35,6 +35,7 @@ interface InventoryTransferTableProps {
 
 // const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
 const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS, itemCode }: any) => {
+    console.log("🚀 ~ InventoryTransferTable ~ data:", data)
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -51,7 +52,7 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
-    const columns = UnReconciled_ITs_Columns(data)
+    const columns = UnReconciled_ITs_Columns(data || [])
 
     // Note: Column definitions for the table
     // const columns = useMemo<ColumnDef<InventoryTransferItems>[]>(
@@ -219,7 +220,7 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
 
                 {/* Scrollable Body - Limited to 6 rows height */}
                 {
-                    data.length === 0 ? (
+                    (data?.length === 0 || data === undefined) ? (
                         <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                             <Text c={customStyles.colors._909090} size="lg">No data available</Text>
                         </Group>

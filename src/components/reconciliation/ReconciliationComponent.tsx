@@ -221,8 +221,7 @@ const ReconciliationComponent = () => {
     // }, [handleCalculateQuantityDifference])
 
     // Transform itemcode data for Select component
-    const selectItemCodesData = itemCodes
-        .map((data: any) => ({
+    const selectItemCodesData = itemCodes?.map((data: any) => ({
             value: data?.itemCode,
             label: data?.itemName + " ( " + data?.itemCode + " )"
         }));
@@ -390,7 +389,7 @@ const ReconciliationComponent = () => {
 
             {/* Reconciliation Not Found Component */}
             {
-                (!unReconciledITs.length && !unReconciledTRs.length) ? (
+                (!unReconciledITs?.length && !unReconciledTRs?.length) ? (
                     <Stack h={550} align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
                         <Image w={250} h={250} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
                         <Title order={2} c={customStyles.colors._4D4D4D}>No Data Found</Title>

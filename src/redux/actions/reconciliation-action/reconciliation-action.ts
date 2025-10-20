@@ -49,6 +49,8 @@ const fetchUnReconciledITSData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_RECONCILIATION_ITS(data?.data));
+        }else{
+            dispatch(FETCH_RECONCILIATION_ITS([]));
         };
     }
 );
@@ -70,6 +72,8 @@ const fetchUnReconciledTRSData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_RECONCILIATION_TRS(data?.data));
+        }else{
+            dispatch(FETCH_RECONCILIATION_TRS([]));
         };
     }
 );
@@ -90,6 +94,8 @@ const fetchItemCodesData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_ITEM_CODES(data?.data));
+        }else{
+            dispatch(FETCH_ITEM_CODES([]));
         };
     }
 );
