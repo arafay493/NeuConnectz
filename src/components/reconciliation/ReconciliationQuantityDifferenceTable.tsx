@@ -58,7 +58,7 @@ const ReconciliationQuantityDifferenceTable = ({
                 header: 'Item Code',
                 cell: ({ getValue }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {getValue() as string}
+                        {getValue() as string || "-"}
                     </Text>
                 ),
                 size: calculateColumnWidth("Item Code", data.map((item: any) => item.itemCode), 160, 200),
@@ -68,7 +68,7 @@ const ReconciliationQuantityDifferenceTable = ({
                 header: 'Item Name',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
+                        {getValue() as string || "-"}
                     </Text>
                 ),
                 size: calculateColumnWidth("Item Name", data.map((item: any) => item.itemName), 200, 250),
@@ -78,7 +78,7 @@ const ReconciliationQuantityDifferenceTable = ({
                 header: 'Total IT Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as number}
+                        {getValue() as number || "-"}
                     </Text>
                 ),
                 size: calculateColumnWidth("Total IT Quantity", data.map((item: any) => String(item.totalITQuantity)), 200, 220),
@@ -88,19 +88,24 @@ const ReconciliationQuantityDifferenceTable = ({
                 header: 'Total TR Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as number}
+                        {getValue() as number || "-"}
                     </Text>
                 ),
                 size: calculateColumnWidth("Total TR Quantity", data.map((item: any) => String(item.totalTRQuantity)), 200, 220),
             },
             {
-                accessorKey: 'quantityDifference',
+                // accessorKey: 'quantityDifference',
                 header: 'Quantity Difference',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as number}
-                    </Text>
-                ),
+                cell: ({ row }: any) => {
+                    const its = row.original.itsQuantity ?? 0;
+                    const trs = row.original.trsQuantity ?? 0;
+                    const diff = its - trs;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500} >
+                            {diff as number || "-"}
+                        </Text >
+                    )
+                },
                 size: calculateColumnWidth("Quantity Difference", data.map((item: any) => String(item.quantityDifference)), 200, 220),
             },
             {
@@ -121,7 +126,8 @@ const ReconciliationQuantityDifferenceTable = ({
 
                         }}
                     >
-                        {getValue() as string}
+                        {/* {getValue() as string} */}
+                        View
                     </Box>
                 ),
                 size: 100,
@@ -171,7 +177,7 @@ const ReconciliationQuantityDifferenceTable = ({
             {/* Table */}
             <Box
                 w="100%"
-                h={700}
+                // h={700}
                 style={{
                     overflowX: 'auto',
                     overflowY: 'auto',

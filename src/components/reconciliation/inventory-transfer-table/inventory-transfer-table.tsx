@@ -34,7 +34,7 @@ interface InventoryTransferTableProps {
 }
 
 // const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
-const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS , itemCode }: any) => {
+const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS, itemCode }: any) => {
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -131,7 +131,13 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
                     <IconBorderCorners cursor="pointer" size={24} />
                 </Group> */}
                 {itemCode ? <Group gap="xs">
-                    <Button onClick={() => handleSelectITS(data)}>Select All</Button>
+                    <Button 
+                        className="filledButton"
+                        variant="transparent"
+                        size="md"
+                        radius={8} 
+                        onClick={() => handleSelectITS(data)}
+                    >Select All</Button>
                 </Group> : null}
             </Group>
 

@@ -130,7 +130,13 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                     <IconBorderCorners cursor="pointer" size={24} />
                 </Group> */}
                 {itemCode ? <Group gap="xs">
-                    <Button onClick={() => handleSelectTRS(data)}>Select All</Button>
+                    <Button 
+                        className="filledButton"
+                        variant="transparent"
+                        size="md"
+                        radius={8} 
+                        onClick={() => handleSelectTRS(data)}
+                    >Select All</Button>
                 </Group> : null}
             </Group>
 
