@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateRemainingAdjustedTR } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateRemainingAdjustedTR, postReverseITofTRInReconciliation } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
@@ -311,12 +311,27 @@ const ReconciliationComponent = () => {
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
             itIds: selectedData?.itIds
-        }))
+        })).finally(() => {
+            handleModalClose()
+        })
+    }
+
+    const handleReverseITofTRInReconciliation = () => {
+        dispatch(postReverseITofTRInReconciliation({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse,
+            toWareHouseCode: toWarehouse,
+            itemCode: itemCode,
+            quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
+            itIds: selectedData?.itIds
+        })).finally(() => {
+            handleModalClose()
+        })
     }
     return (
         <Box>
             {/* Modals */}
-            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} />
+            <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation}/>
             <Group justify='space-between'>
                 <Stack gap={4}>
                     <Title

@@ -16,13 +16,15 @@ interface ModalProps {
     opened: boolean;
     handleModalClose: () => void;
     handleCreateRemainingTranferReciept: () => void
+    handleReverseITofTRInReconciliation: () => void
 }
 
 
 export default function QuantityDifferenceViewModal({
     opened,
     handleModalClose,
-    handleCreateRemainingTranferReciept
+    handleCreateRemainingTranferReciept,
+    handleReverseITofTRInReconciliation
 }: ModalProps) {
     return (
         <Modal
@@ -61,11 +63,11 @@ export default function QuantityDifferenceViewModal({
                     </Group>
                 </Box>
                 <Box style={{ border: "1px solid #E1E7EC", borderRadius: 8 }} w={"100%"} p={20}>
-                    <Group>
+                    <Group style={{ cursor: "pointer" }} onClick={handleReverseITofTRInReconciliation}>
                         <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center" }} w={50} h={50}><IconTransform size={20} stroke={2} color="#4D4D4D" /></Box>
                         <Box>
                             <Text fw={600} mb={10} size="16px">
-                                Inventory Transfer
+                                Reverse Inventory Transfer of Transfer Request
                             </Text>
                             <Text fw={500} color="#909090" size="16px">
                                 Inventory Transfer auto-generates when items are sent, enabling auto-reconciliation.

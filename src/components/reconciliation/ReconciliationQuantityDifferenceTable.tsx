@@ -179,11 +179,7 @@ const ReconciliationQuantityDifferenceTable = ({
             {/* Table */}
             <Box
                 w="100%"
-                // h={700}
-                style={{
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                }}
+                className={"custom-scroll"} style={{ overflow: "auto" }}
             >
                 <table style={{
                     width: '100%',
