@@ -1,6 +1,6 @@
 'use client';
 
-import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateRemainingAdjustedTR, postReverseITofTRInReconciliation, postTransferToLostWarehouse } from '@/redux/actions/reconciliation-action/reconciliation-action';
+import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateAdjustedITRInReconciliation, postCreateRemainingAdjustedTR, postReverseITofTRInReconciliation, postTransferToLostWarehouse } from '@/redux/actions/reconciliation-action/reconciliation-action';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
@@ -113,6 +113,11 @@ const ReconciliationComponent = () => {
             toWarehouseCode: toWarehouse ?? '',
             date: selectDate ?? ''
         }))
+        setSelectDate(null)
+        setToWarehouse(null)
+        setFromWarehouse(null)
+        setItemCode(null)
+        setSelectedData({})
     }
 
     const handleAutoReconcile = () => {
@@ -223,9 +228,9 @@ const ReconciliationComponent = () => {
 
     // Transform itemcode data for Select component
     const selectItemCodesData = itemCodes?.map((data: any) => ({
-            value: data?.itemCode,
-            label: data?.itemName + " ( " + data?.itemCode + " )"
-        }));
+        value: data?.itemCode,
+        label: data?.itemName + " ( " + data?.itemCode + " )"
+    }));
 
     const handleSetItemCode = (val: string) => {
         setItemCode(val ?? '')
@@ -310,7 +315,8 @@ const ReconciliationComponent = () => {
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
             itIds: selectedData?.itIds,
-            trIds: selectedData?.trIds
+            trIds: selectedData?.trIds,
+            resHandler: handleResponse
         })).finally(() => {
             handleModalClose()
         })
@@ -324,7 +330,8 @@ const ReconciliationComponent = () => {
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
             itIds: selectedData?.itIds,
-            trIds: selectedData?.trIds
+            trIds: selectedData?.trIds,
+            resHandler: handleResponse
         })).finally(() => {
             handleModalClose()
         })
@@ -338,7 +345,23 @@ const ReconciliationComponent = () => {
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
             itIds: selectedData?.itIds,
-            trIds: selectedData?.trIds
+            trIds: selectedData?.trIds,
+            resHandler: handleResponse
+        })).finally(() => {
+            handleModalClose()
+        })
+    }
+
+    const handleCreateAdjustedITRInReconciliation = () => {
+        dispatch(postCreateAdjustedITRInReconciliation({
+            authToken: authenticatedUser?.token as string,
+            fromWarehouseCode: fromWarehouse,
+            toWareHouseCode: toWarehouse,
+            itemCode: itemCode,
+            quantity: (selectedData?.trsQuantity || 0) - (selectedData?.itsQuantity || 0),
+            itIds: selectedData?.itIds,
+            trIds: selectedData?.trIds,
+            resHandler: handleResponse
         })).finally(() => {
             handleModalClose()
         })
@@ -346,8 +369,8 @@ const ReconciliationComponent = () => {
     return (
         <Box>
             {/* Modals */}
-            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) > 0) && <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation} handleTransferToLostWarehouse = {handleTransferToLostWarehouse}/>}
-            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) < 0) && <QuantityDifferenceView2Modal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation = {handleReverseITofTRInReconciliation} handleTransferToLostWarehouse = {handleTransferToLostWarehouse}/>}
+            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) > 0) && <QuantityDifferenceViewModal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateRemainingTranferReciept={handleCreateRemainingTranferReciept} handleReverseITofTRInReconciliation={handleReverseITofTRInReconciliation} handleTransferToLostWarehouse={handleTransferToLostWarehouse} />}
+            {(((selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0)) < 0) && <QuantityDifferenceView2Modal opened={quantityDifferenceViewModalOpened} handleModalClose={handleModalClose} handleCreateAdjustedITRInReconciliation={handleCreateAdjustedITRInReconciliation} />}
             {/* Modals End */}
             <Group justify='space-between'>
                 <Stack gap={4}>

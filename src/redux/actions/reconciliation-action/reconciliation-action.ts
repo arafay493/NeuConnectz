@@ -137,9 +137,9 @@ const postCreateRemainingAdjustedTR = createAsyncThunk(
 
         const { status, data } = response;
 
-        // if (status == 200) {
-        //     resHandler(data)
-        // };
+        if (status == 200) {
+            resHandler(data)
+        };
     }
 );
 
@@ -160,9 +160,9 @@ const postReverseITofTRInReconciliation = createAsyncThunk(
 
         const { status, data } = response;
 
-        // if (status == 200) {
-        //     resHandler(data)
-        // };
+        if (status == 200) {
+            resHandler(data)
+        };
     }
 );
 
@@ -181,9 +181,32 @@ const postTransferToLostWarehouse = createAsyncThunk(
 
         const { status, data } = response;
 
-        // if (status == 200) {
-        //     resHandler(data)
-        // };
+        if (status == 200) {
+            resHandler(data)
+        };
+    }
+);
+
+const postCreateAdjustedITRInReconciliation = createAsyncThunk(
+    "reconciliation/postCreateAdjustedITRInReconciliation",
+    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
+
+        const body: any = {
+            fromWareHouseCode: fromWarehouseCode,
+            toWareHouseCode: toWareHouseCode,
+            itemCode: itemCode,
+            quantity: quantity,
+            itIds: itIds,
+            trIds: trIds
+        }
+
+        const response = await apiPost(`/neu-connect/v2/IReconciliationFeature/CreateAdjustedITRInReconciliation`, body)
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            resHandler(data)
+        };
     }
 );
 
@@ -195,5 +218,6 @@ export {
     postAutoReconcile,
     postCreateRemainingAdjustedTR,
     postReverseITofTRInReconciliation,
-    postTransferToLostWarehouse
+    postTransferToLostWarehouse,
+    postCreateAdjustedITRInReconciliation
 };
