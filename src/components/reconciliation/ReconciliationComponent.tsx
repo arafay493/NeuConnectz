@@ -39,7 +39,6 @@ const ReconciliationComponent = () => {
     const [fromWarehouse, setFromWarehouse] = useState<string | null>(null);
     const [itemCode, setItemCode] = useState<string | null>(null);
     const [selectedData, setSelectedData] = useState<SelectedDataTypes>({});
-    console.log("🚀 ~ ReconciliationComponent ~ selectedData:", selectedData)
 
     // Note: Reconciliation Data States
     const [inventoryTransferData, setInventoryTransferData] = useState<Array<InventoryTransferItems>>([]);
@@ -157,61 +156,65 @@ const ReconciliationComponent = () => {
         });
     }
 
-    const handleCalculateQuantityDifference = useCallback(() => {
-        const quantityDifference: QuantityDifferenceData[] = [];
+    // const handleCalculateQuantityDifference = useCallback(() => {
+    //     const quantityDifference: QuantityDifferenceData[] = [];
 
-        // Create a map to track all unique item codes from both tables
-        const itemCodeMap = new Map<string, {
-            itemName: string;
-            itQuantity: number;
-            trQuantity: number;
-        }>();
+    //     // Create a map to track all unique item codes from both tables
+    //     const itemCodeMap = new Map<string, {
+    //         itemName: string;
+    //         itQuantity: number;
+    //         trQuantity: number;
+    //     }>();
 
-        // Add inventory transfer data to the map
-        inventoryTransferData.forEach(item => {
-            itemCodeMap.set(item.itemCode, {
-                itemName: item.itemName,
-                itQuantity: item.quantity,
-                trQuantity: 0
-            });
-        });
+    //     // Add inventory transfer data to the map
+    //     inventoryTransferData.forEach(item => {
+    //         itemCodeMap.set(item.itemCode, {
+    //             itemName: item.itemName,
+    //             itQuantity: item.quantity,
+    //             trQuantity: 0
+    //         });
+    //     });
 
-        // Add or update with transfer receipt data
-        transferReceiptData.forEach(item => {
-            const existing = itemCodeMap.get(item.itemCode);
-            if (existing) {
-                // Update existing entry with TR quantity
-                existing.trQuantity = item.quantity;
-            } else {
-                // Create new entry with only TR quantity
-                itemCodeMap.set(item.itemCode, {
-                    itemName: item.itemName,
-                    itQuantity: 0,
-                    trQuantity: item.quantity
-                });
-            }
-        });
+    //     // Add or update with transfer receipt data
+    //     transferReceiptData.forEach(item => {
+    //         const existing = itemCodeMap.get(item.itemCode);
+    //         if (existing) {
+    //             // Update existing entry with TR quantity
+    //             existing.trQuantity = item.quantity;
+    //         } else {
+    //             // Create new entry with only TR quantity
+    //             itemCodeMap.set(item.itemCode, {
+    //                 itemName: item.itemName,
+    //                 itQuantity: 0,
+    //                 trQuantity: item.quantity
+    //             });
+    //         }
+    //     });
 
-        // Convert map to array and calculate differences
-        itemCodeMap.forEach((value, itemCode) => {
-            const difference = value.itQuantity - value.trQuantity;
-            quantityDifference.push({
-                itemCode,
-                itemName: value.itemName,
-                totalITQuantity: value.itQuantity,
-                totalTRQuantity: value.trQuantity,
-                quantityDifference: difference,
-                action: 'View'
-            });
-        });
+    //     // Convert map to array and calculate differences
+    //     itemCodeMap.forEach((value, itemCode) => {
+    //         const difference = value.itQuantity - value.trQuantity;
+    //         quantityDifference.push({
+    //             itemCode,
+    //             itemName: value.itemName,
+    //             totalITQuantity: value.itQuantity,
+    //             totalTRQuantity: value.trQuantity,
+    //             quantityDifference: difference,
+    //             action: 'View'
+    //         });
+    //     });
 
-        setQuantityDifferenceData(quantityDifference);
-    }, [inventoryTransferData, transferReceiptData]);
+    //     setQuantityDifferenceData(quantityDifference);
+    // }, [inventoryTransferData, transferReceiptData]);
 
-    useEffect(() => {
-        // Calculate quantity difference whenever inventory transfer or transfer receipt data changes
-        handleCalculateQuantityDifference();
-    }, [handleCalculateQuantityDifference])
+    const handleCalculateQuantityDifference = () => {
+        
+    }
+
+    // useEffect(() => {
+    //     // Calculate quantity difference whenever inventory transfer or transfer receipt data changes
+    //     handleCalculateQuantityDifference();
+    // }, [handleCalculateQuantityDifference])
 
     // Transform itemcode data for Select component
     const selectItemCodesData = itemCodes
@@ -381,7 +384,7 @@ const ReconciliationComponent = () => {
 
                         {/* Reconciliation Quantity Difference Table */}
                         <ReconciliationQuantityDifferenceTable
-                            data={quantityDifferenceData}
+                            data={[selectedData]}
                         />
                     </>
                 )

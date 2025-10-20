@@ -15,9 +15,9 @@ interface ReconciliationQuantityDifferenceTableProps {
     data: QuantityDifferenceData[]
 }
 
-const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifferenceTableProps> = ({
+const ReconciliationQuantityDifferenceTable = ({
     data
-}) => {
+}: any) => {
     // const [data] = useState(() => generateQuantityDifferenceData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -61,7 +61,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth("Item Code", data.map(item => item.itemCode), 160, 200),
+                size: calculateColumnWidth("Item Code", data.map((item: any) => item.itemCode), 160, 200),
             },
             {
                 accessorKey: 'itemName',
@@ -71,27 +71,27 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth("Item Name", data.map(item => item.itemName), 200, 250),
+                size: calculateColumnWidth("Item Name", data.map((item: any) => item.itemName), 200, 250),
             },
             {
-                accessorKey: 'totalITQuantity',
+                accessorKey: 'itsQuantity',
                 header: 'Total IT Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
                         {getValue() as number}
                     </Text>
                 ),
-                size: calculateColumnWidth("Total IT Quantity", data.map(item => String(item.totalITQuantity)), 200, 220),
+                size: calculateColumnWidth("Total IT Quantity", data.map((item: any) => String(item.totalITQuantity)), 200, 220),
             },
             {
-                accessorKey: 'totalTRQuantity',
+                accessorKey: 'trsQuantity',
                 header: 'Total TR Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
                         {getValue() as number}
                     </Text>
                 ),
-                size: calculateColumnWidth("Total TR Quantity", data.map(item => String(item.totalTRQuantity)), 200, 220),
+                size: calculateColumnWidth("Total TR Quantity", data.map((item: any) => String(item.totalTRQuantity)), 200, 220),
             },
             {
                 accessorKey: 'quantityDifference',
@@ -101,7 +101,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                         {getValue() as number}
                     </Text>
                 ),
-                size: calculateColumnWidth("Quantity Difference", data.map(item => String(item.quantityDifference)), 200, 220),
+                size: calculateColumnWidth("Quantity Difference", data.map((item: any) => String(item.quantityDifference)), 200, 220),
             },
             {
                 accessorKey: 'action',
