@@ -309,7 +309,8 @@ const ReconciliationComponent = () => {
             toWareHouseCode: toWarehouse,
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
-            itIds: selectedData?.itIds
+            itIds: selectedData?.itIds,
+            trIds: selectedData?.trIds
         })).finally(() => {
             handleModalClose()
         })
@@ -322,7 +323,8 @@ const ReconciliationComponent = () => {
             toWareHouseCode: toWarehouse,
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
-            itIds: selectedData?.itIds
+            itIds: selectedData?.itIds,
+            trIds: selectedData?.trIds
         })).finally(() => {
             handleModalClose()
         })
@@ -335,7 +337,8 @@ const ReconciliationComponent = () => {
             toWareHouseCode: toWarehouse,
             itemCode: itemCode,
             quantity: (selectedData?.itsQuantity || 0) - (selectedData?.trsQuantity || 0),
-            itIds: selectedData?.itIds
+            itIds: selectedData?.itIds,
+            trIds: selectedData?.trIds
         })).finally(() => {
             handleModalClose()
         })

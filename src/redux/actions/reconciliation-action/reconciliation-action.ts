@@ -122,14 +122,15 @@ const postAutoReconcile = createAsyncThunk(
 
 const postCreateRemainingAdjustedTR = createAsyncThunk(
     "reconciliation/postCreateRemainingAdjustedTR",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             fromWareHouseCode: fromWarehouseCode,
             toWareHouseCode: toWareHouseCode,
             itemCode: itemCode,
             quantity: quantity,
-            itIds: itIds
+            itIds: itIds,
+            trIds: trIds
         }
 
         const response = await apiPost(`/neu-connect/v2/IReconciliationFeature/CreateRemainingAdjustedTR`, body)
@@ -144,14 +145,15 @@ const postCreateRemainingAdjustedTR = createAsyncThunk(
 
 const postReverseITofTRInReconciliation = createAsyncThunk(
     "reconciliation/postReverseITofTRInReconciliation",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             fromWareHouseCode: fromWarehouseCode,
             toWareHouseCode: toWareHouseCode,
             itemCode: itemCode,
             quantity: quantity,
-            itIds: itIds
+            itIds: itIds,
+            trIds: trIds
         }
 
         const response = await apiPost(`/neu-connect/v2/IReconciliationFeature/ReverseITofTRInReconciliation`, body)
@@ -166,12 +168,13 @@ const postReverseITofTRInReconciliation = createAsyncThunk(
 
 const postTransferToLostWarehouse = createAsyncThunk(
     "reconciliation/postTransferToLostWarehouse",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             itemCode: itemCode,
             quantity: quantity,
-            itIds: itIds
+            itIds: itIds,
+            trIds: trIds
         }
 
         const response = await apiPost(`/neu-connect/v2/IReconciliationFeature/TransferToLostWarehouse`, body)
