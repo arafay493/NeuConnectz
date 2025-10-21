@@ -525,10 +525,31 @@ export interface TransferReceiptItems {
     quantity: number;
 }
 
+export interface UnRecognizedITs {
+    // itemCode: string;
+    // itemName: string;
+    // quantity: number;
+}
+
+export interface UnRecognizedTRs {
+    // itemCode: string;
+    // itemName: string;
+    // quantity: number;
+}
+
+export interface ItemCodes {
+    
+}
+
 
 export interface ItTrStateProps {
     inventoryTransferItems: Array<InventoryTransferItems>;
     transferReceiptItems: Array<TransferReceiptItems>;
+    unReconciledITs: Array<UnRecognizedITs>
+    unReconciledITsCount: number;
+    unReconciledTRs: Array<UnRecognizedTRs>
+    unReconciledTRsCount: number;
+    itemCodes: Array<ItemCodes>
     reconciliationErrorState: string;
 }
 

@@ -6,7 +6,7 @@ import { TableColumnsFilter } from '@/components/table-filters/TableColumnsFilte
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
 import { QuantityDifferenceData } from '@/types/redux-types';
-import { ActionIcon, Box, Group, Image, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Box, Button, Group, Image, Stack, Text, Title } from '@mantine/core';
 import { IconArrowsUpDown, IconBorderCorners, IconColumns, IconFilter, IconSearch } from '@tabler/icons-react';
 import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
@@ -15,9 +15,10 @@ interface ReconciliationQuantityDifferenceTableProps {
     data: QuantityDifferenceData[]
 }
 
-const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifferenceTableProps> = ({
-    data
-}) => {
+const ReconciliationQuantityDifferenceTable = ({
+    data,
+    handleQuantityDifferenceViewModalOpened
+}: any) => {
     // const [data] = useState(() => generateQuantityDifferenceData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -58,60 +59,65 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                 header: 'Item Code',
                 cell: ({ getValue }) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {getValue() as string}
+                        {getValue() as string || "-"}
                     </Text>
                 ),
-                size: calculateColumnWidth("Item Code", data.map(item => item.itemCode), 160, 200),
+                size: calculateColumnWidth("Item Code", data.map((item: any) => item.itemCode), 160, 200),
             },
             {
                 accessorKey: 'itemName',
                 header: 'Item Name',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
+                        {getValue() as string || "-"}
                     </Text>
                 ),
-                size: calculateColumnWidth("Item Name", data.map(item => item.itemName), 200, 250),
+                size: calculateColumnWidth("Item Name", data.map((item: any) => item.itemName), 200, 250),
             },
             {
-                accessorKey: 'totalITQuantity',
+                accessorKey: 'itsQuantity',
                 header: 'Total IT Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as number}
+                        {getValue() as number || "-"}
                     </Text>
                 ),
-                size: calculateColumnWidth("Total IT Quantity", data.map(item => String(item.totalITQuantity)), 200, 220),
+                size: calculateColumnWidth("Total IT Quantity", data.map((item: any) => String(item.totalITQuantity)), 200, 220),
             },
             {
-                accessorKey: 'totalTRQuantity',
+                accessorKey: 'trsQuantity',
                 header: 'Total TR Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as number}
+                        {getValue() as number || "-"}
                     </Text>
                 ),
-                size: calculateColumnWidth("Total TR Quantity", data.map(item => String(item.totalTRQuantity)), 200, 220),
+                size: calculateColumnWidth("Total TR Quantity", data.map((item: any) => String(item.totalTRQuantity)), 200, 220),
             },
             {
-                accessorKey: 'quantityDifference',
+                // accessorKey: 'quantityDifference',
                 header: 'Quantity Difference',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as number}
-                    </Text>
-                ),
-                size: calculateColumnWidth("Quantity Difference", data.map(item => String(item.quantityDifference)), 200, 220),
+                cell: ({ row }: any) => {
+                    const its = row.original.itsQuantity ?? 0;
+                    const trs = row.original.trsQuantity ?? 0;
+                    const diff = its - trs;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500} >
+                            {diff as number || "-"}
+                        </Text >
+                    )
+                },
+                size: calculateColumnWidth("Quantity Difference", data.map((item: any) => String(item.quantityDifference)), 200, 220),
             },
             {
                 accessorKey: 'action',
                 header: 'Actions',
                 cell: ({ getValue }) => (
-                    <Box
+                    <Button
                         style={{
                             background: '#E8F5E8',
                             color: '#2D8F3F',
-                            padding: '4px 12px',
+                            padding: '4px 24px',
                             borderRadius: '20px',
                             fontSize: '12px',
                             fontWeight: 500,
@@ -120,9 +126,11 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
                             border: '1px solid #A8D5A8',
 
                         }}
+                        onClick={handleQuantityDifferenceViewModalOpened}
                     >
-                        {getValue() as string}
-                    </Box>
+                        {/* {getValue() as string} */}
+                        View
+                    </Button>
                 ),
                 size: 100,
                 enableSorting: false,
@@ -171,11 +179,7 @@ const ReconciliationQuantityDifferenceTable: FC<ReconciliationQuantityDifference
             {/* Table */}
             <Box
                 w="100%"
-                h={700}
-                style={{
-                    overflowX: 'auto',
-                    overflowY: 'auto',
-                }}
+                className={"custom-scroll"} style={{ overflow: "auto" }}
             >
                 <table style={{
                     width: '100%',

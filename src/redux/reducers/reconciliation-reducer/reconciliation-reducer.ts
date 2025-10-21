@@ -7,6 +7,11 @@ import { ItTrStateProps } from "@/types/redux-types";
 const initialState: ItTrStateProps = {
     inventoryTransferItems: [],
     transferReceiptItems: [],
+    unReconciledITs: [],
+    unReconciledITsCount: 0,
+    unReconciledTRs: [],
+    unReconciledTRsCount: 0,
+    itemCodes: [],
     reconciliationErrorState: ''
 };
 
@@ -26,6 +31,23 @@ const reconciliationSlice = createSlice({
             state.transferReceiptItems = action?.payload.transferReceiptItems;
         },
 
+        FETCH_RECONCILIATION_ITS: (state, action: PayloadAction<any>) => {
+            state.reconciliationErrorState = "";
+            state.unReconciledITs = action?.payload.data;
+            state.unReconciledITsCount = action?.payload.totalCount;
+        },
+
+        FETCH_RECONCILIATION_TRS: (state, action: PayloadAction<any>) => {
+            state.reconciliationErrorState = "";
+            state.unReconciledTRs = action?.payload.data;
+            state.unReconciledTRsCount = action?.payload.totalCount;
+        },
+
+        FETCH_ITEM_CODES: (state, action: PayloadAction<any>) => {
+            state.reconciliationErrorState = "";
+            state.itemCodes = action?.payload.data;
+        },
+
         CLEAR_ALL_WAREHOUSE_STATES: (state) => {
             state.inventoryTransferItems = [];
             state.transferReceiptItems = [];
@@ -38,6 +60,9 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_RECONCILIATION_DATA,
         FETCH_RECONCILIATION_DATA,
+        FETCH_RECONCILIATION_ITS,
+        FETCH_ITEM_CODES,
+        FETCH_RECONCILIATION_TRS
     } = reconciliationSlice.actions;
 
 export default reconciliationSlice.reducer;

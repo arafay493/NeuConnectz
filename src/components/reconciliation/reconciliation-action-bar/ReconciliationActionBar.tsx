@@ -2,7 +2,7 @@ import { customStyles } from "@/styles/custom-theme"
 import { Button, Group, Stack, Text, Title } from "@mantine/core"
 import { IconCopyCheck } from "@tabler/icons-react"
 
-const ReconciliationActionBar = () => {
+const ReconciliationActionBar = ({ handleAutoReconcile }: any) => {
     return (
         <Group justify="space-between" mt={24} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px' }}>
             <Stack gap={0}>
@@ -29,6 +29,7 @@ const ReconciliationActionBar = () => {
                     size="md"
                     radius={8}
                     leftSection={<IconCopyCheck size={24} />}
+                    onClick={handleAutoReconcile}
                 >
                     Auto Reconcile
                 </Button>

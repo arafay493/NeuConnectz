@@ -1,4 +1,5 @@
 'use client';
+import UnReconciled_ITs_Columns from '@/components/columns/UnReconciled_ITS_Columns';
 // Note: Inventory Transfer Table Component using TanStack React Table...!
 
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
@@ -8,6 +9,7 @@ import { InventoryTransferItems } from '@/types/redux-types';
 import {
     ActionIcon,
     Box,
+    Button,
     Group,
     Stack,
     Text,
@@ -31,7 +33,8 @@ interface InventoryTransferTableProps {
     selectedItems?: InventoryTransferItems[];
 }
 
-const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
+// const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
+const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS, itemCode }: any) => {
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -48,48 +51,50 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
 
+    const columns = UnReconciled_ITs_Columns(data || [])
+
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<InventoryTransferItems>[]>(
-        () => [
-            {
-                accessorKey: 'itemCode',
-                header: 'Item Code',
-                cell: ({ getValue, }) => {
-                    return (
-                        <Text fw={500} c={customStyles.colors._909090} style={{ whiteSpace: 'nowrap' }}>
-                            {getValue() as string}
-                        </Text>
-                    );
-                },
-                size: 150,
-            },
-            {
-                accessorKey: 'itemName',
-                header: 'Item Name',
-                cell: ({ getValue }) => {
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
-                            {getValue() as string}
-                        </Text>
-                    );
-                },
-                size: 300,
-            },
-            {
-                accessorKey: 'quantity',
-                header: 'Quantity',
-                cell: ({ getValue, }) => {
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
-                            {getValue() as number}
-                        </Text>
-                    );
-                },
-                size: 120,
-            },
-        ],
-        [selectedItems]
-    );
+    // const columns = useMemo<ColumnDef<InventoryTransferItems>[]>(
+    //     () => [
+    //         {
+    //             accessorKey: 'itemCode',
+    //             header: 'Item Code',
+    //             cell: ({ getValue, }) => {
+    //                 return (
+    //                     <Text fw={500} c={customStyles.colors._909090} style={{ whiteSpace: 'nowrap' }}>
+    //                         {getValue() as string}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 150,
+    //         },
+    //         {
+    //             accessorKey: 'itemName',
+    //             header: 'Item Name',
+    //             cell: ({ getValue }) => {
+    //                 return (
+    //                     <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
+    //                         {getValue() as string}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 300,
+    //         },
+    //         {
+    //             accessorKey: 'quantity',
+    //             header: 'Quantity',
+    //             cell: ({ getValue, }) => {
+    //                 return (
+    //                     <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: 'nowrap' }}>
+    //                         {getValue() as number}
+    //                     </Text>
+    //                 );
+    //             },
+    //             size: 120,
+    //         },
+    //     ],
+    //     [selectedItems]
+    // );
 
     const table = useReactTable({
         data,
@@ -114,7 +119,7 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
                         Inventory Transfer
                     </Title>
                 </Group>
-                <Group gap="xs">
+                {/* <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
                         handleGlobalSearch={() => { }}
@@ -124,7 +129,16 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
                     <IconFilter cursor="pointer" onClick={handleTableFiltersVisibility} size={24} />
                     <IconColumns cursor="pointer" size={24} />
                     <IconBorderCorners cursor="pointer" size={24} />
-                </Group>
+                </Group> */}
+                {itemCode ? <Group gap="xs">
+                    <Button 
+                        className="filledButton"
+                        variant="transparent"
+                        size="md"
+                        radius={8} 
+                        onClick={() => handleSelectITS(data)}
+                    >Select All</Button>
+                </Group> : null}
             </Group>
 
             {/* Table */}
@@ -133,7 +147,6 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
                 borderRadius: '8px',
                 overflow: 'auto'
             }}>
-                {/* Sticky Header */}
                 <Box style={{
                     position: 'sticky',
                     top: 0,
@@ -206,7 +219,7 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
 
                 {/* Scrollable Body - Limited to 6 rows height */}
                 {
-                    data.length === 0 ? (
+                    (data?.length === 0 || data === undefined) ? (
                         <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                             <Text c={customStyles.colors._909090} size="lg">No data available</Text>
                         </Group>
@@ -219,7 +232,7 @@ const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleR
                                 backgroundColor: 'white'
                             }}>
                             {table.getRowModel().rows.map((row, index) => {
-                                const isSelected = selectedItems.some(item => item.itemCode === row.original.itemCode);
+                                const isSelected = selectedItems.some((item: any) => item.itemCode === row.original.itemCode);
                                 return (
                                     <Group key={row.id}
                                         onClick={() => handleRowClick && handleRowClick(row.original)}
