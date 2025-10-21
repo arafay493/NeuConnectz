@@ -49,7 +49,7 @@ const fetchUnReconciledITSData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_RECONCILIATION_ITS(data?.data));
-        }else{
+        } else {
             dispatch(FETCH_RECONCILIATION_ITS([]));
         };
     }
@@ -72,7 +72,7 @@ const fetchUnReconciledTRSData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_RECONCILIATION_TRS(data?.data));
-        }else{
+        } else {
             dispatch(FETCH_RECONCILIATION_TRS([]));
         };
     }
@@ -80,13 +80,14 @@ const fetchUnReconciledTRSData = createAsyncThunk(
 
 const fetchItemCodesData = createAsyncThunk(
     "reconciliation/fetchItemCodesData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
 
-        const params = {
-            fromWarehouseCode,
-            toWarehouseCode,
-            dateTime: date
-        }
+        const params: { [key: string]: string | number } = {
+            fromWarehouseCode: fromWarehouseCode || "",
+            toWarehouseCode: toWarehouseCode || "",
+            dateTime: date || "",
+            itemCode: itemCode || "",
+        };
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetReconciliationItems`, authToken, params)
 
@@ -94,7 +95,7 @@ const fetchItemCodesData = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_ITEM_CODES(data?.data));
-        }else{
+        } else {
             dispatch(FETCH_ITEM_CODES([]));
         };
     }
@@ -122,7 +123,7 @@ const postAutoReconcile = createAsyncThunk(
 
 const postCreateRemainingAdjustedTR = createAsyncThunk(
     "reconciliation/postCreateRemainingAdjustedTR",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode, itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             fromWareHouseCode: fromWarehouseCode,
@@ -145,7 +146,7 @@ const postCreateRemainingAdjustedTR = createAsyncThunk(
 
 const postReverseITofTRInReconciliation = createAsyncThunk(
     "reconciliation/postReverseITofTRInReconciliation",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode, itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             fromWareHouseCode: fromWarehouseCode,
@@ -168,7 +169,7 @@ const postReverseITofTRInReconciliation = createAsyncThunk(
 
 const postTransferToLostWarehouse = createAsyncThunk(
     "reconciliation/postTransferToLostWarehouse",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode, itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             itemCode: itemCode,
@@ -189,7 +190,7 @@ const postTransferToLostWarehouse = createAsyncThunk(
 
 const postCreateAdjustedITRInReconciliation = createAsyncThunk(
     "reconciliation/postCreateAdjustedITRInReconciliation",
-    async ({ authToken, fromWarehouseCode, toWareHouseCode,itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWareHouseCode, itemCode, quantity, itIds, trIds, resHandler }: any, { dispatch }) => {
 
         const body: any = {
             fromWareHouseCode: fromWarehouseCode,

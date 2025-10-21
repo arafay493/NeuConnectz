@@ -42,6 +42,7 @@ const ReconciliationComponent = () => {
     const [toWarehouse, setToWarehouse] = useState<string | null>(null);
     const [fromWarehouse, setFromWarehouse] = useState<string | null>(null);
     const [itemCode, setItemCode] = useState<string | null>(null);
+    const [searchItemCode, setSearchItemCode] = useState<string | null>(null);
     const [selectedData, setSelectedData] = useState<SelectedDataTypes>({});
     const [quantityDifferenceViewModalOpened, setQuantityDifferenceViewModalOpened] = useState<boolean>(false)
 
@@ -366,6 +367,37 @@ const ReconciliationComponent = () => {
             handleModalClose()
         })
     }
+
+    // Debouncing For the Search Item Code
+    useEffect(() => {
+        if (searchItemCode !== null) {
+            const interval = setTimeout(() => {
+                // dispatch(fetchUnReconciledITSData({
+                //     authToken: authenticatedUser?.token as string,
+                //     fromWarehouseCode: fromWarehouse ?? '',
+                //     toWarehouseCode: toWarehouse ?? '',
+                //     date: selectDate ?? '',
+                //     itemCode: searchItemCode ?? null,
+                // }))
+
+                // dispatch(fetchUnReconciledTRSData({
+                //     authToken: authenticatedUser?.token as string,
+                //     fromWarehouseCode: fromWarehouse ?? '',
+                //     toWarehouseCode: toWarehouse ?? '',
+                //     date: selectDate ?? '',
+                //     itemCode: searchItemCode ?? "",
+                // }))
+                dispatch(fetchItemCodesData({
+                    authToken: authenticatedUser?.token as string,
+                    fromWarehouseCode: fromWarehouse ?? '',
+                    toWarehouseCode: toWarehouse ?? '',
+                    date: selectDate ?? '',
+                    itemCode: searchItemCode
+                }))
+            }, 2000);
+            return () => clearInterval(interval)
+        }
+    }, [searchItemCode])
     return (
         <Box>
             {/* Modals */}
@@ -439,6 +471,7 @@ const ReconciliationComponent = () => {
                                 radius={8}
                                 size='md'
                                 searchable
+                                onSearchChange={setSearchItemCode}
                                 width={"100%"}
                             />
                         </Stack>
