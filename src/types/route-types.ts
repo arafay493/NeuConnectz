@@ -23,7 +23,8 @@ export type Routes = {
     grnMovement: string
     // generateBarcode: string
     productionOrder: string,
-    goodsIssue: string
+    goodsIssue: string,
+    assignCustomers: string,
 };
 
 export type DrawerRoute = {

@@ -12,7 +12,8 @@ import {
     IconPresentationAnalyticsFilled,
     IconLayoutDashboardFilled,
     IconBarcode,
-    IconChecklist
+    IconChecklist,
+    IconUserCheck
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -40,7 +41,8 @@ const authenticatedRoutes: String[] = [
     "/grn-movement",
     // "/generate-barcode",
     "/production-order",
-    "/goods-issue"
+    "/goods-issue",
+    "/assign-customers"
 ];
 
 // Note: Defining all routes...!
@@ -65,7 +67,8 @@ const routes: Routes = {
     grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
-    goodsIssue : "/goods-issue"
+    goodsIssue : "/goods-issue",
+    assignCustomers: "/assign-customers",
 };
 
 // Note: Defining drawer routes...!
@@ -119,6 +122,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBuildingWarehouse color='currentColor' size={24} />,
         label: "Assign Warehouse",
         route: routes.assignWareHouse,
+    },
+    {
+        icon: <IconUserCheck fill="currentColor" color='currentColor' size={24} />,
+        label: "Assign Customers",
+        route: routes.assignCustomers,
     },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,
