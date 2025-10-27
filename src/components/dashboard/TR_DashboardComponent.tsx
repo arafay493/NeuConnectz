@@ -88,6 +88,9 @@ const TR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenM
                 <GridCol span={isLaptop ? 12 : 5.8} bg={"white"} mih={230} p={20} mb={10} style={{ borderRadius: 10 }}>
                     <UserRequestChartComponent />
                 </GridCol>
+                <GridCol span={12} bg={"white"} mih={230} p={20} mb={10} style={{ borderRadius: 10 }}>
+                    <RequestPerPeriodComponent />
+                </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByToWarehouseChartComponent />
                 </GridCol>
