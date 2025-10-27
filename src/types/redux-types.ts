@@ -487,6 +487,12 @@ export interface DashboardStateType {
         totalRequests: number,
         dayOfWeek: string
     }[];
+    userRequestsPerPeriod: {
+        period: string,
+        createdBy: string,
+        userName: string
+        userRequests: number,
+    }[];
     ITRQuantity: {
         period: string,
         itemName: string,

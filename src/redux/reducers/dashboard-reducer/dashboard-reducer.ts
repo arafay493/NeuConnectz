@@ -9,6 +9,7 @@ const initialState: DashboardStateType = {
     dashboardErrorState: "",
     userITRCountList: [],
     dailyITRTransferKPIs: [],
+    userRequestsPerPeriod: [],
     ITRQuantity: [],
     ITRRequestsToWarehouse: [],
     ITRRequestsFromWarehouse: [],
@@ -35,6 +36,10 @@ const dashboardSlice = createSlice({
 
         FETCH_ITR_DASHBOARD_DAILY_TRANSFER_KPI: (state, action: PayloadAction<any>) => {
             state.dailyITRTransferKPIs = action?.payload;
+        },
+
+        FETCH_ITR_DASHBOARD_USER_REQUESTS_PER_PERIOD: (state, action: PayloadAction<any>) => {
+            state.userRequestsPerPeriod = action?.payload;
         },
 
         FETCH_ITR_DASHBOARD_QUANTITY: (state, action: PayloadAction<any>) => {
@@ -66,6 +71,7 @@ export const
         FETCH_DASHBOARD_ANALYTICS,
         FETCH_ITR_DASHBOARD_USER_COUNT_LIST,
         FETCH_ITR_DASHBOARD_DAILY_TRANSFER_KPI,
+        FETCH_ITR_DASHBOARD_USER_REQUESTS_PER_PERIOD,
         FETCH_ITR_DASHBOARD_QUANTITY,
         FETCH_ITR_DASHBOARD_REQUEST_TO_Warehouse,
         FETCH_ITR_DASHBOARD_REQUEST_FROM_Warehouse,

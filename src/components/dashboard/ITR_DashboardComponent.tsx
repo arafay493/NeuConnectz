@@ -5,7 +5,7 @@ import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
 import { customStyles } from '@/styles/custom-theme'
 import { IconChevronDown, IconUserCircle } from '@tabler/icons-react'
-import { fetchITRDashboardDailyTranferKPI, fetchITRDashboardQuantity, fetchITRDashboardRequestsByDestinationWarehouse, fetchITRDashboardRequestsBySourceWarehouse, fetchITRDashboardUserCountList, fetchITRDashboardAverageCloseTime } from '@/redux/actions/dashboard-actions/dashboard-actions'
+import { fetchITRDashboardDailyTranferKPI, fetchITRDashboardQuantity, fetchITRDashboardRequestsByDestinationWarehouse, fetchITRDashboardRequestsBySourceWarehouse, fetchITRDashboardUserCountList, fetchITRDashboardAverageCloseTime, fetchITRDashboardUserRequestsPerPeriod } from '@/redux/actions/dashboard-actions/dashboard-actions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import SumOfTotalRequestByToWarehouseChartComponent from './SumOfTotalRequestByToWarehouseChartComponent'
@@ -38,6 +38,7 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
         Promise.all([
             dispatch(fetchITRDashboardUserCountList({ authToken })),
             dispatch(fetchITRDashboardDailyTranferKPI({ authToken })),
+            dispatch(fetchITRDashboardUserRequestsPerPeriod({ authToken })),
             dispatch(fetchITRDashboardQuantity({ authToken })),
             dispatch(fetchITRDashboardRequestsByDestinationWarehouse({ authToken })),
             dispatch(fetchITRDashboardRequestsBySourceWarehouse({ authToken })),
@@ -87,6 +88,9 @@ const ITR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpen
                 </GridCol>
                 <GridCol span={isLaptop ? 12 : 5.8} bg={"white"} mih={230} p={20} mb={10} style={{ borderRadius: 10 }}>
                     <UserRequestChartComponent />
+                </GridCol>
+                <GridCol span={12} bg={"white"} mih={230} p={20} mb={10} style={{ borderRadius: 10 }}>
+                    <RequestPerPeriodComponent />
                 </GridCol>
                 <GridCol span={12} bg={"white"} mih={230} p={20} mr={10} mb={10} style={{ borderRadius: 10 }}>
                     <SumOfTotalRequestByToWarehouseChartComponent />

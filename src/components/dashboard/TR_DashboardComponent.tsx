@@ -5,7 +5,7 @@ import RequestPerPeriodComponent from './RequestPerPeriodComponent'
 import UserRequestChartComponent from './UserRequestChartComponent'
 import { customStyles } from '@/styles/custom-theme'
 import { IconChevronDown, IconUserCircle } from '@tabler/icons-react'
-import { fetchITRDashboardDailyTranferKPI, fetchITRDashboardQuantity, fetchITRDashboardRequestsByDestinationWarehouse, fetchITRDashboardRequestsBySourceWarehouse, fetchITRDashboardUserCountList, fetchITRDashboardAverageCloseTime } from '@/redux/actions/dashboard-actions/dashboard-actions'
+import { fetchITRDashboardDailyTranferKPI, fetchITRDashboardQuantity, fetchITRDashboardRequestsByDestinationWarehouse, fetchITRDashboardRequestsBySourceWarehouse, fetchITRDashboardUserCountList, fetchITRDashboardAverageCloseTime, fetchITRDashboardUserRequestsPerPeriod } from '@/redux/actions/dashboard-actions/dashboard-actions'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
 import { useMediaQuery } from '@mantine/hooks'
 import SumOfTotalRequestByToWarehouseChartComponent from './SumOfTotalRequestByToWarehouseChartComponent'
@@ -38,6 +38,7 @@ const TR_DashboardComponent = ({ selectedUser, setDeleteModalOpened, handleOpenM
         Promise.all([
             dispatch(fetchITRDashboardUserCountList({ authToken })),
             dispatch(fetchITRDashboardDailyTranferKPI({ authToken })),
+            dispatch(fetchITRDashboardUserRequestsPerPeriod({ authToken })),
             dispatch(fetchITRDashboardQuantity({ authToken })),
             dispatch(fetchITRDashboardRequestsByDestinationWarehouse({ authToken })),
             dispatch(fetchITRDashboardRequestsBySourceWarehouse({ authToken })),

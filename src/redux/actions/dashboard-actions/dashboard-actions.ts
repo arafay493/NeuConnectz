@@ -6,7 +6,8 @@ import {
     FETCH_ITR_DASHBOARD_QUANTITY,
     FETCH_ITR_DASHBOARD_REQUEST_FROM_Warehouse,
     FETCH_ITR_DASHBOARD_REQUEST_TO_Warehouse,
-    FETCH_ITR_DASHBOARD_USER_COUNT_LIST
+    FETCH_ITR_DASHBOARD_USER_COUNT_LIST,
+    FETCH_ITR_DASHBOARD_USER_REQUESTS_PER_PERIOD
 } from "@/redux/reducers/dashboard-reducer/dashboard-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -53,6 +54,22 @@ const fetchITRDashboardDailyTranferKPI = createAsyncThunk(
 
         if (status == 200) {
             dispatch(FETCH_ITR_DASHBOARD_DAILY_TRANSFER_KPI(data?.data));
+            return data?.data;
+        };
+
+        return null; // fallback
+    }
+);
+
+const fetchITRDashboardUserRequestsPerPeriod = createAsyncThunk(
+    "dashboard/fetchITRDashboardUserRequestsPerPeriod",
+    async ({ authToken }: { authToken: string }, { dispatch }) => {
+        const response = await apiGet(`/neu-connect/v2/IItrDashboardFeature/GetUserRequestsPerPeriod`, authToken);
+
+        const { status, data } = response;
+
+        if (status == 200) {
+            dispatch(FETCH_ITR_DASHBOARD_USER_REQUESTS_PER_PERIOD(data?.data));
             return data?.data;
         };
 
@@ -134,5 +151,6 @@ export {
     fetchITRDashboardQuantity,
     fetchITRDashboardRequestsByDestinationWarehouse,
     fetchITRDashboardRequestsBySourceWarehouse,
-    fetchITRDashboardAverageCloseTime
+    fetchITRDashboardAverageCloseTime,
+    fetchITRDashboardUserRequestsPerPeriod
 };

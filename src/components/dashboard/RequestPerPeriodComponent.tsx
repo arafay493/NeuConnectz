@@ -5,46 +5,38 @@ import { Card, Group, Select, Button, Text, Box } from "@mantine/core";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { customStyles } from "@/styles/custom-theme";
 import { IconChevronDown } from "@tabler/icons-react";
+import { useAppSelector } from "@/redux/store";
 
 // ============================================================
 // 📊 MAIN COMPONENT
 // ============================================================
 const RequestPerPeriodComponent = () => {
-    const data = [
-        { period: "2025-09-29T00:00:00Z", userName: "harisbashir", userRequests: 2 },
-        { period: "2025-09-29T00:00:00Z", userName: "sagartesting", userRequests: 1 },
-        { period: "2025-09-30T00:00:00Z", userName: "sagartesting", userRequests: 18 },
-        { period: "2025-10-01T00:00:00Z", userName: "as", userRequests: 14 },
-        { period: "2025-10-02T00:00:00Z", userName: "nabeela", userRequests: 3 },
-        { period: "2025-10-02T00:00:00Z", userName: "sufiyan", userRequests: 1 },
-        { period: "2025-10-03T00:00:00Z", userName: "daniyal", userRequests: 6 },
-    ];
+    const { userRequestsPerPeriod } = useAppSelector(({ dashboardStates }) => {
+        return dashboardStates;
+    });
+    // const data = [
+    //     { period: "2025-09-29T00:00:00Z", userName: "harisbashir", userRequests: 2 },
+    //     { period: "2025-09-29T00:00:00Z", userName: "sagartesting", userRequests: 1 },
+    //     { period: "2025-09-30T00:00:00Z", userName: "sagartesting", userRequests: 18 },
+    //     { period: "2025-10-01T00:00:00Z", userName: "as", userRequests: 14 },
+    //     { period: "2025-10-02T00:00:00Z", userName: "nabeela", userRequests: 3 },
+    //     { period: "2025-10-02T00:00:00Z", userName: "sufiyan", userRequests: 1 },
+    //     { period: "2025-10-03T00:00:00Z", userName: "daniyal", userRequests: 6 },
+    // ];
 
     const colors = ["#FF8A8A", "#789EFF", "#BBC5FA", "#FFA261", "#D5A5FF"];
-
-    // const treeData = [
-    //     {
-    //         name: "Users",
-    //         children: data.map((d, i) => ({
-    //             name: d.userName,
-    //             size: d.userRequests,
-    //             color: colors[i % colors.length],
-    //             period: new Date(d.period).toLocaleDateString("en-GB"),
-    //         })),
-    //     },
-    // ];
 
     const treeData = useMemo(() => [
         {
             name: "Users",
-            children: data.map((d, i) => ({
+            children: userRequestsPerPeriod.map((d, i) => ({
                 name: d.userName,
                 size: d.userRequests,
                 color: colors[i % colors.length],
                 period: new Date(d.period).toLocaleDateString("en-GB"),
             })),
         },
-    ], [data]);
+    ], [userRequestsPerPeriod]);
 
     // ============================================================
     // 🎨 CUSTOM TREEMAP CELL
