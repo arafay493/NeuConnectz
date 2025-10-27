@@ -52,7 +52,7 @@ export default function QuantityDifferenceView2Modal({
                         <Box p={4} style={{ backgroundColor: "#E1E7EC80", borderRadius: 50, display: "flex", alignItems: "center", justifyContent: "center" }} w={50} h={50}><IconTransform size={20} stroke={2} color="#4D4D4D" /></Box>
                         <Box>
                             <Text fw={600} mb={10} size="16px">
-                                Create Remaining Transfer Reciept
+                                Inventory Transfer Reciept In Reconciliation
                             </Text>
                             <Text fw={500} color="#909090" size="16px">
                                 Inventory Transfer auto-generates when items are sent, enabling auto-reconciliation.

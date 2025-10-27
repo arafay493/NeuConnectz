@@ -9,21 +9,21 @@ const options = [
     "Home",
     "Inventory Transfer Request",
     "Transfer Request",
-    "User Registration",
-    "Password Reset",
-    "Account Verification",
-    "Feedback Submission",
-    "Profile Update",
-    "Subscription Renewal",
-    "Payment Processing",
-    "Order Cancellation",
-    "Data Export",
-    "Service Upgrade",
-    "Usage Analytics",
-    "Support Ticket",
-    "Feature Request",
-    "Beta Access",
-    "Content Moderation",
+    // "User Registration",
+    // "Password Reset",
+    // "Account Verification",
+    // "Feedback Submission",
+    // "Profile Update",
+    // "Subscription Renewal",
+    // "Payment Processing",
+    // "Order Cancellation",
+    // "Data Export",
+    // "Service Upgrade",
+    // "Usage Analytics",
+    // "Support Ticket",
+    // "Feature Request",
+    // "Beta Access",
+    // "Content Moderation",
 ];
 
 const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
@@ -31,22 +31,20 @@ const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
     const [selected, setSelected] = useState<string | null>(null);
 
     // Filtering logic
-    // const filteredUsers = users.filter((u) => {
-    //     const matchesSearch = u.userName
-    //         .toLowerCase()
-    //         .includes(search.toLowerCase());
+    const filteredDashboards = options.filter((u) => {
+        const matchesSearch = u.toLowerCase().includes(search.toLowerCase());
 
-    //     const matchesTab =
-    //         activeTab === "all"
-    //             ? true
-    //             : activeTab === "active"
-    //                 ? u.isActive
-    //                 : activeTab === "inactive"
-    //                     ? !u.isActive
-    //                     : u.role.toLowerCase() === activeTab.toLowerCase();
+        // const matchesTab =
+        //     activeTab === "all"
+        //         ? true
+        //         : activeTab === "active"
+        //             ? u.isActive
+        //             : activeTab === "inactive"
+        //                 ? !u.isActive
+        //                 : u.role.toLowerCase() === activeTab.toLowerCase();
 
-    //     return matchesSearch && matchesTab;
-    // });
+        return matchesSearch
+    });
 
     return (
         <Box>
@@ -86,9 +84,14 @@ const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
             </Group>
 
 
-            <ScrollArea h={300} >
-                <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="md">
-                    {options.map((option) => (
+            <ScrollArea h={400} >
+                {(!filteredDashboards.length) ? <Group wrap="wrap" gap="md" display={"flex"} justify="center" w={"100%"} align='center'>
+                    <Stack align='center' justify='center' mt={24} p={24} style={{ backgroundColor: customStyles.colors.white, borderRadius: '16px' }}>
+                        <Image w={200} h={200} radius={16} component={NextImage} src={localAssets.reconciliationNotFoundImage} alt="Not Found" />
+                        <Title order={2} c={customStyles.colors._4D4D4D}>No Dashboard Found</Title>
+                    </Stack>
+                </Group> : (<SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="md">
+                    {filteredDashboards.map((option) => (
                         <Card
                             key={option}
                             // shadow="sm"
@@ -112,7 +115,7 @@ const SelectDashboardModalData = ({ handleShowDashboard, dashboard }: any) => {
                             </Text>
                         </Card>
                     ))}
-                </SimpleGrid>
+                </SimpleGrid>)}
             </ScrollArea>
         </Box>
     )

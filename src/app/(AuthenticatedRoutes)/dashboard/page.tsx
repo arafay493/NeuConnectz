@@ -14,6 +14,7 @@ import { IconUserCircle } from "@tabler/icons-react";
 import { customStyles } from "@/styles/custom-theme";
 import { useMediaQuery } from "@mantine/hooks";
 import DashboardTitleBar from "@/components/dashboard/DashboardTitleBar";
+import TR_DashboardComponent from "@/components/dashboard/TR_DashboardComponent";
 
 interface SelectedUserProps {
   userId: string,
@@ -80,6 +81,7 @@ const DashboardScreen = () => {
     //     return [...prevState, user];
     // });
     setSelectedUser((prevState: any) => prevState?.userId === user?.userId ? null : user);
+    setDashboard("Home")
   };
 
   const handleOpenModal = useCallback(() => {
@@ -112,6 +114,7 @@ const DashboardScreen = () => {
   const options = [
     "Home",
     "Inventory Transfer Request",
+    "Transfer Request",
   ];
 
 
@@ -119,6 +122,7 @@ const DashboardScreen = () => {
     <>
       {dashboard === "Home" && <DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} dashboard={dashboard} />}
       {dashboard === "Inventory Transfer Request" && <ITR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} dashboard={dashboard} />}
+      {dashboard === "Transfer Request" && <TR_DashboardComponent selectedUser={selectedUser} setDeleteModalOpened={setDeleteModalOpened} handleOpenModal={handleOpenModal} dashboard={dashboard} />}
 
       {/* For Empty Dashboard Screen */}
       {!options.includes(dashboard) && (
