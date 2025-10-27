@@ -1,91 +1,58 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, Group, Select, Button, Text, Box } from "@mantine/core";
-import { Treemap, ResponsiveContainer } from "recharts";
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { customStyles } from "@/styles/custom-theme";
 import { IconChevronDown } from "@tabler/icons-react";
-
 
 // ============================================================
 // 📊 MAIN COMPONENT
 // ============================================================
-const RequestPerPeriod = () => {
-    // ============================================================
-    // 🧩 SAMPLE DATA
-    // ============================================================
+const RequestPerPeriodComponent = () => {
     const data = [
-        {
-            period: "2025-09-29T00:00:00Z",
-            userName: "harisbashir",
-            userRequests: 2,
-        },
-        {
-            period: "2025-09-29T00:00:00Z",
-            userName: "sagartesting",
-            userRequests: 1,
-        },
-        {
-            period: "2025-09-30T00:00:00Z",
-            userName: "sagartesting",
-            userRequests: 18,
-        },
-        {
-            period: "2025-10-01T00:00:00Z",
-            userName: "as",
-            userRequests: 14,
-        },
-        {
-            period: "2025-10-02T00:00:00Z",
-            userName: "nabeela",
-            userRequests: 3,
-        },
-        {
-            period: "2025-10-02T00:00:00Z",
-            userName: "sufiyan",
-            userRequests: 1,
-        },
-        {
-            period: "2025-10-03T00:00:00Z",
-            userName: "daniyal",
-            userRequests: 6,
-        },
+        { period: "2025-09-29T00:00:00Z", userName: "harisbashir", userRequests: 2 },
+        { period: "2025-09-29T00:00:00Z", userName: "sagartesting", userRequests: 1 },
+        { period: "2025-09-30T00:00:00Z", userName: "sagartesting", userRequests: 18 },
+        { period: "2025-10-01T00:00:00Z", userName: "as", userRequests: 14 },
+        { period: "2025-10-02T00:00:00Z", userName: "nabeela", userRequests: 3 },
+        { period: "2025-10-02T00:00:00Z", userName: "sufiyan", userRequests: 1 },
+        { period: "2025-10-03T00:00:00Z", userName: "daniyal", userRequests: 6 },
     ];
 
-    // ============================================================
-    // 🌈 COLOR PALETTE (matching your screenshot)
-    // ============================================================
-    const colors = [
-        "#FF8A8A",
-        "#789EFF",
-        "#BBC5FA",
-        "#FFA261",
-        "#D5A5FF",
-    ];
+    const colors = ["#FF8A8A", "#789EFF", "#BBC5FA", "#FFA261", "#D5A5FF"];
 
-    // ============================================================
-    // 🧱 TREE DATA
-    // ============================================================
-    const treeData = [
+    // const treeData = [
+    //     {
+    //         name: "Users",
+    //         children: data.map((d, i) => ({
+    //             name: d.userName,
+    //             size: d.userRequests,
+    //             color: colors[i % colors.length],
+    //             period: new Date(d.period).toLocaleDateString("en-GB"),
+    //         })),
+    //     },
+    // ];
+
+    const treeData = useMemo(() => [
         {
             name: "Users",
             children: data.map((d, i) => ({
                 name: d.userName,
                 size: d.userRequests,
                 color: colors[i % colors.length],
-                period: new Date(d.period).toLocaleDateString("en-GB"), // e.g. 16-09-2025
+                period: new Date(d.period).toLocaleDateString("en-GB"),
             })),
         },
-    ];
+    ], [data]);
 
     // ============================================================
     // 🎨 CUSTOM TREEMAP CELL
     // ============================================================
     const CustomizedContent = (props: any) => {
-        const { depth, x, y, width, height, index, name, period, color } = props;
+        const { depth, x, y, width, height, name, period, color } = props;
         if (depth === 0) return null;
 
-        // Add visible gap between rectangles
         const gap = 6;
         const rectX = x + gap / 2;
         const rectY = y + gap / 2;
@@ -107,7 +74,6 @@ const RequestPerPeriod = () => {
                         strokeWidth: 2,
                     }}
                 />
-
                 {rectWidth > 80 && rectHeight > 40 && (
                     <g transform={`translate(${rectX + rectWidth / 2}, ${rectY + 30})`}>
                         <text
@@ -121,7 +87,6 @@ const RequestPerPeriod = () => {
                         >
                             {name.charAt(0).toUpperCase() + name.slice(1)}
                         </text>
-
                         <text
                             y={rectHeight - 50}
                             fill="#fff"
@@ -137,15 +102,41 @@ const RequestPerPeriod = () => {
             </g>
         );
     };
+
+    // ============================================================
+    // 🧰 CUSTOM TOOLTIP
+    // ============================================================
+    const CustomTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const { name, size, period } = payload[0].payload;
+            return (
+                <div
+                    style={{
+                        background: "white",
+                        padding: "8px 12px",
+                        borderRadius: 8,
+                        boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+                        border: "1px solid #E1E7EC",
+                    }}
+                >
+                    <Text fw={600} size="sm" c="#333">
+                        {name.charAt(0).toUpperCase() + name.slice(1)}
+                    </Text>
+                    <Text size="xs" c="#666">
+                        Period: {period}
+                    </Text>
+                    <Text size="xs" c="#666">
+                        Requests: {size}
+                    </Text>
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <Card radius="lg" p="md">
-            <Group
-                justify="space-between"
-                mb="md"
-                wrap="wrap"
-            // gap="sm"
-            // style = {{border: "2px solid black"}}
-            >
+            <Group justify="space-between" mb="md" wrap="wrap">
                 <Text size="sm" fw={400} c={customStyles.colors._4D4D4D}>
                     Request By User Per Period
                 </Text>
@@ -160,7 +151,7 @@ const RequestPerPeriod = () => {
                             input: {
                                 border: `1px solid ${customStyles.colors._E1E7EC}`,
                                 color: customStyles.colors._909090,
-                                fontSize: 14
+                                fontSize: 14,
                             },
                         }}
                     />
@@ -172,14 +163,16 @@ const RequestPerPeriod = () => {
                     <Treemap
                         data={treeData}
                         dataKey="size"
-                        // stroke="#fff"
                         fill="#fff"
                         content={<CustomizedContent />}
-                    />
+                    >
+                        {/* 🧠 Tooltip added here */}
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
+                    </Treemap>
                 </ResponsiveContainer>
             </Box>
         </Card>
     );
 };
 
-export default RequestPerPeriod;
+export default React.memo(RequestPerPeriodComponent);
