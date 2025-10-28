@@ -44,6 +44,16 @@ const authenticatedRoutes: string[] = [
     "/handling-unit/add-unit",
     "/production-order/scan/:dynamicPath",
     "/assign-handling-unit",
+    // Note: Defining New Master Routes...!
+    "/master",
+    "/master/customer-data",
+    "/master/product-data",
+    "/master/vehicle-data",
+    "/master/driver-data",
+    "/master/add-customer",
+    "/master/add-product",
+    "/master/add-vehicle",
+    "/master/add-driver"
 ];
 
 // Note: Defining all routes...!
@@ -72,7 +82,18 @@ const routes: Routes = {
     handlingUnit: "/handling-unit",
     addHandlingUnit: "/handling-unit/add-unit",
     scanProductionOrder: "/production-order/scan/:dynamicPath",
-    assignHandlingUnit: "/assign-handling-unit"
+    assignHandlingUnit: "/assign-handling-unit",
+    // Note: Master Parent Route...!
+    master: "/master",
+    // Note: Nested Master Pages
+    customerMaster: "/master/customer-data",
+    productMaster: "/master/product-data",
+    vehicleMaster: "/master/vehicle-data",
+    driverMaster: "/master/driver-data",
+    addCustomerMaster: "/master/add-customer",
+    addProductMaster: "/master/add-product",
+    addVehicleMaster: "/master/add-vehicle",
+    addDriverMaster: "/master/add-driver"
 };
 
 // Note: Defining drawer routes...!
@@ -167,6 +188,18 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Production Order",
         route: routes.productionOrder
     },
+
+    {
+        icon: <IconUsersGroup size={24} />,
+        label: "Master",
+        route: routes.master,
+        children: [ // Note: Add nested tabs
+            { label: "Customer Master", route: routes.customerMaster },
+            { label: "Product Master", route: routes.productMaster },
+            { label: "Vehicle Master", route: routes.vehicleMaster },
+            { label: "Driver Master", route: routes.driverMaster },
+        ]
+    }
 ];
 
 function routeExists(path: string, routes: string[]) {

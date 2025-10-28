@@ -1,5 +1,8 @@
+// NOTE: This file is not working properly. Please do not use it as reference.
+
 'use client';
 
+import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import NextImage from 'next/image';
 import {
@@ -14,7 +17,9 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
     IconLogout,
-    IconChevronRight
+    IconChevronRight,
+    IconChevronUp,
+    IconChevronDown,
 } from '@tabler/icons-react';
 import { DrawerRoute } from "@/types/route-types";
 import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
@@ -35,53 +40,62 @@ const CollapsedNavbar = ({
     setCollapsed,
     toggle
 }: CollapsedNavbarProps) => {
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
 
     // Note: Link component for navigation...!
-    const renderNavLink = (item: DrawerRoute, index: number) => (
-        <NavLink
-            href={item.route}
-            key={index}
-            component="a"
-            leftSection={item?.icon}
-            label={null}
-            variant="light"
-            px={customStyles.deviceSize.sm}
-            py={customStyles.deviceSize.sm}
-            color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
-            active={activeTab === index}
-            onClick={() => setActiveTab(index)}
-            w='fit-content'
-            style={{
-                textTransform: 'capitalize',
-                borderRadius: '10px',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto',
-                opacity: 1,
-                transform: 'scale(1)',
-                '&:hover': {
-                    transform: 'scale(1.1)',
-                }
-            }}
-            styles={{
-                label: {
-                    fontSize: 16,
-                    fontWeight: 500,
-                    transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    opacity: 0,
-                },
-                root: {
-                    justifyContent: 'center',
-                    width: 'fit-content',
-                    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                },
-            }}
-        />
-    );
+    const renderNavLink = (item: DrawerRoute, index: number) => {
+        console.log('Route: ', item);
+        const isRouteActive = pathName.startsWith(item.route);
+        console.log('Active route: ', isRouteActive);
+        const isOpen = openDropdown === item.label;
+        console.log('Open nested drawer: ', isOpen);
+
+        return (
+            <div key={index}>
+                {/* Parent Master Tab */}
+                <NavLink
+                    component="button"   // ✅ no page reload
+                    leftSection={item.icon}
+                    label={item.label}
+                    active={isRouteActive}
+                    onClick={() => {
+                        if (item.children) {
+                            setOpenDropdown(isOpen ? null : item.label);
+                        } else {
+                            setActiveTab(index);
+                        }
+                    }}
+                    rightSection={
+                        item.children ? (
+                            isOpen ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />
+                        ) : null
+                    }
+                />
+
+                {/* Child Nested Links */}
+                {item.children && isOpen && (
+                    <div style={{ marginLeft: "20px", marginTop: "5px" }}>
+                        {item.children.map((child, childIndex) => (
+                            <NavLink
+                                key={childIndex}
+                                component="a"
+                                href={child.route}
+                                label={child.label}
+                                active={pathName === child.route}
+                                style={{
+                                    fontSize: "14px",
+                                    padding: "5px 10px",
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    };
+
 
     return (
         <AppShellNavbar

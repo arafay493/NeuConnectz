@@ -16,7 +16,9 @@ import {
 import { useMediaQuery } from '@mantine/hooks';
 import {
     IconLayoutSidebar,
-    IconLogout
+    IconLogout,
+    IconChevronUp,
+    IconChevronDown,
 } from '@tabler/icons-react';
 import NextImage from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -35,6 +37,7 @@ const HtmlExpandedNavbar = ({
     setCollapsed,
     toggle
 }: HtmlExpandedNavbarProps) => {
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const isMobile = useMediaQuery('(max-width: 768px)');
     const pathName = usePathname();
     const router = useRouter();
@@ -91,55 +94,97 @@ const HtmlExpandedNavbar = ({
     };
 
     // Note: Link component for navigation...!
-    const renderNavLink = (item: DrawerRoute, index: number) => (
-        <NavLink
-            onMouseEnter={(e) => {
-                if (currentActiveTab !== index) {
-                    e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
-                }
-            }}
-            onMouseLeave={(e) => {
-                if (currentActiveTab !== index) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                }
-            }}
-            key={index}
-            leftSection={item?.icon}
-            label={item?.label}
-            // variant="light"
-            p="12px 16px"
-            bg={currentActiveTab === index ? customStyles.colors._1B59F81A : ''}
-            c={currentActiveTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
-            active={currentActiveTab === index}
-            onClick={() => handleNavigation(item.route, index)}
-            w='100%'
-            title={item?.label}
-            h={48}
-            style={{
-                textTransform: 'capitalize',
-                borderRadius: '10px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                margin: '0',
-                cursor: 'pointer',
-            }}
-            styles={{
-                label: {
-                    fontSize: 14,
-                    fontWeight: 700,
-                    transition: 'opacity 0.3s ease',
-                    opacity: 1,
-                },
-                root: {
-                    justifyContent: 'flex-start',
-                    width: '100%',
-                    transition: 'all 0.3s ease',
-                },
-            }}
-        />
-    );
+    const renderNavLink = (item: DrawerRoute, index: number) => {
+        const isParentActive = currentActiveTab === index;
+        const isDropdownOpen = openDropdown === item.label;
+
+        const handleClick = () => {
+            if (item.children) {
+                // Note: Toggle dropdown (prevent navigation)...!
+                setOpenDropdown(prev => (prev === item.label ? null : item.label));
+            }
+            else {
+                // Note: Normal navigation for non-parent items...!
+                handleNavigation(item.route, index);
+            };
+        };
+
+        return (
+            <div key={index}>
+                <NavLink
+                    onMouseEnter={(e) => {
+                        if (currentActiveTab !== index) {
+                            e.currentTarget.style.backgroundColor = customStyles.colors._E1E7EC;
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (currentActiveTab !== index) {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                        }
+                    }}
+                    leftSection={item?.icon}
+                    rightSection={
+                        item.children ? (
+                            isDropdownOpen ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />
+                        ) : null
+                    }
+                    label={item?.label}
+                    p="12px 16px"
+                    bg={currentActiveTab === index ? customStyles.colors._1B59F81A : ''}
+                    c={currentActiveTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+                    active={currentActiveTab === index}
+                    // onClick={() => handleNavigation(item.route, index)}
+                    onClick={handleClick} // Note: Handles expand instead of route navigation
+                    w='100%'
+                    title={item?.label}
+                    h={48}
+                    style={{
+                        textTransform: 'capitalize',
+                        borderRadius: '10px',
+                        transition: 'all 0.3s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        margin: '0',
+                        cursor: 'pointer',
+                    }}
+                    styles={{
+                        label: {
+                            fontSize: 14,
+                            fontWeight: 700,
+                            transition: 'opacity 0.3s ease',
+                            opacity: 1,
+                        },
+                        root: {
+                            justifyContent: 'flex-start',
+                            width: '100%',
+                            transition: 'all 0.3s ease',
+                        },
+                    }}
+                />
+
+                {/* Note: Show nested items ONLY when open */}
+                {item.children && isDropdownOpen && (
+                    <Stack pl={36} gap={6} mt={6}>
+                        {item.children.map((child) => (
+                            <NavLink
+                                key={child.route}
+                                label={child.label}
+                                onClick={() => handleNavigation(child.route, index)}
+                                active={pathName === child.route}
+                                c={pathName === child.route ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+                                style={{
+                                    borderRadius: 8,
+                                    padding: '8px 12px',
+                                    cursor: 'pointer',
+                                }}
+                            />
+                        ))}
+                    </Stack>
+                )}
+            </div>
+        );
+    }
 
     return (
         <aside style={{

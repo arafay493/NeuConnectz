@@ -28,10 +28,21 @@ export type Routes = {
     addHandlingUnit: string;
     scanProductionOrder: string;
     assignHandlingUnit: string;
+    // Note: Defining types for New Master Routes...!
+    master: string;
+    customerMaster: string;
+    productMaster: string;
+    vehicleMaster: string;
+    driverMaster: string;
+    addCustomerMaster: string;
+    addProductMaster: string;
+    addVehicleMaster: string;
+    addDriverMaster: string;
 };
 
 export type DrawerRoute = {
     icon: ReactNode;
     label: string;
     route: string;
+    children?: { label: string; route: string }[];
 };

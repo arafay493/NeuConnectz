@@ -39,44 +39,47 @@ const ExpandedNavbar = ({
     const pathName = usePathname();
 
     // Note: Link component for navigation...!
-    const renderNavLink = (item: DrawerRoute, index: number) => (
-        <NavLink
-            href={item.route}
-            key={index}
-            component="a"
-            leftSection={item?.icon}
-            label={item?.label}
-            variant="light"
-            px={customStyles.deviceSize.md}
-            py={customStyles.deviceSize.sm}
-            color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
-            active={activeTab === index}
-            onClick={() => setActiveTab(index)}
-            w='100%'
-            style={{
-                textTransform: 'capitalize',
-                borderRadius: '10px',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                margin: '0',
-            }}
-            styles={{
-                label: {
-                    fontSize: 16,
-                    fontWeight: 500,
-                    transition: 'opacity 0.3s ease',
-                    opacity: 1,
-                },
-                root: {
-                    justifyContent: 'flex-start',
-                    width: '100%',
+    const renderNavLink = (item: DrawerRoute, index: number) => {
+        console.log('Route: ', item);
+        return (
+            <NavLink
+                href={item.route}
+                key={index}
+                component="a"
+                leftSection={item?.icon}
+                label={item?.label}
+                variant="light"
+                px={customStyles.deviceSize.md}
+                py={customStyles.deviceSize.sm}
+                color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+                active={activeTab === index}
+                onClick={() => setActiveTab(index)}
+                w='100%'
+                style={{
+                    textTransform: 'capitalize',
+                    borderRadius: '10px',
                     transition: 'all 0.3s ease',
-                },
-            }}
-        />
-    );
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    margin: '0',
+                }}
+                styles={{
+                    label: {
+                        fontSize: 16,
+                        fontWeight: 500,
+                        transition: 'opacity 0.3s ease',
+                        opacity: 1,
+                    },
+                    root: {
+                        justifyContent: 'flex-start',
+                        width: '100%',
+                        transition: 'all 0.3s ease',
+                    },
+                }}
+            />
+        );
+    }
 
     return (
         <AppShellNavbar
