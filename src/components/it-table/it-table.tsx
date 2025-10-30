@@ -339,6 +339,28 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
+        accessorKey: "type",
+        header: "Type",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() != null ? String(getValue()) : "-"}
+          </Text>
+        ),
+        filterFn: stringFilterFn,
+        enableColumnFilter: true,
+      },
+      {
+        accessorKey: "reconciliationCase",
+        header: "Case",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() != null ? String(getValue()) : "-"}
+          </Text>
+        ),
+        filterFn: stringFilterFn,
+        enableColumnFilter: true,
+      },
+      {
         accessorKey: "groupCode",
         header: "Group Code",
         cell: ({ getValue }) => (

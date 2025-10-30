@@ -31,7 +31,7 @@ interface SelectedUserProps {
 }
 
 const DashboardScreen = () => {
-  const [dashboard, setDashboard] = useState("Transfer Request")
+  const [dashboard, setDashboard] = useState("Home")
   const [selectedUser, setSelectedUser] = useState<SelectedUserProps | null>(null);
   const [opened, setOpened] = useState(false);
   const [deleteModalOpened, setDeleteModalOpened] = useState(false);
