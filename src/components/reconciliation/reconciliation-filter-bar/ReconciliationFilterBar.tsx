@@ -6,6 +6,7 @@ import { Dispatch, FC, SetStateAction } from 'react';
 import styles from './ReconciliationFilterBar.module.css';
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
+import { FadeLoader } from 'react-spinners';
 dayjs.extend(utc);
 
 interface ReconciliationFilterBarProps {
@@ -17,6 +18,10 @@ interface ReconciliationFilterBarProps {
     fromWarehouse: string | null;
     setFromWarehouse: Dispatch<SetStateAction<string | null>>;
     handleGetData: () => void;
+    scrollFromWarehouseLoading: boolean;
+    scrollToWarehouseLoading: boolean;
+    OnScrollEndPaginateListAllToWarehouse: (e: any) => void;
+    OnScrollEndPaginateListAllFromWarehouse: (e: any) => void;
 }
 
 const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
@@ -27,7 +32,11 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
     setToWarehouse,
     selectDate,
     setSelectDate,
-    handleGetData
+    handleGetData,
+    scrollFromWarehouseLoading,
+    scrollToWarehouseLoading,
+    OnScrollEndPaginateListAllToWarehouse,
+    OnScrollEndPaginateListAllFromWarehouse
 }) => {
 
     // Transform warehouse data for Select component
@@ -51,6 +60,16 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     radius={8}
                     size='md'
                     searchable
+                    maxDropdownHeight={200}
+                    rightSection={scrollFromWarehouseLoading ? <FadeLoader
+                        height={15}
+                        width={3}
+                        margin={1}
+                        radius={1}
+                        color="#1b59f8" /> : null}
+                    scrollAreaProps={{
+                        onScrollEndCapture: (e) => OnScrollEndPaginateListAllFromWarehouse(e),
+                    }}
                 />
             </div>
             <div className={styles.colTwo}>
@@ -64,6 +83,16 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     radius={8}
                     size='md'
                     searchable
+                    maxDropdownHeight={150}
+                    rightSection={scrollToWarehouseLoading ? <FadeLoader
+                        height={15}
+                        width={3}
+                        margin={1}
+                        radius={1}
+                        color="#1b59f8" /> : null}
+                    scrollAreaProps={{
+                        onScrollEndCapture: (e) => OnScrollEndPaginateListAllToWarehouse(e),
+                    }}
                 />
 
             </div>
