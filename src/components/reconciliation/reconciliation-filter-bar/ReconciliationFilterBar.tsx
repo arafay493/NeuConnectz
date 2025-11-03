@@ -60,7 +60,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     radius={8}
                     size='md'
                     searchable
-                    maxDropdownHeight={200}
+                    maxDropdownHeight={150}
                     rightSection={scrollFromWarehouseLoading ? <FadeLoader
                         height={15}
                         width={3}
@@ -69,6 +69,14 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                         color="#1b59f8" /> : null}
                     scrollAreaProps={{
                         onScrollEndCapture: (e) => OnScrollEndPaginateListAllFromWarehouse(e),
+                    }}
+                    styles={{
+                        option: {
+                            fontSize: 12,
+                        },
+                        dropdown: {
+                            fontSize: 12,
+                        },
                     }}
                 />
             </div>
@@ -92,6 +100,14 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                         color="#1b59f8" /> : null}
                     scrollAreaProps={{
                         onScrollEndCapture: (e) => OnScrollEndPaginateListAllToWarehouse(e),
+                    }}
+                    styles={{
+                        option: {
+                            fontSize: 12,
+                        },
+                        dropdown: {
+                            fontSize: 12,
+                        },
                     }}
                 />
 

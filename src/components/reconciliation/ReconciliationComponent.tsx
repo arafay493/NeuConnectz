@@ -453,7 +453,7 @@ const ReconciliationComponent = () => {
         const reachedBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
         if (hasMore && reachedBottom) {
             // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
-            setScrollFromWarehouseLoading(true)
+            setScrollToWarehouseLoading(true)
             const newSkip = 0;
             setWareHouseListPagination((prev) => ({
                 pageSize: prev.pageSize + 5,
@@ -464,7 +464,7 @@ const ReconciliationComponent = () => {
                 lastCount: wareHouseListPagination.pageSize + 5,
                 skipRecords: newSkip,
             })).finally(() => {
-                setScrollFromWarehouseLoading(false)
+                setScrollToWarehouseLoading(false)
             });
         }
     }
