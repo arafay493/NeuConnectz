@@ -370,6 +370,18 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         enableColumnFilter: true,
       },
       {
+        accessorKey: "reconciliationId",
+        header: "Reconcilation Id",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() != null ? String(getValue()) : "-"}
+          </Text>
+        ),
+        filterFn: stringFilterFn,
+        enableColumnFilter: true,
+        minSize: 200
+      },
+      {
         accessorKey: "groupCode",
         header: "Group Code",
         cell: ({ getValue }) => (
