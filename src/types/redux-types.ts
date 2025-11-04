@@ -555,7 +555,8 @@ export interface ItTrStateProps {
     unReconciledITsCount: number;
     unReconciledTRs: Array<UnRecognizedTRs>
     unReconciledTRsCount: number;
-    itemCodes: Array<ItemCodes>
+    itemCodes: Array<ItemCodes>;
+    itemCodesCount: number;
     reconciliationErrorState: string;
 }
 

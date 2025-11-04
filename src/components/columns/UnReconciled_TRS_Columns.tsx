@@ -23,7 +23,7 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
                 cell: ({ getValue }: any) => {
                     const value = getValue() ?? '-';
                     const truncated =
-                        value.length > 15 ? `${value.substring(0, 15)}...` : value;
+                        value.length > 12 ? `${value.substring(0, 12)}...` : value;
                     return (
                         <Text c={customStyles.colors._909090} fw={500} title={value}>
                             {truncated}

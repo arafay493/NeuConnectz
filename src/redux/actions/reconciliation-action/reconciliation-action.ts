@@ -8,7 +8,9 @@ interface FetchReconciliationTableProps {
     fromWarehouseCode: string;
     toWarehouseCode: string;
     date: string;
-    itemCode?: string | null
+    itemCode?: string | null;
+    lastCount?: number,
+    skipRecords?: number
 }
 
 // Note: Action function to fetch all warehouses...!
@@ -80,7 +82,7 @@ const fetchUnReconciledTRSData = createAsyncThunk(
 
 const fetchItemCodesData = createAsyncThunk(
     "reconciliation/fetchItemCodesData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode, lastCount, skipRecords }: FetchReconciliationTableProps, { dispatch }) => {
 
         const params: { [key: string]: string | number } = {
             fromWarehouseCode: fromWarehouseCode || "",
@@ -88,6 +90,8 @@ const fetchItemCodesData = createAsyncThunk(
             dateTime: date || "",
             itemCode: itemCode || "",
         };
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetReconciliationItems`, authToken, params)
 

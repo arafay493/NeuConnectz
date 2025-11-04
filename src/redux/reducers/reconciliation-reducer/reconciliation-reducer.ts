@@ -12,6 +12,7 @@ const initialState: ItTrStateProps = {
     unReconciledTRs: [],
     unReconciledTRsCount: 0,
     itemCodes: [],
+    itemCodesCount: 0,
     reconciliationErrorState: ''
 };
 
@@ -46,6 +47,7 @@ const reconciliationSlice = createSlice({
         FETCH_ITEM_CODES: (state, action: PayloadAction<any>) => {
             state.reconciliationErrorState = "";
             state.itemCodes = action?.payload.data;
+            state.itemCodesCount = action?.payload.totalCount;
         },
 
         CLEAR_ALL_WAREHOUSE_STATES: (state) => {

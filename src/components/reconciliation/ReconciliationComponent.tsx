@@ -59,17 +59,22 @@ const ReconciliationComponent = () => {
     // Note: Auth Selector for Api Call
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs, itemCodes } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
+    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs, itemCodes, itemCodesCount } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
 
     // Loading
     const [loading, setLoading] = useState<boolean>(false)
     const [scrollFromWarehouseLoading, setScrollFromWarehouseLoading] = useState<boolean>(false)
     const [scrollToWarehouseLoading, setScrollToWarehouseLoading] = useState<boolean>(false)
+    const [scrollItemCodesLoading, setScrollItemCodesLoading] = useState<boolean>(false)
 
     // Pagination States
     const [wareHouseListPagination, setWareHouseListPagination] = useState({
         pageIndex: 0,
         pageSize: 0,
+    });
+    const [itemCodesPagination, setItemCodesPagination] = useState({
+        pageIndex: 0,
+        pageSize: 5,
     });
 
     const handleGetReconciliationData = () => {
@@ -102,7 +107,9 @@ const ReconciliationComponent = () => {
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
-            date: selectDate ?? ''
+            date: selectDate ?? '',
+            lastCount: itemCodesPagination.pageSize,
+            skipRecords: 0,
         }))
     }
 
@@ -125,7 +132,9 @@ const ReconciliationComponent = () => {
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
-            date: selectDate ?? ''
+            date: selectDate ?? '',
+            lastCount: itemCodesPagination.pageSize,
+            skipRecords: 0,
         }))
         setSelectDate(null)
         setToWarehouse(null)
@@ -418,7 +427,9 @@ const ReconciliationComponent = () => {
                     fromWarehouseCode: fromWarehouse ?? '',
                     toWarehouseCode: toWarehouse ?? '',
                     date: selectDate ?? '',
-                    itemCode: searchItemCode
+                    itemCode: searchItemCode,
+                    lastCount: itemCodesPagination.pageSize,
+                    skipRecords: 0,
                 }))
             }, 2000);
             return () => clearInterval(interval)
@@ -465,6 +476,32 @@ const ReconciliationComponent = () => {
                 skipRecords: newSkip,
             })).finally(() => {
                 setScrollToWarehouseLoading(false)
+            });
+        }
+    }
+
+    const OnScrollEndPaginateItemCodes = (e: any) => {
+        const target = e.currentTarget;
+        const hasMore = itemCodes?.length < itemCodesCount;
+        const reachedBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
+        if (hasMore && reachedBottom) {
+            // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
+            setScrollItemCodesLoading(true)
+            const newSkip = 0;
+            setItemCodesPagination((prev) => ({
+                pageSize: prev.pageSize + 5,
+                pageIndex: prev.pageIndex + 1,
+            }));
+            dispatch(fetchItemCodesData({
+                authToken: authenticatedUser?.token as string,
+                fromWarehouseCode: fromWarehouse ?? '',
+                toWarehouseCode: toWarehouse ?? '',
+                date: selectDate ?? '',
+                itemCode: searchItemCode,
+                lastCount: itemCodesPagination.pageSize + 5,
+                skipRecords: newSkip,
+            })).finally(() => {
+                setScrollItemCodesLoading(false)
             });
         }
     }
@@ -549,17 +586,18 @@ const ReconciliationComponent = () => {
                                 radius={8}
                                 size='md'
                                 searchable
+                                maxDropdownHeight={180}
                                 onSearchChange={setSearchItemCode}
                                 width={"100%"}
-                            // rightSection={scrollLoading ? <FadeLoader
-                            //     height={15}
-                            //     width={3}
-                            //     margin={1}
-                            //     radius={1}
-                            //     color="#1b59f8" /> : null}
-                            // scrollAreaProps={{
-                            //     onScrollEndCapture: (e) => OnScrollEndPaginateListAllWarehouse(e),
-                            // }}
+                                rightSection={scrollItemCodesLoading ? <FadeLoader
+                                    height={15}
+                                    width={3}
+                                    margin={1}
+                                    radius={1}
+                                    color="#1b59f8" /> : null}
+                                scrollAreaProps={{
+                                    onScrollEndCapture: (e) => OnScrollEndPaginateItemCodes(e),
+                                }}
                             />
                         </Stack>
                         {/* Reconciliation Inventory Transfer And Transfer Receipt Tables */}
