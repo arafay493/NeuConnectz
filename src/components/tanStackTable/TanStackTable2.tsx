@@ -436,11 +436,11 @@ const TanStackTable2 = ({ data, dataCount, columns, isLoading, isInsideModalTabl
                             </Text>
                         </Group>
 
-                        <Text size="sm" c={customStyles.colors._909090}>
+                        {/* <Text size="sm" c={customStyles.colors._909090}>
                             Showing {skipRecord + 1} to{" "}
                             {Math.min(skipRecord + pagination.pageSize, dataCount)} of{" "}
                             {dataCount} entries
-                        </Text>
+                        </Text> */}
                     </Group>
                 </Group>
             </Box>
