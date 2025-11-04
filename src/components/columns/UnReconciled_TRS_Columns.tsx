@@ -7,7 +7,13 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
         () => [
             {
                 accessorKey: 'itemCode',
-                header: 'Item Code',
+                header: () => (
+                    <span
+                        style={{ whiteSpace: 'nowrap', fontWeight: 600 }}
+                    >
+                        Item Code
+                    </span>
+                ),
                 minSize: 160,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
@@ -34,7 +40,13 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
             },
             {
                 accessorKey: 'quantity',
-                header: 'Total Quantity',
+                header: () => (
+                    <span
+                        style={{ whiteSpace: 'nowrap', fontWeight: 600 }}
+                    >
+                        Total Quantity
+                    </span>
+                ),
                 minSize: 150,
                 size: 200,
                 cell: ({ getValue }: any) => (

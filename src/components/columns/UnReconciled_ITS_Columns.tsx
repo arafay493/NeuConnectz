@@ -23,8 +23,14 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             // },
             {
                 accessorKey: 'itemCode',
-                header: 'Item Code',
-                minSize: 120,
+                header: () => (
+                    <span
+                        style={{ whiteSpace: 'nowrap', fontWeight: 600 }}
+                    >
+                        Item Code
+                    </span>
+                ),
+                size: 120,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() ?? '-'}
@@ -50,7 +56,13 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             },
             {
                 accessorKey: 'quantity',
-                header: 'Total Quantity',
+                header: () => (
+                    <span
+                        style={{ whiteSpace: 'nowrap', fontWeight: 600 }}
+                    >
+                        Total Quantity
+                    </span>
+                ),
                 minSize: 150,
                 size: 160,
                 cell: ({ getValue }: any) => (
