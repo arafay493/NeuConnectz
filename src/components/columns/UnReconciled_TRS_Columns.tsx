@@ -36,6 +36,7 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
                 accessorKey: 'quantity',
                 header: 'Total Quantity',
                 minSize: 150,
+                size: 200,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() != null ? Number(getValue()).toFixed(2) : '-'}
@@ -46,8 +47,8 @@ const UnReconciled_TRs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'reconciled',
                 header: 'Status',
-                minSize: 50, // 👈 fixed size
-                size: 50,
+                // minSize: 50, // 👈 fixed size
+                // size: 50,
                 cell: ({ getValue }: any) => (
                     <Text
                         c={customStyles.colors._909090}

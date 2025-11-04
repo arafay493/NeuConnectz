@@ -51,13 +51,19 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'quantity',
                 header: 'Total Quantity',
-                minSize: 120,
+                minSize: 150,
+                size: 160,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() != null ? Number(getValue()).toFixed(2) : '-'}
                     </Text>
                 ),
                 enableColumnFilter: true,
+                muiTableHeadCellProps: {
+                    sx: {
+                        whiteSpace: 'nowrap',
+                    },
+                },
             },
             // {
             //     accessorKey: 'recordCount',
@@ -73,8 +79,8 @@ const UnReconciled_ITs_Columns = ({ list }: any) => {
             {
                 accessorKey: 'reconciled',
                 header: 'Status',
-                minSize: 50, // 👈 fixed size
-                size: 50,
+                // minSize: 70, // 👈 fixed size
+                // size: 70,
                 cell: ({ getValue }: any) => (
                     <Text
                         c={customStyles.colors._909090}

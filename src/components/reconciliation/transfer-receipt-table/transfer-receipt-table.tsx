@@ -4,6 +4,7 @@ import UnReconciled_TRs_Columns from '@/components/columns/UnReconciled_TRS_Colu
 
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '@/components/table-filters/TableColumnsFilter';
+import TanStackTable2 from '@/components/tanStackTable/TanStackTable2';
 import { customStyles } from '@/styles/custom-theme';
 import { TransferReceiptItems } from '@/types/redux-types';
 import {
@@ -34,7 +35,7 @@ interface TransferReceiptTableProps {
 }
 
 // const TransferReceiptTable: FC<TransferReceiptTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
-const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handleSelectTRS, itemCode }: any) => {
+const TransferReceiptTable = ({ data, dataCount, handleRowClick, selectedItems = [], handleSelectTRS, itemCode, pagination, setPagination }: any) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
 
@@ -112,7 +113,7 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
     return (
         <Stack gap="md">
             {/* Header */}
-            <Group justify="space-between" align="center" style={{ flexShrink: 0 }}>
+            <Group justify="space-between" align="center" style={{ flexShrink: 0 }} p={20} pb={0}>
                 <Group gap="xs">
                     <Title order={4} c={customStyles.colors._4D4D4D}>
                         Transfer Receipt
@@ -130,23 +131,33 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                     <IconBorderCorners cursor="pointer" size={24} />
                 </Group> */}
                 {itemCode ? <Group gap="xs">
-                    <Button 
+                    <Button
                         className="filledButton"
                         variant="transparent"
                         size="md"
-                        radius={8} 
+                        radius={8}
                         onClick={() => handleSelectTRS(data)}
                     >Select All</Button>
                 </Group> : null}
             </Group>
 
-            {/* Table */}
-            <Box style={{
+            <TanStackTable2
+                data={Array.isArray(data) ? data : []}
+                dataCount={dataCount}
+                columns={columns}
+                isLoading={false}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={"Inventory Transfer"}
+                skipRecord={0}
+            />
+
+            {/* <Box style={{
                 width: '100%',
                 borderRadius: '8px',
                 overflow: 'auto'
             }}>
-                {/* Sticky Header */}
                 <Box style={{
                     position: 'sticky',
                     top: 0,
@@ -178,7 +189,6 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                                                 padding: '4px 10px',
                                                 whiteSpace: 'nowrap',
                                             }}
-                                            // w={['action'].includes(header.column.id) ? 'auto' : '100%'}
                                             fw={600}
                                         >
                                             {header.isPlaceholder
@@ -201,7 +211,6 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                                             )}
                                         </Text>
                                     </Group>
-                                    {/* Note: Table Filter Input */}
                                     {
                                         header.column.getCanFilter() && (
                                             <TableColumnsFilter
@@ -218,7 +227,6 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                     ))}
                 </Box>
 
-                {/* Scrollable Body - Limited to 6 rows height */}
                 {
                     (data?.length === 0 || data === undefined) ? (
                         <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
@@ -266,7 +274,7 @@ const TransferReceiptTable = ({ data, handleRowClick, selectedItems = [], handle
                             })}
                         </Stack>
                     )}
-            </Box>
+            </Box> */}
         </Stack>
     );
 };

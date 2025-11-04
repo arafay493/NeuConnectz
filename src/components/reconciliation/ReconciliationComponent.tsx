@@ -59,7 +59,7 @@ const ReconciliationComponent = () => {
     // Note: Auth Selector for Api Call
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
-    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledTRs, itemCodes, itemCodesCount } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
+    const { inventoryTransferItems, transferReceiptItems, unReconciledITs, unReconciledITsCount, unReconciledTRs, unReconciledTRsCount, itemCodes, itemCodesCount } = useAppSelector(({ reconciliationStates }) => { return reconciliationStates });
 
     // Loading
     const [loading, setLoading] = useState<boolean>(false)
@@ -73,6 +73,14 @@ const ReconciliationComponent = () => {
         pageSize: 0,
     });
     const [itemCodesPagination, setItemCodesPagination] = useState({
+        pageIndex: 0,
+        pageSize: 5,
+    });
+    const [unRecociledITRPagination, setUnRecociledITRPagination] = useState({
+        pageIndex: 0,
+        pageSize: 5,
+    });
+    const [unRecociledTRPagination, setUnRecociledTRPagination] = useState({
         pageIndex: 0,
         pageSize: 5,
     });
@@ -93,14 +101,18 @@ const ReconciliationComponent = () => {
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
-            date: selectDate ?? ''
+            date: selectDate ?? '',
+            lastCount: unRecociledITRPagination.pageSize,
+            skipRecords: 0
         }))
 
         dispatch(fetchUnReconciledTRSData({
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
-            date: selectDate ?? ''
+            date: selectDate ?? '',
+            lastCount: unRecociledTRPagination.pageSize,
+            skipRecords: 0
         }))
 
         dispatch(fetchItemCodesData({
@@ -118,7 +130,9 @@ const ReconciliationComponent = () => {
             authToken: authenticatedUser?.token as string,
             fromWarehouseCode: fromWarehouse ?? '',
             toWarehouseCode: toWarehouse ?? '',
-            date: selectDate ?? ''
+            date: selectDate ?? '',
+            lastCount: unRecociledITRPagination.pageSize,
+            skipRecords: 0
         }))
 
         dispatch(fetchUnReconciledTRSData({
@@ -262,29 +276,31 @@ const ReconciliationComponent = () => {
 
     const handleSetItemCode = (val: string) => {
         setItemCode(val ?? '')
-        setLoading(true)
-        Promise.all([
-            dispatch(fetchUnReconciledITSData({
-                authToken: authenticatedUser?.token as string,
-                fromWarehouseCode: fromWarehouse ?? '',
-                toWarehouseCode: toWarehouse ?? '',
-                date: selectDate ?? '',
-                itemCode: val ?? null,
-            })),
-            dispatch(fetchUnReconciledTRSData({
-                authToken: authenticatedUser?.token as string,
-                fromWarehouseCode: fromWarehouse ?? '',
-                toWarehouseCode: toWarehouse ?? '',
-                date: selectDate ?? '',
-                itemCode: val ?? "",
-            }))
-        ]).then(() => {
-            setLoading(false)
-        }).catch((err) => {
-            console.log("Fetching Error: ", err)
-            setLoading(false)
-            setItemCode('')
-        })
+        // setLoading(true)
+        // Promise.all([
+        //     dispatch(fetchUnReconciledITSData({
+        //         authToken: authenticatedUser?.token as string,
+        //         fromWarehouseCode: fromWarehouse ?? '',
+        //         toWarehouseCode: toWarehouse ?? '',
+        //         date: selectDate ?? '',
+        //         itemCode: val ?? null,
+        //         lastCount: unRecociledITRPagination.pageSize,
+        //         skipRecords: 0
+        //     })),
+        //     dispatch(fetchUnReconciledTRSData({
+        //         authToken: authenticatedUser?.token as string,
+        //         fromWarehouseCode: fromWarehouse ?? '',
+        //         toWarehouseCode: toWarehouse ?? '',
+        //         date: selectDate ?? '',
+        //         itemCode: val ?? "",
+        //     }))
+        // ]).then(() => {
+        //     setLoading(false)
+        // }).catch((err) => {
+        //     console.log("Fetching Error: ", err)
+        //     setLoading(false)
+        //     setItemCode('')
+        // })
     }
 
     const handleSelectITS = (data: any) => {
@@ -404,6 +420,38 @@ const ReconciliationComponent = () => {
             handleModalClose()
         })
     }
+
+    useEffect(() => {
+        if (fromWarehouse && toWarehouse && selectDate) {
+            setLoading(true)
+            Promise.all([
+                dispatch(fetchUnReconciledITSData({
+                    authToken: authenticatedUser?.token as string,
+                    fromWarehouseCode: fromWarehouse ?? '',
+                    toWarehouseCode: toWarehouse ?? '',
+                    date: selectDate ?? '',
+                    itemCode: itemCode ?? null,
+                    lastCount: unRecociledITRPagination.pageSize,
+                    skipRecords: 0
+                })),
+                dispatch(fetchUnReconciledTRSData({
+                    authToken: authenticatedUser?.token as string,
+                    fromWarehouseCode: fromWarehouse ?? '',
+                    toWarehouseCode: toWarehouse ?? '',
+                    date: selectDate ?? '',
+                    itemCode: itemCode ?? "",
+                    lastCount: unRecociledTRPagination.pageSize,
+                    skipRecords: 0
+                }))
+            ]).then(() => {
+                setLoading(false)
+            }).catch((err) => {
+                console.log("Fetching Error: ", err)
+                setLoading(false)
+                setItemCode('')
+            })
+        }
+    }, [unRecociledTRPagination.pageSize , unRecociledITRPagination.pageSize, itemCode])
 
     // Debouncing For the Search Item Code
     useEffect(() => {
@@ -614,19 +662,25 @@ const ReconciliationComponent = () => {
                         <InventoryTransferReceiptTables
                             inventoryTransfer={<InventoryTransferTable
                                 data={unReconciledITs}
+                                dataCount={unReconciledITsCount}
                                 // handleRowClick={handleInventoryTransferDataChange}
                                 handleRowClick={() => { }}
                                 selectedItems={inventoryTransferData}
                                 handleSelectITS={handleSelectITS}
                                 itemCode={itemCode}
+                                pagination={unRecociledITRPagination}
+                                setPagination={setUnRecociledITRPagination}
                             />}
                             transferReceipt={<TransferReceiptTable
                                 data={unReconciledTRs}
+                                dataCount={unReconciledTRsCount}
                                 // handleRowClick={handleTransferReceiptDataChange}
                                 handleRowClick={() => { }}
                                 selectedItems={transferReceiptData}
                                 handleSelectTRS={handleSelectTRS}
                                 itemCode={itemCode}
+                                pagination={unRecociledTRPagination}
+                                setPagination={setUnRecociledTRPagination}
                             />}
                         />
 

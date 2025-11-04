@@ -25,7 +25,7 @@ const InventoryTransferReceiptTables: FC<ItTrTables> = ({
                 gap: isSmallScreen ? '16px' : '24px'
             }}
         >
-            <Group wrap={'wrap'} align='stretch'>
+            <Group wrap={'wrap'} align='stretch' >
                 {/* Inventory Transfer Table */}
                 <Box
                     flex={1}
@@ -45,6 +45,7 @@ const InventoryTransferReceiptTables: FC<ItTrTables> = ({
                     flex={1}
                     bg={customStyles.colors.white}
                     p={16}
+                    // maw={600}
                     style={{
                         borderRadius: '16px',
                         display: 'flex',

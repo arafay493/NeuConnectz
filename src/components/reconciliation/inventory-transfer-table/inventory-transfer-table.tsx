@@ -4,6 +4,8 @@ import UnReconciled_ITs_Columns from '@/components/columns/UnReconciled_ITS_Colu
 
 import { GlobalSearchFilter } from '@/components/table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '@/components/table-filters/TableColumnsFilter';
+import TanStackTable from '@/components/tanStackTable/TanStackTable';
+import TanStackTable2 from '@/components/tanStackTable/TanStackTable2';
 import { customStyles } from '@/styles/custom-theme';
 import { InventoryTransferItems } from '@/types/redux-types';
 import {
@@ -34,7 +36,7 @@ interface InventoryTransferTableProps {
 }
 
 // const InventoryTransferTable: FC<InventoryTransferTableProps> = ({ data, handleRowClick, selectedItems = [] }) => {
-const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], handleSelectITS, itemCode }: any) => {
+const InventoryTransferTable = ({ data, dataCount, handleRowClick, selectedItems = [], handleSelectITS, itemCode, pagination, setPagination }: any) => {
     // const [data] = useState(() => generateInventoryTransferData());
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -113,7 +115,7 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
     return (
         <Stack gap="md">
             {/* Header */}
-            <Group justify="space-between" align="center" style={{ flexShrink: 0 }}>
+            <Group justify="space-between" align="center" style={{ flexShrink: 0 }} p={20} pb={0}>
                 <Group gap="xs">
                     <Title order={4} c={customStyles.colors._4D4D4D}>
                         Inventory Transfer
@@ -131,18 +133,28 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
                     <IconBorderCorners cursor="pointer" size={24} />
                 </Group> */}
                 {itemCode ? <Group gap="xs">
-                    <Button 
+                    <Button
                         className="filledButton"
                         variant="transparent"
                         size="md"
-                        radius={8} 
+                        radius={8}
                         onClick={() => handleSelectITS(data)}
                     >Select All</Button>
                 </Group> : null}
             </Group>
+            <TanStackTable2
+                data={Array.isArray(data) ? data : []}
+                dataCount={dataCount}
+                columns={columns}
+                isLoading={false}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={"Inventory Transfer"}
+                skipRecord={0}
+            />
 
-            {/* Table */}
-            <Box style={{
+            {/* <Box style={{
                 width: '100%',
                 borderRadius: '8px',
                 overflow: 'auto'
@@ -201,7 +213,6 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
                                             )}
                                         </Text>
                                     </Group>
-                                    {/* Note: Table Filter Input */}
                                     {
                                         header.column.getCanFilter() && (
                                             <TableColumnsFilter
@@ -217,7 +228,6 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
                     ))}
                 </Box>
 
-                {/* Scrollable Body - Limited to 6 rows height */}
                 {
                     (data?.length === 0 || data === undefined) ? (
                         <Group justify='center' h={100} p={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
@@ -265,7 +275,7 @@ const InventoryTransferTable = ({ data, handleRowClick, selectedItems = [], hand
                             })}
                         </Stack>
                     )}
-            </Box>
+            </Box> */}
         </Stack>
     );
 };

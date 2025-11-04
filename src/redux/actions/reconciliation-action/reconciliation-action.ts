@@ -36,14 +36,16 @@ const fetchReconciliationData = createAsyncThunk(
 
 const fetchUnReconciledITSData = createAsyncThunk(
     "reconciliation/fetchUnReconciledITSData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode, lastCount, skipRecords }: FetchReconciliationTableProps, { dispatch }) => {
 
-        const params = {
+        const params: any = {
             fromWarehouseCode,
             toWarehouseCode,
             dateTime: date,
             itemCode: itemCode || ""
         }
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetUnreconciledITs`, authToken, params)
 
@@ -59,14 +61,16 @@ const fetchUnReconciledITSData = createAsyncThunk(
 
 const fetchUnReconciledTRSData = createAsyncThunk(
     "reconciliation/fetchUnReconciledTRSData",
-    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode }: FetchReconciliationTableProps, { dispatch }) => {
+    async ({ authToken, fromWarehouseCode, toWarehouseCode, date, itemCode, lastCount, skipRecords }: FetchReconciliationTableProps, { dispatch }) => {
 
-        const params = {
+        const params: any = {
             fromWarehouseCode,
             toWarehouseCode,
             dateTime: date,
             itemCode: itemCode || ""
         }
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2/IReconciliationFeature/GetUnreconciledTRs`, authToken, params)
 
