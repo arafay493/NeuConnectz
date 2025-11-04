@@ -288,6 +288,7 @@ const ReconciliationComponent = () => {
     }
 
     const handleSelectITS = (data: any) => {
+        if (!data) return []
         const merged: mergedDataTypes = Object.values(
             data.reduce((acc: any, curr: any) => {
                 const key = curr.itemCode;
@@ -314,6 +315,7 @@ const ReconciliationComponent = () => {
     }
 
     const handleSelectTRS = (data: any) => {
+        if (!data) return []
         const merged: mergedDataTypes = Object.values(
             data.reduce((acc: any, curr: any) => {
                 const key = curr.itemCode;
@@ -586,7 +588,7 @@ const ReconciliationComponent = () => {
                                 radius={8}
                                 size='md'
                                 searchable
-                                maxDropdownHeight={180}
+                                maxDropdownHeight={150}
                                 onSearchChange={setSearchItemCode}
                                 width={"100%"}
                                 rightSection={scrollItemCodesLoading ? <FadeLoader
@@ -597,6 +599,14 @@ const ReconciliationComponent = () => {
                                     color="#1b59f8" /> : null}
                                 scrollAreaProps={{
                                     onScrollEndCapture: (e) => OnScrollEndPaginateItemCodes(e),
+                                }}
+                                styles={{
+                                    option: {
+                                        fontSize: 12,
+                                    },
+                                    dropdown: {
+                                        fontSize: 12,
+                                    },
                                 }}
                             />
                         </Stack>
