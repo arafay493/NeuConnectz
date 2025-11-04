@@ -432,7 +432,7 @@ const ReconciliationComponent = () => {
                     date: selectDate ?? '',
                     itemCode: itemCode ?? null,
                     lastCount: unRecociledITRPagination.pageSize,
-                    skipRecords: 0
+                    skipRecords: unRecociledITRPagination.pageIndex * unRecociledITRPagination.pageSize,
                 })),
                 dispatch(fetchUnReconciledTRSData({
                     authToken: authenticatedUser?.token as string,
@@ -441,7 +441,7 @@ const ReconciliationComponent = () => {
                     date: selectDate ?? '',
                     itemCode: itemCode ?? "",
                     lastCount: unRecociledTRPagination.pageSize,
-                    skipRecords: 0
+                    skipRecords: unRecociledTRPagination.pageIndex * unRecociledTRPagination.pageSize,
                 }))
             ]).then(() => {
                 setLoading(false)
@@ -451,7 +451,13 @@ const ReconciliationComponent = () => {
                 setItemCode('')
             })
         }
-    }, [unRecociledTRPagination.pageSize , unRecociledITRPagination.pageSize, itemCode])
+    }, [
+        unRecociledTRPagination.pageSize,
+        unRecociledTRPagination.pageIndex,
+        unRecociledITRPagination.pageSize,
+        unRecociledITRPagination.pageIndex,
+        itemCode,
+    ])
 
     // Debouncing For the Search Item Code
     useEffect(() => {
