@@ -242,20 +242,20 @@ const AssignPlantsComponent = () => {
   // Note: Columns Data for Assign Groups
   const columns = useMemo<ColumnDef<GroupCodeDataType>[]>(
     () => [
-      // {
-      //   header: "S.No",
-      //   cell: ({ row }) => {
-      //     // Calculate serial number based on server-side pagination
-      //     const serialNumber =
-      //       pagination.pageIndex * pagination.pageSize + row.index + 1;
-      //     return (
-      //       <Text fw={500} c={customStyles.colors._909090}>
-      //         {serialNumber}
-      //       </Text>
-      //     );
-      //   },
-      //   size: calculateColumnWidth("S.No", ["99999"], 80, 120), // Assuming max 999 records
-      // },
+      {
+        header: "S.No",
+        cell: ({ row }) => {
+          // Calculate serial number based on server-side pagination
+          const serialNumber =
+            pagination.pageIndex * pagination.pageSize + row.index + 1;
+          return (
+            <Text fw={500} c={customStyles.colors._909090}>
+              {serialNumber}
+            </Text>
+          );
+        },
+        size: calculateColumnWidth("S.No", ["99999"], 80, 120), // Assuming max 999 records
+      },
       {
         accessorKey: "groupCode",
         header: "Plant Code",
@@ -456,15 +456,15 @@ const AssignPlantsComponent = () => {
     //     // Reset to first page when column filters change
     //     setPagination(prev => ({ ...prev, pageIndex: 0 }));
     // },
-    globalFilterFn: (row, columnId, value) => {
-      // Get all column IDs to search across
-      const columnIds = ["S.No", "groupCode", "groupName"];
+    // globalFilterFn: (row, columnId, value) => {
+    //   // Get all column IDs to search across
+    //   const columnIds = ["S.No", "groupCode", "groupName"];
 
-      // Search across all columns
-      return columnIds.some((colId: string) =>
-        globalFilterFn(row, colId, value)
-      );
-    },
+    //   // Search across all columns
+    //   return columnIds.some((colId: string) =>
+    //     globalFilterFn(row, colId, value)
+    //   );
+    // },
     onPaginationChange: setPagination,
     manualPagination: true, // Enable server-side pagination
     pageCount: Math.ceil(groupsTotalCount / pagination.pageSize), // Calculate total pages from server data
@@ -708,7 +708,7 @@ const AssignPlantsComponent = () => {
         style={{ borderRadius: "16px", width: "100%" }}
       >
         {/* Header */}
-        {/* <Group
+        <Group
           mb={24}
           justify="space-between"
           align="center"
@@ -716,10 +716,10 @@ const AssignPlantsComponent = () => {
         >
           <Stack gap={0}>
             <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
-              Group List
+              Plants List
             </Title>
             <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>
-              Select user to assign group
+              Select user to assign plant
             </Text>
           </Stack>
           <Group gap="xs">
@@ -757,7 +757,7 @@ const AssignPlantsComponent = () => {
             <IconColumns cursor="pointer" size={24} />
             <IconBorderCorners cursor="pointer" size={24} />
           </Group>
-        </Group> */}
+        </Group>
 
         {/* Table */}
         <Box w="100%" mah={700} className={"custom-scroll"} style={{ overflow: "auto" }}>

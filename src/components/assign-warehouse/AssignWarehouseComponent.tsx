@@ -589,10 +589,28 @@ const AssignWarehouseComponent = () => {
                         gap={4}
                         w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
                         maw={isSmallScreen ? '100%' : 350}
+                        display={"flex"}
                     >
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select User</Text>
                         <Select
                             placeholder="Select User"
+                            data={activeUsersData}
+                            value={selectedUser}
+                            onChange={(value) => setSelectedUser(value ?? '')}
+                            clearable
+                            w='100%'
+                            radius={8}
+                            size={isSmallScreen ? 'sm' : 'md'}
+                        />
+                    </Stack>
+                    <Stack
+                        gap={4}
+                        w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
+                        maw={isSmallScreen ? '100%' : 350}
+                    >
+                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Plant</Text>
+                        <Select
+                            placeholder="Select Plant"
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
