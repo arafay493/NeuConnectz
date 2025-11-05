@@ -16,6 +16,7 @@ export type Routes = {
     usersList: string;
     assignGroup: string;
     assignWareHouse: string;
+    assignPlants: string;
     addUser: string;
     configuration: string;
     integrationMonitor: string;

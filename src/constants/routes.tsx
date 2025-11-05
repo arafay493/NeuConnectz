@@ -12,7 +12,8 @@ import {
     IconPresentationAnalyticsFilled,
     IconLayoutDashboardFilled,
     IconBarcode,
-    IconChecklist
+    IconChecklist,
+    IconPlant
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -32,6 +33,7 @@ const authenticatedRoutes: String[] = [
     // "/tr-posted-documents",
     "/users-list",
     "/assign-group",
+    "/assign-plants",
     "/assign-warehouse",
     "/add-user",
     "/configuration",
@@ -58,6 +60,7 @@ const routes: Routes = {
     usersList: "/users-list",
     assignGroup: "/assign-group",
     assignWareHouse: "/assign-warehouse",
+    assignPlants: "/assign-plants",
     addUser: "/add-user",
     configuration: "/configuration",
     integrationMonitor: "/integration-monitor",
@@ -65,7 +68,7 @@ const routes: Routes = {
     grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
-    goodsIssue : "/goods-issue"
+    goodsIssue: "/goods-issue"
 };
 
 // Note: Defining drawer routes...!
@@ -119,6 +122,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBuildingWarehouse color='currentColor' size={24} />,
         label: "Assign Warehouse",
         route: routes.assignWareHouse,
+    },
+    {
+        icon: <IconPlant color='currentColor' size={24} />,
+        label: "Assign Plants",
+        route: routes.assignPlants,
     },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,
