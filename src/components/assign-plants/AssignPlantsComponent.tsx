@@ -39,8 +39,10 @@ import {
   IconColumns,
   IconFilter,
   IconFilterOff,
+  IconPlant,
   IconSearch,
   IconSearchOff,
+  IconSeedling,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -240,23 +242,23 @@ const AssignPlantsComponent = () => {
   // Note: Columns Data for Assign Groups
   const columns = useMemo<ColumnDef<GroupCodeDataType>[]>(
     () => [
-      {
-        header: "S.No",
-        cell: ({ row }) => {
-          // Calculate serial number based on server-side pagination
-          const serialNumber =
-            pagination.pageIndex * pagination.pageSize + row.index + 1;
-          return (
-            <Text fw={500} c={customStyles.colors._909090}>
-              {serialNumber}
-            </Text>
-          );
-        },
-        size: calculateColumnWidth("S.No", ["99999"], 80, 120), // Assuming max 999 records
-      },
+      // {
+      //   header: "S.No",
+      //   cell: ({ row }) => {
+      //     // Calculate serial number based on server-side pagination
+      //     const serialNumber =
+      //       pagination.pageIndex * pagination.pageSize + row.index + 1;
+      //     return (
+      //       <Text fw={500} c={customStyles.colors._909090}>
+      //         {serialNumber}
+      //       </Text>
+      //     );
+      //   },
+      //   size: calculateColumnWidth("S.No", ["99999"], 80, 120), // Assuming max 999 records
+      // },
       {
         accessorKey: "groupCode",
-        header: "Group Code",
+        header: "Plant Code",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
             {getValue() as string}
@@ -271,7 +273,7 @@ const AssignPlantsComponent = () => {
       },
       {
         accessorKey: "groupName",
-        header: "Group Name",
+        header: "Plant Name",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
             {getValue() as string}
@@ -284,6 +286,21 @@ const AssignPlantsComponent = () => {
           450
         ),
       },
+      // {
+      //   accessorKey: "groupCode",
+      //   header: "Company Code",
+      //   cell: ({ getValue }) => (
+      //     <Text c={customStyles.colors._909090} fw={500}>
+      //       {getValue() as string}
+      //     </Text>
+      //   ),
+      //   size: calculateColumnWidth(
+      //     "Warehouse Code",
+      //     groups.map((item) => String(item.groupCode)),
+      //     150,
+      //     400
+      //   ),
+      // },
       {
         id: "allow", // Add id for display column
         header: ({ table }) => {
@@ -574,7 +591,7 @@ const AssignPlantsComponent = () => {
         // size={isSmallScreen ? "h3" : "h2"}
         style={{ fontWeight: 700, fontSize: 24 }}
       >
-        Assign Groups
+        Assign Plants
       </Title>
       <Text
         mb={isSmallScreen ? 16 : 24}
@@ -582,7 +599,7 @@ const AssignPlantsComponent = () => {
         // size={isSmallScreen ? "sm" : "md"}
         style={{ fontWeight: 500, fontSize: 16 }}
       >
-        Assign groups to users for easier management
+        Select user to assign plants
       </Text>
 
       {/* Search Bar */}
@@ -652,19 +669,35 @@ const AssignPlantsComponent = () => {
                         />
                     </Stack> */}
         </Group>
-        <Button
-          variant="transparent"
-          className={!selectedUser ? "filledDisabledButton" : "filledButton"}
-          radius={8}
-          size={isSmallScreen ? "sm" : "md"}
-          leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-          onClick={handleAssignGroups}
-          disabled={!selectedUser}
-          w={isSmallScreen ? "100%" : "auto"}
-          mt={isSmallScreen ? 16 : 0}
-        >
-          {isSmallScreen ? "Assign" : "Assign Groups"}
-        </Button>
+        <Group>
+          <Button
+            variant="transparent"
+            // className={!selectedUser ? "filledDisabledButton" : "filledButton"}
+            className={"outlineButton"}
+            radius={8}
+            size={isSmallScreen ? "sm" : "md"}
+            leftSection={<IconPlant size={isSmallScreen ? 20 : 24} />}
+            onClick={handleAssignGroups}
+            // disabled={!selectedUser}
+            w={isSmallScreen ? "100%" : "auto"}
+            mt={isSmallScreen ? 16 : 0}
+          >
+            {isSmallScreen ? "Assign All" : "Assign All Plants"}
+          </Button>
+          <Button
+            variant="transparent"
+            className={!selectedUser ? "filledDisabledButton" : "filledButton"}
+            radius={8}
+            size={isSmallScreen ? "sm" : "md"}
+            leftSection={<IconSeedling size={isSmallScreen ? 20 : 24} />}
+            onClick={handleAssignGroups}
+            disabled={!selectedUser}
+            w={isSmallScreen ? "100%" : "auto"}
+            mt={isSmallScreen ? 16 : 0}
+          >
+            {isSmallScreen ? "Assign" : "Assign Plants"}
+          </Button>
+        </Group>
       </Group>
 
       {/* Main Content */}
@@ -675,7 +708,7 @@ const AssignPlantsComponent = () => {
         style={{ borderRadius: "16px", width: "100%" }}
       >
         {/* Header */}
-        <Group
+        {/* <Group
           mb={24}
           justify="space-between"
           align="center"
@@ -724,7 +757,7 @@ const AssignPlantsComponent = () => {
             <IconColumns cursor="pointer" size={24} />
             <IconBorderCorners cursor="pointer" size={24} />
           </Group>
-        </Group>
+        </Group> */}
 
         {/* Table */}
         <Box w="100%" mah={700} className={"custom-scroll"} style={{ overflow: "auto" }}>
