@@ -79,7 +79,7 @@ const RequestPerPeriodComponent = () => {
                         >
                             {name.charAt(0).toUpperCase() + name.slice(1)}
                         </text>
-                        <text
+                        {rectHeight > 50 && <text
                             y={rectHeight - 50}
                             fill="#fff"
                             fontSize={12}
@@ -88,7 +88,7 @@ const RequestPerPeriodComponent = () => {
                             style={{ pointerEvents: "none" }}
                         >
                             {period}
-                        </text>
+                        </text>}
                     </g>
                 )}
             </g>
