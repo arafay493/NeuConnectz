@@ -3,8 +3,9 @@ import { Stack } from '@mantine/core';
 import { customStyles } from '@/styles/custom-theme';
 import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
-import StockTransferOrderUnPosted_Columns from '../columns/StockTransferOrderUnposted_Columns';
 import StockTransferOrderPosted_Columns from '../columns/StockTransferOrderPosted_Columsn';
+import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
+import StockTransferPostedViewDetailsModal from '../modals/stock-transfer-posted-view-details-modal/StockTransferPostedViewDetailsModal';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -27,18 +28,24 @@ const StockTransferPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
 
     // Note: Handling states here...!
     const [isLoading, setIsLoading] = useState(false);
+    const [isViewLoading, setIsViewLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [paginationViewDetails, setPaginationViewDetails] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
     });
 
     // Note: Table modal state...!
-    // const [isTableModalOpen, setIsTableModalOpen] = useState(false);
-    // const [isClosePOModalOpen, setIsClosePOModalOpen] = useState(false);
-    // const [rowData, setRowData] = useState<GoodsIssueDataType | null>(null);
+    const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
+    const [selectedRow, setSelectedRow] = useState(null);
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
+
 
     // Note: Handeling redux here...!
     // const dispatch = useAppDispatch();
@@ -175,10 +182,38 @@ const StockTransferPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         },
     ];
 
-    const columns = StockTransferOrderPosted_Columns({ pagination, stockTransferOrderList })
+    const handleModalClose = () => {
+        setIsViewDetailsModalOpen(false)
+    }
+
+    const handleViewDetailsModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
+        setIsViewDetailsModalOpen(true)
+    }
+
+    const columns = StockTransferOrderPosted_Columns({
+        pagination, stockTransferOrderList, actions: {
+            handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+        }
+    })
 
     return (
         <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
+            {/* View Modal */}
+            <StockTransferPostedViewDetailsModal
+                opened={isViewDetailsModalOpen}
+                handleModalClose={handleModalClose}
+                row={selectedRow}
+                isLoading={isViewLoading}
+                setIsLoading={setIsViewLoading}
+                pagination={paginationViewDetails}
+                setPagination={setPaginationViewDetails}
+                title={"Stock Transfer Posted"}
+                skipRecord={skipRecordViewDetails}
+                apiUrl={"apiUrlAgainstPO"}
+                poNumber={0}
+            />
+            {/* Table */}
             <TanStackTable
                 data={Array.isArray(stockTransferOrderList) ? stockTransferOrderList : []}
                 dataCount={stockTransferOrderList?.length}

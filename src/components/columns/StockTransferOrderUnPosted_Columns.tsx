@@ -3,7 +3,7 @@ import { Button, Group, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
-const StockTransferOrderUnPosted_Columns = ({ pagination, list }: any) => {
+const StockTransferOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             {
@@ -253,7 +253,8 @@ const StockTransferOrderUnPosted_Columns = ({ pagination, list }: any) => {
                             variant="transparent"
                             className="outlineButton"
                             radius={8}
-                            onClick={() => console.log("View Details:", row.original)}
+                            // onClick={() => console.log("View Details:", row.original)}
+                            onClick={() => actions.handleViewDetailsModalOpen(row.original)}
                         >
                             View Details
                         </Button>
@@ -261,7 +262,7 @@ const StockTransferOrderUnPosted_Columns = ({ pagination, list }: any) => {
                             variant="transparent"
                             className="filledButton"
                             radius={8}
-                            onClick={() => console.log("Confirm:", row.original)}
+                            onClick={() => actions.handleConfirmModalOpen(row.original)}
                         >
                             Confirm
                         </Button>

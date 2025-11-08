@@ -3,7 +3,7 @@ import { Button, Group, Text } from '@mantine/core';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
-const StockTransferOrderPosted_Columns = ({ pagination, list }: any) => {
+const StockTransferOrderPosted_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             {
@@ -250,7 +250,7 @@ const StockTransferOrderPosted_Columns = ({ pagination, list }: any) => {
                             variant="transparent"
                             className="outlineButton"
                             radius={8}
-                            onClick={() => console.log("View Details:", row.original)}
+                            onClick={() => actions.handleViewDetailsModalOpen(row.original)}
                         >
                             View Details
                         </Button>
