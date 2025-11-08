@@ -13,7 +13,8 @@ import {
     IconLayoutDashboardFilled,
     IconBarcode,
     IconChecklist,
-    IconPlant
+    IconPlant,
+    IconStack3
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -42,7 +43,8 @@ const authenticatedRoutes: String[] = [
     "/grn-movement",
     // "/generate-barcode",
     "/production-order",
-    "/goods-issue"
+    "/goods-issue",
+    "/stock-transfer-order"
 ];
 
 // Note: Defining all routes...!
@@ -68,7 +70,8 @@ const routes: Routes = {
     grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
-    goodsIssue: "/goods-issue"
+    goodsIssue: "/goods-issue",
+    stockTransferOrder: "/stock-transfer-order"
 };
 
 // Note: Defining drawer routes...!
@@ -97,6 +100,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconChecklist color='currentColor' size={24} />,
         label: "Goods Issue",
         route: routes.goodsIssue
+    },
+    {
+        icon: <IconStack3 color='currentColor' size={24} />,
+        label: "Stock Transfer Order",
+        route: routes.stockTransferOrder
     },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,

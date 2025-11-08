@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -84,6 +84,9 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                     <Title order={3} mb={8} c={customStyles.colors._4D4D4D} style={{ fontWeight: 600, fontSize: 16 }}>
                         {title}
                     </Title>
+                    {subTitle ? <Title order={3} mb={8} c={customStyles.colors._909090} style={{ fontWeight: 600, fontSize: 16 }}>
+                        {subTitle}
+                    </Title> : null}
                 </Stack>
                 <Group gap="xs">
                     <GlobalSearchFilter
@@ -145,9 +148,10 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
                                                 }`,
                                             width: `${header.getSize()}px`,
-                                            minWidth: `${header.getSize()}px`,
-                                            maxWidth: `${header.getSize()}px`,
+                                            // minWidth: `${header.getSize()}px`,
+                                            // maxWidth: `${header.getSize()}px`,
                                             verticalAlign: "top",
+                                            whiteSpace: "nowrap"
                                         }}
                                     >
                                         <Group

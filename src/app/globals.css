@@ -36,6 +36,7 @@ body::-webkit-scrollbar-thumb {
     background-color: var(--_1B59F8);
     color: var(--white);
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+    min-width: max-content;
 }
 
 .filledDisabledButton {
@@ -55,6 +56,7 @@ body::-webkit-scrollbar-thumb {
     border: 1px solid var(--_1B59F8);
     background-color: var(--white);
     transition: color 0.3s ease, background-color 0.3s ease, border 0.3s ease;
+    min-width: max-content;
 }
 
 .outlineDisabledButton {
