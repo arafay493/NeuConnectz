@@ -61,6 +61,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 import classes from "../production-order-section-component/po.module.css";
+import { FadeLoader } from "react-spinners";
 
 const AssignPlantsComponent = () => {
   // Note: Media query to determine if the screen is small
@@ -85,7 +86,7 @@ const AssignPlantsComponent = () => {
 
   // Note: State for User List
   const {
-    usersList: { users },
+    usersList: { users, totalCount },
   } = useAppSelector(({ userStates }) => userStates);
 
   // Note: State for Groups List
@@ -108,15 +109,21 @@ const AssignPlantsComponent = () => {
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
   });
+  const [userListPagination, setUserListPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10, // Adjusted to a more reasonable default
+  });
 
   // Pagination values for Api call
   const skipRecord = pagination.pageIndex * pagination.pageSize;
+  const skipRecordUserList = userListPagination.pageIndex * userListPagination.pageSize;
   const lastCount = pagination.pageSize;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
   // Note: State for Table Filters
   const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -482,11 +489,13 @@ const AssignPlantsComponent = () => {
 
   useEffect(() => {
     if (authenticatedUser?.token) {
-      dispatch(
-        fetchAllUsers({
-          authToken: authenticatedUser?.token as string,
-        })
-      );
+      dispatch(fetchAllUsers({
+        authToken: authenticatedUser?.token as string,
+        LastCount: userListPagination.pageSize,
+        skipRecord: skipRecordUserList,
+      })).finally(() => {
+        setIsLoading(false);
+      });
     }
   }, [authenticatedUser?.token, dispatch]);
 
@@ -582,6 +591,28 @@ const AssignPlantsComponent = () => {
     table.setGlobalFilter(String(value));
   };
 
+  const OnScrollEndPaginateUserList = (e: any) => {
+    const target = e.currentTarget;
+    const hasMore = users?.length < totalCount;
+    const reachedBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
+    if (hasMore && reachedBottom) {
+      // const newSkip = (pagination.pageIndex + 1) * pagination.pageSize;
+      setScrollItemUserListLoading(true)
+      const newSkip = 0;
+      setUserListPagination((prev) => ({
+        pageSize: prev.pageSize + 5,
+        pageIndex: prev.pageIndex + 1,
+      }));
+      dispatch(fetchAllUsers({
+        authToken: authenticatedUser?.token as string,
+        LastCount: userListPagination.pageSize,
+        skipRecord: skipRecordUserList,
+      })).finally(() => {
+        setScrollItemUserListLoading(false)
+      });
+    }
+  }
+
   return (
     <Box>
       <Title
@@ -645,6 +676,15 @@ const AssignPlantsComponent = () => {
               w="100%"
               radius={8}
               size={isSmallScreen ? "sm" : "md"}
+              rightSection={scrollItemUserListLoading ? <FadeLoader
+                height={15}
+                width={3}
+                margin={1}
+                radius={1}
+                color="#1b59f8" /> : null}
+              scrollAreaProps={{
+                onScrollEndCapture: (e) => OnScrollEndPaginateUserList(e),
+              }}
             />
           </Stack>
 
