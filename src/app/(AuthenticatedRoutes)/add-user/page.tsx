@@ -168,6 +168,7 @@ const AddUserScreen = () => {
             password,
             confirmPassword,
         } = userData;
+        console.log("🚀 ~ addUserHandler ~ userData:", userData)
 
         try {
             if (userName.trim().length < 1) throw "Username is required";

@@ -8,6 +8,7 @@ import authReducer from "./auth-reducer/auth-reducer";
 import userReducer from "./user-reducer/user-reducer";
 import wareHouseReducer from "./warehouse-reducer/warehouse-reducer";
 import groupReducer from "./group-reducer/group-reducer";
+import plantReducer from "./plants-reducer/plants-reducer";
 import sapReducer from "./sap-reducer/sap-reducer";
 import rolesReducer from "./roles-reducer/roles-reducer";
 import itrReducer from "./itr-reducer/itr-reducer";
@@ -30,6 +31,7 @@ const rootReducer = combineReducers({
     userStates: userReducer,
     wareHouseStates: wareHouseReducer,
     groupStates: groupReducer,
+    plantStates: plantReducer,
     sapStates: sapReducer,
     rolesStates: rolesReducer,
     itrStates: itrReducer,

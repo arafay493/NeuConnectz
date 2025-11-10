@@ -96,6 +96,27 @@ export interface GroupStateType {
     GroupErrorState: string
 };
 
+// Note: Plants reducer state types...!
+export interface PlantsStateType {
+    ListAllPlantsCodes: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    // listGroupCodesByUserId: {
+    //     id: string,
+    //     groupCode: number | string,
+    //     groupName: string,
+    //     createdBy: string,
+    //     updatedBy: string,
+    //     createdDate: string,
+    //     updatedDate: string,
+    //     isActive: boolean,
+    //     isArchived: boolean
+    // }[];
+    PlantsErrorState: string
+};
+
 export interface ListAllGroupCodesProps {
     id: string,
     groupCode: number | string,
@@ -106,6 +127,13 @@ export interface ListAllGroupCodesProps {
     updatedDate: string,
     isActive: boolean,
     isArchived: boolean
+}
+
+export interface ListAllPlantsCodesProps {
+    id: string,
+    plantCode: string,
+    plantName: string,
+    companyCode: string
 }
 
 export interface ProductionOrderDataType {
@@ -544,7 +572,7 @@ export interface UnRecognizedTRs {
 }
 
 export interface ItemCodes {
-    
+
 }
 
 
