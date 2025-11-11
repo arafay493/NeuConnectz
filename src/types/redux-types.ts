@@ -46,6 +46,10 @@ export interface WareHouseStateType {
         data: Array<WarehousesListData>
         totalCount: number
     };
+    wareHousesListByUserPlants: {
+        data: Array<WarehousesListData>
+        totalCount: number
+    };
     warehousesListByUserId: {
         id: string,
         whsCode: string,

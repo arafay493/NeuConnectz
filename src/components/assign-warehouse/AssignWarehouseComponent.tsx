@@ -23,8 +23,9 @@ import { FadeLoader } from "react-spinners";
 import { fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
 import WarehouseList_Columns from "../columns/WarehouseList_Columns";
-import { assignWareHouseToUser, fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
+import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserPlants } from "@/redux/actions/warehouse-actions/warehouse-actions";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES, CLEAR_ALL_WAREHOUSE_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 
 const plantsCount = 50
 const warehouseList = [
@@ -261,9 +262,9 @@ const AssignWarehouseComponent = () => {
         usersList: { users, totalCount },
     } = useAppSelector(({ userStates }) => userStates);
     const {
-        wareHousesList: { data: warehouseList, totalCount: warehouseCount }
+        wareHousesList: { data: warehouseList, totalCount: warehouseCount },
+        wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
-    console.log("🚀 ~ AssignWarehouseComponent ~ wareHousesList:", warehouseList)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -283,10 +284,15 @@ const AssignWarehouseComponent = () => {
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
+    const [userListByPlantsPagination, setUserListByPlantsPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10, // Adjusted to a more reasonable default
+    });
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const skipRecordUserList = userListPagination.pageIndex * userListPagination.pageSize;
+    const skipRecordUserListByPlants = userListByPlantsPagination.pageIndex * userListByPlantsPagination.pageSize;
 
     // Loadings States
     const [isLoading, setIsLoading] = useState(false);
@@ -321,6 +327,25 @@ const AssignWarehouseComponent = () => {
             });
         }
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
+
+
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setIsLoading(true);
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+            dispatch(
+                fetchWarehousesListByUserPlants({
+                    authToken: authenticatedUser?.token as string,
+                    lastCount: userListByPlantsPagination.pageSize, // Use page size for server-side pagination
+                    userId: selectedUser ?? "",
+                    skipRecords: skipRecordUserListByPlants,
+                })
+            ).finally(() => {
+                setIsLoading(false);
+            });
+        }
+    }, [authenticatedUser, dispatch, userListByPlantsPagination.pageIndex, userListByPlantsPagination.pageSize, selectedUser]);
 
     const handleSelectAllWarehousesAllow = () => {
         if (selectedWarehousesAllow?.length === warehouseList?.length) {
@@ -424,6 +449,11 @@ const AssignWarehouseComponent = () => {
         );
     };
 
+    const handleSelectUser = (value: string) => {
+        setSelectedUser(value ?? "")
+        dispatch(CLEAR_ALL_WAREHOUSE_STATES())
+    }
+
     return (
         <Box>
             <Title
@@ -482,7 +512,7 @@ const AssignWarehouseComponent = () => {
                             placeholder="Select User"
                             data={activeUsersData}
                             value={selectedUser}
-                            onChange={(value) => setSelectedUser(value ?? "")}
+                            onChange={(value: any) => handleSelectUser(value)}
                             clearable
                             w="100%"
                             radius={8}
@@ -517,7 +547,7 @@ const AssignWarehouseComponent = () => {
             </Group>
 
             {/* Table */}
-            <TanStackTable
+            {warehouseByUserPlantsList?.length === 0 ? <TanStackTable
                 data={Array.isArray(warehouseList) ? warehouseList : []}
                 dataCount={warehouseCount}
                 columns={columns}
@@ -529,7 +559,19 @@ const AssignWarehouseComponent = () => {
                 title={"Warehouse List"}
                 subTitle={"Select user to assign warehouse"}
                 skipRecord={skipRecord}
-            />
+            /> : <TanStackTable
+                data={Array.isArray(warehouseByUserPlantsList) ? warehouseByUserPlantsList : []}
+                dataCount={warehouseByUserPlantsCount}
+                columns={columns}
+                isLoading={isLoading}
+                // isLoading={false}
+                isInsideModalTable={true}
+                pagination={userListByPlantsPagination}
+                setPagination={setUserListByPlantsPagination}
+                title={"Warehouse List"}
+                subTitle={"Select user to assign warehouse"}
+                skipRecord={skipRecord}
+            />}
         </Box>
     );
 };

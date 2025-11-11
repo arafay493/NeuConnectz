@@ -1,7 +1,9 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
 import {
+    CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES,
     FETCH_ALL_WAREHOUSES,
+    FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES,
     FETCH_WAREHOUSES_BY_USER_ID,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA
 } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
@@ -52,6 +54,27 @@ const fetchWarehousesListByUserId = createAsyncThunk(
     }
 );
 
+// Note: Action function to fetch warehouses list by user id...!
+const fetchWarehousesListByUserPlants = createAsyncThunk(
+    "warehouse/fetchWarehousesListByUserPlants",
+    async (
+        { authToken, lastCount, skipRecords, userId }: { authToken: string, lastCount: number, skipRecords: number, userId: string },
+        { dispatch }
+    ) => {
+        const params: { [key: string]: number | string } = {};
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserPlants?userId=${userId}`, authToken);
+
+        const { status, data } = response;
+        console.log("🚀 ~ data:", data)
+
+        if (status == 200) {
+            dispatch(FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES(data?.data));
+        };
+    }
+);
+
 // Note: Action function to assign warehouse to user...!
 const assignWareHouseToUser = createAsyncThunk(
     "warehouse/assignWareHouseToUser",
@@ -75,7 +98,9 @@ const assignWareHouseToUser = createAsyncThunk(
 );
 
 export {
-    assignWareHouseToUser, fetchAllWareHouses,
-    fetchWarehousesListByUserId
+    assignWareHouseToUser,
+    fetchAllWareHouses,
+    fetchWarehousesListByUserId,
+    fetchWarehousesListByUserPlants
 };
 

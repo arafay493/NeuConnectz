@@ -55,6 +55,28 @@ const WarehouseList_Columns = ({
                 enableColumnFilter: true,
             },
             {
+                accessorKey: "pCode",
+                header: "Plant Code",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "slcCode",
+                header: "Storage Location",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
                 id: "allow",
                 header: ({ table }: any) => {
                     return (
