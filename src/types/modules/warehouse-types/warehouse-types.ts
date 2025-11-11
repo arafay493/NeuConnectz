@@ -22,6 +22,6 @@ export interface WareHouseDataType {
 
 export interface WareHouseDataObj {
     userId: string,
-    normalWarehouseCodes: string[],
-    receiverWarehouseCodes: string[]
+    normalWarehouseIds: string[],
+    receiverWarehouseIds: string[]
 };

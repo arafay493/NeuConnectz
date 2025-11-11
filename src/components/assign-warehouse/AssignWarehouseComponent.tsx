@@ -23,6 +23,8 @@ import { FadeLoader } from "react-spinners";
 import { fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
 import WarehouseList_Columns from "../columns/WarehouseList_Columns";
+import { assignWareHouseToUser, fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 const plantsCount = 50
 const warehouseList = [
@@ -238,142 +240,6 @@ const warehouseList = [
     }
 ]
 
-const totalCount = 500
-const users = [
-    {
-        "userId": "MMlFCWxP8T",
-        "userName": "user_327590",
-        "email": "user327590@testmail.com",
-        "phone": "+929893550003",
-        "department": "Production",
-        "role": "ProductionManager",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-27T12:58:47.458968Z",
-        "updatedDate": "2025-10-27T12:58:47.458968Z",
-        "isActive": true
-    },
-    {
-        "userId": "ABx7PQwL9R",
-        "userName": "user_412365",
-        "email": "user412365@testmail.com",
-        "phone": "+929893550004",
-        "department": "Finance",
-        "role": "Accountant",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-28T09:20:15.125478Z",
-        "updatedDate": "2025-10-28T09:20:15.125478Z",
-        "isActive": true
-    },
-    {
-        "userId": "YZr8LKtF6M",
-        "userName": "user_583920",
-        "email": "user583920@testmail.com",
-        "phone": "+929893550005",
-        "department": "HR",
-        "role": "HRExecutive",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-28T11:10:47.987654Z",
-        "updatedDate": "2025-10-28T11:10:47.987654Z",
-        "isActive": false
-    },
-    {
-        "userId": "PLm9VXeR4S",
-        "userName": "user_294710",
-        "email": "user294710@testmail.com",
-        "phone": "+929893550006",
-        "department": "Maintenance",
-        "role": "Technician",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-29T08:15:11.998741Z",
-        "updatedDate": "2025-10-29T08:15:11.998741Z",
-        "isActive": true
-    },
-    {
-        "userId": "TRq2BNyU7J",
-        "userName": "user_173820",
-        "email": "user173820@testmail.com",
-        "phone": "+929893550007",
-        "department": "IT",
-        "role": "SoftwareEngineer",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-30T10:22:01.123654Z",
-        "updatedDate": "2025-10-30T10:22:01.123654Z",
-        "isActive": true
-    },
-    {
-        "userId": "GHk5SWoE3L",
-        "userName": "user_918253",
-        "email": "user918253@testmail.com",
-        "phone": "+929893550008",
-        "department": "Sales",
-        "role": "SalesManager",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-10-31T14:45:29.441123Z",
-        "updatedDate": "2025-10-31T14:45:29.441123Z",
-        "isActive": false
-    },
-    {
-        "userId": "JKl3ERuN2P",
-        "userName": "user_839201",
-        "email": "user839201@testmail.com",
-        "phone": "+929893550009",
-        "department": "Logistics",
-        "role": "DispatchOfficer",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-11-01T09:35:59.785432Z",
-        "updatedDate": "2025-11-01T09:35:59.785432Z",
-        "isActive": true
-    },
-    {
-        "userId": "VWx1HQpZ6T",
-        "userName": "user_729384",
-        "email": "user729384@testmail.com",
-        "phone": "+929893550010",
-        "department": "Procurement",
-        "role": "ProcurementOfficer",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-11-02T07:22:10.547321Z",
-        "updatedDate": "2025-11-02T07:22:10.547321Z",
-        "isActive": true
-    },
-    {
-        "userId": "BNm8TYrQ9C",
-        "userName": "user_581739",
-        "email": "user581739@testmail.com",
-        "phone": "+929893550011",
-        "department": "Research",
-        "role": "LabTechnician",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-11-03T10:18:21.894512Z",
-        "updatedDate": "2025-11-03T10:18:21.894512Z",
-        "isActive": false
-    },
-    {
-        "userId": "CXs4LOmK5D",
-        "userName": "user_987654",
-        "email": "user987654@testmail.com",
-        "phone": "+929893550012",
-        "department": "Quality Control",
-        "role": "QCInspector",
-        "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-        "createdDate": "2025-11-04T13:59:10.445123Z",
-        "updatedDate": "2025-11-04T13:59:10.445123Z",
-        "isActive": true
-    }
-]
-
-
-
 const AssignWarehouseComponent = () => {
     // Note: Media query to determine if the screen is small
     const isSmallScreen = useMediaQuery("(max-width: 768px)");
@@ -391,12 +257,13 @@ const AssignWarehouseComponent = () => {
 
     // Note: Redux State
     const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-    // const {
-    //     usersList: { users, totalCount },
-    // } = useAppSelector(({ userStates }) => userStates);
-    // const {
-    //     ListAllPlantsCodes: { data: warehouseList, totalCount: plantsCount }
-    // } = useAppSelector(({ plantStates }) => plantStates);
+    const {
+        usersList: { users, totalCount },
+    } = useAppSelector(({ userStates }) => userStates);
+    const {
+        wareHousesList: { data: warehouseList, totalCount: warehouseCount }
+    } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
+    console.log("🚀 ~ AssignWarehouseComponent ~ wareHousesList:", warehouseList)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -441,10 +308,10 @@ const AssignWarehouseComponent = () => {
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
             dispatch(
-                fetchListAllPlantsCodes({
+                fetchAllWareHouses({
                     authToken: authenticatedUser?.token as string,
                     lastCount: pagination.pageSize, // Use page size for server-side pagination
                     skipRecords: skipRecord,
@@ -526,15 +393,36 @@ const AssignWarehouseComponent = () => {
         }
     }
 
-    // const handleAssignGroups = () => {
-    //   dispatch(
-    //     assignGroupToUser({
-    //       token: authenticatedUser?.token as string,
-    //       addGroupToUserData: groupPermission!,
-    //       resHandler: handleResponse,
-    //     })
-    //   );
-    // };
+    const handleResponse = (data: any) => {
+        showNotificationToast("Warehouses Assigned", data.message, customStyles.colors._408CCE);
+        dispatch(
+            fetchAllWareHouses({
+                authToken: authenticatedUser?.token as string,
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord,
+            })
+        ).finally(() => {
+            setSelectedWarehousesAllow([])
+            setSelectedWarehousesReceive([])
+            setSelectedUser(null)
+            setIsLoading(false);
+        });
+    }
+
+    const handleAssignWarehouses = () => {
+        const payload: any = {
+            userId: selectedUser,
+            normalWarehouseIds: selectedWarehousesAllow.map((item: any) => item?.id),
+            receiverWarehouseIds: selectedWarehousesReceive.map((item: any) => item?.id)
+        }
+        dispatch(
+            assignWareHouseToUser({
+                token: authenticatedUser?.token as string,
+                payload: payload,
+                resHandler: handleResponse,
+            })
+        );
+    };
 
     return (
         <Box>
@@ -618,7 +506,7 @@ const AssignWarehouseComponent = () => {
                         radius={8}
                         size={isSmallScreen ? "sm" : "md"}
                         leftSection={<IconBuildingWarehouse size={isSmallScreen ? 20 : 24} />}
-                        // onClick={handleAssignGroups}
+                        onClick={handleAssignWarehouses}
                         disabled={!selectedUser && selectedWarehousesAllow?.length > 0}
                         w={isSmallScreen ? "100%" : "auto"}
                         mt={isSmallScreen ? 16 : 0}
@@ -631,10 +519,10 @@ const AssignWarehouseComponent = () => {
             {/* Table */}
             <TanStackTable
                 data={Array.isArray(warehouseList) ? warehouseList : []}
-                dataCount={warehouseList?.length}
+                dataCount={warehouseCount}
                 columns={columns}
-                // isLoading={isLoading}
-                isLoading={false}
+                isLoading={isLoading}
+                // isLoading={false}
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}

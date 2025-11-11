@@ -56,20 +56,20 @@ const fetchWarehousesListByUserId = createAsyncThunk(
 const assignWareHouseToUser = createAsyncThunk(
     "warehouse/assignWareHouseToUser",
     async (
-        { wareHouseData, token, resHandler }:
+        { payload, token, resHandler }:
             {
-                wareHouseData: WareHouseDataObj,
+                payload: WareHouseDataObj,
                 token: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
-        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', wareHouseData, token);
+        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', payload, token);
 
         const { status, data } = response;
 
         if (status == 201) {
-            resHandler(response);
+            resHandler(data);
         };
     }
 );
