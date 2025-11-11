@@ -103,6 +103,11 @@ export interface PlantsStateType {
         data: any,
         totalCount: number
     };
+    ListAllPlantsCodesByUser: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
     // listGroupCodesByUserId: {
     //     id: string,
     //     groupCode: number | string,

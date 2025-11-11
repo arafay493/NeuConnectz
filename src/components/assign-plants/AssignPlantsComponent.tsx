@@ -21,180 +21,12 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
-import { assignPlantsToUser, fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
+import { assignPlantsToUser, fetchListAllPlantsCodes, fetchListAllUserPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
 import PlantsList_Columns from "../columns/PlantsList_Columns";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
-
-// const plantsCount = 50
-// const plantsList = [
-//   { "id": "1", "plantCode": "1100", "plantName": "Head Office", "companyCode": "1100" },
-//   { "id": "2", "plantCode": "1200", "plantName": "Gadoon", "companyCode": "1100" },
-//   { "id": "3", "plantCode": "1300", "plantName": "Hub", "companyCode": "1100" },
-//   { "id": "4", "plantCode": "1400", "plantName": "Virtual Plant", "companyCode": "1100" },
-//   { "id": "5", "plantCode": "1500", "plantName": "Testing Plant", "companyCode": "1222" },
-//   { "id": "6", "plantCode": "1600", "plantName": "Karachi Port", "companyCode": "1200" },
-//   { "id": "7", "plantCode": "1700", "plantName": "Lahore Plant", "companyCode": "1300" },
-//   { "id": "8", "plantCode": "1800", "plantName": "Faisalabad Unit", "companyCode": "1300" },
-//   { "id": "9", "plantCode": "1900", "plantName": "Rawalpindi Depot", "companyCode": "1400" },
-//   { "id": "10", "plantCode": "2000", "plantName": "Multan Plant", "companyCode": "1400" },
-//   { "id": "11", "plantCode": "2100", "plantName": "Hyderabad Plant", "companyCode": "1500" },
-//   { "id": "12", "plantCode": "2200", "plantName": "Peshawar Depot", "companyCode": "1500" },
-//   { "id": "13", "plantCode": "2300", "plantName": "Quetta Branch", "companyCode": "1600" },
-//   { "id": "14", "plantCode": "2400", "plantName": "Sukkur Plant", "companyCode": "1600" },
-//   { "id": "15", "plantCode": "2500", "plantName": "Nawabshah Unit", "companyCode": "1700" },
-//   { "id": "16", "plantCode": "2600", "plantName": "Mirpurkhas Plant", "companyCode": "1700" },
-//   { "id": "17", "plantCode": "2700", "plantName": "Sialkot Plant", "companyCode": "1800" },
-//   { "id": "18", "plantCode": "2800", "plantName": "Gujranwala Plant", "companyCode": "1800" },
-//   { "id": "19", "plantCode": "2900", "plantName": "Kasur Unit", "companyCode": "1900" },
-//   { "id": "20", "plantCode": "3000", "plantName": "Sheikhupura Plant", "companyCode": "1900" },
-//   { "id": "21", "plantCode": "3100", "plantName": "Sahiwal Depot", "companyCode": "2000" },
-//   { "id": "22", "plantCode": "3200", "plantName": "Okara Plant", "companyCode": "2000" },
-//   { "id": "23", "plantCode": "3300", "plantName": "Muridke Plant", "companyCode": "2100" },
-//   { "id": "24", "plantCode": "3400", "plantName": "Mardan Plant", "companyCode": "2100" },
-//   { "id": "25", "plantCode": "3500", "plantName": "Swabi Depot", "companyCode": "2200" },
-//   { "id": "26", "plantCode": "3600", "plantName": "Attock Plant", "companyCode": "2200" },
-//   { "id": "27", "plantCode": "3700", "plantName": "Gwadar Unit", "companyCode": "2300" },
-//   { "id": "28", "plantCode": "3800", "plantName": "Thar Plant", "companyCode": "2300" },
-//   { "id": "29", "plantCode": "3900", "plantName": "Jacobabad Plant", "companyCode": "2400" },
-//   { "id": "30", "plantCode": "4000", "plantName": "Turbat Plant", "companyCode": "2400" }
-// ]
-
-// const totalCount = 500
-// const users = [
-//   {
-//     "userId": "MMlFCWxP8T",
-//     "userName": "user_327590",
-//     "email": "user327590@testmail.com",
-//     "phone": "+929893550003",
-//     "department": "Production",
-//     "role": "ProductionManager",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-27T12:58:47.458968Z",
-//     "updatedDate": "2025-10-27T12:58:47.458968Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "ABx7PQwL9R",
-//     "userName": "user_412365",
-//     "email": "user412365@testmail.com",
-//     "phone": "+929893550004",
-//     "department": "Finance",
-//     "role": "Accountant",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-28T09:20:15.125478Z",
-//     "updatedDate": "2025-10-28T09:20:15.125478Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "YZr8LKtF6M",
-//     "userName": "user_583920",
-//     "email": "user583920@testmail.com",
-//     "phone": "+929893550005",
-//     "department": "HR",
-//     "role": "HRExecutive",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-28T11:10:47.987654Z",
-//     "updatedDate": "2025-10-28T11:10:47.987654Z",
-//     "isActive": false
-//   },
-//   {
-//     "userId": "PLm9VXeR4S",
-//     "userName": "user_294710",
-//     "email": "user294710@testmail.com",
-//     "phone": "+929893550006",
-//     "department": "Maintenance",
-//     "role": "Technician",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-29T08:15:11.998741Z",
-//     "updatedDate": "2025-10-29T08:15:11.998741Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "TRq2BNyU7J",
-//     "userName": "user_173820",
-//     "email": "user173820@testmail.com",
-//     "phone": "+929893550007",
-//     "department": "IT",
-//     "role": "SoftwareEngineer",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-30T10:22:01.123654Z",
-//     "updatedDate": "2025-10-30T10:22:01.123654Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "GHk5SWoE3L",
-//     "userName": "user_918253",
-//     "email": "user918253@testmail.com",
-//     "phone": "+929893550008",
-//     "department": "Sales",
-//     "role": "SalesManager",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-10-31T14:45:29.441123Z",
-//     "updatedDate": "2025-10-31T14:45:29.441123Z",
-//     "isActive": false
-//   },
-//   {
-//     "userId": "JKl3ERuN2P",
-//     "userName": "user_839201",
-//     "email": "user839201@testmail.com",
-//     "phone": "+929893550009",
-//     "department": "Logistics",
-//     "role": "DispatchOfficer",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-11-01T09:35:59.785432Z",
-//     "updatedDate": "2025-11-01T09:35:59.785432Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "VWx1HQpZ6T",
-//     "userName": "user_729384",
-//     "email": "user729384@testmail.com",
-//     "phone": "+929893550010",
-//     "department": "Procurement",
-//     "role": "ProcurementOfficer",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-11-02T07:22:10.547321Z",
-//     "updatedDate": "2025-11-02T07:22:10.547321Z",
-//     "isActive": true
-//   },
-//   {
-//     "userId": "BNm8TYrQ9C",
-//     "userName": "user_581739",
-//     "email": "user581739@testmail.com",
-//     "phone": "+929893550011",
-//     "department": "Research",
-//     "role": "LabTechnician",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-11-03T10:18:21.894512Z",
-//     "updatedDate": "2025-11-03T10:18:21.894512Z",
-//     "isActive": false
-//   },
-//   {
-//     "userId": "CXs4LOmK5D",
-//     "userName": "user_987654",
-//     "email": "user987654@testmail.com",
-//     "phone": "+929893550012",
-//     "department": "Quality Control",
-//     "role": "QCInspector",
-//     "createdBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "updatedBy": "83991774-3fde-5d21-c442-de2d76f588f1",
-//     "createdDate": "2025-11-04T13:59:10.445123Z",
-//     "updatedDate": "2025-11-04T13:59:10.445123Z",
-//     "isActive": true
-//   }
-// ]
-
-
+import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
+import UserPlantsList_Columns from "../columns/UserPlantsList_Columns";
 
 const AssignPlantsComponent = () => {
   // Note: Media query to determine if the screen is small
@@ -218,6 +50,9 @@ const AssignPlantsComponent = () => {
   const {
     ListAllPlantsCodes: { data: plantsList, totalCount: plantsCount }
   } = useAppSelector(({ plantStates }) => plantStates);
+  const {
+    ListAllPlantsCodesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
+  } = useAppSelector(({ plantStates }) => plantStates);
 
   // Transform users data for Select component
   const activeUsersData =
@@ -237,10 +72,15 @@ const AssignPlantsComponent = () => {
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
   });
+  const [userAssignedPlantsPagination, setUserAssignedPlantsPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10, // Adjusted to a more reasonable default
+  });
 
   // Pagination values for Api call
   const skipRecord = pagination.pageIndex * pagination.pageSize;
   const skipRecordUserList = userListPagination.pageIndex * userListPagination.pageSize;
+  const skipAssignedPlantsUserList = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
 
   // Loadings States
   const [isLoading, setIsLoading] = useState(false);
@@ -276,6 +116,25 @@ const AssignPlantsComponent = () => {
     }
   }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
 
+
+  useEffect(() => {
+    if (authenticatedUser?.token && selectedUser) {
+      setIsLoading(true);
+      const skipRecord = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
+
+      dispatch(
+        fetchListAllUserPlantsCodes({
+          authToken: authenticatedUser?.token as string,
+          userId: selectedUser ?? null,
+          lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+          skipRecords: skipRecord,
+        })
+      ).finally(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [authenticatedUser, dispatch, userAssignedPlantsPagination.pageIndex, userAssignedPlantsPagination.pageSize, selectedUser]);
+
   const handleSelectAllPlants = () => {
     if (selectedPlants?.length === plantsList?.length) {
       setSelectedPlants([])
@@ -294,6 +153,16 @@ const AssignPlantsComponent = () => {
 
 
   const columns = PlantsList_Columns({
+    pagination,
+    selectedUser,
+    handleSelectAllPlants,
+    handleSelectSpecificPlant,
+    selectedPlants,
+    plantsList,
+  })
+
+
+  const userPlantListColumns = UserPlantsList_Columns({
     pagination,
     selectedUser,
     handleSelectAllPlants,
@@ -322,6 +191,11 @@ const AssignPlantsComponent = () => {
         setScrollItemUserListLoading(false)
       });
     }
+  }
+
+  const handleSelectUser = (value: string) => {
+    setSelectedUser(value ?? "")
+    dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
   }
 
   const handleResponse = (data: any) => {
@@ -424,7 +298,7 @@ const AssignPlantsComponent = () => {
               placeholder="Select User"
               data={activeUsersData}
               value={selectedUser}
-              onChange={(value) => setSelectedUser(value ?? "")}
+              onChange={(value: any) => handleSelectUser(value)}
               clearable
               w="100%"
               radius={8}
@@ -473,7 +347,7 @@ const AssignPlantsComponent = () => {
       </Group>
 
       {/* Table */}
-      <TanStackTable
+      {assignedPlantsList?.length === 0 ? <TanStackTable
         data={Array.isArray(plantsList) ? plantsList : []}
         dataCount={plantsList?.length}
         columns={columns}
@@ -484,7 +358,18 @@ const AssignPlantsComponent = () => {
         title={"Assign Plants"}
         subTitle={"Select user to assign plants"}
         skipRecord={skipRecord}
-      />
+      /> : < TanStackTable
+        data={Array.isArray(assignedPlantsList) ? assignedPlantsList : []}
+        dataCount={assignedPlantsList?.length}
+        columns={userPlantListColumns}
+        isLoading={isLoading}
+        isInsideModalTable={true}
+        pagination={userAssignedPlantsPagination}
+        setPagination={setUserAssignedPlantsPagination}
+        title={"Assign Plants"}
+        subTitle={"Select user to assign plants"}
+        skipRecord={skipAssignedPlantsUserList}
+      />}
     </Box>
   );
 };

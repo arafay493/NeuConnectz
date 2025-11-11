@@ -9,6 +9,10 @@ const initialState: PlantsStateType = {
         data: [],
         totalCount: 0
     },
+    ListAllPlantsCodesByUser: {
+        data: [],
+        totalCount: 0
+    },
     PlantsErrorState: ""
 };
 
@@ -29,6 +33,19 @@ const plantsSlice = createSlice({
             state.ListAllPlantsCodes = action?.payload;
         },
 
+        FETCH_ALL_PLANTS_CODES_BY_USER: (state, action: PayloadAction<any>) => {
+            state.PlantsErrorState = "";
+            state.ListAllPlantsCodesByUser = action?.payload;
+        },
+
+        CLEAR_ALL_PLANTS_STATES_BY_USER: (state) => {
+            state.ListAllPlantsCodesByUser = {
+                data: [],
+                totalCount: 0
+            };
+            state.PlantsErrorState = "";
+        },
+
         CLEAR_ALL_PLANTS_STATES: (state) => {
             state.ListAllPlantsCodes = {
                 data: [],
@@ -42,7 +59,9 @@ const plantsSlice = createSlice({
 export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PLANTS_DATA,
+        FETCH_ALL_PLANTS_CODES_BY_USER,
         FETCH_ALL_PLANTS_CODES,
+        CLEAR_ALL_PLANTS_STATES_BY_USER,
         CLEAR_ALL_PLANTS_STATES
     } = plantsSlice.actions;
 export default plantsSlice.reducer;
