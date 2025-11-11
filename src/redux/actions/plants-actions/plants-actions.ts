@@ -34,28 +34,31 @@ const fetchListAllPlantsCodes = createAsyncThunk(
 );
 
 // Note: Action function to assign group to user...!
-// const assignGroupToUser = createAsyncThunk(
-//     "group/assignGroupToUser",
-//     async (
-//         { addGroupToUserData, token, resHandler }:
-//             {
-//                 addGroupToUserData: AssignGroupToUserDataType,
-//                 token: string,
-//                 resHandler: ResHandler
-//             },
-//         { dispatch }
-//     ) => {
-//         const response = await apiPost('/neu-connect/v2/IGroupcodeFeature/AddGroupcodeToUser', addGroupToUserData, token);
+const assignPlantsToUser = createAsyncThunk(
+    "plants/assignPlantsToUser",
+    async (
+        // { payload, token, resHandler }:
+        //     {
+        //         addGroupToUserData: AssignGroupToUserDataType,
+        //         token: string,
+        //         resHandler: ResHandler
+        //     },
+        { payload, token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        const response = await apiPost('/neu-connect/v2/IPlantFeature/AssignPlantsToUser', payload, token);
 
-//         const { status, data } = response;
+        const { status, data } = response;
 
-//         if (status == 201) {
-//             resHandler(response);
-//         };
-//     }
-// );
+        if (status == 201) {
+            resHandler(data);
+        };
+    }
+);
 
 export {
-    fetchListAllPlantsCodes
+    fetchListAllPlantsCodes,
+    assignPlantsToUser
 };
 

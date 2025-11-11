@@ -21,9 +21,10 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
-import { fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
+import { assignPlantsToUser, fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
 import PlantsList_Columns from "../columns/PlantsList_Columns";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 // const plantsCount = 50
 // const plantsList = [
@@ -202,7 +203,7 @@ const AssignPlantsComponent = () => {
   const isLargeScreen = useMediaQuery("(min-width: 1200px)");
 
   // Note: State for selected user
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [selectedPlants, setSelectedPlants] = useState<any>([]);
 
 
@@ -323,15 +324,47 @@ const AssignPlantsComponent = () => {
     }
   }
 
-  // const handleAssignGroups = () => {
-  //   dispatch(
-  //     assignGroupToUser({
-  //       token: authenticatedUser?.token as string,
-  //       addGroupToUserData: groupPermission!,
-  //       resHandler: handleResponse,
-  //     })
-  //   );
-  // };
+  const handleResponse = (data: any) => {
+    showNotificationToast("Plant Assigned", data.message, customStyles.colors._408CCE);
+    dispatch(
+      fetchListAllPlantsCodes({
+        authToken: authenticatedUser?.token as string,
+        lastCount: pagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord,
+      })
+    ).finally(() => {
+      setSelectedPlants([])
+      setIsLoading(false);
+    });
+  }
+
+  const handleAssignPlants = () => {
+    const payload = {
+      userId: selectedUser ?? null,
+      plantIds: selectedPlants.map((plant: any) => plant.id)
+    }
+    dispatch(
+      assignPlantsToUser({
+        token: authenticatedUser?.token as string,
+        payload,
+        resHandler: handleResponse,
+      })
+    );
+  };
+
+  const handleAssignAllPlants = () => {
+    const payload = {
+      userId: selectedUser ?? null,
+      plantIds: plantsList.map((plant: any) => plant.id)
+    }
+    dispatch(
+      assignPlantsToUser({
+        token: authenticatedUser?.token as string,
+        payload,
+        resHandler: handleResponse,
+      })
+    );
+  };
 
   return (
     <Box>
@@ -416,8 +449,8 @@ const AssignPlantsComponent = () => {
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
             leftSection={<IconPlant size={isSmallScreen ? 20 : 24} />}
-            // onClick={handleAssignGroups}
-            // disabled={!selectedUser}
+            onClick={handleAssignAllPlants}
+            disabled={!selectedUser}
             w={isSmallScreen ? "100%" : "auto"}
             mt={isSmallScreen ? 16 : 0}
           >
@@ -429,7 +462,7 @@ const AssignPlantsComponent = () => {
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
             leftSection={<IconSeedling size={isSmallScreen ? 20 : 24} />}
-            // onClick={handleAssignGroups}
+            onClick={handleAssignPlants}
             disabled={!selectedUser && selectedPlants?.length > 0}
             w={isSmallScreen ? "100%" : "auto"}
             mt={isSmallScreen ? 16 : 0}
