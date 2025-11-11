@@ -115,7 +115,7 @@ const WarehouseList_Columns = ({
                     // const isAllowed = selectedWarehousesAllow.includes(row?.original)
                     // const isRecieved = selectedWarehousesReceive.includes(row?.original)
                     // const isChecked = isAllowed && isRecieved
-                    const isChecked = selectedWarehousesReceive.includes(row?.original)
+                    // const isChecked = selectedWarehousesReceive.includes(row?.original)
                     return (
                         <Checkbox
                             checked={(selectedWarehousesReceive?.length === warehouseList?.length)}
@@ -127,14 +127,14 @@ const WarehouseList_Columns = ({
                             label="Recevier"
                             color={customStyles.colors._1B59F8}
                             radius="xl"
-                            disabled={!selectedUser}
+                            disabled={!(selectedWarehousesAllow?.length === warehouseList?.length)}
                             title="Select all on current page"
                         />
                     );
                 },
                 minSize: 180,
                 cell: ({ row }: any) => {
-                    // const isAllowed = selectedWarehousesAllow.includes(row?.original)
+                    const isAllowed = selectedWarehousesAllow.includes(row?.original)
                     // const isRecieved = selectedWarehousesReceive.includes(row?.original)
                     // const isChecked = isAllowed && isRecieved
                     const isChecked = selectedWarehousesReceive.includes(row?.original)
@@ -148,7 +148,7 @@ const WarehouseList_Columns = ({
                             color={customStyles.colors._1B59F8}
                             label="Allow access"
                             radius="xl"
-                            disabled={!selectedUser}
+                            disabled={!isAllowed}
                             w={200}
                             styles={{
                                 root: {
