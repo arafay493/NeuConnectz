@@ -458,6 +458,7 @@ const AssignWarehouseComponent = () => {
     const handleSelectAllWarehousesAllow = () => {
         if (selectedWarehousesAllow?.length === warehouseList?.length) {
             setSelectedWarehousesAllow([])
+            setSelectedWarehousesReceive([])
         } else {
             setSelectedWarehousesAllow(warehouseList)
         }
@@ -468,6 +469,9 @@ const AssignWarehouseComponent = () => {
             setSelectedWarehousesAllow(selectedWarehousesAllow.filter((p: any) => p.id !== warehouse.id));
         } else {
             setSelectedWarehousesAllow([...selectedWarehousesAllow, warehouse]);
+        }
+        if (selectedWarehousesAllow.includes(warehouse)) {
+            setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
         }
     };
 
