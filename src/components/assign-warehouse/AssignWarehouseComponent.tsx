@@ -26,6 +26,7 @@ import WarehouseList_Columns from "../columns/WarehouseList_Columns";
 import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserPlants } from "@/redux/actions/warehouse-actions/warehouse-actions";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES, CLEAR_ALL_WAREHOUSE_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
+import Loader from "../loader/loader";
 
 const plantsCount = 50
 const warehouseList = [
@@ -266,7 +267,7 @@ const AssignWarehouseComponent = () => {
         wareHousesList: { data: warehouseList, totalCount: warehouseCount },
         wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
-    console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -298,6 +299,7 @@ const AssignWarehouseComponent = () => {
 
     // Loadings States
     const [isLoading, setIsLoading] = useState(false);
+    const [isMainLoading, setIsMainLoading] = useState(false);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
 
@@ -550,6 +552,7 @@ const AssignWarehouseComponent = () => {
     }
 
     const handleAssignWarehouses = () => {
+        setIsMainLoading(true)
         const payload: any = {
             userId: selectedUser,
             normalWarehouseIds: selectedWarehousesAllow.map((item: any) => item?.id),
@@ -561,7 +564,9 @@ const AssignWarehouseComponent = () => {
                 payload: payload,
                 resHandler: handleResponse,
             })
-        );
+        ).finally(() => {
+            setIsMainLoading(false)
+        })
     };
 
     const handleSelectUser = (value: string) => {
@@ -574,6 +579,10 @@ const AssignWarehouseComponent = () => {
         setSelectedWarehousesAllow([])
         setSelectedWarehousesReceive([])
         setSelectedUser(null)
+    }
+
+    if (isMainLoading) {
+        return <Loader loadingState={isMainLoading} />
     }
 
     return (
