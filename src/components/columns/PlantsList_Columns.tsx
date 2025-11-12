@@ -72,7 +72,8 @@ const PlantsList_Columns = ({
                 },
                 minSize: 180,
                 cell: ({ row }: any) => {
-                    const isChecked = selectedPlants.includes(row?.original)
+                    // const isChecked = selectedPlants.includes(row?.original)
+                    const isChecked = row?.original?.allowed
                     return (
                         <Checkbox
                             checked={isChecked}

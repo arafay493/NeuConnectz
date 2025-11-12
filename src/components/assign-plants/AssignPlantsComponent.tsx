@@ -37,6 +37,7 @@ const AssignPlantsComponent = () => {
   // Note: State for selected user
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [selectedPlants, setSelectedPlants] = useState<any>([]);
+  const [transformedPlantsList, setTransformedPlantsList] = useState([])
 
 
   // Note: Dispatcher for all Actions
@@ -53,6 +54,7 @@ const AssignPlantsComponent = () => {
   const {
     ListAllPlantsCodesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
   } = useAppSelector(({ plantStates }) => plantStates);
+  console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
   // Transform users data for Select component
   const activeUsersData =
@@ -85,6 +87,31 @@ const AssignPlantsComponent = () => {
   // Loadings States
   const [isLoading, setIsLoading] = useState(false);
   const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
+
+
+  useEffect(() => {
+    const assignedIds = assignedPlantsList.map((p: any) => p.id);
+
+    const updatedList: any = plantsList.map((item: any) => ({
+      ...item,
+      allowed: assignedIds.includes(item.id),
+    }));
+    setTransformedPlantsList(updatedList);
+  }, [plantsList]);
+
+
+  useEffect(() => {
+    const assignedIds = assignedPlantsList.map((p: any) => p.id);
+    const transformedAssignedList = assignedPlantsList.map((p: any) => p);
+    setSelectedPlants(transformedAssignedList)
+
+    const updatedList: any = plantsList.map((item: any) => ({
+      ...item,
+      allowed: assignedIds.includes(item.id),
+    }));
+
+    setTransformedPlantsList(updatedList);
+  }, [assignedPlantsList]);
 
   useEffect(() => {
     if (authenticatedUser?.token) {
@@ -136,6 +163,12 @@ const AssignPlantsComponent = () => {
   }, [authenticatedUser, dispatch, userAssignedPlantsPagination.pageIndex, userAssignedPlantsPagination.pageSize, selectedUser]);
 
   const handleSelectAllPlants = () => {
+    const updatedList: any = transformedPlantsList.map((item: any) => ({
+      ...item,
+      allowed: !item.allowed,
+    }));
+
+    setTransformedPlantsList(updatedList);
     if (selectedPlants?.length === plantsList?.length) {
       setSelectedPlants([])
     } else {
@@ -144,6 +177,13 @@ const AssignPlantsComponent = () => {
   }
 
   const handleSelectSpecificPlant = (plant: any) => {
+    const updatedList: any = transformedPlantsList.map((item: any) => ({
+      ...item,
+      allowed: item.id === plant.id ? !item.allowed : item.allowed,
+    }));
+
+    setTransformedPlantsList(updatedList);
+
     if (selectedPlants.some((p: any) => p.id === plant.id)) {
       setSelectedPlants(selectedPlants.filter((p: any) => p.id !== plant.id));
     } else {
@@ -194,8 +234,9 @@ const AssignPlantsComponent = () => {
   }
 
   const handleSelectUser = (value: string) => {
+    // console.log("🚀 ~ handleSelectUser ~ value:", value, transformedPlantsList, assignedPlantsList)
     setSelectedUser(value ?? "")
-    dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+    // dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
   }
 
   const handleResponse = (data: any) => {
@@ -206,8 +247,15 @@ const AssignPlantsComponent = () => {
         lastCount: pagination.pageSize, // Use page size for server-side pagination
         skipRecords: skipRecord,
       })
+    )
+    dispatch(
+      fetchListAllUserPlantsCodes({
+        authToken: authenticatedUser?.token as string,
+        userId: selectedUser ?? null,
+        lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord,
+      })
     ).finally(() => {
-      setSelectedPlants([])
       setIsLoading(false);
     });
   }
@@ -347,7 +395,7 @@ const AssignPlantsComponent = () => {
       </Group>
 
       {/* Table */}
-      {assignedPlantsList?.length === 0 ? <TanStackTable
+      {/* {assignedPlantsList?.length === 0 ? <TanStackTable
         data={Array.isArray(plantsList) ? plantsList : []}
         dataCount={plantsList?.length}
         columns={columns}
@@ -369,7 +417,21 @@ const AssignPlantsComponent = () => {
         title={"Assign Plants"}
         subTitle={"Select user to assign plants"}
         skipRecord={skipAssignedPlantsUserList}
-      />}
+      />} */}
+
+      {/* Table */}
+      <TanStackTable
+        data={Array.isArray(transformedPlantsList) ? transformedPlantsList : []}
+        dataCount={transformedPlantsList?.length}
+        columns={columns}
+        isLoading={isLoading}
+        isInsideModalTable={true}
+        pagination={pagination}
+        setPagination={setPagination}
+        title={"Assign Plants"}
+        subTitle={"Select user to assign plants"}
+        skipRecord={skipRecord}
+      />
     </Box>
   );
 };
