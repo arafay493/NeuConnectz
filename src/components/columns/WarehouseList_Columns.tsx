@@ -97,7 +97,8 @@ const WarehouseList_Columns = ({
                 },
                 minSize: 180,
                 cell: ({ row }: any) => {
-                    const isChecked = selectedWarehousesAllow.includes(row?.original)
+                    // const isChecked = selectedWarehousesAllow.includes(row?.original)
+                    const isChecked = row?.original?.allowed
                     return (
                         <Checkbox
                             checked={isChecked}
@@ -134,13 +135,15 @@ const WarehouseList_Columns = ({
             {
                 id: "receiver",
                 header: ({ row }: any) => {
-                    // const isAllowed = selectedWarehousesAllow.includes(row?.original)
-                    // const isRecieved = selectedWarehousesReceive.includes(row?.original)
-                    // const isChecked = isAllowed && isRecieved
+                    const isAllowed = row?.original?.allowed
+                    const isRecieved = row?.original?.recieverAllowed
+                    const isChecked = isAllowed && isRecieved
                     // const isChecked = selectedWarehousesReceive.includes(row?.original)
+                    // const isChecked = isAllowed && isRecieved
                     return (
                         <Checkbox
-                            checked={(selectedWarehousesReceive?.length === warehouseList?.length)}
+                            // checked={(selectedWarehousesReceive?.length === warehouseList?.length)}
+                            checked={isChecked}
                             indeterminate={selectedWarehousesReceive?.length < warehouseList?.length && selectedWarehousesReceive?.length > 0}
                             onChange={(event) =>
                                 handleSelectAllWarehousesReciever()
@@ -149,17 +152,23 @@ const WarehouseList_Columns = ({
                             label="Recevier"
                             color={customStyles.colors._1B59F8}
                             radius="xl"
-                            disabled={!(selectedWarehousesAllow?.length === warehouseList?.length)}
+                            // disabled={!(selectedWarehousesAllow?.length === warehouseList?.length)}
+                            disabled={!isChecked}
                             title="Select all on current page"
                         />
                     );
                 },
                 minSize: 180,
                 cell: ({ row }: any) => {
-                    const isAllowed = selectedWarehousesAllow.includes(row?.original)
+                    // const isAllowed = selectedWarehousesAllow.includes(row?.original)
                     // const isRecieved = selectedWarehousesReceive.includes(row?.original)
                     // const isChecked = isAllowed && isRecieved
-                    const isChecked = selectedWarehousesReceive.includes(row?.original)
+                    // const isChecked = selectedWarehousesReceive.includes(row?.original)
+
+                    const isAllowed = row?.original?.allowed
+                    const isRecieved = row?.original?.recieverAllowed
+                    // const isChecked = isAllowed && isRecieved
+                    const isChecked = row?.original?.recieverAllowed
                     return (
                         <Checkbox
                             checked={isChecked}

@@ -251,6 +251,7 @@ const AssignWarehouseComponent = () => {
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [selectedWarehousesAllow, setSelectedWarehousesAllow] = useState<any>([]);
     const [selectedWarehousesReceive, setSelectedWarehousesReceive] = useState<any>([]);
+    const [transformedWarehousesList, setTransformedWarehousesList] = useState([])
 
 
     // Note: Dispatcher for all Actions
@@ -265,6 +266,7 @@ const AssignWarehouseComponent = () => {
         wareHousesList: { data: warehouseList, totalCount: warehouseCount },
         wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
+    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -298,6 +300,22 @@ const AssignWarehouseComponent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
+
+    useEffect(() => {
+        const assignedIds = warehouseByUserPlantsList.map((p: any) => p.id);
+        const transformedAssignedList = warehouseByUserPlantsList.map((p: any) => p);
+        // setSelectedPlants(transformedAssignedList)
+        setSelectedWarehousesAllow(transformedAssignedList)
+        setSelectedWarehousesReceive(transformedAssignedList)
+        const updatedList: any = warehouseList.map((item: any) => ({
+            ...item,
+            allowed: assignedIds.includes(item.id),
+            recieverAllowed: false,
+        }));
+
+        setTransformedWarehousesList(updatedList);
+    }, [warehouseByUserPlantsList]);
+
     useEffect(() => {
         if (authenticatedUser?.token) {
             dispatch(fetchAllUsers({
@@ -310,53 +328,124 @@ const AssignWarehouseComponent = () => {
         }
     }, [authenticatedUser?.token, dispatch]);
 
-
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
             // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-            dispatch(
-                fetchAllWareHouses({
-                    authToken: authenticatedUser?.token as string,
-                    lastCount: pagination.pageSize, // Use page size for server-side pagination
-                    skipRecords: skipRecord,
-                })
-            ).finally(() => {
+            Promise.all([
+                dispatch(
+                    fetchAllWareHouses({
+                        authToken: authenticatedUser?.token as string,
+                        lastCount: pagination.pageSize, // Use page size for server-side pagination
+                        skipRecords: skipRecord,
+                    })
+                ),
+                dispatch(
+                    fetchWarehousesListByUserPlants({
+                        authToken: authenticatedUser?.token as string,
+                        userId: selectedUser ?? ""
+                        // lastCount: pagination.pageSize,
+                        // skipRecords: skipRecord,
+                    })
+                )
+            ]).finally(() => {
                 setIsLoading(false);
             });
-        }
-    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
 
+        }
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, selectedUser]);
 
     useEffect(() => {
-        if (authenticatedUser?.token) {
-            setIsLoading(true);
-            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+        const assignedIds = warehouseByUserPlantsList.map((p: any) => p.id);
 
-            dispatch(
-                fetchWarehousesListByUserPlants({
-                    authToken: authenticatedUser?.token as string,
-                    lastCount: userListByPlantsPagination.pageSize, // Use page size for server-side pagination
-                    userId: selectedUser ?? "",
-                    skipRecords: skipRecordUserListByPlants,
-                })
-            ).finally(() => {
-                setIsLoading(false);
-            });
-        }
-    }, [authenticatedUser, dispatch, userListByPlantsPagination.pageIndex, userListByPlantsPagination.pageSize, selectedUser]);
+        const updatedList: any = warehouseList.map((item: any) => ({
+            ...item,
+            allowed: assignedIds.includes(item.id),
+            recieverAllowed: false,
+        }));
+        setTransformedWarehousesList(updatedList);
+    }, [warehouseList]);
+
+    // useEffect(() => {
+    //     if (authenticatedUser?.token) {
+    //         setIsLoading(true);
+    //         // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+    //         dispatch(
+    //             fetchAllWareHouses({
+    //                 authToken: authenticatedUser?.token as string,
+    //                 lastCount: pagination.pageSize, // Use page size for server-side pagination
+    //                 skipRecords: skipRecord,
+    //             })
+    //         ).finally(() => {
+    //             setIsLoading(false);
+    //         });
+    //     }
+    // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
+
+
+    // useEffect(() => {
+    //     if (authenticatedUser?.token) {
+    //         setIsLoading(true);
+    //         // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+    //         dispatch(
+    //             fetchWarehousesListByUserPlants({
+    //                 authToken: authenticatedUser?.token as string,
+    //                 lastCount: userListByPlantsPagination.pageSize, // Use page size for server-side pagination
+    //                 userId: selectedUser ?? "",
+    //                 skipRecords: skipRecordUserListByPlants,
+    //             })
+    //         ).finally(() => {
+    //             setIsLoading(false);
+    //         });
+    //     }
+    // }, [authenticatedUser, dispatch, userListByPlantsPagination.pageIndex, userListByPlantsPagination.pageSize, selectedUser]);
+
+    // const handleSelectAllWarehousesAllow = () => {
+    //     if (selectedWarehousesAllow?.length === warehouseList?.length) {
+    //         setSelectedWarehousesAllow([])
+    //         setSelectedWarehousesReceive([])
+    //     } else {
+    //         setSelectedWarehousesAllow(warehouseList)
+    //     }
+    // }
 
     const handleSelectAllWarehousesAllow = () => {
-        if (selectedWarehousesAllow?.length === warehouseList?.length) {
-            setSelectedWarehousesAllow([])
-            setSelectedWarehousesReceive([])
+        const allSelected = selectedWarehousesAllow.length === transformedWarehousesList.length;
+
+        if (allSelected) {
+            // Unselect all
+            const unselectedList: any = transformedWarehousesList.map((item: any) => ({
+                ...item,
+                allowed: false,
+                // recieverAllowed: false,
+            }));
+            setSelectedWarehousesAllow([]);
+            setSelectedWarehousesReceive([]);
+            setTransformedWarehousesList(unselectedList);
         } else {
-            setSelectedWarehousesAllow(warehouseList)
+            // Select all
+            const selectedList: any = transformedWarehousesList.map((item: any) => ({
+                ...item,
+                allowed: true,
+                // recieverAllowed: false,
+            }));
+            setSelectedWarehousesAllow(selectedList);
+            setTransformedWarehousesList(selectedList);
         }
-    }
+    };
 
     const handleSelectSpecificWarehouseAllow = (warehouse: any) => {
+        const updatedList: any = transformedWarehousesList.map((item: any) => ({
+            ...item,
+            allowed: item.id === warehouse.id ? !item.allowed : item.allowed,
+            // recieverAllowed: item.id === warehouse.id ? !item.recieverAllowed : item.recieverAllowed,
+            // recieverAllowed: false,
+        }));
+
+        setTransformedWarehousesList(updatedList);
         if (selectedWarehousesAllow.some((p: any) => p.id === warehouse.id)) {
             setSelectedWarehousesAllow(selectedWarehousesAllow.filter((p: any) => p.id !== warehouse.id));
         } else {
@@ -367,15 +456,44 @@ const AssignWarehouseComponent = () => {
         }
     };
 
+    // const handleSelectAllWarehousesReciever = () => {
+    //     if (selectedWarehousesReceive?.length === warehouseList?.length) {
+    //         setSelectedWarehousesReceive([])
+    //     } else {
+    //         setSelectedWarehousesReceive(warehouseList)
+    //     }
+    // }
+
     const handleSelectAllWarehousesReciever = () => {
-        if (selectedWarehousesReceive?.length === warehouseList?.length) {
-            setSelectedWarehousesReceive([])
+        const allSelected = selectedWarehousesReceive.length === transformedWarehousesList.length;
+
+        if (allSelected) {
+            // Unselect all
+            const unselectedList: any = transformedWarehousesList.map((item: any) => ({
+                ...item,
+                recieverAllowed: false,
+            }));
+            setSelectedWarehousesAllow([]);
+            setSelectedWarehousesReceive([]);
+            setTransformedWarehousesList(unselectedList);
         } else {
-            setSelectedWarehousesReceive(warehouseList)
+            // Select all
+            const selectedList: any = transformedWarehousesList.map((item: any) => ({
+                ...item,
+                recieverAllowed: true,
+            }));
+            setSelectedWarehousesAllow(selectedList);
+            setTransformedWarehousesList(selectedList);
         }
-    }
+    };
 
     const handleSelectSpecificWarehouseReciever = (warehouse: any) => {
+        const updatedList: any = transformedWarehousesList.map((item: any) => ({
+            ...item,
+            recieverAllowed: item.id === warehouse.id ? !item.recieverAllowed : item.recieverAllowed,
+        }));
+
+        setTransformedWarehousesList(updatedList);
         if (selectedWarehousesReceive.some((p: any) => p.id === warehouse.id)) {
             setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
         } else {
@@ -451,7 +569,14 @@ const AssignWarehouseComponent = () => {
 
     const handleSelectUser = (value: string) => {
         setSelectedUser(value ?? "")
-        dispatch(CLEAR_ALL_WAREHOUSE_STATES())
+        // dispatch(CLEAR_ALL_WAREHOUSE_STATES())
+    }
+
+    const handleUserRemoved = () => {
+        dispatch(CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES())
+        setSelectedWarehousesAllow([])
+        setSelectedWarehousesReceive([])
+        setSelectedUser(null)
     }
 
     return (
@@ -512,7 +637,14 @@ const AssignWarehouseComponent = () => {
                             placeholder="Select User"
                             data={activeUsersData}
                             value={selectedUser}
-                            onChange={(value: any) => handleSelectUser(value)}
+                            // onChange={(value: any) => handleSelectUser(value)}
+                            onChange={(value: any) => {
+                                if (value === null) {
+                                    handleUserRemoved();
+                                } else {
+                                    handleSelectUser(value);
+                                }
+                            }}
                             clearable
                             w="100%"
                             radius={8}
@@ -547,7 +679,7 @@ const AssignWarehouseComponent = () => {
             </Group>
 
             {/* Table */}
-            {warehouseByUserPlantsList?.length === 0 ? <TanStackTable
+            {/* {warehouseByUserPlantsList?.length === 0 ? <TanStackTable
                 data={Array.isArray(warehouseList) ? warehouseList : []}
                 dataCount={warehouseCount}
                 columns={columns}
@@ -571,7 +703,22 @@ const AssignWarehouseComponent = () => {
                 title={"Warehouse List"}
                 subTitle={"Select user to assign warehouse"}
                 skipRecord={skipRecord}
-            />}
+            />} */}
+
+            {/* Table */}
+            <TanStackTable
+                data={Array.isArray(transformedWarehousesList) ? transformedWarehousesList : []}
+                dataCount={warehouseCount}
+                columns={columns}
+                isLoading={isLoading}
+                // isLoading={false}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={"Warehouse List"}
+                subTitle={"Select user to assign warehouse"}
+                skipRecord={skipRecord}
+            />
         </Box>
     );
 };

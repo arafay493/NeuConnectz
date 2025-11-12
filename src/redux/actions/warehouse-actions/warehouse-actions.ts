@@ -58,7 +58,7 @@ const fetchWarehousesListByUserId = createAsyncThunk(
 const fetchWarehousesListByUserPlants = createAsyncThunk(
     "warehouse/fetchWarehousesListByUserPlants",
     async (
-        { authToken, lastCount, skipRecords, userId }: { authToken: string, lastCount: number, skipRecords: number, userId: string },
+        { authToken, lastCount, skipRecords, userId }: { authToken: string, lastCount?: number, skipRecords?: number, userId: string },
         { dispatch }
     ) => {
         const params: { [key: string]: number | string } = {};
