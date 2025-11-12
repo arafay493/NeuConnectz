@@ -27,6 +27,7 @@ import PlantsList_Columns from "../columns/PlantsList_Columns";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import UserPlantsList_Columns from "../columns/UserPlantsList_Columns";
+import Loader from "../loader/loader";
 
 const AssignPlantsComponent = () => {
   // Note: Media query to determine if the screen is small
@@ -86,8 +87,8 @@ const AssignPlantsComponent = () => {
 
   // Loadings States
   const [isLoading, setIsLoading] = useState(false);
+  const [isMainLoading, setIsMainLoading] = useState(false);
   const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
-
 
   useEffect(() => {
     const assignedIds = assignedPlantsList.map((p: any) => p.id);
@@ -302,6 +303,7 @@ const AssignPlantsComponent = () => {
   }
 
   const handleAssignPlants = () => {
+    setIsMainLoading(true)
     const payload = {
       userId: selectedUser ?? null,
       plantIds: selectedPlants.map((plant: any) => plant.id)
@@ -312,10 +314,13 @@ const AssignPlantsComponent = () => {
         payload,
         resHandler: handleResponse,
       })
-    );
+    ).finally(() => {
+      setIsMainLoading(false)
+    })
   };
 
   const handleAssignAllPlants = () => {
+    setIsMainLoading(true)
     const payload = {
       userId: selectedUser ?? null,
       plantIds: plantsList.map((plant: any) => plant.id)
@@ -326,8 +331,14 @@ const AssignPlantsComponent = () => {
         payload,
         resHandler: handleResponse,
       })
-    );
+    ).finally(() => {
+      setIsMainLoading(false)
+    })
   };
+
+  if (isMainLoading) {
+    return <Loader loadingState={isMainLoading} />
+  }
 
   return (
     <Box>
