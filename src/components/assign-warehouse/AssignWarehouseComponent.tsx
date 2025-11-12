@@ -266,7 +266,7 @@ const AssignWarehouseComponent = () => {
         wareHousesList: { data: warehouseList, totalCount: warehouseCount },
         wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
-    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
+    console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -310,7 +310,7 @@ const AssignWarehouseComponent = () => {
         const updatedList: any = warehouseList.map((item: any) => ({
             ...item,
             allowed: assignedIds.includes(item.id),
-            recieverAllowed: false,
+            recieverAllowed: item?.isReceiver,
         }));
 
         setTransformedWarehousesList(updatedList);
@@ -362,7 +362,7 @@ const AssignWarehouseComponent = () => {
         const updatedList: any = warehouseList.map((item: any) => ({
             ...item,
             allowed: assignedIds.includes(item.id),
-            recieverAllowed: false,
+            recieverAllowed: item?.isReceiver,
         }));
         setTransformedWarehousesList(updatedList);
     }, [warehouseList]);
@@ -420,7 +420,7 @@ const AssignWarehouseComponent = () => {
             const unselectedList: any = transformedWarehousesList.map((item: any) => ({
                 ...item,
                 allowed: false,
-                // recieverAllowed: false,
+                recieverAllowed: false
             }));
             setSelectedWarehousesAllow([]);
             setSelectedWarehousesReceive([]);
@@ -430,7 +430,6 @@ const AssignWarehouseComponent = () => {
             const selectedList: any = transformedWarehousesList.map((item: any) => ({
                 ...item,
                 allowed: true,
-                // recieverAllowed: false,
             }));
             setSelectedWarehousesAllow(selectedList);
             setTransformedWarehousesList(selectedList);
@@ -441,8 +440,6 @@ const AssignWarehouseComponent = () => {
         const updatedList: any = transformedWarehousesList.map((item: any) => ({
             ...item,
             allowed: item.id === warehouse.id ? !item.allowed : item.allowed,
-            // recieverAllowed: item.id === warehouse.id ? !item.recieverAllowed : item.recieverAllowed,
-            // recieverAllowed: false,
         }));
 
         setTransformedWarehousesList(updatedList);
