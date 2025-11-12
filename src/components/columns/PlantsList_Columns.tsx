@@ -6,7 +6,7 @@ import { customStyles } from "@/styles/custom-theme";
 const PlantsList_Columns = ({
     pagination,
     selectedPlants,
-    plantsList,
+    transformedPlantsList,
     handleSelectAllPlants,
     handleSelectSpecificPlant,
     selectedUser,
@@ -54,10 +54,12 @@ const PlantsList_Columns = ({
             {
                 id: "allow",
                 header: ({ table }: any) => {
+                    // const isCheckedArray = selectedPlants?.length === transformedPlantsList?.length
+                    const isChecked = selectedPlants?.length === transformedPlantsList?.length
                     return (
                         <Checkbox
-                            checked={selectedPlants?.length === plantsList?.length}
-                            indeterminate={selectedPlants?.length < plantsList?.length && selectedPlants?.length > 0}
+                            checked={isChecked}
+                            indeterminate={selectedPlants?.length !== transformedPlantsList?.length && selectedPlants?.length > 0}
                             onChange={(event) =>
                                 handleSelectAllPlants()
                             }
@@ -111,7 +113,7 @@ const PlantsList_Columns = ({
         [
             pagination,
             selectedPlants,
-            plantsList,
+            transformedPlantsList,
             handleSelectAllPlants,
             handleSelectSpecificPlant,
             selectedUser,

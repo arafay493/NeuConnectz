@@ -91,17 +91,6 @@ const AssignPlantsComponent = () => {
 
   useEffect(() => {
     const assignedIds = assignedPlantsList.map((p: any) => p.id);
-
-    const updatedList: any = plantsList.map((item: any) => ({
-      ...item,
-      allowed: assignedIds.includes(item.id),
-    }));
-    setTransformedPlantsList(updatedList);
-  }, [plantsList]);
-
-
-  useEffect(() => {
-    const assignedIds = assignedPlantsList.map((p: any) => p.id);
     const transformedAssignedList = assignedPlantsList.map((p: any) => p);
     setSelectedPlants(transformedAssignedList)
 
@@ -129,52 +118,98 @@ const AssignPlantsComponent = () => {
   useEffect(() => {
     if (authenticatedUser?.token) {
       setIsLoading(true);
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+      // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      dispatch(
-        fetchListAllPlantsCodes({
-          authToken: authenticatedUser?.token as string,
-          lastCount: pagination.pageSize, // Use page size for server-side pagination
-          skipRecords: skipRecord,
-        })
-      ).finally(() => {
+      Promise.all([
+        dispatch(
+          fetchListAllPlantsCodes({
+            authToken: authenticatedUser?.token as string,
+            lastCount: pagination.pageSize, // Use page size for server-side pagination
+            skipRecords: skipRecord,
+          })
+        ),
+        dispatch(
+          fetchListAllUserPlantsCodes({
+            authToken: authenticatedUser?.token as string,
+            userId: selectedUser ?? null,
+            // lastCount: pagination.pageSize,
+            // skipRecords: skipRecord,
+          })
+        )
+      ]).finally(() => {
         setIsLoading(false);
       });
+
     }
-  }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
+  }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, selectedUser]);
 
 
   useEffect(() => {
-    if (authenticatedUser?.token && selectedUser) {
-      setIsLoading(true);
-      const skipRecord = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
+    const assignedIds = assignedPlantsList.map((p: any) => p.id);
 
-      dispatch(
-        fetchListAllUserPlantsCodes({
-          authToken: authenticatedUser?.token as string,
-          userId: selectedUser ?? null,
-          lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
-          skipRecords: skipRecord,
-        })
-      ).finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }, [authenticatedUser, dispatch, userAssignedPlantsPagination.pageIndex, userAssignedPlantsPagination.pageSize, selectedUser]);
+    const updatedList: any = plantsList.map((item: any) => ({
+      ...item,
+      allowed: assignedIds.includes(item.id),
+    }));
+    setTransformedPlantsList(updatedList);
+  }, [plantsList]);
+
+  // useEffect(() => {
+  //   if (authenticatedUser?.token && selectedUser) {
+  //     setIsLoading(true);
+  //     // const skipRecord = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
+
+  //     dispatch(
+  //       fetchListAllUserPlantsCodes({
+  //         authToken: authenticatedUser?.token as string,
+  //         userId: selectedUser ?? null,
+  //         lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+  //         skipRecords: skipAssignedPlantsUserList,
+  //       })
+  //     ).finally(() => {
+  //       setIsLoading(false);
+  //     });
+  //   }
+  // }, [authenticatedUser, dispatch, userAssignedPlantsPagination.pageIndex, userAssignedPlantsPagination.pageSize, selectedUser]);
+
+  // const handleSelectAllPlants = () => {
+  //   const selectedPlantsId = selectedPlants.map((p: any) => p.id);
+  //   const updatedList: any = transformedPlantsList.map((item: any) => ({
+  //     ...item,
+  //     allowed: !selectedPlantsId.includes(item.id) ? !item.allowed : item.allowed,
+  //   }));
+  //   console.log("🚀 ~ handleSelectAllPlants ~ transformedPlantsList:", transformedPlantsList)
+
+  //   if (selectedPlants?.length === updatedList?.length) {
+  //     setSelectedPlants([])
+  //     // setTransformedPlantsList([]);
+  //   } else {
+  //     setSelectedPlants(updatedList)
+  //     setTransformedPlantsList(updatedList);
+  //   }
+  // }
 
   const handleSelectAllPlants = () => {
-    const updatedList: any = transformedPlantsList.map((item: any) => ({
-      ...item,
-      allowed: !item.allowed,
-    }));
+    const allSelected = selectedPlants.length === transformedPlantsList.length;
 
-    setTransformedPlantsList(updatedList);
-    if (selectedPlants?.length === plantsList?.length) {
-      setSelectedPlants([])
+    if (allSelected) {
+      // Unselect all
+      const unselectedList: any = transformedPlantsList.map((item: any) => ({
+        ...item,
+        allowed: false,
+      }));
+      setSelectedPlants([]);
+      setTransformedPlantsList(unselectedList);
     } else {
-      setSelectedPlants(plantsList)
+      // Select all
+      const selectedList: any = transformedPlantsList.map((item: any) => ({
+        ...item,
+        allowed: true,
+      }));
+      setSelectedPlants(selectedList);
+      setTransformedPlantsList(selectedList);
     }
-  }
+  };
 
   const handleSelectSpecificPlant = (plant: any) => {
     const updatedList: any = transformedPlantsList.map((item: any) => ({
@@ -198,7 +233,7 @@ const AssignPlantsComponent = () => {
     handleSelectAllPlants,
     handleSelectSpecificPlant,
     selectedPlants,
-    plantsList,
+    transformedPlantsList,
   })
 
 
@@ -237,6 +272,12 @@ const AssignPlantsComponent = () => {
     // console.log("🚀 ~ handleSelectUser ~ value:", value, transformedPlantsList, assignedPlantsList)
     setSelectedUser(value ?? "")
     // dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+  }
+
+  const handleUserRemoved = () => {
+    dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+    setSelectedPlants([])
+    setSelectedUser(null)
   }
 
   const handleResponse = (data: any) => {
@@ -346,7 +387,14 @@ const AssignPlantsComponent = () => {
               placeholder="Select User"
               data={activeUsersData}
               value={selectedUser}
-              onChange={(value: any) => handleSelectUser(value)}
+              // onChange={(value: any) => handleSelectUser(value)}
+              onChange={(value: any) => {
+                if (value === null) {
+                  handleUserRemoved();
+                } else {
+                  handleSelectUser(value);
+                }
+              }}
               clearable
               w="100%"
               radius={8}
@@ -422,7 +470,7 @@ const AssignPlantsComponent = () => {
       {/* Table */}
       <TanStackTable
         data={Array.isArray(transformedPlantsList) ? transformedPlantsList : []}
-        dataCount={transformedPlantsList?.length}
+        dataCount={plantsCount}
         columns={columns}
         isLoading={isLoading}
         isInsideModalTable={true}
