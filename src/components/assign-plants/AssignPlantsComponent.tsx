@@ -54,7 +54,7 @@ const AssignPlantsComponent = () => {
   const {
     ListAllPlantsCodesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
   } = useAppSelector(({ plantStates }) => plantStates);
-  console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
+  // console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
   // Transform users data for Select component
   const activeUsersData =
