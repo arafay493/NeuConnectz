@@ -14,7 +14,8 @@ import {
     IconBarcode,
     IconChecklist,
     IconPlant,
-    IconStack3
+    IconStack3,
+    IconTruckDelivery
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -44,7 +45,8 @@ const authenticatedRoutes: String[] = [
     // "/generate-barcode",
     "/production-order",
     "/goods-issue",
-    "/stock-transfer-order"
+    "/stock-transfer-order",
+    "/putaway-order"
 ];
 
 // Note: Defining all routes...!
@@ -71,7 +73,8 @@ const routes: Routes = {
     // generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
     goodsIssue: "/goods-issue",
-    stockTransferOrder: "/stock-transfer-order"
+    stockTransferOrder: "/stock-transfer-order",
+    putAwayOrder: "/putaway-order",
 };
 
 // Note: Defining drawer routes...!
@@ -105,6 +108,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconStack3 color='currentColor' size={24} />,
         label: "Stock Transfer Order",
         route: routes.stockTransferOrder
+    },
+    {
+        icon: <IconTruckDelivery color='currentColor' size={24} />,
+        label: "Putaway Order",
+        route: routes.putAwayOrder
     },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,

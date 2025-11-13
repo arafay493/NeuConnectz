@@ -1,6 +1,6 @@
 import { customStyles } from '@/styles/custom-theme';
-import { ActionIcon, Box, Group, Image, Select, Stack, Text, Title } from '@mantine/core'
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from '@tabler/icons-react';
+import { ActionIcon, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core'
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFileImport, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from '@tabler/icons-react';
 import { ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import React, { memo, useMemo, useState } from 'react'
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle, isCsvExport }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -121,10 +121,21 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                             onClick={handleTableFiltersVisibility}
                         />
                     )}
-                    <IconColumns cursor="pointer" size={24} />
+                    {/* <IconColumns cursor="pointer" size={24} />
                     <IconBorderCorners cursor="pointer" size={24}
                     // onClick={() => setIsFullscreen(!isFullscreen)} 
-                    />
+                    /> */}
+                    {isCsvExport && <Button
+                        variant='transparent'
+                        className='filledButton'
+                        radius={8}
+                        size='md'
+                        leftSection={<IconFileImport size={24} />}
+                    // onClick={exportToCSV}
+                    // fullWidth
+                    >
+                        Export To CSV
+                    </Button>}
                 </Group>
             </Group>
             <Box w="100%" className={"custom-scroll"} style={{ overflow: "auto" }}>
