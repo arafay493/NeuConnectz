@@ -8,7 +8,7 @@ import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle, isCsvExport }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle, isCsvExport, handleExportToCSV = () => { } }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -131,8 +131,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         radius={8}
                         size='md'
                         leftSection={<IconFileImport size={24} />}
-                    // onClick={exportToCSV}
-                    // fullWidth
+                        onClick={handleExportToCSV}
                     >
                         Export To CSV
                     </Button>}

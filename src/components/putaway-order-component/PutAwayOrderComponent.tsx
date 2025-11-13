@@ -12,6 +12,7 @@ import styles from '../../components/grn-movement/GRNMovementFilterBar.module.cs
 import { DateInput, DatePickerInput } from "@mantine/dates"
 import PutAwayPostedComponent from './PutAwayPostedComponent';
 import PutAwayUnPostedComponent from './PutAwayUnPostedComponent';
+import PutAwayOrderFiltersSection from './PutAwayOrderFilterSection';
 
 const PutAwayOrderComponent = () => {
 
@@ -71,8 +72,11 @@ const PutAwayOrderComponent = () => {
                 ))}
             </div>
 
+            {/* Filters */}
+            <PutAwayOrderFiltersSection />
+
             {/* Note: Date selection and export to CSV section */}
-            <Group
+            {/* <Group
                 p={isSmallScreen ? 16 : 24}
                 justify={isSmallScreen ? 'flex-start' : customStyles.alignment.spaceBetween}
                 align={isSmallScreen ? 'stretch' : 'flex-end'}
@@ -118,7 +122,7 @@ const PutAwayOrderComponent = () => {
                     </Stack>
                 </Group>
 
-                {/* <div className={styles.colFive}>
+                <div className={styles.colFive}>
                     <Button
                         variant='transparent'
                         className='filledButton'
@@ -130,8 +134,8 @@ const PutAwayOrderComponent = () => {
                     >
                         Export To CSV
                     </Button>
-                </div> */}
-            </Group>
+                </div>
+            </Group> */}
 
             {/* Custom Tab Panels */}
             <div>

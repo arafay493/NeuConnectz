@@ -5,7 +5,7 @@ import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import StockTransferOrderUnPosted_Columns from '../columns/StockTransferOrderUnPosted_Columns';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
-import StockTransferUnPostedViewDetailsModal from '../modals/stock-transfer-unposted-view-details-modal/StockTransferUnPostedViewDetailsModal';
+import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -69,7 +69,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     //     };
     // }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
 
-    const stockTransferOrderList = [
+    const putAwayOrderList = [
         {
             id: 1,
             type: "Transfer",
@@ -200,18 +200,22 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         setIsViewDetailsModalOpen(true)
     }
     const columns = StockTransferOrderUnPosted_Columns({
-        pagination, stockTransferOrderList, actions: {
+        pagination, putAwayOrderList, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
         }
     })
+
+    const handleExportToCSV = () => {
+        console.log("Export to CSV Running.............")
+    }
 
     return (
         <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
             {/* Confirm Modal */}
             <ConfirmModal description='By Confirming this will be posted.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
             {/* View Modal */}
-            <StockTransferUnPostedViewDetailsModal
+            <PutawayUnPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}
                 handleModalClose={handleModalClose}
                 row={selectedRow}
@@ -219,15 +223,15 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 setIsLoading={setIsViewLoading}
                 pagination={paginationViewDetails}
                 setPagination={setPaginationViewDetails}
-                title={"Stock Transfer Unposted"}
+                title={"Putaway Unposted"}
                 skipRecord={skipRecordViewDetails}
                 apiUrl={"apiUrlAgainstPO"}
                 poNumber={0}
             />
 
             <TanStackTable
-                data={Array.isArray(stockTransferOrderList) ? stockTransferOrderList : []}
-                dataCount={stockTransferOrderList?.length}
+                data={Array.isArray(putAwayOrderList) ? putAwayOrderList : []}
+                dataCount={putAwayOrderList?.length}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
@@ -237,6 +241,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 subTitle={"Track and review stock transfer order seemlessly."}
                 skipRecord={skipRecord}
                 isCsvExport={true}
+                handleExportToCSV={handleExportToCSV}
             />
         </Stack>
     );
