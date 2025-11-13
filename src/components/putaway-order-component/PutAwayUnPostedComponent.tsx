@@ -6,6 +6,7 @@ import TanStackTable from '../tanStackTable/TanStackTable';
 import StockTransferOrderUnPosted_Columns from '../columns/StockTransferOrderUnPosted_Columns';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
+import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -199,7 +200,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         setSelectedRow(rowData)
         setIsViewDetailsModalOpen(true)
     }
-    const columns = StockTransferOrderUnPosted_Columns({
+    const columns = PutAwayOrderUnPosted_Columns({
         pagination, putAwayOrderList, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
