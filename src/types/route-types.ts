@@ -27,6 +27,7 @@ export type Routes = {
     goodsIssue: string,
     stockTransferOrder: string,
     putAwayOrder: string,
+    pickingOrder: string,
 };
 
 export type DrawerRoute = {

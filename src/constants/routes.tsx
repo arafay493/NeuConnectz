@@ -15,7 +15,8 @@ import {
     IconChecklist,
     IconPlant,
     IconStack3,
-    IconTruckDelivery
+    IconTruckDelivery,
+    IconTruckReturn
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -46,7 +47,8 @@ const authenticatedRoutes: String[] = [
     "/production-order",
     "/goods-issue",
     "/stock-transfer-order",
-    "/putaway-order"
+    "/putaway-order",
+    "/picking-order",
 ];
 
 // Note: Defining all routes...!
@@ -75,6 +77,7 @@ const routes: Routes = {
     goodsIssue: "/goods-issue",
     stockTransferOrder: "/stock-transfer-order",
     putAwayOrder: "/putaway-order",
+    pickingOrder: "/picking-order",
 };
 
 // Note: Defining drawer routes...!
@@ -113,6 +116,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconTruckDelivery color='currentColor' size={24} />,
         label: "Putaway Order",
         route: routes.putAwayOrder
+    },
+    {
+        icon: <IconTruckReturn color='currentColor' size={24} />,
+        label: "Picking Order",
+        route: routes.pickingOrder
     },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,

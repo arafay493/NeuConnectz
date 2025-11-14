@@ -1,8 +1,8 @@
-import PutAwayOrderComponent from "@/components/putaway-order-component/PutAwayOrderComponent";
+import PickingOrderComponent from "@/components/picking-order-component/PickingOrderComponent";
 
 const PickingOrderScreen = () => {
   return (
-    <PutAwayOrderComponent />
+    <PickingOrderComponent />
   );
 };
 
