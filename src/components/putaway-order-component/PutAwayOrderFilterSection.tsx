@@ -9,7 +9,7 @@ export default function PutAwayOrderFiltersSection({ }: any) {
   const isMediumScreen = useMediaQuery("(max-width: 992px)");
   const isLargeScreen = useMediaQuery("(max-width: 1200px)");
 
-  const span = isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 12/5
+  const span = isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 4 : 12 / 5
 
   return (
     <Grid
