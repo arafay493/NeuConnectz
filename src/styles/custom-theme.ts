@@ -7,7 +7,8 @@ const customStyles: CustomStyles = {
         white: "#fff",
         black: "#000",
         red: "red",
-        green: "green",
+        // green: "green",
+        green: "#3CD856",
         _408CCE: "#408CCE",
         _4D4D4D: "#4D4D4D",
         _909090: "#909090",
@@ -20,6 +21,8 @@ const customStyles: CustomStyles = {
         _1B59F81A: "#1B59F81A",
         evenTableColor: "#E1E7EC80",
         tableRowBorderColor: "#E1E7EC",
+        lightgreen: "#3CD8561A",
+
     },
 
     deviceSize: {

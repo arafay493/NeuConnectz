@@ -13,11 +13,12 @@ export interface CustomStyles {
         _4A4A4A: string;
         _F5F7FA: string;
         _ECECEC: string;
-        _F8F9FA: String;
+        _F8F9FA: string;
         _E1E7EC: string;
         _1B59F81A: string;
         evenTableColor: string;
         tableRowBorderColor: string;
+        lightgreen: string;
     };
 
     deviceSize: {

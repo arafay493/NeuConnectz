@@ -1,9 +1,10 @@
 import { customStyles } from '@/styles/custom-theme';
 import { Button, Group, Text } from '@mantine/core';
+import { IconCircleFilled } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
-const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => {
+const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             {
@@ -23,8 +24,41 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "type",
-                header: "Type",
+                accessorKey: "documentNumber",
+                header: "Document Number",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "materialCode",
+                header: "Material Code",
+                minSize: 150,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "materialName",
+                header: "Material Name",
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "uom",
+                header: "UOM",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
@@ -34,19 +68,19 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "number",
-                header: "Number",
+                accessorKey: "quantity",
+                header: "Quantity",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
+                        {getValue() ?? "-"}
                     </Text>
                 ),
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "itemCode",
-                header: "Item Code",
+                accessorKey: "movementType",
+                header: "Movement Type",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
@@ -56,8 +90,9 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "fromPlantCode",
-                header: "From Plant Code",
+                accessorKey: "purchaseOrder",
+                header: "Purchase Order",
+                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
@@ -66,8 +101,41 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "fromWarehouse",
-                header: "From Warehouse",
+                accessorKey: "suppliers",
+                header: "Suppliers",
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "reservationNumber",
+                header: "Reservation Number",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "inboundDeliveryNumber",
+                header: "Inbound Delivery #",
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "sourceBin",
+                header: "Source Bin",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
@@ -76,116 +144,9 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 ),
                 enableColumnFilter: true,
             },
-            {
-                accessorKey: "fromStorageLocation",
-                header: "From Storage Location",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "fromStorageType",
-                header: "From Storage Type",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "fromStorageSection",
-                header: "From Storage Section",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "fromBin",
-                header: "From Bin",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toPlantCode",
-                header: "To Plant Code",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toWarehouse",
-                header: "To Warehouse",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toStorageLocation",
-                header: "To Storage Location",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toStorageType",
-                header: "To Storage Type",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toStorageSection",
-                header: "To Storage Section",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "toBin",
-                header: "To Bin",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
+
+            /* -------------------- NEW ADDED COLUMNS -------------------- */
+
             {
                 accessorKey: "username",
                 header: "Username",
@@ -219,6 +180,28 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 ),
                 enableColumnFilter: true,
             },
+
+            /* ------------------------------------------------------------ */
+
+            {
+                accessorKey: "status",
+                header: "Status",
+                minSize: 140,
+                cell: ({ getValue }: any) => (
+                    <Text
+                        fw={500}
+                        c={customStyles.colors.green}
+                        px={20}
+                        py={5}
+                        bg={customStyles.colors.lightgreen}
+                        style={{ borderRadius: 20, textAlign: "center" }}
+                    >
+                        <IconCircleFilled size={10} />{" "}
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
             {
                 accessorKey: "date",
                 header: "Date",
@@ -226,8 +209,8 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate
-                        ? dayjs(rawDate).format('DD/MM/YYYY')
-                        : '-';
+                        ? dayjs(rawDate).format("DD/MM/YYYY")
+                        : "-";
                     return (
                         <Text fw={500} c={customStyles.colors._909090}>
                             {formatted}
@@ -239,20 +222,37 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
             {
                 id: "actions",
                 header: "Actions",
+                minSize: 150,
                 cell: ({ row }: any) => (
-                    <Group gap="xs" justify="center" style={{
-                        flexWrap: "nowrap",
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                    }}>
+                    <Group
+                        gap="xs"
+                        justify="center"
+                        style={{
+                            flexWrap: "nowrap",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
+                    >
                         <Button
                             variant="transparent"
                             className="outlineButton"
                             radius={8}
-                            onClick={() => actions.handleViewDetailsModalOpen(row.original)}
+                            onClick={() =>
+                                actions.handleViewDetailsModalOpen(row.original)
+                            }
                         >
                             View Details
+                        </Button>
+                        <Button
+                            variant="transparent"
+                            className="filledButton"
+                            radius={8}
+                            onClick={() =>
+                                actions.handleConfirmModalOpen(row.original)
+                            }
+                        >
+                            Confirm
                         </Button>
                     </Group>
                 ),
@@ -265,4 +265,4 @@ const PutAwayOrderOrderPosted_Columns = ({ pagination, list, actions }: any) => 
     return columns;
 };
 
-export default PutAwayOrderOrderPosted_Columns;
+export default PutAwayOrderPosted_Columns;
