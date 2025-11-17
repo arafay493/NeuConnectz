@@ -357,22 +357,42 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         ),
         filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+        // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+        size: 200,
       },
-      {
-        accessorKey: "postedDate",
-        header: "Created Date",
-        cell: ({ getValue }) => {
-          return (
-            <Text c={customStyles.colors._909090} fw={500}>
-              {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
-            </Text>
-          )
-        },
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        size: calculateColumnWidth('Created Date', (issuesForProductionList || []).map(item => item.postedDate), 150, 220),
-      },
+      // {
+      //   accessorKey: "postedDate",
+      //   header: "Posted Date",
+      //   cell: ({ getValue }) => {
+      //     return (
+      //       <Text c={customStyles.colors._909090} fw={500}>
+      //         {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
+      //       </Text>
+      //     )
+      //   },
+      //   filterFn: stringFilterFn,
+      //   enableColumnFilter: true,
+      //   size: 150
+      //   // size: calculateColumnWidth('Created Date', (issuesForProductionList || []).map(item => item.postedDate), 150, 220),
+      // },
+      ...(tab === "Posted"
+        ? [
+          {
+            accessorKey: "postedDate",
+            header: "Posted Date",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {getValue()
+                  ? new Date(getValue() as string).toLocaleDateString()
+                  : "-"}
+              </Text>
+            ),
+            filterFn: stringFilterFn,
+            enableColumnFilter: true,
+            size: 200,
+          }
+        ]
+        : [])
       // {
       //   header: "Action",
       //   cell: ({ getValue, row }) => {
@@ -420,7 +440,7 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       //   // size: calculateColumnWidth('Action', (productionOrdersList || []).map(item => item.docStatus), 150, 180),
       // },
     ],
-    [issuesForProductionList]
+    [issuesForProductionList, tab]
   );
 
   // Note: Table columns...!
@@ -538,8 +558,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
         skipRecords: skipRecord,
       })
     ).finally(() => {
-        setIsLoading(false);
-      });
+      setIsLoading(false);
+    });
   };
 
   return (
