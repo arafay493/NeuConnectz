@@ -121,25 +121,37 @@ const AssignPlantsComponent = () => {
       setIsLoading(true);
       // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-      Promise.all([
+      if (selectedUser) {
+        Promise.all([
+          dispatch(
+            fetchListAllPlantsCodes({
+              authToken: authenticatedUser?.token as string,
+              lastCount: pagination.pageSize, // Use page size for server-side pagination
+              skipRecords: skipRecord,
+            })
+          ),
+          dispatch(
+            fetchListAllUserPlantsCodes({
+              authToken: authenticatedUser?.token as string,
+              userId: selectedUser ?? null,
+              // lastCount: pagination.pageSize,
+              // skipRecords: skipRecord,
+            })
+          )
+        ]).finally(() => {
+          setIsLoading(false);
+        });
+      } else {
         dispatch(
           fetchListAllPlantsCodes({
             authToken: authenticatedUser?.token as string,
             lastCount: pagination.pageSize, // Use page size for server-side pagination
             skipRecords: skipRecord,
           })
-        ),
-        dispatch(
-          fetchListAllUserPlantsCodes({
-            authToken: authenticatedUser?.token as string,
-            userId: selectedUser ?? null,
-            // lastCount: pagination.pageSize,
-            // skipRecords: skipRecord,
-          })
-        )
-      ]).finally(() => {
-        setIsLoading(false);
-      });
+        ).finally(() => {
+          setIsLoading(false);
+        });
+      }
 
     }
   }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, selectedUser]);
