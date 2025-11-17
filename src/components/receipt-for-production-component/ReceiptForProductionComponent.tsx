@@ -313,18 +313,36 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
           220
         ),
       },
-      {
-        accessorKey: "postedDate",
-        header: "Created Date",
-        cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
-          </Text>
-        ),
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        size: calculateColumnWidth('Created Date', (recieptFromProductionList || []).map(item => item.postedDate), 200, 220),
-      },
+      // {
+      //   accessorKey: "postedDate",
+      //   header: "Created Date",
+      //   cell: ({ getValue }) => (
+      //     <Text c={customStyles.colors._909090} fw={500}>
+      //       {getValue() ? new Date(getValue() as string).toLocaleDateString() : "-"}
+      //     </Text>
+      //   ),
+      //   filterFn: stringFilterFn,
+      //   enableColumnFilter: true,
+      //   size: calculateColumnWidth('Created Date', (recieptFromProductionList || []).map(item => item.postedDate), 200, 220),
+      // },
+      ...(tab === "Posted"
+        ? [
+          {
+            accessorKey: "postedDate",
+            header: "Posted Date",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {getValue()
+                  ? new Date(getValue() as string).toLocaleDateString()
+                  : "-"}
+              </Text>
+            ),
+            filterFn: stringFilterFn,
+            enableColumnFilter: true,
+            size: 200,
+          }
+        ]
+        : []),
       {
         accessorKey: "",
         header: "Transc Type",
@@ -338,7 +356,7 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
         // size: calculateColumnWidth('Transc Type', (recieptFromProductionList || []).map(item => item.), 150, 220),
       },
     ],
-    [recieptFromProductionList]
+    [recieptFromProductionList, tab]
   );
 
   // Note: Table columns...!
