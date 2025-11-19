@@ -107,7 +107,7 @@ export interface PutAwayOrdersStateType {
         data: any,
         totalCount: number
     };
-    ListAllPlantsCodesByUser: {
+    ListAllPutAwayDetailsByDocNo: {
         // data: Array<ListAllPlantsCodesProps>,
         data: any,
         totalCount: number
@@ -123,7 +123,7 @@ export interface PutAwayOrdersStateType {
     //     isActive: boolean,
     //     isArchived: boolean
     // }[];
-    PlantsErrorState: string
+    PutAwayErrorState: string
 };
 
 // Note: Plants reducer state types...!

@@ -18,6 +18,8 @@ import TanStackTable from "@/components/tanStackTable/TanStackTable";
 import ITR_Columns from "@/components/columns/ITR_Columns";
 import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
 import IT_Columns from "@/components/columns/IT_Columns";
+import { fetchListAllPutAwayDetalisByDocNo } from "@/redux/actions/putaway-actions/putaway-actions";
+import PutAwayOrderViewDetails_Columns from "@/components/columns/PutAwayOrderViewDetails_Columns";
 
 
 interface ModalProps {
@@ -65,9 +67,9 @@ export default function PutawayUnPostedViewDetailsModal({
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
-    const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
-        ({ sapStates }) => {
-            return sapStates;
+    const { ListAllPutAwayDetailsByDocNo } = useAppSelector(
+        ({ putawayStates }) => {
+            return putawayStates;
         }
     );
     const dispatch = useAppDispatch();
@@ -76,9 +78,9 @@ export default function PutawayUnPostedViewDetailsModal({
         if (authenticatedUser?.token && opened) {
             setIsLoading(true)
             dispatch(
-                fetchAgainstPoNumber({
-                    token: authenticatedUser?.token || "",
-                    poNumber: poNumber,
+                fetchListAllPutAwayDetalisByDocNo({
+                    authToken: authenticatedUser?.token || "",
+                    docNumber: poNumber,
                     apiUrl: apiUrl,
                     lastCount: pagination.pageSize,
                     skipRecords: skipRecord,
@@ -94,7 +96,7 @@ export default function PutawayUnPostedViewDetailsModal({
         poNumber
     ]);
 
-    const columns = IT_Columns({ pagination, listAgainstPo })
+    const columns = PutAwayOrderViewDetails_Columns({ pagination, List: ListAllPutAwayDetailsByDocNo?.data })
 
     return (
         <Modal
@@ -119,27 +121,27 @@ export default function PutawayUnPostedViewDetailsModal({
 
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
-                    <InfoRow label="Document No" value={row?.number} />
-                    <InfoRow label="Type" value={row?.type} />
-                    <InfoRow label="Item Code" value={row?.itemCode} />
-                    <InfoRow label="From Warehouse" value={row?.fromWarehouse} />
-                    <InfoRow label="To Warehouse" value={row?.toWarehouse} />
-                    <InfoRow label="From Bin" value={row?.fromBin} />
-                    <InfoRow label="To Bin" value={row?.toBin} />
-                    <InfoRow
+                    <InfoRow label="Document No" value={row?.docNum} />
+                    <InfoRow label="Material Doc No" value={row?.materialDocument} />
+                    <InfoRow label="Supplier" value={row?.supplierName} />
+                    <InfoRow label="Movement Type" value={row?.movementType} />
+                    <InfoRow label="Purchase Order" value={row?.purchaseOrder} />
+                    <InfoRow label="Date" value={row?.createdOn} />
+                    <InfoRow label="Qty" value={row?.totalQuantity} />
+                    {/* <InfoRow
                         label="Date"
                         value={new Date(row?.date).toLocaleDateString()}
-                    />
-                    <InfoRow label="User" value={row?.username} />
-                    <InfoRow label="ERP Doc Entry" value={row?.erpDocEntry} />
+                    /> */}
+                    {/* <InfoRow label="User" value={row?.username} />
+                    <InfoRow label="ERP Doc Entry" value={row?.erpDocEntry} /> */}
                 </SimpleGrid>
             </Box>
 
             <Divider my="sm" />
 
             <TanStackTable
-                data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
-                dataCount={totalRecordsAgainstPo}
+                data={Array.isArray(ListAllPutAwayDetailsByDocNo?.data) ? ListAllPutAwayDetailsByDocNo?.data : []}
+                dataCount={ListAllPutAwayDetailsByDocNo?.totalCount}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}

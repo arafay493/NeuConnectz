@@ -1,7 +1,7 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
-import { CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY } from "@/redux/reducers/putaway-reducer/putaway-reducer";
+import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchListAllPutAway = createAsyncThunk(
@@ -32,6 +32,42 @@ const fetchListAllPutAway = createAsyncThunk(
             }
         } catch (error) {
             dispatch(CLEAR_ALL_PUTAWAY_STATES())
+        }
+    }
+);
+
+const fetchListAllPutAwayDetalisByDocNo = createAsyncThunk(
+    "putaway/fetchListAllPutAway",
+    async (
+        { authToken, docNumber, lastCount, skipRecords, apiUrl }:
+            {
+                authToken: string,
+                docNumber: number,
+                apiUrl: string
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        try {
+            const params: { [key: string]: number | string } = {
+                DocNum: docNumber
+            };
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
+
+            const { status, data } = response;
+            
+
+            const { data: PutAwayViewDetailsData } = data
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO({ data: PutAwayViewDetailsData }));
+            }
+        } catch (error) {
+            dispatch(CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO())
         }
     }
 );
@@ -93,7 +129,7 @@ const assignPlantsToUser = createAsyncThunk(
 
 export {
     fetchListAllPutAway,
-    fetchListAllUserPlantsCodes,
+    fetchListAllPutAwayDetalisByDocNo,
     assignPlantsToUser
 };
 

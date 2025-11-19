@@ -44,7 +44,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     // Note: Table modal state...!
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRow, setSelectedRow] = useState<any>(null);
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -114,8 +114,8 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 setPagination={setPaginationViewDetails}
                 title={"Putaway Unposted"}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"apiUrlAgainstPO"}
-                poNumber={0}
+                apiUrl={"/IPutAwayFeature/GetPutAwayDetails"}
+                poNumber={selectedRow?.docNum || ""}
             />
 
             <TanStackTable

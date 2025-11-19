@@ -84,7 +84,7 @@ export default function PutAwayOrderFiltersSection({ }: any) {
       </GridCol>
 
       {/* Reservation No */}
-      <GridCol span={span}>
+      {/* <GridCol span={span}>
         <Text size="md" mb={8} fw={500}>Reservation No</Text>
         <Select
           placeholder="Select Reservation No"
@@ -93,7 +93,7 @@ export default function PutAwayOrderFiltersSection({ }: any) {
           radius={8}
           size="md"
         />
-      </GridCol>
+      </GridCol> */}
 
       {/* Supplier */}
       <GridCol span={span}>

@@ -68,7 +68,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "uom",
+                accessorKey: "baseUOM",
                 header: "UOM",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
