@@ -13,6 +13,7 @@ import { DateInput, DatePickerInput } from "@mantine/dates"
 import PutAwayPostedComponent from './PutAwayPostedComponent';
 import PutAwayUnPostedComponent from './PutAwayUnPostedComponent';
 import PutAwayOrderFiltersSection from './PutAwayOrderFilterSection';
+import { useAppDispatch } from '@/redux/store';
 
 const PutAwayOrderComponent = () => {
 
@@ -139,8 +140,8 @@ const PutAwayOrderComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Posted' && (<PutAwayPostedComponent apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
-                {tab === 'Unposted' && (<PutAwayUnPostedComponent apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
+                {tab === 'Unposted' && (<PutAwayUnPostedComponent apiUrl={`/IPutAwayFeature/ListAllPutAway?sapStatus=pending` as string} />)}
+                {tab === 'Posted' && (<PutAwayPostedComponent apiUrl={`/IPutAwayFeature/ListAllPutAway?sapStatus=Integrated` as string} />)}
             </div>
         </Box>
     );

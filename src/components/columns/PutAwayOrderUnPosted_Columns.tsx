@@ -24,7 +24,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "documentNumber",
+                accessorKey: "docNum",
                 header: "Document Number",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
@@ -36,7 +36,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
-                accessorKey: "materialCode",
+                accessorKey: "material",
                 header: "Material Code",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
@@ -48,8 +48,19 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
-                accessorKey: "materialName",
+                accessorKey: "materialDescription",
                 header: "Material Name",
+                minSize: 200,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "materialDocument",
+                header: "Material Document",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
@@ -60,7 +71,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
-                accessorKey: "uom",
+                accessorKey: "baseUOM",
                 header: "UOM",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
@@ -72,7 +83,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
-                accessorKey: "quantity",
+                accessorKey: "totalQuantity",
                 header: "Quantity",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
@@ -108,7 +119,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
-                accessorKey: "suppliers",
+                accessorKey: "supplierName",
                 header: "Suppliers",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
@@ -118,33 +129,20 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 ),
                 enableColumnFilter: true,
             },
+            // {
+            //     accessorKey: "inboundDeliveryNumber",
+            //     header: "Inbound Delivery #",
+            //     minSize: 200,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
 
             {
-                accessorKey: "reservationNumber",
-                header: "Reservation Number",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-
-            {
-                accessorKey: "inboundDeliveryNumber",
-                header: "Inbound Delivery #",
-                minSize: 200,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-
-            {
-                accessorKey: "sourceBin",
+                accessorKey: "sourceStorageBin",
                 header: "Source Bin",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
@@ -161,13 +159,14 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} px={20} py={5} bg={customStyles.colors.evenTableColor} style={{ borderRadius: 20, textAlign: "center" }}>
                         <IconCircleFilled size={10} />
-                        {" " + String(getValue() ?? "-")}
+                        {/* {" " + String(getValue() ?? "-")} */}
+                        {" " + "Unconfirmed"}
                     </Text>
                 ),
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "date",
+                accessorKey: "createdOn",
                 header: "Date",
                 minSize: 140,
                 cell: ({ getValue }: any) => {

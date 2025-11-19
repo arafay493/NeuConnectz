@@ -101,6 +101,32 @@ export interface GroupStateType {
 };
 
 // Note: Plants reducer state types...!
+export interface PutAwayOrdersStateType {
+    ListAllPutAway: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllPlantsCodesByUser: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    // listGroupCodesByUserId: {
+    //     id: string,
+    //     groupCode: number | string,
+    //     groupName: string,
+    //     createdBy: string,
+    //     updatedBy: string,
+    //     createdDate: string,
+    //     updatedDate: string,
+    //     isActive: boolean,
+    //     isArchived: boolean
+    // }[];
+    PlantsErrorState: string
+};
+
+// Note: Plants reducer state types...!
 export interface PlantsStateType {
     ListAllPlantsCodes: {
         // data: Array<ListAllPlantsCodesProps>,

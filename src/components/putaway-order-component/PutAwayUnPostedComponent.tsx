@@ -7,6 +7,8 @@ import StockTransferOrderUnPosted_Columns from '../columns/StockTransferOrderUnP
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
 import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -49,114 +51,25 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
 
     // Note: Handeling redux here...!
-    // const dispatch = useAppDispatch();
-    // const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    // const { listGoodIssue, totalCount } = useAppSelector(({ gIStates }) => { return gIStates });
-    // // console.log("productionOrdersList: ", productionOrdersList);
+    const dispatch = useAppDispatch();
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { ListAllPutAway } = useAppSelector(({ putawayStates }) => { return putawayStates });
 
-    // useEffect(() => {
-    //     if (authenticatedUser?.token) {
-    //         setIsLoading(true);
-    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setIsLoading(true);
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-    //         dispatch(fetchAllGoodsIssue({
-    //             token: authenticatedUser?.token || '',
-    //             apiUrl: apiUrl,
-    //             lastCount: pagination.pageSize, // Use page size for server-side pagination
-    //             skipRecords: skipRecord
-    //         })).finally(() => {
-    //             setIsLoading(false)
-    //         });
-    //     };
-    // }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
-
-    const putAwayOrderList = [
-        {
-            id: 1,
-            documentNumber: "DOC-0001",
-            materialCode: "MAT-1001",
-            materialName: "Steel Rod",
-            uom: "KG",
-            quantity: 120,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5001",
-            suppliers: "ABC Suppliers",
-            reservationNumber: "RES-001",
-            inboundDeliveryNumber: "INB-1001",
-            sourceBin: "BIN-001",
-            date: "2025-11-08T10:30:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 2,
-            documentNumber: "DOC-0002",
-            materialCode: "MAT-1002",
-            materialName: "Copper Sheets",
-            uom: "PCS",
-            quantity: 300,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5002",
-            suppliers: "Global Metals",
-            reservationNumber: "RES-002",
-            inboundDeliveryNumber: "INB-1002",
-            sourceBin: "BIN-003",
-            date: "2025-11-07T14:45:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 3,
-            documentNumber: "DOC-0003",
-            materialCode: "MAT-1003",
-            materialName: "Plastic Granules",
-            uom: "BAG",
-            quantity: 50,
-            movementType: "Return",
-            purchaseOrder: "PO-5003",
-            suppliers: "PolyTech",
-            reservationNumber: "RES-003",
-            inboundDeliveryNumber: "INB-1003",
-            sourceBin: "BIN-005",
-            date: "2025-11-06T09:20:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 4,
-            documentNumber: "DOC-0004",
-            materialCode: "MAT-1004",
-            materialName: "Aluminum Blocks",
-            uom: "BOX",
-            quantity: 80,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5004",
-            suppliers: "MetalX Industries",
-            reservationNumber: "RES-004",
-            inboundDeliveryNumber: "INB-1004",
-            sourceBin: "BIN-007",
-            date: "2025-11-05T16:10:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 5,
-            documentNumber: "DOC-0005",
-            materialCode: "MAT-1005",
-            materialName: "Rubber Sheets",
-            uom: "ROLL",
-            quantity: 40,
-            movementType: "Return",
-            purchaseOrder: "PO-5005",
-            suppliers: "FlexRubber Co.",
-            reservationNumber: "RES-005",
-            inboundDeliveryNumber: "INB-1005",
-            sourceBin: "BIN-009",
-            date: "2025-11-04T11:00:00Z",
-            status: "Unconfirmed",
-            actions: null
-        }
-    ];
+            dispatch(fetchListAllPutAway({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: apiUrl,
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        };
+    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
 
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
@@ -176,7 +89,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         setIsViewDetailsModalOpen(true)
     }
     const columns = PutAwayOrderUnPosted_Columns({
-        pagination, putAwayOrderList, actions: {
+        pagination, list: ListAllPutAway?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
         }
@@ -206,8 +119,8 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
             />
 
             <TanStackTable
-                data={Array.isArray(putAwayOrderList) ? putAwayOrderList : []}
-                dataCount={putAwayOrderList?.length}
+                data={Array.isArray(ListAllPutAway?.data) ? ListAllPutAway?.data : []}
+                dataCount={ListAllPutAway?.totalCount}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
