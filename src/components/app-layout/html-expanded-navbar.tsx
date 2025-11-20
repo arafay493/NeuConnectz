@@ -70,7 +70,8 @@ const HtmlExpandedNavbar = ({
             c={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
             active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
-            w='100%'
+            // w='100%'
+            w={260}
             title={item?.label}
             h={48}
             style={{

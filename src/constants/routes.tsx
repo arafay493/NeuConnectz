@@ -16,7 +16,8 @@ import {
     IconPlant,
     IconStack3,
     IconTruckDelivery,
-    IconTruckReturn
+    IconTruckReturn,
+    IconSortAscendingShapes
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -49,6 +50,7 @@ const authenticatedRoutes: String[] = [
     "/stock-transfer-order",
     "/putaway-order",
     "/picking-order",
+    "/assign-movement-type",
 ];
 
 // Note: Defining all routes...!
@@ -78,6 +80,7 @@ const routes: Routes = {
     stockTransferOrder: "/stock-transfer-order",
     putAwayOrder: "/putaway-order",
     pickingOrder: "/picking-order",
+    assignMovementType: "/assign-movement-type",
 };
 
 // Note: Defining drawer routes...!
@@ -122,6 +125,11 @@ const drawerRoutes: DrawerRoute[] = [
     //     label: "Picking Order",
     //     route: routes.pickingOrder
     // },
+    {
+        icon: <IconSortAscendingShapes color='currentColor' size={24} />,
+        label: "Assign Movement Type",
+        route: routes.assignMovementType
+    },
     {
         icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
         label: "Integration Monitor",

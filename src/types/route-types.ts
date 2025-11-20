@@ -28,6 +28,7 @@ export type Routes = {
     stockTransferOrder: string,
     putAwayOrder: string,
     pickingOrder: string,
+    assignMovementType: string,
 };
 
 export type DrawerRoute = {
