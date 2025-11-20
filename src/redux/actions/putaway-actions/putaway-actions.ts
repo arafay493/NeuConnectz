@@ -59,7 +59,7 @@ const fetchListAllPutAwayDetalisByDocNo = createAsyncThunk(
             const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
 
             const { status, data } = response;
-            
+
 
             const { data: PutAwayViewDetailsData } = data
 
@@ -72,64 +72,28 @@ const fetchListAllPutAwayDetalisByDocNo = createAsyncThunk(
     }
 );
 
-// Note: Action function to fetch list all plant codes...!
-const fetchListAllUserPlantsCodes = createAsyncThunk(
-    "plants/fetchListAllUserPlantsCodes",
+const confirmPutAwayOrders = createAsyncThunk(
+    "putaway/confirmPutAwayOrders",
     async (
-        { authToken, userId, lastCount, skipRecords }:
-            {
-                authToken: string,
-                userId: string,
-                lastCount?: number,
-                skipRecords?: number
-            },
-        { dispatch }
-    ) => {
-        const params: { [key: string]: number | string } = {
-            userId: userId
-        };
-        if (lastCount !== undefined) params.lastCount = lastCount;
-        if (skipRecords !== undefined) params.skipRecords = skipRecords;
-
-        const response = await apiGet('/neu-connect/v2/IPlantFeature/ListAllPlantsAssignedToUser', authToken, params);
-
-        const { status, data } = response;
-
-        const { data: PlantsData, totalCount } = data?.data
-
-        if (status == 200) {
-            dispatch(FETCH_ALL_PLANTS_CODES_BY_USER({ data: PlantsData, totalCount }));
-        };
-    }
-);
-
-// Note: Action function to assign group to user...!
-const assignPlantsToUser = createAsyncThunk(
-    "plants/assignPlantsToUser",
-    async (
-        // { payload, token, resHandler }:
-        //     {
-        //         addGroupToUserData: AssignGroupToUserDataType,
-        //         token: string,
-        //         resHandler: ResHandler
-        //     },
         { payload, token, resHandler }:
             any,
         { dispatch }
     ) => {
-        const response = await apiPost('/neu-connect/v2/IPlantFeature/AssignPlantsToUser', payload, token);
+        try {
+            const response = await apiPost('/neu-connect/v2/IPutAwayFeature/ConfirmPutAway', payload, token);
+            const { status, data, error } = response;
+            resHandler(status, data, error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
 
-        const { status, data } = response;
-
-        if (status == 201) {
-            resHandler(data);
-        };
     }
 );
 
 export {
     fetchListAllPutAway,
     fetchListAllPutAwayDetalisByDocNo,
-    assignPlantsToUser
+    confirmPutAwayOrders
 };
 

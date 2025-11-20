@@ -8,7 +8,9 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
 import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
+import { confirmPutAwayOrders, fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import Loader from '../loader/loader';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -31,6 +33,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
 
     // Note: Handling states here...!
     const [isLoading, setIsLoading] = useState(false);
+    const [isFullPageLoading, setIsFullPageLoading] = useState(false);
     const [isViewLoading, setIsViewLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -58,7 +61,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
             dispatch(fetchListAllPutAway({
                 authToken: authenticatedUser?.token || '',
@@ -77,10 +80,30 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     }
 
     const handleConfirm = () => {
+        setIsFullPageLoading(true)
+        dispatch(confirmPutAwayOrders({
+            payload: {
+                docNum: selectedRow?.docNum
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handleResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllPutAway({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: apiUrl,
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
         setIsConfirmModalOpen(false)
     }
 
     const handleConfirmModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
     }
 
@@ -95,8 +118,20 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         }
     })
 
+    const handleResponse = (status: number, data: any, error: string) => {
+        if (status === 200) {
+            showNotificationToast("Order Confirmed", data.message, customStyles.colors._408CCE);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
+
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
+    }
+
+    if (isFullPageLoading) {
+        return <Loader loadingState={isFullPageLoading} />
     }
 
     return (

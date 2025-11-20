@@ -153,15 +153,28 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "status",
+                accessorKey: "confirmationStatus",
                 header: "Status",
                 minSize: 140,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} px={20} py={5} bg={customStyles.colors.evenTableColor} style={{ borderRadius: 20, textAlign: "center" }}>
-                        <IconCircleFilled size={10} />
-                        {/* {" " + String(getValue() ?? "-")} */}
-                        {" " + "Unconfirmed"}
-                    </Text>
+                    getValue() !== "UnConfirmed" ?
+                        <Text
+                            fw={500}
+                            c={customStyles.colors.green}
+                            px={20}
+                            py={5}
+                            bg={customStyles.colors.lightgreen}
+                            style={{ borderRadius: 20, textAlign: "center" }}
+                        >
+                            <IconCircleFilled size={10} />{" "}
+                            {/* {String(getValue() ?? "-")} */}
+                            {"Confirmed"}
+                        </Text> :
+                        <Text fw={500} c={customStyles.colors._909090} px={20} py={5} bg={customStyles.colors.evenTableColor} style={{ borderRadius: 20, textAlign: "center" }}>
+                            <IconCircleFilled size={10} />
+                            {/* {" " + String(getValue() ?? "-")} */}
+                            {" " + "Unconfirmed"}
+                        </Text>
                 ),
                 enableColumnFilter: true,
             },
@@ -209,7 +222,8 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                         </Button>
                         <Button
                             variant="transparent"
-                            className="filledButton"
+                            className={row?.original?.confirmationStatus === "Confirmed" ? "filledDisabledButton" : "filledButton"}
+                            disabled={row?.original?.confirmationStatus === "Confirmed"}
                             radius={8}
                             onClick={() =>
                                 actions.handleConfirmModalOpen(row.original)
