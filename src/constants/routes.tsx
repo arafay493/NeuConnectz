@@ -55,6 +55,8 @@ const authenticatedRoutes: String[] = [
 
 const initialRoute: string = "/putaway-order"
 
+const settingsInitialRoute: string =  "/users-list"
+
 // Note: Defining all routes...!
 const routes: Routes = {
     root: "/",
@@ -142,11 +144,11 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Users List",
         route: routes.usersList,
     },
-    {
-        icon: <IconUsersGroup color='currentColor' size={24} />,
-        label: "Assign Group",
-        route: routes.assignGroup,
-    },
+    // {
+    //     icon: <IconUsersGroup color='currentColor' size={24} />,
+    //     label: "Assign Group",
+    //     route: routes.assignGroup,
+    // },
     {
         icon: <IconPlant color='currentColor' size={24} />,
         label: "Assign Plants",
@@ -205,5 +207,6 @@ export {
     authenticatedRoutes,
     routes,
     drawerRoutes,
-    initialRoute
+    initialRoute,
+    settingsInitialRoute
 };

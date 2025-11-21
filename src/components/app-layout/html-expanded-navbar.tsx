@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
 import NextImage from 'next/image';
 import {
     Group,
@@ -17,7 +18,7 @@ import {
     IconLayoutSidebar
 } from '@tabler/icons-react';
 import { DrawerRoute } from "@/types/route-types";
-import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
+import { drawerRoutes, authenticatedRoutes, settingsInitialRoute } from '@/constants/routes';
 import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
 import { localAssets } from '@/lib/file-paths/file-paths';
@@ -47,7 +48,6 @@ const HtmlExpandedNavbar = ({
             toggle(); // Close mobile menu after navigation
         }
     };
-
     // Note: Link component for navigation...!
     const renderNavLink = (item: DrawerRoute, index: number) => (
         <NavLink
@@ -166,13 +166,75 @@ const HtmlExpandedNavbar = ({
                         paddingTop: customStyles.deviceSize.md,
                         paddingBottom: customStyles.deviceSize.md,
                     }}>
-                        <Stack
+                        {/* <Stack
                             gap={customStyles.deviceSize.md}
                             style={{
                                 transition: 'all 0.3s ease',
                             }}
                         >
                             {drawerRoutes.map((item, index) => renderNavLink(item, index))}
+                        </Stack> */}
+                        <Stack
+                            gap={customStyles.deviceSize.md}
+                            style={{ transition: "all 0.3s ease" }}
+                        >
+                            {drawerRoutes.map((item, index) => (
+                                <React.Fragment key={index}>
+
+                                    {/* ---- SHOW DIVIDER BEFORE SETTINGS ---- */}
+                                    {item.route === settingsInitialRoute && (
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                margin: "12px 0",
+                                                width: 260,
+                                                position: "relative"
+                                            }}
+                                        >
+                                            {/* Left line */}
+                                            {/* <div
+                                                style={{
+                                                    // flex: 1,
+                                                    width: 50,
+                                                    height: 1,
+                                                    backgroundColor: "#D0D5DD",
+                                                }}
+                                            /> */}
+
+                                            {/* Center label */}
+                                            <span
+                                                style={{
+                                                    // margin: "0 8px",
+                                                    padding: "20px",
+                                                    fontSize: 12,
+                                                    fontWeight: 600,
+                                                    color: "#98A2B3",
+                                                    textTransform: "uppercase",
+                                                    letterSpacing: 0.7,
+                                                    // transform: "translate(-50%)",
+                                                    position: "absolute",
+                                                    backgroundColor: "white",
+                                                    left: 10
+                                                }}
+                                            >
+                                                Settings
+                                            </span>
+
+                                            {/* Right line */}
+                                            <div
+                                                style={{
+                                                    flex: 1,
+                                                    height: 1,
+                                                    backgroundColor: "#D0D5DD",
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {renderNavLink(item, index)}
+                                </React.Fragment>
+                            ))}
                         </Stack>
                     </nav>
 
