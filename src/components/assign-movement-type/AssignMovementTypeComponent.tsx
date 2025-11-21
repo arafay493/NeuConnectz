@@ -21,7 +21,7 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
-import { fetchListAllPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
+import { assignPlantsToUser, fetchListAllPlantsCodes, fetchListAllUserPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
 import WarehouseList_Columns from "../columns/WarehouseList_Columns";
 import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserPlants } from "@/redux/actions/warehouse-actions/warehouse-actions";
@@ -29,6 +29,9 @@ import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 import Loader from "../loader/loader";
 import AssignMovementTypeList_Columns from "../columns/AssignMovementTypeList_Columns";
+import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
+import UserPlantsList_Columns from "../columns/UserPlantsList_Columns";
+import PlantsList_Columns from "../columns/PlantsList_Columns";
 
 const AssignMovementTypeComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -37,10 +40,9 @@ const AssignMovementTypeComponent = () => {
     const isLargeScreen = useMediaQuery("(min-width: 1200px)");
 
     // Note: State for selected user
-    const [selectedUser, setSelectedUser] = useState<string | null>(null);
-    const [selectedWarehousesAllow, setSelectedWarehousesAllow] = useState<any>([]);
-    const [selectedWarehousesReceive, setSelectedWarehousesReceive] = useState<any>([]);
-    const [transformedWarehousesList, setTransformedWarehousesList] = useState([])
+    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [selectedPlants, setSelectedPlants] = useState<any>([]);
+    const [transformedPlantsList, setTransformedPlantsList] = useState([])
 
 
     // Note: Dispatcher for all Actions
@@ -52,10 +54,12 @@ const AssignMovementTypeComponent = () => {
         usersList: { users, totalCount },
     } = useAppSelector(({ userStates }) => userStates);
     const {
-        wareHousesList: { data: warehouseList, totalCount: warehouseCount },
-        wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
-    } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
-    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
+        ListAllPlantsCodes: { data: plantsList, totalCount: plantsCount }
+    } = useAppSelector(({ plantStates }) => plantStates);
+    const {
+        ListAllPlantsCodesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
+    } = useAppSelector(({ plantStates }) => plantStates);
+    // console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -75,7 +79,7 @@ const AssignMovementTypeComponent = () => {
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
-    const [userListByPlantsPagination, setUserListByPlantsPagination] = useState<PaginationState>({
+    const [userAssignedPlantsPagination, setUserAssignedPlantsPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
@@ -83,28 +87,25 @@ const AssignMovementTypeComponent = () => {
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const skipRecordUserList = userListPagination.pageIndex * userListPagination.pageSize;
-    const skipRecordUserListByPlants = userListByPlantsPagination.pageIndex * userListByPlantsPagination.pageSize;
+    const skipAssignedPlantsUserList = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
 
     // Loadings States
     const [isLoading, setIsLoading] = useState(false);
     const [isMainLoading, setIsMainLoading] = useState(false);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
-
     useEffect(() => {
-        const assignedIds = warehouseByUserPlantsList.map((p: any) => p.id);
-        const transformedAssignedList = warehouseByUserPlantsList.map((p: any) => p);
-        // setSelectedPlants(transformedAssignedList)
-        setSelectedWarehousesAllow(transformedAssignedList)
-        setSelectedWarehousesReceive(transformedAssignedList)
-        const updatedList: any = warehouseList.map((item: any) => ({
+        const assignedIds = assignedPlantsList.map((p: any) => p.id);
+        const transformedAssignedList = assignedPlantsList.map((p: any) => p);
+        setSelectedPlants(transformedAssignedList)
+
+        const updatedList: any = plantsList.map((item: any) => ({
             ...item,
             allowed: assignedIds.includes(item.id),
-            recieverAllowed: item?.isReceiver,
         }));
 
-        setTransformedWarehousesList(updatedList);
-    }, [warehouseByUserPlantsList]);
+        setTransformedPlantsList(updatedList);
+    }, [assignedPlantsList]);
 
     useEffect(() => {
         if (authenticatedUser?.token) {
@@ -118,6 +119,7 @@ const AssignMovementTypeComponent = () => {
         }
     }, [authenticatedUser?.token, dispatch]);
 
+
     useEffect(() => {
         if (authenticatedUser?.token) {
             setIsLoading(true);
@@ -126,16 +128,16 @@ const AssignMovementTypeComponent = () => {
             if (selectedUser) {
                 Promise.all([
                     dispatch(
-                        fetchAllWareHouses({
+                        fetchListAllPlantsCodes({
                             authToken: authenticatedUser?.token as string,
                             lastCount: pagination.pageSize, // Use page size for server-side pagination
                             skipRecords: skipRecord,
                         })
                     ),
                     dispatch(
-                        fetchWarehousesListByUserPlants({
+                        fetchListAllUserPlantsCodes({
                             authToken: authenticatedUser?.token as string,
-                            userId: selectedUser ?? ""
+                            userId: selectedUser ?? null,
                             // lastCount: pagination.pageSize,
                             // skipRecords: skipRecord,
                         })
@@ -145,158 +147,99 @@ const AssignMovementTypeComponent = () => {
                 });
             } else {
                 dispatch(
-                    fetchAllWareHouses({
+                    fetchListAllPlantsCodes({
                         authToken: authenticatedUser?.token as string,
                         lastCount: pagination.pageSize, // Use page size for server-side pagination
                         skipRecords: skipRecord,
                     })
                 ).finally(() => {
                     setIsLoading(false);
-                })
+                });
             }
 
         }
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, selectedUser]);
 
-    useEffect(() => {
-        const assignedIds = warehouseByUserPlantsList.map((p: any) => p.id);
 
-        const updatedList: any = warehouseList.map((item: any) => ({
+    useEffect(() => {
+        const assignedIds = assignedPlantsList.map((p: any) => p.id);
+
+        const updatedList: any = plantsList.map((item: any) => ({
             ...item,
             allowed: assignedIds.includes(item.id),
-            recieverAllowed: item?.isReceiver,
         }));
-        setTransformedWarehousesList(updatedList);
-    }, [warehouseList]);
+        setTransformedPlantsList(updatedList);
+    }, [plantsList]);
 
     // useEffect(() => {
-    //     if (authenticatedUser?.token) {
-    //         setIsLoading(true);
-    //         // const skipRecord = pagination.pageIndex * pagination.pageSize;
+    //   if (authenticatedUser?.token && selectedUser) {
+    //     setIsLoading(true);
+    //     // const skipRecord = userAssignedPlantsPagination.pageIndex * userAssignedPlantsPagination.pageSize;
 
-    //         dispatch(
-    //             fetchAllWareHouses({
-    //                 authToken: authenticatedUser?.token as string,
-    //                 lastCount: pagination.pageSize, // Use page size for server-side pagination
-    //                 skipRecords: skipRecord,
-    //             })
-    //         ).finally(() => {
-    //             setIsLoading(false);
-    //         });
-    //     }
-    // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]);
+    //     dispatch(
+    //       fetchListAllUserPlantsCodes({
+    //         authToken: authenticatedUser?.token as string,
+    //         userId: selectedUser ?? null,
+    //         lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+    //         skipRecords: skipAssignedPlantsUserList,
+    //       })
+    //     ).finally(() => {
+    //       setIsLoading(false);
+    //     });
+    //   }
+    // }, [authenticatedUser, dispatch, userAssignedPlantsPagination.pageIndex, userAssignedPlantsPagination.pageSize, selectedUser]);
 
+    // const handleSelectAllPlants = () => {
+    //   const selectedPlantsId = selectedPlants.map((p: any) => p.id);
+    //   const updatedList: any = transformedPlantsList.map((item: any) => ({
+    //     ...item,
+    //     allowed: !selectedPlantsId.includes(item.id) ? !item.allowed : item.allowed,
+    //   }));
+    //   console.log("🚀 ~ handleSelectAllPlants ~ transformedPlantsList:", transformedPlantsList)
 
-    // useEffect(() => {
-    //     if (authenticatedUser?.token) {
-    //         setIsLoading(true);
-    //         // const skipRecord = pagination.pageIndex * pagination.pageSize;
-
-    //         dispatch(
-    //             fetchWarehousesListByUserPlants({
-    //                 authToken: authenticatedUser?.token as string,
-    //                 lastCount: userListByPlantsPagination.pageSize, // Use page size for server-side pagination
-    //                 userId: selectedUser ?? "",
-    //                 skipRecords: skipRecordUserListByPlants,
-    //             })
-    //         ).finally(() => {
-    //             setIsLoading(false);
-    //         });
-    //     }
-    // }, [authenticatedUser, dispatch, userListByPlantsPagination.pageIndex, userListByPlantsPagination.pageSize, selectedUser]);
-
-    // const handleSelectAllWarehousesAllow = () => {
-    //     if (selectedWarehousesAllow?.length === warehouseList?.length) {
-    //         setSelectedWarehousesAllow([])
-    //         setSelectedWarehousesReceive([])
-    //     } else {
-    //         setSelectedWarehousesAllow(warehouseList)
-    //     }
+    //   if (selectedPlants?.length === updatedList?.length) {
+    //     setSelectedPlants([])
+    //     // setTransformedPlantsList([]);
+    //   } else {
+    //     setSelectedPlants(updatedList)
+    //     setTransformedPlantsList(updatedList);
+    //   }
     // }
 
-    const handleSelectAllWarehousesAllow = () => {
-        const allSelected = selectedWarehousesAllow.length === transformedWarehousesList.length;
+    const handleSelectAllPlants = () => {
+        const allSelected = selectedPlants.length === transformedPlantsList.length;
 
         if (allSelected) {
             // Unselect all
-            const unselectedList: any = transformedWarehousesList.map((item: any) => ({
+            const unselectedList: any = transformedPlantsList.map((item: any) => ({
                 ...item,
                 allowed: false,
-                recieverAllowed: false
             }));
-            setSelectedWarehousesAllow([]);
-            setSelectedWarehousesReceive([]);
-            setTransformedWarehousesList(unselectedList);
+            setSelectedPlants([]);
+            setTransformedPlantsList(unselectedList);
         } else {
             // Select all
-            const selectedList: any = transformedWarehousesList.map((item: any) => ({
+            const selectedList: any = transformedPlantsList.map((item: any) => ({
                 ...item,
                 allowed: true,
             }));
-            setSelectedWarehousesAllow(selectedList);
-            setTransformedWarehousesList(selectedList);
+            setSelectedPlants(selectedList);
+            setTransformedPlantsList(selectedList);
         }
     };
 
-    const handleSelectSpecificWarehouseAllow = (warehouse: any) => {
-        const updatedList: any = transformedWarehousesList.map((item: any) => ({
+    const handleSelectSpecificPlant = (plant: any) => {
+        const updatedList: any = transformedPlantsList.map((item: any) => ({
             ...item,
-            allowed: item.id === warehouse.id ? !item.allowed : item.allowed,
+            allowed: item.id === plant.id ? !item.allowed : item.allowed,
         }));
 
-        setTransformedWarehousesList(updatedList);
-        if (selectedWarehousesAllow.some((p: any) => p.id === warehouse.id)) {
-            setSelectedWarehousesAllow(selectedWarehousesAllow.filter((p: any) => p.id !== warehouse.id));
+        setTransformedPlantsList(updatedList);
+
+        if (selectedPlants.some((p: any) => p.id === plant.id)) {
+            setSelectedPlants(selectedPlants.filter((p: any) => p.id !== plant.id));
         } else {
-            setSelectedWarehousesAllow([...selectedWarehousesAllow, warehouse]);
-        }
-        if (selectedWarehousesAllow.includes(warehouse)) {
-            setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
-        }
-    };
-
-    // const handleSelectAllWarehousesReciever = () => {
-    //     if (selectedWarehousesReceive?.length === warehouseList?.length) {
-    //         setSelectedWarehousesReceive([])
-    //     } else {
-    //         setSelectedWarehousesReceive(warehouseList)
-    //     }
-    // }
-
-    const handleSelectAllWarehousesReciever = () => {
-        const allSelected = selectedWarehousesReceive.length === transformedWarehousesList.length;
-
-        if (allSelected) {
-            // Unselect all
-            const unselectedList: any = transformedWarehousesList.map((item: any) => ({
-                ...item,
-                recieverAllowed: false,
-            }));
-            setSelectedWarehousesAllow([]);
-            setSelectedWarehousesReceive([]);
-            setTransformedWarehousesList(unselectedList);
-        } else {
-            // Select all
-            const selectedList: any = transformedWarehousesList.map((item: any) => ({
-                ...item,
-                recieverAllowed: true,
-            }));
-            setSelectedWarehousesAllow(selectedList);
-            setTransformedWarehousesList(selectedList);
-        }
-    };
-
-    const handleSelectSpecificWarehouseReciever = (warehouse: any) => {
-        const updatedList: any = transformedWarehousesList.map((item: any) => ({
-            ...item,
-            recieverAllowed: item.id === warehouse.id ? !item.recieverAllowed : item.recieverAllowed,
-        }));
-
-        setTransformedWarehousesList(updatedList);
-        if (selectedWarehousesReceive.some((p: any) => p.id === warehouse.id)) {
-            setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
-        } else {
-            setSelectedWarehousesReceive([...selectedWarehousesReceive, warehouse]);
+            setSelectedPlants([...selectedPlants, plant]);
         }
     };
 
@@ -304,13 +247,10 @@ const AssignMovementTypeComponent = () => {
     const columns = AssignMovementTypeList_Columns({
         pagination,
         selectedUser,
-        handleSelectAllWarehousesAllow,
-        handleSelectSpecificWarehouseAllow,
-        handleSelectAllWarehousesReciever,
-        handleSelectSpecificWarehouseReciever,
-        selectedWarehousesAllow,
-        selectedWarehousesReceive,
-        warehouseList,
+        handleSelectAllPlants,
+        handleSelectSpecificPlant,
+        selectedPlants,
+        transformedPlantsList,
     })
 
     const OnScrollEndPaginateUserList = (e: any) => {
@@ -335,33 +275,49 @@ const AssignMovementTypeComponent = () => {
         }
     }
 
+    const handleSelectUser = (value: string) => {
+        // console.log("🚀 ~ handleSelectUser ~ value:", value, transformedPlantsList, assignedPlantsList)
+        setSelectedUser(value ?? "")
+        // dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+    }
+
+    const handleUserRemoved = () => {
+        dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+        setSelectedPlants([])
+        setSelectedUser(null)
+    }
+
     const handleResponse = (data: any) => {
-        showNotificationToast("Warehouses Assigned", data.message, customStyles.colors._408CCE);
+        showNotificationToast("Plant Assigned", data.message, customStyles.colors._408CCE);
         dispatch(
-            fetchAllWareHouses({
+            fetchListAllPlantsCodes({
                 authToken: authenticatedUser?.token as string,
                 lastCount: pagination.pageSize, // Use page size for server-side pagination
                 skipRecords: skipRecord,
             })
+        )
+        dispatch(
+            fetchListAllUserPlantsCodes({
+                authToken: authenticatedUser?.token as string,
+                userId: selectedUser ?? null,
+                lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord,
+            })
         ).finally(() => {
-            setSelectedWarehousesAllow([])
-            setSelectedWarehousesReceive([])
-            setSelectedUser(null)
             setIsLoading(false);
         });
     }
 
-    const handleAssignWarehouses = () => {
+    const handleAssignPlants = () => {
         setIsMainLoading(true)
-        const payload: any = {
-            userId: selectedUser,
-            normalWarehouseIds: selectedWarehousesAllow.map((item: any) => item?.id),
-            receiverWarehouseIds: selectedWarehousesReceive.map((item: any) => item?.id)
+        const payload = {
+            userId: selectedUser ?? null,
+            plantIds: selectedPlants.map((plant: any) => plant.id)
         }
         dispatch(
-            assignWareHouseToUser({
+            assignPlantsToUser({
                 token: authenticatedUser?.token as string,
-                payload: payload,
+                payload,
                 resHandler: handleResponse,
             })
         ).finally(() => {
@@ -369,17 +325,22 @@ const AssignMovementTypeComponent = () => {
         })
     };
 
-    const handleSelectUser = (value: string) => {
-        setSelectedUser(value ?? "")
-        // dispatch(CLEAR_ALL_WAREHOUSE_STATES())
-    }
-
-    const handleUserRemoved = () => {
-        dispatch(CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES())
-        setSelectedWarehousesAllow([])
-        setSelectedWarehousesReceive([])
-        setSelectedUser(null)
-    }
+    const handleAssignAllPlants = () => {
+        setIsMainLoading(true)
+        const payload = {
+            userId: selectedUser ?? null,
+            plantIds: plantsList.map((plant: any) => plant.id)
+        }
+        dispatch(
+            assignPlantsToUser({
+                token: authenticatedUser?.token as string,
+                payload,
+                resHandler: handleResponse,
+            })
+        ).finally(() => {
+            setIsMainLoading(false)
+        })
+    };
 
     if (isMainLoading) {
         return <Loader loadingState={isMainLoading} />
@@ -402,7 +363,7 @@ const AssignMovementTypeComponent = () => {
                 // size={isSmallScreen ? "sm" : "md"}
                 style={{ fontWeight: 500, fontSize: 16 }}
             >
-                Select user & assign single and multiple movement to user
+                Select user & assign single or multiple movement type to user.
             </Text>
 
             {/* Search Bar */}
@@ -475,12 +436,12 @@ const AssignMovementTypeComponent = () => {
                         radius={8}
                         size={isSmallScreen ? "sm" : "md"}
                         leftSection={<IconBuildingCommunity size={isSmallScreen ? 20 : 24} />}
-                        // onClick={handleAssignAllPlants}
+                        onClick={handleAssignAllPlants}
                         disabled={!selectedUser}
                         w={isSmallScreen ? "100%" : "auto"}
                         mt={isSmallScreen ? 16 : 0}
                     >
-                        {isSmallScreen ? "Assign All" : "Assign All Movement Type"}
+                        {isSmallScreen ? "Assign All" : "Assign All Movement Types"}
                     </Button>
                     <Button
                         variant="transparent"
@@ -488,8 +449,8 @@ const AssignMovementTypeComponent = () => {
                         radius={8}
                         size={isSmallScreen ? "sm" : "md"}
                         leftSection={<IconBuildingCommunity size={isSmallScreen ? 20 : 24} />}
-                        onClick={handleAssignWarehouses}
-                        disabled={!selectedUser && selectedWarehousesAllow?.length > 0}
+                        onClick={handleAssignPlants}
+                        disabled={!selectedUser && selectedPlants?.length > 0}
                         w={isSmallScreen ? "100%" : "auto"}
                         mt={isSmallScreen ? 16 : 0}
                     >
@@ -499,44 +460,41 @@ const AssignMovementTypeComponent = () => {
             </Group>
 
             {/* Table */}
-            {/* {warehouseByUserPlantsList?.length === 0 ? <TanStackTable
-                data={Array.isArray(warehouseList) ? warehouseList : []}
-                dataCount={warehouseCount}
-                columns={columns}
-                isLoading={isLoading}
-                // isLoading={false}
-                isInsideModalTable={true}
-                pagination={pagination}
-                setPagination={setPagination}
-                title={"Warehouse List"}
-                subTitle={"Select user to assign warehouse"}
-                skipRecord={skipRecord}
-            /> : <TanStackTable
-                data={Array.isArray(warehouseByUserPlantsList) ? warehouseByUserPlantsList : []}
-                dataCount={warehouseByUserPlantsCount}
-                columns={columns}
-                isLoading={isLoading}
-                // isLoading={false}
-                isInsideModalTable={true}
-                pagination={userListByPlantsPagination}
-                setPagination={setUserListByPlantsPagination}
-                title={"Warehouse List"}
-                subTitle={"Select user to assign warehouse"}
-                skipRecord={skipRecord}
-            />} */}
+            {/* {assignedPlantsList?.length === 0 ? <TanStackTable
+        data={Array.isArray(plantsList) ? plantsList : []}
+        dataCount={plantsList?.length}
+        columns={columns}
+        isLoading={isLoading}
+        isInsideModalTable={true}
+        pagination={pagination}
+        setPagination={setPagination}
+        title={"Assign Plants"}
+        subTitle={"Select user to assign plants"}
+        skipRecord={skipRecord}
+      /> : < TanStackTable
+        data={Array.isArray(assignedPlantsList) ? assignedPlantsList : []}
+        dataCount={assignedPlantsList?.length}
+        columns={userPlantListColumns}
+        isLoading={isLoading}
+        isInsideModalTable={true}
+        pagination={userAssignedPlantsPagination}
+        setPagination={setUserAssignedPlantsPagination}
+        title={"Assign Plants"}
+        subTitle={"Select user to assign plants"}
+        skipRecord={skipAssignedPlantsUserList}
+      />} */}
 
             {/* Table */}
             <TanStackTable
-                data={Array.isArray(transformedWarehousesList) ? transformedWarehousesList : []}
-                dataCount={warehouseCount}
+                data={Array.isArray(transformedPlantsList) ? transformedPlantsList : []}
+                dataCount={plantsCount}
                 columns={columns}
                 isLoading={isLoading}
-                // isLoading={false}
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
-                title={"Moment Type"}
-                subTitle={"Select user to assign movement type"}
+                title={"Assign Movement Type"}
+                subTitle={"Select user to assign movement type."}
                 skipRecord={skipRecord}
             />
         </Box>
