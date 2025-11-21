@@ -70,8 +70,9 @@ const HtmlExpandedNavbar = ({
             c={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
             active={activeTab === index}
             onClick={() => handleNavigation(item.route, index)}
-            // w='100%'
-            w={260}
+            w='100%'
+            // w={260}
+            miw={260}
             title={item?.label}
             h={48}
             style={{
@@ -188,7 +189,7 @@ const HtmlExpandedNavbar = ({
                                                 display: "flex",
                                                 alignItems: "center",
                                                 margin: "12px 0",
-                                                width: 260,
+                                                width: "100%",
                                                 position: "relative"
                                             }}
                                         >
@@ -225,6 +226,7 @@ const HtmlExpandedNavbar = ({
                                             <div
                                                 style={{
                                                     flex: 1,
+                                                    width: "100%",
                                                     height: 1,
                                                     backgroundColor: "#D0D5DD",
                                                 }}
