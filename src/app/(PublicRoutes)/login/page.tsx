@@ -37,7 +37,7 @@ const LoginScreen = () => {
     // Note: Check if user is already authenticated on component mount
     useEffect(() => {
         if (AuthService.isAuthenticated()) {
-            router.replace("/putaway-order");
+            router.replace(initialRoute);
         }
     }, [router]);
 
@@ -66,7 +66,7 @@ const LoginScreen = () => {
 
             // Add a small delay to ensure cookies are set before redirect
             setTimeout(() => {
-                router.replace("/putaway-order");
+                router.replace(initialRoute);
             }, 100);
             return;
         }

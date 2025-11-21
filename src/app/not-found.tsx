@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Container, Text, Center } from '@mantine/core';
 import nextDynamic from 'next/dynamic';
 import { customStyles } from '@/styles/custom-theme';
-import { routes } from '@/constants/routes';
+import { initialRoute, routes } from '@/constants/routes';
 
 // Dynamically import Lottie to prevent SSR issues
 const Lottie = nextDynamic(() => import('lottie-react'), { ssr: false });
@@ -25,7 +25,7 @@ const PageNotFound = () => {
     });
 
     setTimeout(() => {
-      router.push(routes.putAwayOrder);
+      router.push(initialRoute);
     }, 2000);
   }, [router]);
 
