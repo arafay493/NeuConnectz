@@ -5,9 +5,9 @@ import { ReactNode } from "react";
 export type Routes = {
     root: string;
     login: string;
-    dashboard: string;
-    stockMovement: string;
-    reconciliation: string;
+    // dashboard: string;
+    // stockMovement: string;
+    // reconciliation: string;
     // itemMovement: string;
     // inventoryTransfer: string;
     // itTrDifference: string;
@@ -19,13 +19,13 @@ export type Routes = {
     assignPlants: string;
     addUser: string;
     configuration: string;
-    integrationMonitor: string;
-    editUser: (uid: string) => string,
-    grnMovement: string
+    // integrationMonitor: string;
+    // editUser: (uid: string) => string,
+    // grnMovement: string
     // generateBarcode: string
-    productionOrder: string,
-    goodsIssue: string,
-    stockTransferOrder: string,
+    // productionOrder: string,
+    // goodsIssue: string,
+    // stockTransferOrder: string,
     putAwayOrder: string,
     pickingOrder: string,
     assignMovementType: string,

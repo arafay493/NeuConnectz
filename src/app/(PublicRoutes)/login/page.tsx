@@ -18,6 +18,7 @@ import AuthService from '@/lib/auth-service/auth-service';
 import WhiteLogo from "@/assets/images/white-logo.svg"
 import ProductImage from "@/assets/images/product-image.gif";
 import QBSLogo from "@/assets/images/QBS _LOGO.svg";
+import { initialRoute } from '@/constants/routes';
 
 const LoginScreen = () => {
 
@@ -36,7 +37,7 @@ const LoginScreen = () => {
     // Note: Check if user is already authenticated on component mount
     useEffect(() => {
         if (AuthService.isAuthenticated()) {
-            router.replace('/dashboard');
+            router.replace("/putaway-order");
         }
     }, [router]);
 
@@ -65,7 +66,7 @@ const LoginScreen = () => {
 
             // Add a small delay to ensure cookies are set before redirect
             setTimeout(() => {
-                router.replace('/dashboard');
+                router.replace("/putaway-order");
             }, 100);
             return;
         }
@@ -297,12 +298,12 @@ const LoginScreen = () => {
                                 w="100%"
                                 maw={400}
                                 miw={250}
-                                // mt={6}
+                            // mt={6}
                             >
                                 <input
                                     type="checkbox"
                                     id="rememberMe"
-                                    // style={{ marginRight: 2 }}
+                                // style={{ marginRight: 2 }}
                                 // You can add state handling for remember me here
                                 />
                                 <label

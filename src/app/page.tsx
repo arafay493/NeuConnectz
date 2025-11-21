@@ -13,7 +13,7 @@ const App = () => {
 
   // Note: This hook will run when this component mounts...!
   useEffect(() => {
-    router.push(routes.dashboard);
+    router.push(routes.putAwayOrder);
   }, []);
 
   return (

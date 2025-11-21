@@ -25,8 +25,8 @@ const PageNotFound = () => {
     });
 
     setTimeout(() => {
-      router.push(routes.root);
-    }, 3000);
+      router.push(routes.putAwayOrder);
+    }, 2000);
   }, [router]);
 
   return (

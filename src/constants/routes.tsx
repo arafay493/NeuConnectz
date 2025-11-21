@@ -27,39 +27,41 @@ const unAuthenticatedRoutes: String[] = ["/login"];
 
 // Note: Authenticated routes...!
 const authenticatedRoutes: String[] = [
-    "/dashboard",
-    "/stock-movement",
-    "/reconciliation",
+    "/putaway-order",
+    "/picking-order",
+    // "/dashboard",
+    // "/stock-movement",
+    // "/reconciliation",
     // "/item-movement",
     // "/inventory-transfer",
     // "/it-tr-difference",
     // "/it-posted-documents",
     // "/tr-posted-documents",
     "/users-list",
-    "/assign-group",
+    // "/assign-group",
     "/assign-plants",
     "/assign-warehouse",
     "/add-user",
     "/configuration",
-    "/integration-monitor",
-    "/edit",
-    "/grn-movement",
+    // "/integration-monitor",
+    // "/edit",
+    // "/grn-movement",
     // "/generate-barcode",
-    "/production-order",
-    "/goods-issue",
-    "/stock-transfer-order",
-    "/putaway-order",
-    "/picking-order",
+    // "/production-order",
+    // "/goods-issue",
+    // "/stock-transfer-order",
     "/assign-movement-type",
 ];
+
+const initialRoute: string = "/putaway-order"
 
 // Note: Defining all routes...!
 const routes: Routes = {
     root: "/",
     login: "/login",
-    dashboard: "/dashboard",
-    stockMovement: "/stock-movement",
-    reconciliation: "/reconciliation",
+    // dashboard: "/dashboard",
+    // stockMovement: "/stock-movement",
+    // reconciliation: "/reconciliation",
     // itemMovement: "/item-movement",
     // inventoryTransfer: "/inventory-transfer",
     // itTrDifference: "/it-tr-difference",
@@ -71,13 +73,13 @@ const routes: Routes = {
     assignPlants: "/assign-plants",
     addUser: "/add-user",
     configuration: "/configuration",
-    integrationMonitor: "/integration-monitor",
-    editUser: (uid: string) => `/edit/${uid}`,
-    grnMovement: "/grn-movement",
+    // integrationMonitor: "/integration-monitor",
+    // editUser: (uid: string) => `/edit/${uid}`,
+    // grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
-    productionOrder: "/production-order",
-    goodsIssue: "/goods-issue",
-    stockTransferOrder: "/stock-transfer-order",
+    // productionOrder: "/production-order",
+    // goodsIssue: "/goods-issue",
+    // stockTransferOrder: "/stock-transfer-order",
     putAwayOrder: "/putaway-order",
     pickingOrder: "/picking-order",
     assignMovementType: "/assign-movement-type",
@@ -85,36 +87,36 @@ const routes: Routes = {
 
 // Note: Defining drawer routes...!
 const drawerRoutes: DrawerRoute[] = [
-    {
-        icon: <IconLayoutDashboardFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "Dashboard",
-        route: routes.dashboard,
-    },
-    {
-        icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
-        label: "Stock Movement",
-        route: routes.stockMovement,
-    },
+    // {
+    //     icon: <IconLayoutDashboardFilled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Dashboard",
+    //     route: routes.dashboard,
+    // },
+    // {
+    //     icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Stock Movement",
+    //     route: routes.stockMovement,
+    // },
     // {
     //     icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
     //     label: "Goods Receipt Note",
     //     route: routes.grnMovement
     // },
-    {
-        icon: <IconChecklist color='currentColor' size={24} />,
-        label: "Production",
-        route: routes.productionOrder
-    },
-    {
-        icon: <IconChecklist color='currentColor' size={24} />,
-        label: "Goods Issue",
-        route: routes.goodsIssue
-    },
-    {
-        icon: <IconStack3 color='currentColor' size={24} />,
-        label: "Stock Transfer Order",
-        route: routes.stockTransferOrder
-    },
+    // {
+    //     icon: <IconChecklist color='currentColor' size={24} />,
+    //     label: "Production",
+    //     route: routes.productionOrder
+    // },
+    // {
+    //     icon: <IconChecklist color='currentColor' size={24} />,
+    //     label: "Goods Issue",
+    //     route: routes.goodsIssue
+    // },
+    // {
+    //     icon: <IconStack3 color='currentColor' size={24} />,
+    //     label: "Stock Transfer Order",
+    //     route: routes.stockTransferOrder
+    // },
     {
         icon: <IconTruckDelivery color='currentColor' size={24} />,
         label: "Putaway Order",
@@ -125,21 +127,16 @@ const drawerRoutes: DrawerRoute[] = [
     //     label: "Picking Order",
     //     route: routes.pickingOrder
     // },
-    {
-        icon: <IconSortAscendingShapes color='currentColor' size={24} />,
-        label: "Assign Movement Type",
-        route: routes.assignMovementType
-    },
-    {
-        icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "Integration Monitor",
-        route: routes.integrationMonitor
-    },
-    {
-        icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
-        label: "Reconciliation",
-        route: routes.reconciliation,
-    },
+    // {
+    //     icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Integration Monitor",
+    //     route: routes.integrationMonitor
+    // },
+    // {
+    //     icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Reconciliation",
+    //     route: routes.reconciliation,
+    // },
     {
         icon: <IconUsersGroup color='currentColor' size={24} />,
         label: "Users List",
@@ -151,14 +148,20 @@ const drawerRoutes: DrawerRoute[] = [
         route: routes.assignGroup,
     },
     {
+        icon: <IconPlant color='currentColor' size={24} />,
+        label: "Assign Plants",
+        route: routes.assignPlants,
+    },
+    {
         icon: <IconBuildingWarehouse color='currentColor' size={24} />,
         label: "Assign Warehouse",
         route: routes.assignWareHouse,
     },
+
     {
-        icon: <IconPlant color='currentColor' size={24} />,
-        label: "Assign Plants",
-        route: routes.assignPlants,
+        icon: <IconSortAscendingShapes color='currentColor' size={24} />,
+        label: "Assign Movement Type",
+        route: routes.assignMovementType
     },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,
@@ -201,5 +204,6 @@ export {
     unAuthenticatedRoutes,
     authenticatedRoutes,
     routes,
-    drawerRoutes
+    drawerRoutes,
+    initialRoute
 };
