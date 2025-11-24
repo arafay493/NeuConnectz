@@ -152,6 +152,32 @@ export interface PlantsStateType {
     PlantsErrorState: string
 };
 
+// Note: Movement Type reducer state types...!
+export interface MovementTypeStateType {
+    ListAllMovementTypes: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllMovementTypesByUser: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    // listGroupCodesByUserId: {
+    //     id: string,
+    //     groupCode: number | string,
+    //     groupName: string,
+    //     createdBy: string,
+    //     updatedBy: string,
+    //     createdDate: string,
+    //     updatedDate: string,
+    //     isActive: boolean,
+    //     isArchived: boolean
+    // }[];
+    MovementTypesErrorState: string
+};
+
 export interface ListAllGroupCodesProps {
     id: string,
     groupCode: number | string,

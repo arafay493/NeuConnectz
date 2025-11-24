@@ -29,19 +29,19 @@ const AssignMovementTypeList_Columns = ({
                 },
                 enableColumnFilter: false,
             },
+            // {
+            //     accessorKey: "plantCode",
+            //     header: "Movement Code",
+            //     minSize: 160,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
             {
-                accessorKey: "plantCode",
-                header: "Movement Code",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "plantName",
+                accessorKey: "description",
                 header: "Movement Name",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
@@ -52,7 +52,7 @@ const AssignMovementTypeList_Columns = ({
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "type",
+                accessorKey: "movementType",
                 header: "Type",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
@@ -62,17 +62,17 @@ const AssignMovementTypeList_Columns = ({
                 ),
                 enableColumnFilter: true,
             },
-            {
-                accessorKey: "direction",
-                header: "Direction",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
+            // {
+            //     accessorKey: "direction",
+            //     header: "Direction",
+            //     minSize: 180,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
             {
                 id: "allow",
                 header: ({ table }: any) => {

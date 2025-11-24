@@ -14,24 +14,18 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 import {
     IconBuildingCommunity,
-    IconBuildingWarehouse,
 } from "@tabler/icons-react";
 import {
     PaginationState,
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { FadeLoader } from "react-spinners";
-import { assignPlantsToUser, fetchListAllPlantsCodes, fetchListAllUserPlantsCodes } from "@/redux/actions/plants-actions/plants-actions";
 import TanStackTable from "../tanStackTable/TanStackTable";
-import WarehouseList_Columns from "../columns/WarehouseList_Columns";
-import { assignWareHouseToUser, fetchAllWareHouses, fetchWarehousesListByUserPlants } from "@/redux/actions/warehouse-actions/warehouse-actions";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
-import { CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
 import Loader from "../loader/loader";
 import AssignMovementTypeList_Columns from "../columns/AssignMovementTypeList_Columns";
 import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
-import UserPlantsList_Columns from "../columns/UserPlantsList_Columns";
-import PlantsList_Columns from "../columns/PlantsList_Columns";
+import { assignMovementTypeToUser, fetchListAllMovementTypes, fetchListAllUserMovementTypes } from "@/redux/actions/movement-type-actions/movement-type-actions";
 
 const AssignMovementTypeComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -54,11 +48,9 @@ const AssignMovementTypeComponent = () => {
         usersList: { users, totalCount },
     } = useAppSelector(({ userStates }) => userStates);
     const {
-        ListAllPlantsCodes: { data: plantsList, totalCount: plantsCount }
-    } = useAppSelector(({ plantStates }) => plantStates);
-    const {
-        ListAllPlantsCodesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
-    } = useAppSelector(({ plantStates }) => plantStates);
+        ListAllMovementTypes: { data: plantsList, totalCount: plantsCount },
+        ListAllMovementTypesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
+    } = useAppSelector(({ movementTypeStates }) => movementTypeStates);
     // console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
     // Transform users data for Select component
@@ -128,14 +120,14 @@ const AssignMovementTypeComponent = () => {
             if (selectedUser) {
                 Promise.all([
                     dispatch(
-                        fetchListAllPlantsCodes({
+                        fetchListAllMovementTypes({
                             authToken: authenticatedUser?.token as string,
                             lastCount: pagination.pageSize, // Use page size for server-side pagination
                             skipRecords: skipRecord,
                         })
                     ),
                     dispatch(
-                        fetchListAllUserPlantsCodes({
+                        fetchListAllUserMovementTypes({
                             authToken: authenticatedUser?.token as string,
                             userId: selectedUser ?? null,
                             // lastCount: pagination.pageSize,
@@ -147,7 +139,7 @@ const AssignMovementTypeComponent = () => {
                 });
             } else {
                 dispatch(
-                    fetchListAllPlantsCodes({
+                    fetchListAllMovementTypes({
                         authToken: authenticatedUser?.token as string,
                         lastCount: pagination.pageSize, // Use page size for server-side pagination
                         skipRecords: skipRecord,
@@ -288,16 +280,16 @@ const AssignMovementTypeComponent = () => {
     }
 
     const handleResponse = (data: any) => {
-        showNotificationToast("Plant Assigned", data.message, customStyles.colors._408CCE);
+        showNotificationToast("Movement Type Assigned", data.message, customStyles.colors._408CCE);
         dispatch(
-            fetchListAllPlantsCodes({
+            fetchListAllMovementTypes({
                 authToken: authenticatedUser?.token as string,
                 lastCount: pagination.pageSize, // Use page size for server-side pagination
                 skipRecords: skipRecord,
             })
         )
         dispatch(
-            fetchListAllUserPlantsCodes({
+            fetchListAllUserMovementTypes({
                 authToken: authenticatedUser?.token as string,
                 userId: selectedUser ?? null,
                 lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
@@ -312,10 +304,10 @@ const AssignMovementTypeComponent = () => {
         setIsMainLoading(true)
         const payload = {
             userId: selectedUser ?? null,
-            plantIds: selectedPlants.map((plant: any) => plant.id)
+            movementTypeIds: selectedPlants.map((plant: any) => plant.id)
         }
         dispatch(
-            assignPlantsToUser({
+            assignMovementTypeToUser({
                 token: authenticatedUser?.token as string,
                 payload,
                 resHandler: handleResponse,
@@ -329,10 +321,10 @@ const AssignMovementTypeComponent = () => {
         setIsMainLoading(true)
         const payload = {
             userId: selectedUser ?? null,
-            plantIds: plantsList.map((plant: any) => plant.id)
+            movementTypeIds: plantsList.map((plant: any) => plant.id)
         }
         dispatch(
-            assignPlantsToUser({
+            assignMovementTypeToUser({
                 token: authenticatedUser?.token as string,
                 payload,
                 resHandler: handleResponse,
