@@ -91,7 +91,9 @@ const AssignPlantsComponent = () => {
   const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
   useEffect(() => {
-    handleUserRemoved()
+    if (selectedUser === null) {
+      handleUserRemoved()
+    }
   }, [])
 
   useEffect(() => {
