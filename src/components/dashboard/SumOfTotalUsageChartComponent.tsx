@@ -1,3 +1,4 @@
+"use client"
 import { Paper, Stack, Group, Text, Title, Divider, Box } from "@mantine/core";
 import React, { useMemo } from "react";
 import Chart from "react-apexcharts";

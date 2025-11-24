@@ -177,7 +177,7 @@
 
 
 
-
+"use client"
 import { useAppSelector } from '@/redux/store'
 import { customStyles } from '@/styles/custom-theme'
 import { Box, Group, Select, Text } from '@mantine/core'
