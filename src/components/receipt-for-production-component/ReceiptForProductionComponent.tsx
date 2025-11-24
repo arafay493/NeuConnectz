@@ -342,19 +342,34 @@ const ReceiptFromProduction: FC<ApiProp> = ({ apiUrl }) => {
             size: 200,
           }
         ]
-        : []),
-      {
-        accessorKey: "",
-        header: "Transc Type",
-        cell: ({ getValue }) => (
-          <Text c={customStyles.colors._909090} fw={500}>
-            {/* {new Date(getValue() as string).toLocaleDateString()} */}-
-          </Text>
-        ),
-        filterFn: stringFilterFn,
-        enableColumnFilter: true,
-        // size: calculateColumnWidth('Transc Type', (recieptFromProductionList || []).map(item => item.), 150, 220),
-      },
+        : [
+          {
+            accessorKey: "createdDate",
+            header: "Created Date",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {getValue()
+                  ? new Date(getValue() as string).toLocaleDateString()
+                  : "-"}
+              </Text>
+            ),
+            filterFn: stringFilterFn,
+            enableColumnFilter: true,
+            size: 200,
+          }
+        ]),
+      // {
+      //   accessorKey: "",
+      //   header: "Transc Type",
+      //   cell: ({ getValue }) => (
+      //     <Text c={customStyles.colors._909090} fw={500}>
+      //       {/* {new Date(getValue() as string).toLocaleDateString()} */}-
+      //     </Text>
+      //   ),
+      //   filterFn: stringFilterFn,
+      //   enableColumnFilter: true,
+      //   // size: calculateColumnWidth('Transc Type', (recieptFromProductionList || []).map(item => item.), 150, 220),
+      // },
     ],
     [recieptFromProductionList, tab]
   );

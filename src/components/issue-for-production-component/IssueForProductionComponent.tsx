@@ -392,7 +392,22 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
             size: 200,
           }
         ]
-        : [])
+        : [
+          {
+            accessorKey: "createdDate",
+            header: "Created Date",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {getValue()
+                  ? new Date(getValue() as string).toLocaleDateString()
+                  : "-"}
+              </Text>
+            ),
+            filterFn: stringFilterFn,
+            enableColumnFilter: true,
+            size: 200,
+          }
+        ])
       // {
       //   header: "Action",
       //   cell: ({ getValue, row }) => {
