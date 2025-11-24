@@ -52,7 +52,7 @@ const AssignMovementTypeComponent = () => {
         ListAllMovementTypes: { data: plantsList, totalCount: plantsCount },
         ListAllMovementTypesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
     } = useAppSelector(({ movementTypeStates }) => movementTypeStates);
-    console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
+    // console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -444,12 +444,12 @@ const AssignMovementTypeComponent = () => {
                     </Button>
                     <Button
                         variant="transparent"
-                        className={!selectedUser ? "filledDisabledButton" : "filledButton"}
+                        className={!(selectedPlants?.length > 0) ? "filledDisabledButton" : "filledButton"}
                         radius={8}
                         size={isSmallScreen ? "sm" : "md"}
                         leftSection={<IconBuildingCommunity size={isSmallScreen ? 20 : 24} />}
                         onClick={handleAssignPlants}
-                        disabled={!selectedUser && selectedPlants?.length > 0}
+                        disabled={!(selectedPlants?.length > 0)}
                         w={isSmallScreen ? "100%" : "auto"}
                         mt={isSmallScreen ? 16 : 0}
                     >
