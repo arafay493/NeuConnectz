@@ -37,8 +37,9 @@ const AssignMovementTypeComponent = () => {
     const [selectedUser, setSelectedUser] = useState<any>(null);
     const [selectedPlants, setSelectedPlants] = useState<any>([]);
     const [transformedPlantsList, setTransformedPlantsList] = useState([])
-
-
+    
+    
+    
     // Note: Dispatcher for all Actions
     const dispatch = useAppDispatch();
 
@@ -51,7 +52,7 @@ const AssignMovementTypeComponent = () => {
         ListAllMovementTypes: { data: plantsList, totalCount: plantsCount },
         ListAllMovementTypesByUser: { data: assignedPlantsList, totalCount: assigndPlantsCount }
     } = useAppSelector(({ movementTypeStates }) => movementTypeStates);
-    // console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
+    console.log("🚀 ~ AssignPlantsComponent ~ transformedPlantsList:", transformedPlantsList, selectedPlants, assignedPlantsList)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -298,8 +299,8 @@ const AssignMovementTypeComponent = () => {
             fetchListAllUserMovementTypes({
                 authToken: authenticatedUser?.token as string,
                 userId: selectedUser ?? null,
-                lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
-                skipRecords: skipRecord,
+                // lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+                // skipRecords: skipRecord,
             })
         ).finally(() => {
             setIsLoading(false);

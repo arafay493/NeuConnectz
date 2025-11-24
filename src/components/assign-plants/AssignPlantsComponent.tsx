@@ -312,8 +312,8 @@ const AssignPlantsComponent = () => {
       fetchListAllUserPlantsCodes({
         authToken: authenticatedUser?.token as string,
         userId: selectedUser ?? null,
-        lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
-        skipRecords: skipRecord,
+        // lastCount: userAssignedPlantsPagination.pageSize, // Use page size for server-side pagination
+        // skipRecords: skipRecord,
       })
     ).finally(() => {
       setIsLoading(false);
