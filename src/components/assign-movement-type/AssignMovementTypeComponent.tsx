@@ -24,8 +24,8 @@ import TanStackTable from "../tanStackTable/TanStackTable";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import Loader from "../loader/loader";
 import AssignMovementTypeList_Columns from "../columns/AssignMovementTypeList_Columns";
-import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { assignMovementTypeToUser, fetchListAllMovementTypes, fetchListAllUserMovementTypes } from "@/redux/actions/movement-type-actions/movement-type-actions";
+import { CLEAR_ALL_MOVEMENT_TYPE_STATES_BY_USER } from "@/redux/reducers/movement-type-reducer/movement-type-reducer";
 
 const AssignMovementTypeComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -85,6 +85,10 @@ const AssignMovementTypeComponent = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isMainLoading, setIsMainLoading] = useState(false);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
+
+    useEffect(() => {
+        handleUserRemoved()
+    }, [])
 
     useEffect(() => {
         const assignedIds = assignedPlantsList.map((p: any) => p.id);
@@ -274,7 +278,7 @@ const AssignMovementTypeComponent = () => {
     }
 
     const handleUserRemoved = () => {
-        dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
+        dispatch(CLEAR_ALL_MOVEMENT_TYPE_STATES_BY_USER())
         setSelectedPlants([])
         setSelectedUser(null)
     }

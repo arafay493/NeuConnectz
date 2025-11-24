@@ -91,6 +91,10 @@ const AssignPlantsComponent = () => {
   const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
   useEffect(() => {
+    handleUserRemoved()
+  }, [])
+
+  useEffect(() => {
     const assignedIds = assignedPlantsList.map((p: any) => p.id);
     const transformedAssignedList = assignedPlantsList.map((p: any) => p);
     setSelectedPlants(transformedAssignedList)
