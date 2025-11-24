@@ -37,14 +37,14 @@ export async function middleware(req: NextRequest) {
     // Note: Redirect authenticated user trying to access login page...!
     if (isAuthenticated && isUnauthenticatedRoute) {
         console.log('Redirecting to dashboard - authenticated user accessing login');
-        return NextResponse.redirect(new URL(routes.dashboard, req.url));
+        return NextResponse.redirect(new URL(routes.putAwayOrder, req.url));
     }
 
     // Note: Redirect root to dashboard if authenticated, otherwise to login
     if (pathname === '/') {
         if (isAuthenticated) {
             console.log('Redirecting to dashboard from root');
-            return NextResponse.redirect(new URL(routes.dashboard, req.url));
+            return NextResponse.redirect(new URL(routes.putAwayOrder, req.url));
         } else {
             console.log('Redirecting to login from root');
             return NextResponse.redirect(new URL(routes.login, req.url));

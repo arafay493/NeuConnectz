@@ -76,7 +76,7 @@ const routes: Routes = {
     addUser: "/add-user",
     configuration: "/configuration",
     // integrationMonitor: "/integration-monitor",
-    // editUser: (uid: string) => `/edit/${uid}`,
+    editUser: (uid: string) => `/edit/${uid}`,
     // grnMovement: "/grn-movement",
     // generateBarcode: "/generate-barcode",
     // productionOrder: "/production-order",

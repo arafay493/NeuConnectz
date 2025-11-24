@@ -55,7 +55,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
   
   // Note: This hook will run only once when the component mounts...!
   useEffect(() => {
-    if (window.location.pathname === routes.root) router.push(routes.dashboard);
+    if (window.location.pathname === routes.root) router.push(routes.putAwayOrder);
   }, []);
 
   // Note: This hook will automatically update activeTab based on current route path...!
