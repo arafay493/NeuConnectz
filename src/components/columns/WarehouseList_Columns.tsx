@@ -19,8 +19,7 @@ const WarehouseList_Columns = ({
             {
                 id: "serialNumber",
                 header: "S.No",
-                minSize: 100,
-                maxSize: 120,
+                maxSize: 80,
                 cell: ({ row }: any) => {
                     const serialNumber =
                         pagination.pageIndex * pagination.pageSize + row.index + 1;
@@ -35,7 +34,6 @@ const WarehouseList_Columns = ({
             {
                 accessorKey: "whsCode",
                 header: "Warehouse Code",
-                minSize: 160,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
@@ -46,7 +44,6 @@ const WarehouseList_Columns = ({
             {
                 accessorKey: "whsName",
                 header: "Warehouse Name",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
@@ -57,7 +54,6 @@ const WarehouseList_Columns = ({
             {
                 accessorKey: "pCode",
                 header: "Plant Code",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
@@ -68,7 +64,6 @@ const WarehouseList_Columns = ({
             {
                 accessorKey: "slcCode",
                 header: "Storage Location",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
@@ -95,7 +90,6 @@ const WarehouseList_Columns = ({
                         />
                     );
                 },
-                minSize: 180,
                 cell: ({ row }: any) => {
                     // const isChecked = selectedWarehousesAllow.includes(row?.original)
                     const isChecked = row?.original?.allowed
@@ -158,7 +152,6 @@ const WarehouseList_Columns = ({
                         />
                     );
                 },
-                minSize: 180,
                 cell: ({ row }: any) => {
                     // const isAllowed = selectedWarehousesAllow.includes(row?.original)
                     // const isRecieved = selectedWarehousesReceive.includes(row?.original)

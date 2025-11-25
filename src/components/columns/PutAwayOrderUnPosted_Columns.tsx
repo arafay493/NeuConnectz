@@ -10,7 +10,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 id: "serialNumber",
                 header: "S.No",
-                maxSize: 120,
+                maxSize: 80,
                 cell: ({ row }: any) => {
                     const serialNumber =
                         pagination.pageIndex * pagination.pageSize + row.index + 1;
@@ -25,7 +25,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "docNum",
                 header: "Doc Number",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -36,7 +35,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "transferReceiptNumber",
                 header: "TR Number",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -47,7 +45,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "material",
                 header: "Material Code",
-                minSize: 150,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -59,7 +56,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "materialDescription",
                 header: "Material Name",
-                minSize: 200,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -69,8 +65,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
             {
                 accessorKey: "materialDocument",
-                header: "Material Document",
-                minSize: 200,
+                header: "Material Doc",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -82,7 +77,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "baseUOM",
                 header: "UOM",
-                minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -94,7 +88,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "totalQuantity",
                 header: "Quantity",
-                minSize: 120,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {getValue() ?? "-"}
@@ -106,7 +99,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "movementType",
                 header: "Movement Type",
-                minSize: 150,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -118,7 +110,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "purchaseOrder",
                 header: "Purchase Order",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -130,7 +121,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "supplierName",
                 header: "Suppliers",
-                minSize: 200,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -153,7 +143,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "sourceStorageBin",
                 header: "Source Bin",
-                minSize: 150,
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
@@ -164,7 +153,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "confirmationStatus",
                 header: "Status",
-                minSize: 140,
                 cell: ({ getValue }: any) => (
                     getValue() !== "UnConfirmed" ?
                         <Text
@@ -190,7 +178,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 accessorKey: "createdOn",
                 header: "Date",
-                minSize: 140,
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate
@@ -207,7 +194,6 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 id: "actions",
                 header: "Actions",
-                minSize: 150,
                 cell: ({ row }: any) => (
                     <Group
                         gap="xs"
