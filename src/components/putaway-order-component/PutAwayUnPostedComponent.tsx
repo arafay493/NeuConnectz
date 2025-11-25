@@ -103,6 +103,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     }
 
     const handlePost = (rowData: any) => {
+        handleModalClose()
         setIsFullPageLoading(true)
         dispatch(postPutAwayOrders({
             payload: {
@@ -182,6 +183,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 skipRecord={skipRecordViewDetails}
                 apiUrl={"/IPutAwayFeature/GetPutAwayDetails"}
                 poNumber={selectedRow?.docNum || ""}
+                handlePost={handlePost}
             />
 
             <TanStackTable

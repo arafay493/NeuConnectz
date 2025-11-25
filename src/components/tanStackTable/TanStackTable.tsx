@@ -153,27 +153,31 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                         key={header.id}
                                         style={{
                                             cursor: "pointer",
-                                            textAlign: "left",
                                             padding: "0 16px 16px 11px",
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || "#E5E5E5"
                                                 }`,
                                             width: `${header.getSize()}px`,
+                                            textAlign: "center",
                                             // minWidth: `${header.getSize()}px`,
                                             // maxWidth: `${header.getSize()}px`,
                                             verticalAlign: "top",
-                                            whiteSpace: "nowrap"
+                                            whiteSpace: "nowrap",
                                         }}
                                     >
-                                        <Group
-                                            wrap="nowrap"
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            <Box fw={600} c={customStyles.colors._4D4D4D}>
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                            </Box>
+                                        <Group wrap="nowrap" justify="center">
+                                            <Group
+                                                wrap="nowrap"
+                                                justify="center"
+                                                onClick={header.column.getToggleSortingHandler()}
+                                            >
+                                                <Box fw={600} c={customStyles.colors._4D4D4D}>
+                                                    {flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                                </Box>
+
+                                            </Group>
                                             {header.column.getCanSort() && (
                                                 <ActionIcon
                                                     variant="subtle"
@@ -259,7 +263,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                         <td
                                             key={cell.id}
                                             style={{
-                                                textAlign: "left",
+                                                textAlign: "center",
                                                 padding: "12px",
                                                 width: `${cell.column.getSize()}px`,
                                                 minWidth: `${cell.column.getSize()}px`,

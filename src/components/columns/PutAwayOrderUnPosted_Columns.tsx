@@ -9,14 +9,13 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
         () => [
             {
                 id: "serialNumber",
-                header: "Serial No",
-                minSize: 180,
-                maxSize: 180,
+                header: "S.No",
+                maxSize: 120,
                 cell: ({ row }: any) => {
                     const serialNumber =
                         pagination.pageIndex * pagination.pageSize + row.index + 1;
                     return (
-                        <Text fw={500} c={customStyles.colors._909090}>
+                        <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                             {serialNumber}
                         </Text>
                     );
@@ -25,22 +24,32 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
             {
                 accessorKey: "docNum",
-                header: "Document Number",
+                header: "Doc Number",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
                 enableColumnFilter: true,
             },
-
+            {
+                accessorKey: "transferReceiptNumber",
+                header: "TR Number",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
             {
                 accessorKey: "material",
                 header: "Material Code",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -52,7 +61,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Material Name",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -63,7 +72,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Material Document",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -75,7 +84,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "UOM",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -87,7 +96,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Quantity",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
@@ -99,7 +108,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Movement Type",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -111,7 +120,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Purchase Order",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -123,7 +132,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Suppliers",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -146,7 +155,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Source Bin",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -188,7 +197,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                         ? dayjs(rawDate).format("DD/MM/YYYY")
                         : "-";
                     return (
-                        <Text fw={500} c={customStyles.colors._909090}>
+                        <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                             {formatted}
                         </Text>
                     );
@@ -225,6 +234,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                             className={row?.original?.confirmationStatus === "Confirmed" ? "filledDisabledButton" : "filledButton"}
                             disabled={row?.original?.confirmationStatus === "Confirmed"}
                             radius={8}
+                            miw={121}
                             onClick={() =>
                                 actions.handleConfirmModalOpen(row.original)
                             }
@@ -235,6 +245,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                             className={"filledButton"}
                             disabled={row?.original?.confirmationStatus !== "Confirmed"}
                             radius={8}
+                            miw={121}
                             onClick={() =>
                                 actions.handlePost(row.original)
                             }

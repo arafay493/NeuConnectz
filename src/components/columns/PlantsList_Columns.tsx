@@ -1,5 +1,5 @@
 "use client";
-import { Checkbox, Text } from "@mantine/core";
+import { Box, Checkbox, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { customStyles } from "@/styles/custom-theme";
 
@@ -77,34 +77,36 @@ const PlantsList_Columns = ({
                     // const isChecked = selectedPlants.includes(row?.original)
                     const isChecked = row?.original?.allowed
                     return (
-                        <Checkbox
-                            checked={isChecked}
-                            onChange={(event) =>
-                                handleSelectSpecificPlant(row?.original)
-                            }
-                            size="sm"
-                            color={customStyles.colors._1B59F8}
-                            label="Allow access"
-                            radius="xl"
-                            disabled={!selectedUser}
-                            w={200}
-                            styles={{
-                                root: {
-                                    padding: "10px 16px",
-                                    border: isChecked
-                                        ? `1px solid ${customStyles.colors._1B59F8}`
-                                        : `1px solid ${customStyles.colors._E1E7EC}`,
-                                    background: isChecked ? customStyles.colors._1B59F81A : "",
-                                    borderRadius: "6px",
-                                    opacity: !selectedUser ? 0.5 : 1,
-                                },
-                                label: {
-                                    color: isChecked
-                                        ? customStyles.colors._1B59F8
-                                        : customStyles.colors._909090,
-                                },
-                            }}
-                        />
+                        <Box display={"flex"} style={{justifyContent: "center"}}>
+                            <Checkbox
+                                checked={isChecked}
+                                onChange={(event) =>
+                                    handleSelectSpecificPlant(row?.original)
+                                }
+                                size="sm"
+                                color={customStyles.colors._1B59F8}
+                                label="Allow access"
+                                radius="xl"
+                                disabled={!selectedUser}
+                                w={200}
+                                styles={{
+                                    root: {
+                                        padding: "10px 16px",
+                                        border: isChecked
+                                            ? `1px solid ${customStyles.colors._1B59F8}`
+                                            : `1px solid ${customStyles.colors._E1E7EC}`,
+                                        background: isChecked ? customStyles.colors._1B59F81A : "",
+                                        borderRadius: "6px",
+                                        opacity: !selectedUser ? 0.5 : 1,
+                                    },
+                                    label: {
+                                        color: isChecked
+                                            ? customStyles.colors._1B59F8
+                                            : customStyles.colors._909090,
+                                    },
+                                }}
+                            />
+                        </Box>
                     );
                 },
                 enableColumnFilter: true,

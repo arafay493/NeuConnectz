@@ -9,9 +9,8 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
         () => [
             {
                 id: "serialNumber",
-                header: "Serial No",
-                minSize: 180,
-                maxSize: 180,
+                header: "S.No",
+                maxSize: 120,
                 cell: ({ row }: any) => {
                     const serialNumber =
                         pagination.pageIndex * pagination.pageSize + row.index + 1;
@@ -25,10 +24,32 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
             },
             {
                 accessorKey: "docNum",
-                header: "Document Number",
+                header: "Doc Number",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "transferReceiptNumber",
+                header: "TR Number",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} >
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "transferOrderNumber",
+                header: "TO Number",
+                minSize: 150,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -39,7 +60,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Material Code",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -50,7 +71,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Material Name",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -61,7 +82,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Material Document",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -72,7 +93,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "UOM",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -83,7 +104,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Quantity",
                 minSize: 120,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {getValue() ?? "-"}
                     </Text>
                 ),
@@ -94,7 +115,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Movement Type",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -105,7 +126,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Purchase Order",
                 minSize: 180,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -116,7 +137,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Suppliers",
                 minSize: 200,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -138,7 +159,7 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 header: "Source Bin",
                 minSize: 150,
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
+                    <Text fw={500} c={customStyles.colors._909090} >
                         {String(getValue() ?? "-")}
                     </Text>
                 ),

@@ -152,7 +152,7 @@ export default function PutAwayPostedViewDetailsModal({
                 skipRecord={skipRecord}
             />
 
-            <Box my={20}>
+            {/* <Box my={20}>
                 <Text>Remarks</Text>
                 <TextInput placeholder="Write your description" radius={"md"} my={10} size="lg" value={"Good"} readOnly styles={{
                     input: {
@@ -160,7 +160,7 @@ export default function PutAwayPostedViewDetailsModal({
                         cursor: "default",
                     },
                 }} />
-            </Box>
+            </Box> */}
         </Modal>
     );
 }

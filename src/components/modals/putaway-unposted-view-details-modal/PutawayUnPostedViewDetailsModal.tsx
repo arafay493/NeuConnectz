@@ -33,7 +33,8 @@ interface ModalProps {
     skipRecord: number,
     setIsLoading: any,
     apiUrl: string,
-    poNumber: number
+    poNumber: number,
+    handlePost: (rowData: any) => void
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -61,7 +62,8 @@ export default function PutawayUnPostedViewDetailsModal({
     skipRecord,
     setIsLoading,
     apiUrl,
-    poNumber
+    poNumber,
+    handlePost
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
@@ -151,10 +153,10 @@ export default function PutawayUnPostedViewDetailsModal({
                 skipRecord={skipRecord}
             />
 
-            <Box my={20}>
+            {/* <Box my={20}>
                 <Text>Remarks</Text>
                 <TextInput placeholder="Write your description" radius={"md"} my={10} size="lg" />
-            </Box>
+            </Box> */}
 
             {/* Footer Section */}
             <Flex
@@ -168,7 +170,7 @@ export default function PutawayUnPostedViewDetailsModal({
                     className="filledButton"
                     radius={8}
                     miw={200}
-                // onClick={() => actions.handleConfirmModalOpen(row.original)}
+                    onClick={() => handlePost(row)}
                 >
                     Post
                 </Button>
