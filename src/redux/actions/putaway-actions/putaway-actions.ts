@@ -91,9 +91,31 @@ const confirmPutAwayOrders = createAsyncThunk(
     }
 );
 
+const postPutAwayOrders = createAsyncThunk(
+    "putaway/postPutAwayOrders",
+    async (
+        { payload, token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPost('/neu-connect/v2/ISapFeature/PostPutAwayAgainstGR', payload, token);
+            // console.log("payload>>>>>>>> " , payload)
+            const { data, status} = response;
+            const { message, error } = data?.data;
+            resHandler(status, message, error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
+
+    }
+);
+
 export {
     fetchListAllPutAway,
     fetchListAllPutAwayDetalisByDocNo,
-    confirmPutAwayOrders
+    confirmPutAwayOrders,
+    postPutAwayOrders
 };
 

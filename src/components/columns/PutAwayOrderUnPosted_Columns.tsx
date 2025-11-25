@@ -220,7 +220,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                         >
                             View Details
                         </Button>
-                        <Button
+                        {row?.original?.confirmationStatus !== "Confirmed" ? <Button
                             variant="transparent"
                             className={row?.original?.confirmationStatus === "Confirmed" ? "filledDisabledButton" : "filledButton"}
                             disabled={row?.original?.confirmationStatus === "Confirmed"}
@@ -230,7 +230,17 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                             }
                         >
                             Confirm
-                        </Button>
+                        </Button> : <Button
+                            variant="transparent"
+                            className={"filledButton"}
+                            disabled={row?.original?.confirmationStatus !== "Confirmed"}
+                            radius={8}
+                            onClick={() =>
+                                actions.handlePost(row.original)
+                            }
+                        >
+                            Post
+                        </Button>}
                     </Group>
                 ),
                 enableColumnFilter: false,

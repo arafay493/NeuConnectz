@@ -140,7 +140,7 @@ const PutAwayOrderComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Unposted' && (<PutAwayUnPostedComponent apiUrl={`/IPutAwayFeature/ListAllPutAway?sapStatus=pending` as string} />)}
+                {tab === 'Unposted' && (<PutAwayUnPostedComponent apiUrl={`/IPutAwayFeature/ListAllPutAway?sapStatus=Pending` as string} />)}
                 {tab === 'Posted' && (<PutAwayPostedComponent apiUrl={`/IPutAwayFeature/ListAllPutAway?sapStatus=Integrated` as string} />)}
             </div>
         </Box>

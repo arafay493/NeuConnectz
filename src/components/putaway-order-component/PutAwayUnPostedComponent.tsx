@@ -8,7 +8,7 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
 import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPutAwayOrders, fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
+import { confirmPutAwayOrders, fetchListAllPutAway, postPutAwayOrders } from '@/redux/actions/putaway-actions/putaway-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 
@@ -102,6 +102,28 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         setIsConfirmModalOpen(false)
     }
 
+    const handlePost = (rowData: any) => {
+        setIsFullPageLoading(true)
+        dispatch(postPutAwayOrders({
+            payload: {
+                putawayDocNums: [String(rowData?.docNum)]
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handlePostResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllPutAway({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: apiUrl,
+                lastCount: pagination.pageSize,
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -115,12 +137,21 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         pagination, list: ListAllPutAway?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+            handlePost: handlePost,
         }
     })
 
     const handleResponse = (status: number, data: any, error: string) => {
         if (status === 200) {
-            showNotificationToast("Order Confirmed", data.message, customStyles.colors._408CCE);
+            showNotificationToast("Confirmation", data.message, customStyles.colors._408CCE);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
+
+    const handlePostResponse = (status: number, message: string, error: string) => {
+        if (status === 201) {
+            showNotificationToast("Putaway Post", message, customStyles.colors._408CCE);
         } else if (error) {
             showNotificationToast("Error", error, customStyles.colors.red);
         }

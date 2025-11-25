@@ -147,39 +147,39 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
 
             /* -------------------- NEW ADDED COLUMNS -------------------- */
 
-            {
-                accessorKey: "username",
-                header: "Username",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "erpDocEntry",
-                header: "ERP Doc Entry",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
-            {
-                accessorKey: "erpLineId",
-                header: "ERP Line Id",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090}>
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-                enableColumnFilter: true,
-            },
+            // {
+            //     accessorKey: "username",
+            //     header: "Username",
+            //     minSize: 150,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
+            // {
+            //     accessorKey: "erpDocEntry",
+            //     header: "ERP Doc Entry",
+            //     minSize: 180,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
+            // {
+            //     accessorKey: "erpLineId",
+            //     header: "ERP Line Id",
+            //     minSize: 150,
+            //     cell: ({ getValue }: any) => (
+            //         <Text fw={500} c={customStyles.colors._909090}>
+            //             {String(getValue() ?? "-")}
+            //         </Text>
+            //     ),
+            //     enableColumnFilter: true,
+            // },
 
             /* ------------------------------------------------------------ */
 
