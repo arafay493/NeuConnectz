@@ -55,6 +55,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
 import classes from "../production-order-section-component/po.module.css";
+import TanStackTable from "../tanStackTable/TanStackTable";
 
 interface UserListComponentProps {
   // data: Array<UserListProps>;
@@ -70,6 +71,8 @@ const UserListComponent: FC<UserListComponentProps> = (
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
   });
+
+  const skipRecord = pagination.pageIndex * pagination.pageSize;
 
   // Note: Router for switch page
   const route = useRouter();
@@ -384,7 +387,7 @@ const UserListComponent: FC<UserListComponentProps> = (
     if (authenticatedUser) {
       setIsLoading(true);
 
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+      // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
       dispatch(
         fetchAllUsers({
@@ -426,13 +429,27 @@ const UserListComponent: FC<UserListComponentProps> = (
           Add User
         </Button>
       </Group>
-      <Stack
+      <TanStackTable
+        data={Array.isArray(data) ? data : []}
+        dataCount={totalCount}
+        columns={columns}
+        isLoading={isLoading}
+        isInsideModalTable={true}
+        pagination={pagination}
+        setPagination={setPagination}
+        title={"Manage Users"}
+        subTitle={"View, search, and manage all users by using multiple filters."}
+        skipRecord={skipRecord}
+      />
+
+
+      
+      {/* <Stack
         p={24}
         mt={24}
         bg={customStyles.colors.white}
         style={{ borderRadius: "16px", width: "100%" }}
       >
-        {/* Header */}
         <Group
           mb={24}
           justify="space-between"
@@ -484,7 +501,6 @@ const UserListComponent: FC<UserListComponentProps> = (
           </Group>
         </Group>
 
-        {/* Table */}
         <Box w="100%" mah={700} className={"custom-scroll"} style={{ overflow: "auto" }}>
           <table
             style={{
@@ -544,7 +560,6 @@ const UserListComponent: FC<UserListComponentProps> = (
                           </ActionIcon>
                         )}
                       </Group>
-                      {/* Note: Table Filter Input */}
                       {header.column.getCanFilter() && (
                         <TableColumnsFilter
                           areTableFiltersVisible={areTableFiltersVisible}
@@ -564,7 +579,6 @@ const UserListComponent: FC<UserListComponentProps> = (
             </thead>
             <tbody>
               {isLoading ? (
-                // Loading skeleton
                 Array.from({ length: pagination.pageSize }).map((_, index) => (
                   <tr
                     key={`loading-${index}`}
@@ -663,16 +677,15 @@ const UserListComponent: FC<UserListComponentProps> = (
             </tbody>
           </table>
         </Box>
-      </Stack>
+      </Stack> */}
 
       {/* Pagination */}
-      <Box
+      {/* <Box
         mt={12}
         bg={customStyles.colors.white}
         style={{ borderRadius: "16px", padding: "12px 24px" }}
       >
         <Group justify="space-between" align="center">
-          {/* Left side - Page navigation */}
           <Group justify="flex-start" align="center" gap="xs">
             <ActionIcon
               className={
@@ -737,7 +750,6 @@ const UserListComponent: FC<UserListComponentProps> = (
             </Text>
           </Group>
 
-          {/* Right side - Page size selector and info */}
           <Group gap="md" align="center">
             <Group gap="xs" align="center">
               <Text size="sm" c={customStyles.colors._909090}>
@@ -780,7 +792,7 @@ const UserListComponent: FC<UserListComponentProps> = (
             </Text>
           </Group>
         </Group>
-      </Box>
+      </Box> */}
     </Box>
   );
 };
