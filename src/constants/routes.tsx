@@ -24,11 +24,6 @@ const authenticatedRoutes: string[] = [
     "/dashboard",
     "/stock-movement",
     "/reconciliation",
-    // "/item-movement",
-    // "/inventory-transfer",
-    // "/it-tr-difference",
-    // "/it-posted-documents",
-    // "/tr-posted-documents",
     "/users-list",
     "/assign-group",
     "/assign-warehouse",
@@ -50,10 +45,12 @@ const authenticatedRoutes: string[] = [
     "/master/product-data",
     "/master/vehicle-data",
     "/master/driver-data",
+    "/master/contractor-data",
     "/master/add-customer",
     "/master/add-product",
     "/master/add-vehicle",
-    "/master/add-driver"
+    "/master/add-driver",
+    "/master/add-contractor"
 ];
 
 // Note: Defining all routes...!
@@ -63,11 +60,6 @@ const routes: Routes = {
     dashboard: "/dashboard",
     stockMovement: "/stock-movement",
     reconciliation: "/reconciliation",
-    // itemMovement: "/item-movement",
-    // inventoryTransfer: "/inventory-transfer",
-    // itTrDifference: "/it-tr-difference",
-    // itPostedDocuments: "/it-posted-documents",
-    // trPostedDocuments: "/tr-posted-documents",
     usersList: "/users-list",
     assignGroup: "/assign-group",
     assignWareHouse: "/assign-warehouse",
@@ -93,7 +85,9 @@ const routes: Routes = {
     addCustomerMaster: "/master/add-customer",
     addProductMaster: "/master/add-product",
     addVehicleMaster: "/master/add-vehicle",
-    addDriverMaster: "/master/add-driver"
+    addDriverMaster: "/master/add-driver",
+    contractorMaster: "/master/contractor-data",
+    addContractorMaster: "/master/add-contractor",
 };
 
 // Note: Defining drawer routes...!
@@ -198,6 +192,7 @@ const drawerRoutes: DrawerRoute[] = [
             { label: "Product Master", route: routes.productMaster },
             { label: "Vehicle Master", route: routes.vehicleMaster },
             { label: "Driver Master", route: routes.driverMaster },
+            { label: "Contractor Master", route: routes.contractorMaster }
         ]
     }
 ];

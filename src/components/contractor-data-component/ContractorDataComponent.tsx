@@ -1,24 +1,22 @@
-// Note: Driver data component...!
+// Note: Contractor data component...!
 
 'use client';
 
 import { routes } from '@/constants/routes';
-import { localAssets } from '@/lib/file-paths/file-paths';
-import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
-import { UserListProps } from '@/types/redux-types';
-import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Box, Button, Group, Select, Stack, Text, Title , Image } from '@mantine/core';
+import NextImage from 'next/image';
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
-import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState, memo } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import { apiGet } from '@/lib/api-service';
+import { localAssets } from '@/lib/file-paths/file-paths';
 
-interface DriverDataProps {
+interface ContractorDataProps {
     createdBy: string,
     updatedBy: string,
     createdDate: string,
@@ -26,20 +24,16 @@ interface DriverDataProps {
     isActive: boolean,
     isArchived: boolean,
     id: string,
-    firstName: string,
-    lastName: string,
-    email: string,
-    phone: string,
+    contractorName: string,
     address: string,
-    licenseNumber: string,
-    transportMode: string,
-    contractorId: string,
+    city: string,
+    country: string
 };
 
-const DriverDataComponent: FC = () => {
+const ContractorDataComponent: FC = () => {
 
-    const [driversList, setDriversList] = useState<DriverDataProps[]>([]);
-    const [driversCount, setDriversCount] = useState<number>(0);
+    const [contarctorsList, setContarctorsList] = useState<ContractorDataProps[]>([]);
+    const [contractorsCount, setContractorsCount] = useState<number>(0);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -48,7 +42,7 @@ const DriverDataComponent: FC = () => {
     });
 
     // Note: Router for switch page
-    const router = useRouter();
+    const route = useRouter();
 
     const dispatch = useAppDispatch();
 
@@ -88,7 +82,7 @@ const DriverDataComponent: FC = () => {
     };
 
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<DriverDataProps>[]>(
+    const columns = useMemo<ColumnDef<ContractorDataProps>[]>(
         () => [
             {
                 // accessorKey: 'userId',
@@ -105,47 +99,47 @@ const DriverDataComponent: FC = () => {
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
-                accessorKey: 'firstName',
-                header: 'Driver Name',
+                accessorKey: 'contractorName',
+                header: 'Contractor Name',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
+                    <Text c={customStyles.colors._909090} fw={500} >
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Driver Name', (driversList || []).map(item => item.firstName), 150, 200),
-            },
-            {
-                accessorKey: 'licenseNumber',
-                header: 'Driver License',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Driver License', (driversList || []).map(item => item.licenseNumber), 100, 150),
-            },
-            {
-                accessorKey: 'phone',
-                header: 'Driver Contact',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Driver Contact', (driversList || []).map(item => item.phone), 200, 200),
+                size: calculateColumnWidth('Contractor Name', (contarctorsList || []).map(item => item.contractorName), 200, 450),
             },
             {
                 accessorKey: 'address',
-                header: 'Driver Address',
+                header: 'Address',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500} >
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Address', (contarctorsList || []).map(item => item.address), 120, 200),
+            },
+            {
+                accessorKey: 'city',
+                header: 'City',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Driver Address', (driversList || []).map(item => item.address), 200, 200),
+                size: calculateColumnWidth('City', (contarctorsList || []).map(item => item.city), 200, 400),
+            },
+            {
+                accessorKey: 'country',
+                header: 'Country',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Country', (contarctorsList || []).map(item => item.country), 200, 200),
             }
         ],
-        [driversList] // Add data as dependency to recalculate when data changes
+        [contarctorsList] // Add data as dependency to recalculate when data changes
     );
 
     // Custom global filter function to handle Status column properly
@@ -181,7 +175,7 @@ const DriverDataComponent: FC = () => {
     };
 
     const table = useReactTable({
-        data: driversList,
+        data: contarctorsList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -205,7 +199,7 @@ const DriverDataComponent: FC = () => {
         // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(driversCount / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(contractorsCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -218,8 +212,8 @@ const DriverDataComponent: FC = () => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
-    // Note: Fetch all drivers...!
-    const fetchAllDrivers = async () => {
+    // Note: Fetch all contractors...!
+    const fetchAllContarctors = async () => {
         try {
             const skipRecord = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
@@ -227,26 +221,26 @@ const DriverDataComponent: FC = () => {
             if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
             if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_DRIVERS}`, authenticatedUser?.token, params);
-            console.log(response);
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token, params);
+            // console.log(response);
 
             const { status, data } = response;
             if (status == 200) {
-                setDriversList(data?.data?.data || []);
-                setDriversCount(data?.data?.totalCount || 0);
+                setContarctorsList(data?.data?.data || []);
+                setContractorsCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
             };
         }
 
         catch (error) {
-            console.log('Something went wrong while fetching all drivers', error);
+            console.log('Something went wrong while fetching all contractors', error);
         };
     };
 
     useEffect(() => {
         if (authenticatedUser) {
             setIsLoading(true);
-            fetchAllDrivers();
+            fetchAllContarctors();
         };
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
@@ -255,7 +249,7 @@ const DriverDataComponent: FC = () => {
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>List of Driver, Create driver, edit driver & delete driver</Text>
+                    <Text c={customStyles.colors._909090}> List of Contractor, Create contractor, edit contractor and & delete contractor </Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -263,9 +257,9 @@ const DriverDataComponent: FC = () => {
                     variant="transparent"
                     size="md"
                     radius={8}
-                    onClick={() => router.push(routes.addDriverMaster)}
+                    onClick={() => route.push(routes.addContractorMaster)}
                 >
-                    Add Driver
+                    Add Contractor
                 </Button>
             </Group>
 
@@ -274,9 +268,9 @@ const DriverDataComponent: FC = () => {
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Driver Master
+                            Contractor Master
                         </Title>
-                        <Text c={customStyles.colors._909090}>Track, edit and review Driver Master seamlessly</Text>
+                        <Text c={customStyles.colors._909090}>Track, edit and review Contractor Master seamlessly</Text>
                     </Stack>
                     <Group gap="xs">
                         <GlobalSearchFilter
@@ -534,7 +528,7 @@ const DriverDataComponent: FC = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, driversCount)} of {driversCount} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, contractorsCount)} of {contractorsCount} entries
                         </Text>
                     </Group>
                 </Group>
@@ -543,4 +537,4 @@ const DriverDataComponent: FC = () => {
     )
 }
 
-export default DriverDataComponent;
+export default memo(ContractorDataComponent);
