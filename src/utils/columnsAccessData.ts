@@ -1,7 +1,7 @@
 const TablesData = [
     {
-        value: "putaway",
-        label: "Putaway Order"
+        value: "putaway_unposted",
+        label: "Unposted Putaway Order"
     },
     {
         value: "userList",

@@ -18,7 +18,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
-    const { putaway_columns } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
+    const { putaway_unposted_columns } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
 
     const table = useReactTable({
         data: data || [],
@@ -39,7 +39,21 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             columnFilters,
             pagination,
             columnVisibility: {
-                putawayUnposted_transferReceiptNumber: putaway_columns.transferReceiptNumber.value
+                putawayUnposted_serialNumber: putaway_unposted_columns.serialNumber.value,
+                putawayUnposted_docNum: putaway_unposted_columns.docNum.value,
+                putawayUnposted_transferReceiptNumber: putaway_unposted_columns.transferReceiptNumber.value,
+                putawayUnposted_material: putaway_unposted_columns.material.value,
+                putawayUnposted_materialDescription: putaway_unposted_columns.materialDescription.value,
+                putawayUnposted_materialDocument: putaway_unposted_columns.materialDocument.value,
+                putawayUnposted_baseUOM: putaway_unposted_columns.baseUOM.value,
+                putawayUnposted_totalQuantity: putaway_unposted_columns.totalQuantity.value,
+                putawayUnposted_movementType: putaway_unposted_columns.movementType.value,
+                putawayUnposted_purchaseOrder: putaway_unposted_columns.purchaseOrder.value,
+                putawayUnposted_supplierName: putaway_unposted_columns.supplierName.value,
+                putawayUnposted_sourceStorageBin: putaway_unposted_columns.sourceStorageBin.value,
+                putawayUnposted_confirmationStatus: putaway_unposted_columns.confirmationStatus.value,
+                putawayUnposted_createdOn: putaway_unposted_columns.createdOn.value,
+                putawayUnposted_Actions: putaway_unposted_columns.actions.value,
             }
         },
     });

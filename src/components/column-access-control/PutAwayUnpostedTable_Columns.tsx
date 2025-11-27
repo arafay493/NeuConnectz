@@ -2,9 +2,8 @@ import React from 'react';
 import { Checkbox, Group, Stack, Title } from '@mantine/core';
 import { customStyles } from '@/styles/custom-theme';
 
-const PutAwayTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
+const PutAwayUnpostedTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
   const handleToggle = (key: string) => {
-    // console.log("🚀 ~ handleToggle ~ col:", key, selectedColumns[key])
     setSelectedColumns((prev: any) => {
       return {
         ...prev,
@@ -14,25 +13,9 @@ const PutAwayTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
         },
       };
     });
-    // setSelectedColumns((prev: any) => {
-    //   return {
-    //     ...prev,
-    //     selectedColumns[key]: {
-    //       label: selectedColumns[key].label,
-    //       value: !selectedColumns[key].value
-    //     }
-    //   }
-    // })
-    // selectedColumns[key]
-    // if (selectedColumns.includes(col)) {
-    //   onChange(selectedColumns.filter((item: string) => item !== col));
-    // } else {
-    //   onChange([...selectedColumns, col]);
-    // }
   };
 
-  // Object keys extract
-  const columnKeys = Object.keys(selectedColumns); // ["serialNumber", "docNum", ...]
+  const columnKeys = Object.keys(selectedColumns);
 
   return (
     <Stack>
@@ -49,10 +32,9 @@ const PutAwayTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
         {columnKeys.map((key: string) => (
           <Checkbox
             key={key}
-            label={selectedColumns[key].label}     // <-- label show
+            label={selectedColumns[key].label}
             color={customStyles.colors._1B59F8}
             radius="sm"
-            // checked={selectedColumns.includes(key)}
             checked={selectedColumns[key].value}
             onChange={() => handleToggle(key)}
           />
@@ -62,5 +44,5 @@ const PutAwayTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
   );
 };
 
-export default PutAwayTable_Columns;
+export default PutAwayUnpostedTable_Columns;
 

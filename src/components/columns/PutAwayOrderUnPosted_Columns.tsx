@@ -8,7 +8,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             {
-                id: "serialNumber",
+                id: "putawayUnposted_serialNumber",
                 header: "S.No",
                 maxSize: 80,
                 cell: ({ row }: any) => {
@@ -23,6 +23,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_docNum",
                 accessorKey: "docNum",
                 header: "Doc Number",
                 cell: ({ getValue }: any) => (
@@ -44,6 +45,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_material",
                 accessorKey: "material",
                 header: "Material Code",
                 cell: ({ getValue }: any) => (
@@ -55,6 +57,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_materialDescription",
                 accessorKey: "materialDescription",
                 header: "Material Name",
                 cell: ({ getValue }: any) => (
@@ -65,6 +68,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_materialDocument",
                 accessorKey: "materialDocument",
                 header: "Material Doc",
                 cell: ({ getValue }: any) => (
@@ -76,6 +80,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_baseUOM",
                 accessorKey: "baseUOM",
                 header: "UOM",
                 cell: ({ getValue }: any) => (
@@ -87,6 +92,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_totalQuantity",
                 accessorKey: "totalQuantity",
                 header: "Quantity",
                 cell: ({ getValue }: any) => (
@@ -98,6 +104,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_movementType",
                 accessorKey: "movementType",
                 header: "Movement Type",
                 cell: ({ getValue }: any) => (
@@ -109,6 +116,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_purchaseOrder",
                 accessorKey: "purchaseOrder",
                 header: "Purchase Order",
                 cell: ({ getValue }: any) => (
@@ -120,6 +128,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             },
 
             {
+                id: "putawayUnposted_supplierName",
                 accessorKey: "supplierName",
                 header: "Suppliers",
                 cell: ({ getValue }: any) => (
@@ -142,6 +151,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
             // },
 
             {
+                id: "putawayUnposted_sourceStorageBin",
                 accessorKey: "sourceStorageBin",
                 header: "Source Bin",
                 cell: ({ getValue }: any) => (
@@ -152,6 +162,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_confirmationStatus",
                 accessorKey: "confirmationStatus",
                 header: "Status",
                 cell: ({ getValue }: any) => (
@@ -177,6 +188,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_createdOn",
                 accessorKey: "createdOn",
                 header: "Date",
                 cell: ({ getValue }: any) => {
@@ -193,7 +205,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                id: "actions",
+                id: "putawayUnposted_Actions",
                 header: "Actions",
                 cell: ({ row }: any) => (
                     <Group

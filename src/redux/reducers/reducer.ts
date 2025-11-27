@@ -26,6 +26,7 @@ const persistConfig = {
     key: "root",
     storage,
     whitelist: ['authStates']
+    // whitelist: ['authStates', 'columnBasedAccessControlStates']
 };
 
 const rootReducer = combineReducers({
