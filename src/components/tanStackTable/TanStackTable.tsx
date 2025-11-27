@@ -39,7 +39,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             columnFilters,
             pagination,
             columnVisibility: {
-                putawayUnposted_transferReceiptNumber: putaway_columns.transferReceiptNumber
+                putawayUnposted_transferReceiptNumber: putaway_columns.transferReceiptNumber.value
             }
         },
     });

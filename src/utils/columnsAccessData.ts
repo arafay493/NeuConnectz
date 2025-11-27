@@ -21,26 +21,26 @@ const TablesData = [
     },
 ]
 
-const putaway_unposted_columns = [
-  "S.No",
-  "Doc Number",
-  "TR Number",
-  "Material Code",
-  "Material Name",
-  "Material Doc",
-  "UOM",
-  "Quantity",
-  "Movement Type",
-  "Purchase Order",
-  "Suppliers",
-  "Source Bin",
-  "Status",
-  "Date",
-  "Actions",
-];
+// const putaway_unposted_columns = [
+//   "S.No",
+//   "Doc Number",
+//   "TR Number",
+//   "Material Code",
+//   "Material Name",
+//   "Material Doc",
+//   "UOM",
+//   "Quantity",
+//   "Movement Type",
+//   "Purchase Order",
+//   "Suppliers",
+//   "Source Bin",
+//   "Status",
+//   "Date",
+//   "Actions",
+// ];
 
 
 export {
     TablesData,
-    putaway_unposted_columns
+    // putaway_unposted_columns
 }

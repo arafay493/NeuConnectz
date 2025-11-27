@@ -16,10 +16,11 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import Loader from "../loader/loader";
-import { putaway_unposted_columns, TablesData } from "@/utils/columnsAccessData";
+import { TablesData } from "@/utils/columnsAccessData";
 import PutAwayTable_Columns from "./PutAwayTables_Columns";
 import UserListTable_Columns from "./UserListTables_Columns";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { PUTAWAY_UNPOSTED } from "@/redux/reducers/column-based-access-control/column-based-access-control-reducer";
 
 const ColumnAccessComponent = () => {
   // Note: Media query to determine if the screen is small
@@ -32,21 +33,23 @@ const ColumnAccessComponent = () => {
   const dispatch = useAppDispatch();
 
   // Note: Redux State
-  const { putaway_columns } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
-  // console.log("🚀 ~ ColumnAccessComponent ~ putaway_columns:", putaway_columns)
+  const { putaway_columns, userList } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
 
   // States
   const [isMainLoading, setIsMainLoading] = useState(false);
   const [selectedTable, setSelectedTable] = useState("putaway");
 
-  const [selectedColumns, setSelectedColumns] = useState([]);
+  const [selectedColumns, setSelectedColumns] = useState<any>(structuredClone(putaway_columns));
 
   useEffect(() => {
-
-  }, [])
+    if (selectedTable === "putaway") {
+      setSelectedColumns(structuredClone(putaway_columns))
+    } else if (selectedTable === "userList") {
+      setSelectedColumns(structuredClone(userList))
+    }
+  }, [selectedTable])
 
   const handleSelectTable = (value: string) => {
-    console.log("🚀 ~ handleSelectUser ~ value:", value)
     setSelectedTable(value ?? "")
   }
 
@@ -57,9 +60,10 @@ const ColumnAccessComponent = () => {
   }
 
   const handleAllowAccess = () => {
-    if(selectedTable === "putaway"){
-      console.log("Selected Table.......")
-    }else{
+    if (selectedTable === "putaway") {
+      dispatch(PUTAWAY_UNPOSTED(selectedColumns))
+      showNotificationToast("Access Given", "Column access configuration has been changed", customStyles.colors.green);
+    } else {
       showNotificationToast("Error", "Column access configuration feature is coming soon. Thank you for your patience!", customStyles.colors.red);
     }
     // dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
@@ -165,9 +169,8 @@ const ColumnAccessComponent = () => {
         style={{ borderRadius: "16px", width: "100%" }}
       >
         {selectedTable === "putaway" && <PutAwayTable_Columns
-          columns={putaway_unposted_columns}
           selectedColumns={selectedColumns}
-          onChange={setSelectedColumns}
+          setSelectedColumns={setSelectedColumns}
         />}
         {selectedTable === "userList" && <UserListTable_Columns />}
       </Stack>

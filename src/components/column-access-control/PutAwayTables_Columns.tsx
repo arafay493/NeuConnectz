@@ -2,32 +2,59 @@ import React from 'react';
 import { Checkbox, Group, Stack, Title } from '@mantine/core';
 import { customStyles } from '@/styles/custom-theme';
 
-const PutAwayTable_Columns = ({ columns, selectedColumns, onChange }: any) => {
-  const handleToggle = (col: string) => {
-    if (selectedColumns.includes(col)) {
-      onChange(selectedColumns.filter((item: string) => item !== col));
-    } else {
-      onChange([...selectedColumns, col]);
-    }
+const PutAwayTable_Columns = ({ selectedColumns, setSelectedColumns }: any) => {
+  const handleToggle = (key: string) => {
+    // console.log("🚀 ~ handleToggle ~ col:", key, selectedColumns[key])
+    setSelectedColumns((prev: any) => {
+      return {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          value: !prev[key].value,
+        },
+      };
+    });
+    // setSelectedColumns((prev: any) => {
+    //   return {
+    //     ...prev,
+    //     selectedColumns[key]: {
+    //       label: selectedColumns[key].label,
+    //       value: !selectedColumns[key].value
+    //     }
+    //   }
+    // })
+    // selectedColumns[key]
+    // if (selectedColumns.includes(col)) {
+    //   onChange(selectedColumns.filter((item: string) => item !== col));
+    // } else {
+    //   onChange([...selectedColumns, col]);
+    // }
   };
+
+  // Object keys extract
+  const columnKeys = Object.keys(selectedColumns); // ["serialNumber", "docNum", ...]
 
   return (
     <Stack>
-      <Title mb={5}
+      <Title
+        mb={5}
         order={5}
         c={customStyles.colors._4D4D4D}
-        // size={isSmallScreen ? "h3" : "h2"}
-        style={{ fontWeight: 600, fontSize: 16 }}>Unposted Putaway Columns</Title>
+        style={{ fontWeight: 600, fontSize: 16 }}
+      >
+        Unposted Putaway Columns
+      </Title>
 
       <Group my={10} gap={20}>
-        {columns.map((col: string) => (
+        {columnKeys.map((key: string) => (
           <Checkbox
-            key={col}
-            label={col}
+            key={key}
+            label={selectedColumns[key].label}     // <-- label show
             color={customStyles.colors._1B59F8}
-            radius={"sm"}
-            checked={selectedColumns.includes(col)}
-            onChange={() => handleToggle(col)}
+            radius="sm"
+            // checked={selectedColumns.includes(key)}
+            checked={selectedColumns[key].value}
+            onChange={() => handleToggle(key)}
           />
         ))}
       </Group>
@@ -36,3 +63,4 @@ const PutAwayTable_Columns = ({ columns, selectedColumns, onChange }: any) => {
 };
 
 export default PutAwayTable_Columns;
+
