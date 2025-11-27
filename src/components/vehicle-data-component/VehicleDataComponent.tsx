@@ -16,69 +16,47 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { apiGet } from '@/lib/api-service';
 
 interface VehicleDataProps {
-    vehicleNumber: string;      // Vehicle Plate Number (ABC-1234)
-    vehicleType: string;        // Bus, Truck, Pickup, Van etc.
-    capacity: string;           // Example → '10 Tons' or '50 Seats'
-    driverName: string;         // Name of driver
-    transporter: string;        // Transport company name
-    driverContact: string;      // Driver's phone/contact number
+    "createdBy": string,
+    "updatedBy": string,
+    "createdDate": string,
+    "updatedDate": string,
+    "isActive": boolean,
+    "isArchived": boolean,
+    "id": string,
+    "vehicleNumber": string,
+    "description": string,
+    "vehicleType": string,
+    "capacity": string,
+    "contractorName": string,
+    "transportMode": string,
+    "drivers": [
+        {
+            "createdBy": string,
+            "updatedBy": string,
+            "createdDate": string,
+            "updatedDate": string,
+            "isActive": boolean,
+            "isArchived": boolean,
+            "id": string,
+            "firstName": string,
+            "lastName": string,
+            "email": string,
+            "phone": string,
+            "address": string,
+            "licenseNumber": string,
+            "transportMode": string,
+            "contractorId": string
+        }
+    ]
 }
-
-
-// Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
-const dummyVehicleData = [
-    {
-        userId: "1",
-        vehicleNumber: "ABC-1234",
-        vehicleType: "Truck",
-        capacity: "10 Tons",
-        driverName: "John Doe",
-        transporter: "Fast Logistics",
-        driverContact: "+1234567890",
-    },
-    {
-        userId: "2",
-        vehicleNumber: "XYZ-5678",
-        vehicleType: "Mini Van",
-        capacity: "2 Tons",
-        driverName: "Muhammad Ali",
-        transporter: "Speed Movers",
-        driverContact: "+9876543210",
-    },
-    {
-        userId: "3",
-        vehicleNumber: "JKL-9101",
-        vehicleType: "Container",
-        capacity: "20 Tons",
-        driverName: "Ahmed Khan",
-        transporter: "Cargo Express",
-        driverContact: "+1122334455",
-    },
-    {
-        userId: "4",
-        vehicleNumber: "MNO-3456",
-        vehicleType: "Pickup",
-        capacity: "5 Tons",
-        driverName: "Chris Evans",
-        transporter: "Metro Transport",
-        driverContact: "+5566778899",
-    },
-    {
-        userId: "5",
-        vehicleNumber: "PQR-7890",
-        vehicleType: "Bus",
-        capacity: "50 Seats",
-        driverName: "David Smith",
-        transporter: "City Movers",
-        driverContact: "+9988776655",
-    },
-];
 
 const VehicleDataComponent: FC = () => {
 
-    const [data, setData] = useState(dummyVehicleData); // Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
+    const [vehiclesList, setVehiclesList] = useState<VehicleDataProps[]>([]);
+    const [vehiclesCount, setVehiclesCount] = useState<number>(0);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -93,12 +71,6 @@ const VehicleDataComponent: FC = () => {
 
     // Note: State for Authentication
     const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-
-    // Note: State for Users List
-    // const { usersList: {
-    //     users: data,
-    //     totalCount
-    // } } = useAppSelector(({ userStates }) => userStates);
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -150,6 +122,16 @@ const VehicleDataComponent: FC = () => {
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
+                accessorKey: 'description',
+                header: 'Vehicle Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Vehicle Name', (vehiclesList || []).map(item => item.description), 150, 200),
+            },
+            {
                 accessorKey: 'vehicleNumber',
                 header: 'Vehicle Number',
                 cell: ({ getValue }) => (
@@ -157,102 +139,53 @@ const VehicleDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Vehicle Number', (data || []).map(item => item.vehicleNumber), 200, 400),
+                size: calculateColumnWidth('Vehicle Number', (vehiclesList || []).map(item => item.vehicleNumber), 150, 200),
             },
             {
                 accessorKey: 'vehicleType',
                 header: 'Vehicle Type',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Vehicle Type', (data || []).map(item => item.vehicleType), 180, 450),
+                size: calculateColumnWidth('Vehicle Type', (vehiclesList || []).map(item => item.vehicleType), 100, 150),
             },
             {
                 accessorKey: 'capacity',
                 header: 'Capacity',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Capacity', (data || []).map(item => item.capacity), 120, 200),
+                size: calculateColumnWidth('Capacity', (vehiclesList || []).map(item => item.capacity), 200, 200),
             },
             {
-                accessorKey: 'driverName',
-                header: 'Driver Name',
+                accessorKey: 'transportMode',
+                header: 'Transport Mode',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Driver Name', (data || []).map(item => item.driverName), 150, 200),
+                size: calculateColumnWidth('Transport Mode', (vehiclesList || []).map(item => item.transportMode), 200, 200),
             },
             {
-                accessorKey: 'transporter',
-                header: 'Transporter',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Transporter', (data || []).map(item => item.transporter), 100, 150),
-            },
-            {
-                accessorKey: 'driverContact',
-                header: 'Driver Contact',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Driver Contact', (data || []).map(item => item.driverContact), 200, 200),
-            },
-            {
-                accessorKey: 'userId',
-                header: 'Action',
-                cell: ({ getValue }) => {
-                    const userId = getValue() as string;
+                accessorKey: 'contractorName',
+                header: 'Contractor',
+                cell: ({ getValue, row }) => {
+                    const { contractorName } = row.original;
                     return (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                            }}
-                        >
-                            <Button
-                                variant="transparent"
-                                className={"outlineButton"}
-                                radius={8}
-                                size="sm"
-                                w={120}
-                            >
-                                Edit
-                            </Button>
-
-                            <Button
-                                variant="transparent"
-                                // className={'outlineButton'}
-                                radius={8}
-                                size="sm"
-                                // w={"100%"}
-                                w={120}
-                                style={{
-                                    color: "red",
-                                    backgroundColor: "#E1E7EC",
-                                    marginLeft: 8,
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        </div>
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {(contractorName ? contractorName : '-') as string}
+                        </Text>
                     )
                 },
-                size: calculateColumnWidth('Action', ['Delete'], 100, 120)
+                size: calculateColumnWidth('Contractor', (vehiclesList || []).map(item => item.contractorName), 200, 200),
             }
         ],
-        [data] // Add data as dependency to recalculate when data changes
+        [vehiclesList] // Add data as dependency to recalculate when data changes
     );
 
     // Custom global filter function to handle Status column properly
@@ -288,7 +221,7 @@ const VehicleDataComponent: FC = () => {
     };
 
     const table = useReactTable({
-        data: data,
+        data: vehiclesList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -312,7 +245,7 @@ const VehicleDataComponent: FC = () => {
         // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(data.length / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(vehiclesCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -325,21 +258,37 @@ const VehicleDataComponent: FC = () => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
-    // useEffect(() => {
-    //     if (authenticatedUser) {
-    //         setIsLoading(true);
+    // Note: Fetch all vehicles...!
+    const fetchAllVehicles = async () => {
+        try {
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const params: { [key: string]: number } = {};
 
-    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
+            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
-    //         dispatch(fetchAllUsers({
-    //             authToken: authenticatedUser?.token,
-    //             LastCount: pagination.pageSize, // Fetch only current page records
-    //             skipRecord: skipRecord
-    //         })).finally(() => {
-    //             setIsLoading(false);
-    //         });
-    //     };
-    // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_VEHICLES}`, authenticatedUser?.token, params);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setVehiclesList(data?.data?.data || []);
+                setVehiclesCount(data?.data?.totalCount || 0);
+                setIsLoading(false);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all vehicles', error);
+        };
+    };
+
+    useEffect(() => {
+        if (authenticatedUser) {
+            setIsLoading(true);
+            fetchAllVehicles();
+        };
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
     return (
         <Box p={8}>
@@ -625,7 +574,7 @@ const VehicleDataComponent: FC = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, data.length)} of {data.length} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, vehiclesCount)} of {vehiclesCount} entries
                         </Text>
                     </Group>
                 </Group>

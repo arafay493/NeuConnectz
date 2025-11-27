@@ -15,6 +15,7 @@ import {
     PasswordInput,
     Grid,
     Box,
+    MultiSelect
 } from "@mantine/core";
 import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -24,47 +25,194 @@ import { addSAPConfiguration } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
 import { IconUserPlus } from '@tabler/icons-react';
+import { apiGet, apiPost } from '@/lib/api-service';
+import { useRouter } from 'next/navigation';
+import { routes } from '@/constants/routes';
 
 const AddVehicletMasterComponent = () => {
+    
+    const router = useRouter();
 
     const [formData, setFormData] = useState({
         vehicleNumber: "",
+        vehicleName: "",
         vehicleType: "",
         capacity: "",
-        driverName: "",
-        driverContact: "",
-        transporter: "",
-        transporterType: "",
+        selectedContractor: "",
+        selectedTransporterMode: "",
+        drivers: [],
         loading: false,
     });
+    const [vehicleTypes, setVehicleTypes] = useState([]);
+    const [contarctorsList, setContarctorsList] = useState([]);
+    const [driversList, setDriversList] = useState([]);
+
+    // Note: State for Authentication
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
     const handleChange = (field: string, value: any) => {
         setFormData({ ...formData, [field]: value });
     };
 
+    // Note: Fetch all vehicle types...!
+    const fetchAllVehicleTypes = async () => {
+        try {
+
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_VEHICLE_TYPES}`, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setVehicleTypes(data?.data?.data || []);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all vehicle tyoes', error);
+        };
+    };
+
+    // Note: Fetch all contractors...!
+    const fetchAllContarctors = async () => {
+        try {
+
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token);
+            console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setContarctorsList(data?.data?.data || []);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all contractors', error);
+        };
+    };
+
+    useEffect(() => {
+        if (formData.selectedTransporterMode == "ContractorVehicle") {
+            fetchAllContarctors();
+        }
+
+        else {
+            setContarctorsList([]);
+            handleChange("selectedContractor", "");
+            fetchAllDriversByContarctorId();
+        }
+    }, [formData.selectedTransporterMode == "ContractorVehicle"]);
+
+    useEffect(() => {
+        if (authenticatedUser) {
+            fetchAllVehicleTypes();
+        };
+    }, [authenticatedUser]);
+
+    // Note: Fetch all drivers by contractor id...!
+    const fetchAllDriversByContarctorId = async () => {
+
+        try {
+            const apiUrl = (formData.selectedTransporterMode == "ContractorVehicle") ? (`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_DRIVERS_BY_CONTRACTOR_ID}?ContractorId=${formData.selectedContractor}`) : (`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_DRIVERS_BY_CONTRACTOR_ID}`)
+
+            const response = await apiGet(apiUrl, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setDriversList(data?.data?.data || []);
+            }
+
+            if (!String(status).startsWith("2")) {
+                setDriversList([]);
+                handleChange("drivers", []);
+            }
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all drivers by contractor id', error);
+        };
+    };
+
+    useEffect(() => {
+        if (formData.selectedContractor) {
+            fetchAllDriversByContarctorId();
+        }
+
+        else {
+            setDriversList([]);
+            handleChange("drivers", []);
+        }
+    }, [formData.selectedContractor]);
+
+    // Add Vehicle in DB using API call...!
+    const addVehicleHandler = async (vehicleData: any) => {
+        console.log('Vehicle Data:', vehicleData);
+
+        // Enable loader...!
+        setFormData((prev) => ({ ...prev, loading: true }));
+
+        try {
+            const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_VEHICLE}`, vehicleData, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 201) {
+                showNotificationToast("Success", "vehicle added successfully", customStyles.colors._1B59F8);
+                setFormData({
+                    vehicleNumber: "",
+                    vehicleName: "",
+                    vehicleType: "",
+                    capacity: "",
+                    selectedContractor: "",
+                    selectedTransporterMode: "",
+                    drivers: [],
+                    loading: false,
+                });
+                setContarctorsList([]);
+                setDriversList([]);
+                router.push(routes.vehicleMaster);
+            };
+        }
+
+        catch (error) {
+            console.log('Add Vehicle Error:', error);
+        };
+    };
+
     const handleSubmit = () => {
-        const { vehicleNumber, vehicleType, capacity, driverName, driverContact, transporter, transporterType } = formData;
+        const { vehicleNumber, vehicleName, vehicleType, capacity, selectedTransporterMode, selectedContractor, drivers } = formData;
 
         try {
             if (!vehicleNumber.trim()) throw "Vehicle Number is required";
-            if (!vehicleType.trim()) throw "Vehicle Type is required";
+            if (!vehicleName.trim()) throw "Vehicle Name is required";
             if (!capacity.trim()) throw "Capacity is required";
-            if (!driverName.trim()) throw "Driver Name is required";
-            if (!driverContact.trim()) throw "Driver Contact is required";
-            if (!transporter.trim()) throw "Transporter is required";
-            if (!transporterType.trim()) throw "Transporter Type is required";
+            if (!vehicleType) throw "Please select vehicle type";
+            if (!selectedTransporterMode) throw "Please select transportation mode";
+            if (drivers.length < 1) throw "Please select atleast 1 driver";
+            if (formData.selectedTransporterMode == "ContractorVehicle" && !selectedContractor) throw "Please select Contractor";
 
-            console.log("Submitted Data:", formData);
-        } catch (error) {
-            alert(error);
+            const veghicleData = {
+                vehicleNumber: vehicleNumber,
+                description: vehicleName,
+                vehicleTypeId: vehicleType,
+                capacity: capacity,
+                contractorId: (selectedTransporterMode == "ContractorVehicle") ? selectedContractor : null,
+                transportMode: selectedTransporterMode,
+                driverIds: drivers
+            };
+            addVehicleHandler(veghicleData);
         }
+
+        catch (error: any) {
+            if (error) {
+                console.log('Validation Error:', error);
+                showNotificationToast("Validation Error", String(error), customStyles.colors.red);
+            };
+        };
     };
 
     return (
         <Box>
-
-            {/* Note: Loading Component */}
-            <Loader loadingState={formData.loading} />
 
             {/* Note: Screen Head section */}
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }} p={'md'}>
@@ -78,6 +226,9 @@ const AddVehicletMasterComponent = () => {
                     variant="transparent"
                     size="md"
                     radius={8}
+                    onClick={handleSubmit}
+                    loading={formData.loading}
+                    disabled={formData.loading}
                 >
                     Save Vehicle
                 </Button>
@@ -106,15 +257,24 @@ const AddVehicletMasterComponent = () => {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <TextInput
+                                label="Vehicle Name"
+                                placeholder="Enter Vehicle Name"
+                                withAsterisk
+                                value={formData.vehicleName}
+                                onChange={(e) => handleChange("vehicleName", e.currentTarget.value)}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <Select
                                 label="Vehicle Type"
                                 placeholder="Select Vehicle Type"
                                 withAsterisk
-                                data={[
-                                    { value: "Truck", label: "Truck" },
-                                    { value: "Van", label: "Van" },
-                                    { value: "Container", label: "Container" },
-                                ]}
+                                data={vehicleTypes.map((type: any) => ({
+                                    value: type.id,
+                                    label: type.vehicleType,
+                                }))}
                                 value={formData.vehicleType}
                                 onChange={(value) => handleChange("vehicleType", value)}
                             />
@@ -136,47 +296,47 @@ const AddVehicletMasterComponent = () => {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Driver Name"
-                                placeholder="Enter Driver Name"
+                            <Select
+                                label="Transportation Mode"
+                                placeholder="Select Transportation Mode"
                                 withAsterisk
-                                value={formData.driverName}
-                                onChange={(e) => handleChange("driverName", e.currentTarget.value)}
-                            />
-                        </Grid.Col>
-
-                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                type="number"
-                                label="Driver Contact"
-                                placeholder="Enter Driver Contact Number"
-                                withAsterisk
-                                value={formData.driverContact}
-                                onChange={(e) => handleChange("driverContact", e.currentTarget.value)}
-                            />
-                        </Grid.Col>
-
-                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Transporter"
-                                placeholder="Enter Transporter"
-                                withAsterisk
-                                value={formData.transporter}
-                                onChange={(e) => handleChange("transporter", e.currentTarget.value)}
+                                data={[
+                                    { value: "CompanyVehicle", label: "Company Vehicle" },
+                                    { value: "ContractorVehicle", label: "ContractorVehicle" },
+                                ]}
+                                value={formData.selectedTransporterMode}
+                                onChange={(value) => handleChange("selectedTransporterMode", value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <Select
-                                label="Transporter Type"
-                                placeholder="Select Transporter Type"
+                                label="Contractor"
+                                placeholder="Select Contractor"
                                 withAsterisk
-                                data={[
-                                    { value: "Company Owned", label: "Company Owned" },
-                                    { value: "Third Party", label: "Third Party" },
-                                ]}
-                                value={formData.transporterType}
-                                onChange={(value) => handleChange("transporterType", value)}
+                                data={
+                                    contarctorsList.map((contarctor: any) => ({
+                                        value: contarctor.id,
+                                        label: contarctor.contractorName,
+                                    }))
+                                }
+                                value={formData.selectedContractor}
+                                onChange={(value) => handleChange("selectedContractor", value)}
+                                disabled={formData.selectedTransporterMode !== "ContractorVehicle"}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <MultiSelect
+                                label="Drivers"
+                                placeholder="Select Drivers"
+                                withAsterisk
+                                data={driversList.map((driver: any) => ({
+                                    value: driver.id,            // selected ID will be stored
+                                    label: `${driver.firstName} ${driver.lastName}`
+                                }))}
+                                value={formData.drivers}       // <- Array of selected IDs
+                                onChange={(value) => handleChange("drivers", value)}
                             />
                         </Grid.Col>
                     </Grid>
