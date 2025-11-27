@@ -8,8 +8,8 @@ const initialState: any = {
     putaway_columns: {
         serialNumber: true,
         docNum: true,
-        transferReceiptNumber: false,
-        material: false,
+        transferReceiptNumber: true,
+        material: true,
         materialDescription: true,
         materialDocument: true,
         baseUOM: true,

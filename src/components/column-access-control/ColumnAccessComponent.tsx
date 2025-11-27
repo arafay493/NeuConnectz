@@ -14,12 +14,12 @@ import { useMediaQuery } from "@mantine/hooks";
 import {
   IconShieldLock,
 } from "@tabler/icons-react";
-import { useState } from "react";
-import { CLEAR_ALL_PLANTS_STATES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
+import { useEffect, useState } from "react";
 import Loader from "../loader/loader";
-import { TablesData } from "@/utils/columnsAccessData";
+import { putaway_unposted_columns, TablesData } from "@/utils/columnsAccessData";
 import PutAwayTable_Columns from "./PutAwayTables_Columns";
 import UserListTable_Columns from "./UserListTables_Columns";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 const ColumnAccessComponent = () => {
   // Note: Media query to determine if the screen is small
@@ -33,10 +33,17 @@ const ColumnAccessComponent = () => {
 
   // Note: Redux State
   const { putaway_columns } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
+  // console.log("🚀 ~ ColumnAccessComponent ~ putaway_columns:", putaway_columns)
 
   // States
   const [isMainLoading, setIsMainLoading] = useState(false);
   const [selectedTable, setSelectedTable] = useState("putaway");
+
+  const [selectedColumns, setSelectedColumns] = useState([]);
+
+  useEffect(() => {
+
+  }, [])
 
   const handleSelectTable = (value: string) => {
     console.log("🚀 ~ handleSelectUser ~ value:", value)
@@ -45,9 +52,17 @@ const ColumnAccessComponent = () => {
 
   const handleTableRemoved = () => {
     // showNotificationToast("Plant Assigned", data.message, customStyles.colors._408CCE);
-    dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
     // setSelectedPlants([])
     // setSelectedUser(null)
+  }
+
+  const handleAllowAccess = () => {
+    if(selectedTable === "putaway"){
+      console.log("Selected Table.......")
+    }else{
+      showNotificationToast("Error", "Column access configuration feature is coming soon. Thank you for your patience!", customStyles.colors.red);
+    }
+    // dispatch(CLEAR_ALL_PLANTS_STATES_BY_USER())
   }
 
   if (isMainLoading) {
@@ -134,8 +149,7 @@ const ColumnAccessComponent = () => {
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
             leftSection={<IconShieldLock size={isSmallScreen ? 20 : 24} />}
-            // onClick={handleAssignPlants}
-            // disabled={!(selectedPlants?.length > 0)}
+            onClick={handleAllowAccess}
             w={isSmallScreen ? "100%" : "auto"}
             mt={isSmallScreen ? 16 : 0}
           >
@@ -150,7 +164,11 @@ const ColumnAccessComponent = () => {
         bg={customStyles.colors.white}
         style={{ borderRadius: "16px", width: "100%" }}
       >
-        {selectedTable === "putaway" && <PutAwayTable_Columns />}
+        {selectedTable === "putaway" && <PutAwayTable_Columns
+          columns={putaway_unposted_columns}
+          selectedColumns={selectedColumns}
+          onChange={setSelectedColumns}
+        />}
         {selectedTable === "userList" && <UserListTable_Columns />}
       </Stack>
     </Box>
