@@ -17,7 +17,8 @@ import {
     IconStack3,
     IconTruckDelivery,
     IconTruckReturn,
-    IconSortAscendingShapes
+    IconSortAscendingShapes,
+    IconShieldLock
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -42,6 +43,7 @@ const authenticatedRoutes: String[] = [
     "/assign-plants",
     "/assign-warehouse",
     "/add-user",
+    "/column-access-control",
     "/configuration",
     // "/integration-monitor",
     // "/edit",
@@ -55,7 +57,7 @@ const authenticatedRoutes: String[] = [
 
 const initialRoute: string = "/putaway-order"
 
-const settingsInitialRoute: string =  "/users-list"
+const settingsInitialRoute: string = "/users-list"
 
 // Note: Defining all routes...!
 const routes: Routes = {
@@ -75,6 +77,7 @@ const routes: Routes = {
     assignPlants: "/assign-plants",
     addUser: "/add-user",
     configuration: "/configuration",
+    columnAccessControl: "/column-access-control",
     // integrationMonitor: "/integration-monitor",
     editUser: (uid: string) => `/edit/${uid}`,
     // grnMovement: "/grn-movement",
@@ -164,6 +167,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconSortAscendingShapes color='currentColor' size={24} />,
         label: "Assign Movement Type",
         route: routes.assignMovementType
+    },
+    {
+        icon: <IconShieldLock color='currentColor' size={24} />,
+        label: "Column Access Control",
+        route: routes.columnAccessControl
     },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,

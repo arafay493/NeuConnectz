@@ -18,6 +18,7 @@ export type Routes = {
     assignWareHouse: string;
     assignPlants: string;
     addUser: string;
+    columnAccessControl: string,
     configuration: string;
     // integrationMonitor: string;
     editUser: (uid: string) => string,

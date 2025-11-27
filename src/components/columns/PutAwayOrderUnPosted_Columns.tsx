@@ -33,6 +33,7 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
+                id: "putawayUnposted_transferReceiptNumber",
                 accessorKey: "transferReceiptNumber",
                 header: "TR Number",
                 cell: ({ getValue }: any) => (

@@ -7,6 +7,7 @@ import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
+import { useAppSelector } from '@/redux/store';
 
 const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, subTitle, isCsvExport, handleExportToCSV = () => { } }: any) => {
 
@@ -16,6 +17,9 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
+
+    const { putaway_columns } = useAppSelector(({ columnBasedAccessControlStates }) => { return columnBasedAccessControlStates });
+
     const table = useReactTable({
         data: data || [],
         columns: columns || [],
@@ -34,6 +38,9 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
             globalFilter,
             columnFilters,
             pagination,
+            columnVisibility: {
+                putawayUnposted_transferReceiptNumber: putaway_columns.transferReceiptNumber
+            }
         },
     });
     const numbersArray = useMemo<number[]>(() => {

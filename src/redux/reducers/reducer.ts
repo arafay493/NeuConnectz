@@ -19,6 +19,7 @@ import generateBarcodeReducer from '@/redux/reducers/generate-barcode-reducer/ge
 import goodsIssueReducer from "@/redux/reducers/gi-reducer/gi-reducer";
 import sidebarReducer from "@/redux/reducers/sidebar-reducer/sidebar-reducer";
 import movementTypeReducer from "@/redux/reducers/movement-type-reducer/movement-type-reducer"
+import columnBasedAccessControlReducer from "@/redux/reducers/column-based-access-control/column-based-access-control-reducer"
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -42,7 +43,8 @@ const rootReducer = combineReducers({
     reconciliationStates: reconciliationReducer,
     generateBarcodeStates: generateBarcodeReducer,
     gIStates: goodsIssueReducer,
-    sidebarStates: sidebarReducer
+    sidebarStates: sidebarReducer,
+    columnBasedAccessControlStates: columnBasedAccessControlReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);
