@@ -62,7 +62,7 @@ const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: a
             {
                 id: "materialDescription",
                 accessorKey: "materialDescription",
-                header: "Material Description",
+                header: "Material Name",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
                         {String(getValue() || "-")}
