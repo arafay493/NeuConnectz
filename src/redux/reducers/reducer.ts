@@ -20,6 +20,7 @@ import goodsIssueReducer from "@/redux/reducers/gi-reducer/gi-reducer";
 import sidebarReducer from "@/redux/reducers/sidebar-reducer/sidebar-reducer";
 import movementTypeReducer from "@/redux/reducers/movement-type-reducer/movement-type-reducer"
 import columnBasedAccessControlReducer from "@/redux/reducers/column-based-access-control/column-based-access-control-reducer"
+import pickingReducer from "./picking-reducer/picking-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
     wareHouseStates: wareHouseReducer,
     groupStates: groupReducer,
     putawayStates: putawayReducer,
+    pickingStates: pickingReducer,
     plantStates: plantReducer,
     movementTypeStates: movementTypeReducer,
     sapStates: sapReducer,

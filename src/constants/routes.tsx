@@ -127,11 +127,11 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Putaway Order",
         route: routes.putAwayOrder
     },
-    // {
-    //     icon: <IconTruckReturn color='currentColor' size={24} />,
-    //     label: "Picking Order",
-    //     route: routes.pickingOrder
-    // },
+    {
+        icon: <IconTruckReturn color='currentColor' size={24} />,
+        label: "Picking Order",
+        route: routes.pickingOrder
+    },
     // {
     //     icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
     //     label: "Integration Monitor",
@@ -168,11 +168,11 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Assign Movement Type",
         route: routes.assignMovementType
     },
-    {
-        icon: <IconShieldLock color='currentColor' size={24} />,
-        label: "Column Access Control",
-        route: routes.columnAccessControl
-    },
+    // {
+    //     icon: <IconShieldLock color='currentColor' size={24} />,
+    //     label: "Column Access Control",
+    //     route: routes.columnAccessControl
+    // },
     {
         icon: <IconSettingsCog color='currentColor' size={24} />,
         label: "Configuration",

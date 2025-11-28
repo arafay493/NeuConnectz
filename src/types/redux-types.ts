@@ -126,6 +126,31 @@ export interface PutAwayOrdersStateType {
     PutAwayErrorState: string
 };
 
+export interface PickingOrdersStateType {
+    ListAllReservation: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllPutAwayDetailsByDocNo: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    // listGroupCodesByUserId: {
+    //     id: string,
+    //     groupCode: number | string,
+    //     groupName: string,
+    //     createdBy: string,
+    //     updatedBy: string,
+    //     createdDate: string,
+    //     updatedDate: string,
+    //     isActive: boolean,
+    //     isArchived: boolean
+    // }[];
+    PickingErrorState: string
+};
+
 // Note: Plants reducer state types...!
 export interface PlantsStateType {
     ListAllPlantsCodes: {

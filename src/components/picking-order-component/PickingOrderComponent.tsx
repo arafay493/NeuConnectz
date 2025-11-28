@@ -134,8 +134,8 @@ const PickingOrderComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Posted' && (<PickingPostedComponent apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
-                {tab === 'Unposted' && (<PickingUnPostedComponent apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
+                {tab === 'Posted' && (<PickingPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=Integrated" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
+                {tab === 'Unposted' && (<PickingUnPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=pending" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
             </div>
         </Box>
     );

@@ -1,11 +1,15 @@
 import React, { memo, useState, FC, useEffect } from 'react';
-import { Stack } from '@mantine/core';
+import { Button, Group, Stack } from '@mantine/core';
 import { customStyles } from '@/styles/custom-theme';
 import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
+import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
+import { fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -21,9 +25,10 @@ import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-det
 
 type ApiProp = {
     apiUrl: string;
+    reservationApiUrl: string
 };
 
-const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
+const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
@@ -41,121 +46,34 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     // Note: Table modal state...!
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRow, setSelectedRow] = useState<any>(null);
+    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Inbound">("Reservation");
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
 
     // Note: Handeling redux here...!
-    // const dispatch = useAppDispatch();
-    // const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    // const { listGoodIssue, totalCount } = useAppSelector(({ gIStates }) => { return gIStates });
+    const dispatch = useAppDispatch();
+    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    const { ListAllReservation } = useAppSelector(({ pickingStates }) => { return pickingStates });
     // // console.log("productionOrdersList: ", productionOrdersList);
 
-    // useEffect(() => {
-    //     if (authenticatedUser?.token) {
-    //         setIsLoading(true);
-    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
+    useEffect(() => {
+        if (authenticatedUser?.token) {
+            setIsLoading(true);
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
-    //         dispatch(fetchAllGoodsIssue({
-    //             token: authenticatedUser?.token || '',
-    //             apiUrl: apiUrl,
-    //             lastCount: pagination.pageSize, // Use page size for server-side pagination
-    //             skipRecords: skipRecord
-    //         })).finally(() => {
-    //             setIsLoading(false)
-    //         });
-    //     };
-    // }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
-
-    const pickingOrderList = [
-        {
-            id: 1,
-            documentNumber: "DOC-0001",
-            materialCode: "MAT-1001",
-            materialName: "Steel Rod",
-            uom: "KG",
-            quantity: 120,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5001",
-            suppliers: "ABC Suppliers",
-            reservationNumber: "RES-001",
-            inboundDeliveryNumber: "INB-1001",
-            sourceBin: "BIN-001",
-            date: "2025-11-08T10:30:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 2,
-            documentNumber: "DOC-0002",
-            materialCode: "MAT-1002",
-            materialName: "Copper Sheets",
-            uom: "PCS",
-            quantity: 300,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5002",
-            suppliers: "Global Metals",
-            reservationNumber: "RES-002",
-            inboundDeliveryNumber: "INB-1002",
-            sourceBin: "BIN-003",
-            date: "2025-11-07T14:45:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 3,
-            documentNumber: "DOC-0003",
-            materialCode: "MAT-1003",
-            materialName: "Plastic Granules",
-            uom: "BAG",
-            quantity: 50,
-            movementType: "Return",
-            purchaseOrder: "PO-5003",
-            suppliers: "PolyTech",
-            reservationNumber: "RES-003",
-            inboundDeliveryNumber: "INB-1003",
-            sourceBin: "BIN-005",
-            date: "2025-11-06T09:20:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 4,
-            documentNumber: "DOC-0004",
-            materialCode: "MAT-1004",
-            materialName: "Aluminum Blocks",
-            uom: "BOX",
-            quantity: 80,
-            movementType: "Transfer",
-            purchaseOrder: "PO-5004",
-            suppliers: "MetalX Industries",
-            reservationNumber: "RES-004",
-            inboundDeliveryNumber: "INB-1004",
-            sourceBin: "BIN-007",
-            date: "2025-11-05T16:10:00Z",
-            status: "Unconfirmed",
-            actions: null
-        },
-        {
-            id: 5,
-            documentNumber: "DOC-0005",
-            materialCode: "MAT-1005",
-            materialName: "Rubber Sheets",
-            uom: "ROLL",
-            quantity: 40,
-            movementType: "Return",
-            purchaseOrder: "PO-5005",
-            suppliers: "FlexRubber Co.",
-            reservationNumber: "RES-005",
-            inboundDeliveryNumber: "INB-1005",
-            sourceBin: "BIN-009",
-            date: "2025-11-04T11:00:00Z",
-            status: "Unconfirmed",
-            actions: null
-        }
-    ];
+            dispatch(fetchListAllReservation({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: reservationApiUrl,
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        };
+    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
 
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
@@ -174,10 +92,13 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         setSelectedRow(rowData)
         setIsViewDetailsModalOpen(true)
     }
-    const columns = PutAwayOrderUnPosted_Columns({
-        pagination, pickingOrderList, actions: {
+
+    const reservationColumns = PickingOrderUnPosted_Reservation_Columns({
+        pagination, list: ListAllReservation?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+            // handlePost: handlePost,
+            handlePost: () => { },
         }
     })
 
@@ -204,7 +125,54 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 poNumber={0}
             />
 
-            <TanStackTable
+            {/* Tabs */}
+            <Group
+                justify={customStyles.alignment.left}
+                // mb="sm"
+                // mb={-20}
+                gap={0}
+                className="tabGroup"
+                style={{
+                    display: "flex",
+                    alignItems: customStyles.alignment.center,
+                    border: "1px solid",
+                    borderColor: customStyles.colors._1B59F8,
+                    borderRadius: "5px"
+                }}
+            >
+                <Button
+                    variant="transparent"
+                    radius={0}
+                    size="md"
+                    flex={1}
+                    onClick={() => setHeaderBtnType("Reservation")}
+                    style={{
+                        backgroundColor: headerBtnType === "Reservation" ? "#DEE4F5" : "white"
+                    }}
+                    color={customStyles.colors._1B59F8}
+                >
+                    Reservation
+                </Button>
+
+                <Button
+                    variant="transparent"
+                    className={headerBtnType === "Inbound" ? "myFilledButton" : "myOutlineButton"}
+                    radius={0}
+                    size="md"
+                    flex={1}
+                    onClick={() => setHeaderBtnType("Inbound")}
+                    style={{
+                        borderLeftWidth: 1,
+                        borderLeftColor: "#228be6",
+                        backgroundColor: headerBtnType === "Inbound" ? "#DEE4F5" : "white"
+                    }}
+                    color={customStyles.colors._1B59F8}
+                >
+                    Inbound
+                </Button>
+            </Group>
+
+            {/* <TanStackTable
                 data={Array.isArray(pickingOrderList) ? pickingOrderList : []}
                 dataCount={pickingOrderList?.length}
                 columns={columns}
@@ -213,11 +181,45 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 pagination={pagination}
                 setPagination={setPagination}
                 title={" Unposted Picking Orders"}
-                subTitle={"Track and review stock transfer order seemlessly."}
+                subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecord}
                 isCsvExport={true}
                 handleExportToCSV={handleExportToCSV}
-            />
+            /> */}
+
+
+            {/* Table */}
+            {headerBtnType === "Reservation" && <TanStackTable
+                data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
+                dataCount={ListAllReservation?.totalCount}
+                columns={reservationColumns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={" Unposted Picking Orders"}
+                subTitle={"Track and review picking order seemlessly."}
+                skipRecord={skipRecord}
+                isCsvExport={true}
+                handleExportToCSV={handleExportToCSV}
+            />}
+
+
+            {/* Table */}
+            {headerBtnType === "Inbound" && <TanStackTable
+                data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
+                dataCount={ListAllReservation?.totalCount}
+                columns={reservationColumns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPagination}
+                title={" Unposted Picking Orders"}
+                subTitle={"Track and review picking order seemlessly."}
+                skipRecord={skipRecord}
+                isCsvExport={true}
+                handleExportToCSV={handleExportToCSV}
+            />}
         </Stack>
     );
 };
