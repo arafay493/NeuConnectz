@@ -4,7 +4,7 @@ import { IconCircleFilled } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
-const PickingOrderUnPosted_Reservation_Columns = ({ pagination, list, actions }: any) => {
+const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             // ========== SERIAL NUMBER ==========
@@ -228,4 +228,4 @@ const PickingOrderUnPosted_Reservation_Columns = ({ pagination, list, actions }:
     return columns;
 };
 
-export default PickingOrderUnPosted_Reservation_Columns;
+export default PickingOrderPosted_Reservation_Columns;

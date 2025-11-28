@@ -7,7 +7,7 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPickingReservationOrders, fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
+import { confirmPickingReservationOrders, fetchListAllReservation, postPickingReservationOrders } from '@/redux/actions/picking-actions/picking-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 
@@ -105,26 +105,26 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
     }
 
     const handlePostReservation = (rowData: any) => {
-        // handleModalClose()
-        // setIsFullPageLoading(true)
-        // dispatch(postPutAwayOrders({
-        //     payload: {
-        //         putawayDocNums: [String(rowData?.docNum)]
-        //     },
-        //     token: authenticatedUser?.token || '',
-        //     resHandler: handlePostReservationResponse
-        // })).finally(() => {
-        //     setIsFullPageLoading(false)
-        //     setIsLoading(true);
-        //     dispatch(fetchListAllReservation({
-        //         authToken: authenticatedUser?.token || '',
-        //         apiUrl: apiUrl,
-        //         lastCount: pagination.pageSize,
-        //         skipRecords: skipRecord
-        //     })).finally(() => {
-        //         setIsLoading(false)
-        //     });
-        // })
+        handleModalClose()
+        setIsFullPageLoading(true)
+        dispatch(postPickingReservationOrders({
+            payload: {
+                docNums: [String(rowData?.docNum)]
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handlePostReservationResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllReservation({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: reservationApiUrl,
+                lastCount: pagination.pageSize,
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
     }
 
     const handleConfirmModalOpen = (rowData: any) => {

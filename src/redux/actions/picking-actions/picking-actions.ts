@@ -92,15 +92,15 @@ const confirmPickingReservationOrders = createAsyncThunk(
     }
 );
 
-const postPutAwayOrders = createAsyncThunk(
-    "putaway/postPutAwayOrders",
+const postPickingReservationOrders = createAsyncThunk(
+    "putaway/postPickingReservationOrders",
     async (
         { payload, token, resHandler }:
             any,
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/ISapFeature/PostPutAwayAgainstGR', payload, token);
+            const response = await apiPost('/neu-connect/v2/ISapFeature/PostReservation', payload, token);
             // console.log("payload>>>>>>>> " , payload)
             const { data, status} = response;
             const { message, error } = data?.data;
@@ -117,6 +117,6 @@ export {
     fetchListAllReservation,
     fetchListAllPutAwayDetalisByDocNo,
     confirmPickingReservationOrders,
-    postPutAwayOrders
+    postPickingReservationOrders
 };
 

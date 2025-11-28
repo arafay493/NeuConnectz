@@ -4,13 +4,10 @@ import { customStyles } from '@/styles/custom-theme';
 import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
-import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
-import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
-import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
 import { fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
 import PickingPostedViewDetailsModal from '../modals/picking-posted-view-details-modal/PickingPostedViewDetailsModal';
+import PickingOrderPosted_Reservation_Columns from '../columns/PickingOrderPosted_Reservation_Columns';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -94,7 +91,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
         setIsViewDetailsModalOpen(true)
     }
 
-    const reservationColumns = PickingOrderUnPosted_Reservation_Columns({
+    const reservationColumns = PickingOrderPosted_Reservation_Columns({
         pagination, list: ListAllReservation?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
