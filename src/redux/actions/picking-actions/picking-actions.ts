@@ -73,19 +73,19 @@ const fetchListAllPutAwayDetalisByDocNo = createAsyncThunk(
     }
 );
 
-const confirmPutAwayOrders = createAsyncThunk(
-    "putaway/confirmPutAwayOrders",
+const confirmPickingReservationOrders = createAsyncThunk(
+    "putaway/confirmPickingReservationOrders",
     async (
         { payload, token, resHandler }:
             any,
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/IPutAwayFeature/ConfirmPutAway', payload, token);
+            const response = await apiPost('/neu-connect/v2/IReservationFeature/ConfirmReservation', payload, token);
             const { status, data, error } = response;
             resHandler(status, data, error);
         } catch (error) {
-            // resHandler(400, error)
+            resHandler(400, error)
             console.log("response error", error)
         }
 
@@ -116,7 +116,7 @@ const postPutAwayOrders = createAsyncThunk(
 export {
     fetchListAllReservation,
     fetchListAllPutAwayDetalisByDocNo,
-    confirmPutAwayOrders,
+    confirmPickingReservationOrders,
     postPutAwayOrders
 };
 

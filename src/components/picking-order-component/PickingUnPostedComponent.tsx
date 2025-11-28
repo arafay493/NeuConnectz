@@ -4,12 +4,12 @@ import { customStyles } from '@/styles/custom-theme';
 import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
-import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchListAllPutAway } from '@/redux/actions/putaway-actions/putaway-actions';
-import { fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
+import { confirmPickingReservationOrders, fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import Loader from '../loader/loader';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -33,6 +33,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
 
     // Note: Handling states here...!
     const [isLoading, setIsLoading] = useState(false);
+    const [isFullPageLoading, setIsFullPageLoading] = useState(false);
     const [isViewLoading, setIsViewLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -81,10 +82,53 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
     }
 
     const handleConfirm = () => {
+        setIsFullPageLoading(true)
+        dispatch(confirmPickingReservationOrders({
+            payload: {
+                reservationNumber: String(selectedRow?.reservationNumber)
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handleReservationResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllReservation({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: reservationApiUrl,
+                lastCount: pagination.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
         setIsConfirmModalOpen(false)
     }
 
+    const handlePostReservation = (rowData: any) => {
+        // handleModalClose()
+        // setIsFullPageLoading(true)
+        // dispatch(postPutAwayOrders({
+        //     payload: {
+        //         putawayDocNums: [String(rowData?.docNum)]
+        //     },
+        //     token: authenticatedUser?.token || '',
+        //     resHandler: handlePostReservationResponse
+        // })).finally(() => {
+        //     setIsFullPageLoading(false)
+        //     setIsLoading(true);
+        //     dispatch(fetchListAllReservation({
+        //         authToken: authenticatedUser?.token || '',
+        //         apiUrl: apiUrl,
+        //         lastCount: pagination.pageSize,
+        //         skipRecords: skipRecord
+        //     })).finally(() => {
+        //         setIsLoading(false)
+        //     });
+        // })
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
     }
 
@@ -97,19 +141,40 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
         pagination, list: ListAllReservation?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
-            // handlePost: handlePost,
-            handlePost: () => { },
+            handlePost: handlePostReservation,
+            // handlePost: () => { },
         }
     })
+
+    const handleReservationResponse = (status: number, data: any, error: string = "Something went wrong") => {
+        if (status === 200) {
+            showNotificationToast("Confirm Reservation", data.message, customStyles.colors._408CCE);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
+
+    const handlePostReservationResponse = (status: number, message: string, error: string = "Something went wrong") => {
+        if (status === 201) {
+            showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
 
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
     }
 
+    if (isFullPageLoading) {
+        return <Loader loadingState={isFullPageLoading} />
+    }
+
+
     return (
         <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
             {/* Confirm Modal */}
-            <ConfirmModal description='By Confirming this will be posted.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
+            <ConfirmModal description='Are you sure you want to proceed? This action cannot be undone.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
             {/* View Modal */}
             <PickingUnPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}
@@ -171,22 +236,6 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
                     Inbound
                 </Button>
             </Group>
-
-            {/* <TanStackTable
-                data={Array.isArray(pickingOrderList) ? pickingOrderList : []}
-                dataCount={pickingOrderList?.length}
-                columns={columns}
-                isLoading={isLoading}
-                isInsideModalTable={true}
-                pagination={pagination}
-                setPagination={setPagination}
-                title={" Unposted Picking Orders"}
-                subTitle={"Track and review picking order seemlessly."}
-                skipRecord={skipRecord}
-                isCsvExport={true}
-                handleExportToCSV={handleExportToCSV}
-            /> */}
-
 
             {/* Table */}
             {headerBtnType === "Reservation" && <TanStackTable
