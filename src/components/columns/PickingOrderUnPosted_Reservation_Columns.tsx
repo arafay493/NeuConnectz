@@ -181,28 +181,6 @@ const PickingOrderUnPosted_Reservation_Columns = ({ pagination, list, actions }:
                 enableColumnFilter: true,
             },
 
-            {
-                id: "erpMaterialDocument",
-                accessorKey: "erpMaterialDocument",
-                header: "ERP Material Doc",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
-                        {String(getValue() || "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "erpTransferOrder",
-                accessorKey: "erpTransferOrder",
-                header: "ERP Transfer Order",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
-                        {String(getValue() || "-")}
-                    </Text>
-                ),
-            },
-
             // ========== ACTIONS COLUMN ==========
             {
                 id: "reservation_actions",
