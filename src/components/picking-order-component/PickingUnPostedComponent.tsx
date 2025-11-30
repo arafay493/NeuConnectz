@@ -48,7 +48,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
-    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Inbound">("Reservation");
+    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound">("Reservation");
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -221,19 +221,19 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
 
                 <Button
                     variant="transparent"
-                    className={headerBtnType === "Inbound" ? "myFilledButton" : "myOutlineButton"}
+                    className={headerBtnType === "Outbound" ? "myFilledButton" : "myOutlineButton"}
                     radius={0}
                     size="md"
                     flex={1}
-                    onClick={() => setHeaderBtnType("Inbound")}
+                    onClick={() => setHeaderBtnType("Outbound")}
                     style={{
                         borderLeftWidth: 1,
                         borderLeftColor: "#228be6",
-                        backgroundColor: headerBtnType === "Inbound" ? "#DEE4F5" : "white"
+                        backgroundColor: headerBtnType === "Outbound" ? "#DEE4F5" : "white"
                     }}
                     color={customStyles.colors._1B59F8}
                 >
-                    Inbound
+                    Outbound
                 </Button>
             </Group>
 
@@ -255,9 +255,10 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
 
 
             {/* Table */}
-            {headerBtnType === "Inbound" && <TanStackTable
-                data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
-                dataCount={ListAllReservation?.totalCount}
+            {headerBtnType === "Outbound" && <TanStackTable
+                // data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
+                data={[]}
+                dataCount={0}
                 columns={reservationColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
