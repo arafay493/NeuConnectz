@@ -147,7 +147,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
         }
     })
 
-    const handleReservationResponse = (status: number, data: any, error: string = "Something went wrong") => {
+    const handleReservationResponse = (status: number, data: any, error: string) => {
         if (status === 200) {
             showNotificationToast("Confirm Reservation", data.message, customStyles.colors._408CCE);
         } else if (error) {
@@ -156,13 +156,11 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
     }
 
     const handlePostReservationResponse = (status: number, message: string, error: string) => {
-        if (error) {
-            ToastMessage("Error", message, status, error)
-            // showNotificationToast("Error", error, customStyles.colors.red);
-            // showNotificationToast("Error", `${message}\n${error}`, customStyles.colors.red);
-        } else if (status === 201) {
+        if (status === 201) {
             ToastMessage("Reservation Post", message, status, error)
             // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else {
+            ToastMessage("Error", message, status, error)
         }
     }
 
