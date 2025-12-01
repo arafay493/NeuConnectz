@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { confirmPickingReservationOrders, fetchListAllReservation, postPickingReservationOrders } from '@/redux/actions/picking-actions/picking-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
+import { ToastMessage } from '@/utils/ToastMessage';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -154,11 +155,14 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
         }
     }
 
-    const handlePostReservationResponse = (status: number, message: string, error: string = "Something went wrong") => {
-        if (status === 201) {
-            showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
-        } else if (error) {
-            showNotificationToast("Error", error, customStyles.colors.red);
+    const handlePostReservationResponse = (status: number, message: string, error: string) => {
+        if (error) {
+            ToastMessage("Error", message, status, error)
+            // showNotificationToast("Error", error, customStyles.colors.red);
+            // showNotificationToast("Error", `${message}\n${error}`, customStyles.colors.red);
+        } else if (status === 201) {
+            ToastMessage("Reservation Post", message, status, error)
+            // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
         }
     }
 
