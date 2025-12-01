@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import {
+  IconBuilding,
   IconBuildings,
   IconPlant,
   IconSeedling,
@@ -448,7 +449,7 @@ const AssignPlantsComponent = () => {
             className={"outlineButton"}
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
-            leftSection={<IconBuildings size={isSmallScreen ? 20 : 24} />}
+            leftSection={<IconBuilding size={isSmallScreen ? 20 : 24} />}
             onClick={handleAssignAllPlants}
             disabled={!selectedUser}
             w={isSmallScreen ? "100%" : "auto"}
@@ -461,7 +462,7 @@ const AssignPlantsComponent = () => {
             className={!(selectedPlants?.length > 0) ? "filledDisabledButton" : "filledButton"}
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
-            leftSection={<IconBuildings size={isSmallScreen ? 20 : 24} />}
+            leftSection={<IconBuilding size={isSmallScreen ? 20 : 24} />}
             onClick={handleAssignPlants}
             disabled={!(selectedPlants?.length > 0)}
             w={isSmallScreen ? "100%" : "auto"}
