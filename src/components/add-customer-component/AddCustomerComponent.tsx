@@ -12,9 +12,9 @@ import {
     Title,
     Button,
     TextInput,
-    PasswordInput,
     Grid,
     Box,
+    TagsInput
 } from "@mantine/core";
 import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from '@/redux/store';
@@ -24,19 +24,30 @@ import { addSAPConfiguration } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
 import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
 import { IconUserPlus } from '@tabler/icons-react';
+import { apiGet, apiPost } from '@/lib/api-service';
+import { useRouter } from 'next/navigation';
+import { routes } from '@/constants/routes';
 
 const AddCustomerMasterComponent = () => {
 
+    const router = useRouter();
+
     const [formData, setFormData] = useState({
-        customerCode: "",
         customerName: "",
         address: "",
-        contactPerson: "",
-        phoneNumber: "",
-        gst_taxNumber: "",
-        paymentTerms: "",
+        selectedCountry: "",
+        selectedProvince: "",
+        selectedCity: "",
+        customerType: "",
+        subCustomers: "",
         loading: false,
     });
+    const [tags, setTags] = useState([]);
+    const [provinces, setProvinces] = useState([]);
+    const [cities, setCities] = useState([]);
+
+    // Note: State for Authentication
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
     const handleChange = (field: string, value: any) => {
         setFormData({
@@ -45,40 +56,147 @@ const AddCustomerMasterComponent = () => {
         });
     };
 
-    const handleSubmit = () => {
-        const {
-            customerCode,
-            customerName,
-            address,
-            contactPerson,
-            phoneNumber,
-            gst_taxNumber,
-            paymentTerms,
-        } = formData;
+    const handleTagChange = (newTags: any) => {
+        // console.log('New Tag:', newTags);
+        setTags(newTags);
+    };
 
+    // Note: Fetch all provinces...!
+    const fetchAllProvinces = async () => {
         try {
-            if (!customerCode.trim()) throw "Customer Code is required";
-            if (!customerName.trim()) throw "Customer Name is required";
-            if (!address.trim()) throw "Address is required";
-            if (!contactPerson.trim()) throw "Contact Person is required";
-            if (!phoneNumber.trim()) throw "Phone Number is required";
-            if (!gst_taxNumber.trim()) throw "GST / Tax Number is required";
-            if (!paymentTerms.trim()) throw "Payment Terms are required";
 
-            // Submit form (API logic here)
-            console.log("Submitted Data:", formData);
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_PROVINCES}`, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data, error } = response;
+            if (status == 200) {
+                setProvinces(data?.data?.data || []);
+            }
+
+            if (!String(status).startsWith('2')) {
+                setProvinces([]);
+                throw error || "Failed to fetch provinces";
+            };
         }
 
         catch (error) {
-            alert(error); // You can replace it with toast
+            console.log('Something went wrong while fetching all provinces', error);
+            showNotificationToast("Something went wrong", String(error), customStyles.colors.red);
+        };
+    };
+
+    // Note: Fetch all cities by pronince id...!
+    const fetchAllCitiesByProvince = async () => {
+        try {
+
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CITIES}?provinceId=${formData?.selectedProvince}`, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setCities(data?.data?.data || []);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all cities', error);
+            showNotificationToast("Something went wrong", String(error), customStyles.colors.red);
+        };
+    };
+
+    // Note: THis hook will run when the component is mounted...!
+    useEffect(() => {
+        if (authenticatedUser) {
+            fetchAllProvinces();
+        };
+    }, []);
+
+    // Note: THis hook will run when the component is mounted...!
+    useEffect(() => {
+        if (formData?.selectedProvince) {
+            fetchAllCitiesByProvince();
+            setFormData({
+                ...formData,
+                selectedCity: "",
+            });
+        };
+    }, [formData?.selectedProvince]);
+
+    // Add Customer master in DB using API call...!
+    const addCustomerHandler = async (customerData: any) => {
+        console.log('Customer Data:', customerData);
+
+        // Enable loader...!
+        setFormData((prev) => ({ ...prev, loading: true }));
+
+        try {
+            const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_CUSTOMER}`, customerData, authenticatedUser?.token);
+            // console.log(response);
+
+            const { status, data } = response;
+            if (status == 201) {
+                showNotificationToast("Success", "Customer added successfully", customStyles.colors._1B59F8);
+                setFormData({
+                    customerName: "",
+                    address: "",
+                    selectedCountry: "",
+                    selectedProvince: "",
+                    selectedCity: "",
+                    customerType: "",
+                    subCustomers: "",
+                    loading: false,
+                });
+                setTags([]);
+                setCities([]);
+                router.push(routes.customerMaster);
+            };
+        }
+
+        catch (error) {
+            console.log('Add Vehicle Error:', error);
+        };
+    };
+
+    const handleSubmit = () => {
+        const {
+            customerName,
+            address,
+            selectedCountry,
+            selectedProvince,
+            selectedCity,
+            customerType,
+        } = formData;
+
+        try {
+            if (!customerName.trim()) throw "Customer Name is required";
+            if (!address.trim()) throw "Address is required";
+            if (!selectedCountry) throw "Please select a Country";
+            if (!selectedProvince) throw "Please select a Province";
+            if (!selectedCity) throw "Please select a City";
+            if (customerType == "SubCustomer" && tags.length < 1) throw "Please add at least one Sub Customer";
+
+            const customerData = {
+                customerName: customerName,
+                country: selectedCountry,
+                provinceId: selectedProvince,
+                cityId: selectedCity,
+                address: address,
+                customerType: "subcustomer",
+                distributerNames: tags,
+            };
+            addCustomerHandler(customerData);
+        }
+
+        catch (error: any) {
+            if (error) {
+                console.log('Validation Error:', error);
+                showNotificationToast("Validation Error", String(error), customStyles.colors.red);
+            };
         }
     };
 
     return (
         <Box>
-
-            {/* Note: Loading Component */}
-            <Loader loadingState={formData.loading} />
 
             {/* Note: Screen Head section */}
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }} p={'md'}>
@@ -92,6 +210,9 @@ const AddCustomerMasterComponent = () => {
                     variant="transparent"
                     size="md"
                     radius={8}
+                    onClick={handleSubmit}
+                    loading={formData.loading}
+                    disabled={formData.loading}
                 >
                     Save Customer
                 </Button>
@@ -109,16 +230,6 @@ const AddCustomerMasterComponent = () => {
                     </Title>
 
                     <Grid gutter="md">
-                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Customer Code"
-                                placeholder="Enter Customer Code"
-                                withAsterisk
-                                value={formData.customerCode}
-                                onChange={(e) => handleChange("customerCode", e.currentTarget.value)}
-                            />
-                        </Grid.Col>
-
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
                                 label="Customer Name"
@@ -140,44 +251,87 @@ const AddCustomerMasterComponent = () => {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Contact Person"
-                                placeholder="Enter Contact Person"
+                            <Select
+                                label="Country"
+                                placeholder="Select Country"
                                 withAsterisk
-                                value={formData.contactPerson}
-                                onChange={(e) => handleChange("contactPerson", e.currentTarget.value)}
+                                data={[
+                                    { value: "Pakistan", label: "Pakistan" }
+                                ]}
+                                value={formData.selectedCountry || null}
+                                onChange={(value) => handleChange("selectedCountry", value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Phone Number"
-                                placeholder="Enter Phone Number"
+                            <Select
+                                label="Province"
+                                placeholder="Select Province"
                                 withAsterisk
-                                value={formData.phoneNumber}
-                                onChange={(e) => handleChange("phoneNumber", e.currentTarget.value)}
+                                data={
+                                    provinces.map((province: any) => ({
+                                        value: province.id,
+                                        label: province.provinceName
+                                    }))
+                                }
+                                value={formData.selectedProvince || null}
+                                onChange={(value) => handleChange("selectedProvince", value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="GST / Tax Number"
-                                placeholder="Enter GST / Tax Number"
+                            <Select
+                                label="City"
+                                placeholder="Select City"
                                 withAsterisk
-                                value={formData.gst_taxNumber}
-                                onChange={(e) => handleChange("gst_taxNumber", e.currentTarget.value)}
+                                data={
+                                    cities.map((city: any) => ({
+                                        value: city.id,
+                                        label: city.cityName
+                                    }))
+                                }
+                                value={formData.selectedCity || null}
+                                onChange={(value) => handleChange("selectedCity", value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <TextInput
-                                label="Payment Terms"
-                                placeholder="E.g. Net 30, Advance, etc."
+                            <Select
+                                label="Sub Customer"
+                                placeholder="Select Sub Customer"
                                 withAsterisk
-                                value={formData.paymentTerms}
-                                onChange={(e) => handleChange("paymentTerms", e.currentTarget.value)}
+                                data={[
+                                    { value: "SubCustomer", label: "Sub Customer" }
+                                ]}
+                                value={formData.customerType || null}
+                                onChange={(value) => handleChange("customerType", value)}
                             />
                         </Grid.Col>
+
+                        {
+                            formData.customerType === "SubCustomer" && (
+                                <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                                    <div>
+                                        <Text size="sm" mb={4}>
+                                            Sub Customers
+                                        </Text>
+                                        <TagsInput
+                                            label="Press Enter to submit a Sub Customer"
+                                            placeholder="Enter Sub Customer"
+                                            clearable
+                                            value={tags}
+                                            onChange={handleTagChange}
+                                        />
+
+                                        {/* <TagsInput
+                                            value={tags}
+                                            onChange={handleTagChange}
+                                            inputProps={{ placeholder: 'Add sub customer' }}
+                                        /> */}
+                                    </div>
+                                </Grid.Col>
+                            )
+                        }
                     </Grid>
                 </Paper>
             </div>

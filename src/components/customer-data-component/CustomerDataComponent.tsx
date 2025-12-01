@@ -16,70 +16,29 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { apiGet } from '@/lib/api-service';
 
 interface CustomerDataProps {
-    customerCode: string;
-    customerName: string;
-    address: string;
-    contactPerson: string;
-    gst_taxNumber: string;
-    paymentTerms: string;
-    phoneNumber: string;
-}
-
-
-// Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
-const dummyCustomerData: CustomerDataProps[] = [
-  {
-    customerCode: "CUST-001",
-    customerName: "Alpha Traders",
-    address: "123 Market Street, Lahore, Punjab, Pakistan",
-    contactPerson: "Ahmed Ali",
-    gst_taxNumber: "GST-PAK-456789",
-    paymentTerms: "30 Days Credit",
-    phoneNumber: "+92 300 1234567",
-  },
-  {
-    customerCode: "CUST-002",
-    customerName: "Global Enterprises",
-    address: "45 Industrial Area, Karachi, Sindh, Pakistan",
-    contactPerson: "Muhammad Saad",
-    gst_taxNumber: "GST-PAK-987654",
-    paymentTerms: "Advance Payment",
-    phoneNumber: "+92 321 9876543",
-  },
-  {
-    customerCode: "CUST-003",
-    customerName: "Bright Supplies",
-    address: "21 Canal Road, Faisalabad, Punjab, Pakistan",
-    contactPerson: "John David",
-    gst_taxNumber: "GST-PAK-112233",
-    paymentTerms: "15 Days Credit",
-    phoneNumber: "+92 300 5566778",
-  },
-  {
-    customerCode: "CUST-004",
-    customerName: "Metro Distributors",
-    address: "78 Clifton Block 5, Karachi, Pakistan",
-    contactPerson: "Sara Khan",
-    gst_taxNumber: "GST-PAK-223344",
-    paymentTerms: "50% Advance, 50% on Delivery",
-    phoneNumber: "+92 333 4455667",
-  },
-  {
-    customerCode: "CUST-005",
-    customerName: "Skyline Pvt Ltd",
-    address: "10 Blue Area, Islamabad, Pakistan",
-    contactPerson: "Bilal Ahmed",
-    gst_taxNumber: "GST-PAK-334455",
-    paymentTerms: "Cash on Delivery",
-    phoneNumber: "+92 321 6677889",
-  },
-];
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean,
+    isArchived: boolean,
+    id: string,
+    customerName: string,
+    country: string,
+    province: string,
+    city: string,
+    address: string,
+    customerType: string,
+    distributerNames: string[]
+};
 
 const CustomerDataComponent: FC = () => {
 
-    const [data, setCustomerData] = useState<CustomerDataProps[]>(dummyCustomerData); // Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
+    const [customersList, setCustomersList] = useState<CustomerDataProps[]>([]);
+    const [customersCount, setCustomersCount] = useState<number>(0);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -88,18 +47,12 @@ const CustomerDataComponent: FC = () => {
     });
 
     // Note: Router for switch page
-    const route = useRouter();
+    const router = useRouter();
 
     const dispatch = useAppDispatch();
 
     // Note: State for Authentication
     const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-
-    // Note: State for Users List
-    // const { usersList: {
-    //     users: data,
-    //     totalCount
-    // } } = useAppSelector(({ userStates }) => userStates);
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -117,11 +70,6 @@ const CustomerDataComponent: FC = () => {
     const handleTableFiltersVisibility = () => {
         setAreTableFiltersVisible(!areTableFiltersVisible);
     };
-
-    // Note: Function to Edit any User
-    const handleEditUser = (userId: string) => {
-        route.push(routes.addCustomerMaster);
-    }
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -156,119 +104,57 @@ const CustomerDataComponent: FC = () => {
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
-                accessorKey: 'customerCode',
-                header: 'Customer Code',
+                accessorKey: 'customerName',
+                header: 'Customer Name',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Customer Code', (data || []).map(item => item.customerCode), 200, 400),
+                size: calculateColumnWidth('Customer Name', (customersList || []).map(item => item.customerName), 150, 200),
             },
             {
-                accessorKey: 'customerName',
-                header: 'Customer Name',
+                accessorKey: 'country',
+                header: 'Country',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Customer Name', (data || []).map(item => item.customerName), 200, 450),
+                size: calculateColumnWidth('Country', (customersList || []).map(item => item.country), 100, 150),
+            },
+            {
+                accessorKey: 'province',
+                header: 'Province',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Province', (customersList || []).map(item => item.province), 200, 200),
+            },
+            {
+                accessorKey: 'city',
+                header: 'City',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('City', (customersList || []).map(item => item.city), 200, 200),
             },
             {
                 accessorKey: 'address',
                 header: 'Address',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Address', (data || []).map(item => item.address), 120, 200),
-            },
-            {
-                accessorKey: 'contactPerson',
-                header: 'Contact Person',
-                cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Contact Person', (data || []).map(item => item.contactPerson), 200, 200),
+                size: calculateColumnWidth('Address', (customersList || []).map(item => item.address), 150, 200),
             },
-            {
-                accessorKey: 'phoneNumber',
-                header: 'Phone Number',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Phone Number', (data || []).map(item => item.phoneNumber), 200, 200),
-            },
-            {
-                accessorKey: 'gst_taxNumber',
-                header: 'GST/Tax Number',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('', (data || []).map(item => item.gst_taxNumber), 220, 250),
-            },
-            {
-                accessorKey: 'paymentTerms',
-                header: 'Payment Terms',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Payment Terms', (data || []).map(item => item.paymentTerms), 200, 200),
-            },
-            {
-                accessorKey: 'userId',
-                header: 'Action',
-                cell: ({ getValue }) => {
-                    const userId = getValue() as string;
-                    return (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                            }}
-                        >
-                            <Button
-                                variant="transparent"
-                                className={"outlineButton"}
-                                radius={8}
-                                size="sm"
-                                w={120}
-                            >
-                                Edit
-                            </Button>
-
-                            <Button
-                                variant="transparent"
-                                // className={'outlineButton'}
-                                radius={8}
-                                size="sm"
-                                // w={"100%"}
-                                w={120}
-                                style={{
-                                    color: "red",
-                                    backgroundColor: "#E1E7EC",
-                                    marginLeft: 8,
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    )
-                },
-                size: calculateColumnWidth('Action', ['Delete'], 100, 120)
-            }
         ],
-        [data] // Add data as dependency to recalculate when data changes
+        [customersList] // Add data as dependency to recalculate when data changes
     );
 
     // Custom global filter function to handle Status column properly
@@ -304,7 +190,7 @@ const CustomerDataComponent: FC = () => {
     };
 
     const table = useReactTable({
-        data: data,
+        data: customersList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -328,7 +214,7 @@ const CustomerDataComponent: FC = () => {
         // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(data.length / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(customersCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -341,21 +227,37 @@ const CustomerDataComponent: FC = () => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
-    // useEffect(() => {
-    //     if (authenticatedUser) {
-    //         setIsLoading(true);
+    // Note: Fetch all customers...!
+    const fetchAllCustomers = async () => {
+        try {
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const params: { [key: string]: number } = {};
 
-    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
+            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
-    //         dispatch(fetchAllUsers({
-    //             authToken: authenticatedUser?.token,
-    //             LastCount: pagination.pageSize, // Fetch only current page records
-    //             skipRecord: skipRecord
-    //         })).finally(() => {
-    //             setIsLoading(false);
-    //         });
-    //     };
-    // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CUSTOMERS}`, authenticatedUser?.token, params);
+            console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setCustomersList(data?.data?.data || []);
+                setCustomersCount(data?.data?.totalCount || 0);
+                setIsLoading(false);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all customers', error);
+        };
+    };
+
+    useEffect(() => {
+        if (authenticatedUser) {
+            setIsLoading(true);
+            fetchAllCustomers();
+        };
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
     return (
         <Box p={8}>
@@ -370,7 +272,7 @@ const CustomerDataComponent: FC = () => {
                     variant="transparent"
                     size="md"
                     radius={8}
-                    onClick={() => route.push(routes.addCustomerMaster)}
+                    onClick={() => router.push(routes.addCustomerMaster)}
                 >
                     Add Customer
                 </Button>
@@ -427,7 +329,7 @@ const CustomerDataComponent: FC = () => {
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: '0 16px 24px 10px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
@@ -641,7 +543,7 @@ const CustomerDataComponent: FC = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, data.length)} of {data.length} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, customersCount)} of {customersCount} entries
                         </Text>
                     </Group>
                 </Group>

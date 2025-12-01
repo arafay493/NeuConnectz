@@ -23,6 +23,8 @@ export type Routes = {
     addHandlingUnit: string;
     scanProductionOrder: string;
     assignHandlingUnit: string;
+    salesOrder: string;
+    deliveryOrder: string;
     // Note: Defining types for New Master Routes...!
     master: string;
     customerMaster: string;

@@ -1,10 +1,9 @@
-// Note: Add Product Master Component...!
+// Note: Add Item Master Component...!
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, memo } from 'react';
 import {
-    Select,
     Group,
     Text,
     Paper,
@@ -12,61 +11,118 @@ import {
     Title,
     Button,
     TextInput,
-    PasswordInput,
     Grid,
     Box,
 } from "@mantine/core";
-import { IconSend, IconEye, IconEyeOff } from "@tabler/icons-react";
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import Loader from '@/components/loader/loader';
+import { useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
-import { addSAPConfiguration } from '@/redux/actions/sap-actions/sap-actions';
 import { customStyles } from '@/styles/custom-theme';
-import { checkSAPConfigExist } from '@/redux/actions/sap-actions/sap-actions';
 import { IconUserPlus } from '@tabler/icons-react';
+import { apiPost } from '@/lib/api-service';
+import { useRouter } from 'next/navigation';
+import { routes } from '@/constants/routes';
 
-const AddProductMasterComponent = () => {
+const AddItemMasterComponent = () => {
+
+    const router = useRouter();
 
     const [formData, setFormData] = useState({
-        productCode: "",
-        productName: "",
-        packagingType: "",
+        itemCode: "",
+        itemName: "",
+        productCategory: "",
+        litres: "",
+        canQuantity: "",
+        cartonSize: "",
         uom: "",
-        batch_expiry: "",
+        subUOM: "",
         loading: false,
     });
 
+    // Note: State for Authentication
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
+
     const handleChange = (field: string, value: any) => {
-        setFormData({ ...formData, [field]: value });
+        setFormData({
+            ...formData,
+            [field]: value,
+        });
+    };
+
+    // Add item master in DB using API call...!
+    const addItemHandler = async (itemData: any) => {
+        console.log('Item Data:', itemData);
+
+        // Enable loader...!
+        setFormData((prev) => ({ ...prev, loading: true }));
+
+        try {
+            const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_ITEM_MASTER}`, itemData, authenticatedUser?.token);
+            console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                showNotificationToast("Success", "Item added successfully", customStyles.colors._1B59F8);
+                setFormData({
+                    itemCode: "",
+                    itemName: "",
+                    productCategory: "",
+                    litres: "",
+                    canQuantity: "",
+                    cartonSize: "",
+                    uom: "",
+                    subUOM: "",
+                    loading: false,
+                });
+                router.push(routes.productMaster);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while adding item: ', error);
+        };
     };
 
     const handleSubmit = () => {
-        const { productCode, productName, uom, packagingType, batch_expiry } = formData;
+        const itemData = {
+            itemCode: formData.itemCode,
+            itemName: formData.itemName,
+            productCategory: formData.productCategory,
+            litres: formData.litres,
+            canQTY: formData.canQuantity,
+            cartonSize: formData.cartonSize,
+            uom: formData.uom,
+            subUOM: formData.subUOM,
+            groupCode: 101
+        };
+
+        const values = Object.values(itemData);
+        const allFieldsFilled = values.every(value => value !== "");
 
         try {
-            if (!productCode.trim()) throw "Product Code is required";
-            if (!productName.trim()) throw "Product Name is required";
-            if (!packagingType.trim()) throw "Packaging Type is required";
-            if (!uom.trim()) throw "Unit of Measurement (UOM) is required";
-            if (!batch_expiry.trim()) throw "Batch Expiry date is required";
+            if (!allFieldsFilled) {
+                showNotificationToast("Validation Error", "Please fill in all required fields.", customStyles.colors.red);
+                return;
+            };
 
-            console.log("Submitted Data:", formData);
-        } catch (error) {
-            alert(error);
+            addItemHandler(itemData);
         }
+
+        catch (error: any) {
+            if (error) {
+                console.log('Validation Error:', error);
+                showNotificationToast("Validation Error", String(error), customStyles.colors.red);
+            };
+        };
     };
 
     return (
         <Box>
 
-            {/* Note: Loading Component */}
-            <Loader loadingState={formData.loading} />
-
             {/* Note: Screen Head section */}
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }} p={'md'}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>Add product</Text>
+                    <Text c={customStyles.colors._909090}>Add Item</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -74,8 +130,11 @@ const AddProductMasterComponent = () => {
                     variant="transparent"
                     size="md"
                     radius={8}
+                    onClick={handleSubmit}
+                    loading={formData.loading}
+                    disabled={formData.loading}
                 >
-                    Save Product
+                    Save Item
                 </Button>
             </Group>
 
@@ -87,63 +146,89 @@ const AddProductMasterComponent = () => {
                         mb="lg"
                         style={{ color: customStyles.colors._4D4D4D }}
                     >
-                        Product Information
+                        Item Master
                     </Title>
 
                     <Grid gutter="md">
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                label="Product Code"
-                                placeholder="Enter Product Code"
+                                label="Item Code"
+                                placeholder="Enter Item Code"
                                 withAsterisk
-                                value={formData.productCode}
-                                onChange={(e) => handleChange("productCode", e.currentTarget.value)}
+                                value={formData.itemCode}
+                                onChange={(e) => handleChange("itemCode", e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                label="Product Name"
-                                placeholder="Enter Product Name"
+                                label="Item Name"
+                                placeholder="Enter Item Name"
                                 withAsterisk
-                                value={formData.productName}
-                                onChange={(e) => handleChange("productName", e.currentTarget.value)}
-                            />
-                        </Grid.Col>
-
-                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <Select
-                                label="Packaging Type"
-                                placeholder="Select Packaging Type"
-                                withAsterisk
-                                data={[
-                                    { value: "SAP Business 1", label: "SAP Business 1" },
-                                    { value: "SAP S4 HANA", label: "SAP S4 HANA" },
-                                    { value: "Fusion", label: "Fusion" }
-                                ]}
-                                value={formData.packagingType}
-                                onChange={(value) => handleChange("packagingType", value)}
+                                value={formData.itemName}
+                                onChange={(e) => handleChange("itemName", e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                type="date"
-                                label="Batch Expiry Date"
-                                placeholder="Select batch expiry date"
+                                label="Product Category"
+                                placeholder="Enter Product Category"
                                 withAsterisk
-                                value={formData.batch_expiry}
-                                onChange={(e) => handleChange("batch_expiry", e.currentTarget.value)}
+                                value={formData.productCategory}
+                                onChange={(e) => handleChange("productCategory", e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                label="Unit of Measurement (UOM)"
-                                placeholder="e.g. PCS, KG, LTR"
+                                type='number'
+                                label="litres"
+                                placeholder="Enter Litres"
+                                withAsterisk
+                                value={formData.litres}
+                                onChange={(e) => handleChange("litres", e.currentTarget.value)}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <TextInput
+                                type='number'
+                                label="Can Quantity"
+                                placeholder="Enter Can Quantity"
+                                withAsterisk
+                                value={formData.canQuantity}
+                                onChange={(e) => handleChange("canQuantity", e.currentTarget.value)}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <TextInput
+                                label="Carton Size"
+                                placeholder="Enter Carton Size"
+                                withAsterisk
+                                value={formData.cartonSize}
+                                onChange={(e) => handleChange("cartonSize", e.currentTarget.value)}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <TextInput
+                                label="UOM"
+                                placeholder="Enter UOM"
                                 withAsterisk
                                 value={formData.uom}
                                 onChange={(e) => handleChange("uom", e.currentTarget.value)}
+                            />
+                        </Grid.Col>
+
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <TextInput
+                                label="Sub UOM"
+                                placeholder="Enter Sub UOM"
+                                withAsterisk
+                                value={formData.subUOM}
+                                onChange={(e) => handleChange("subUOM", e.currentTarget.value)}
                             />
                         </Grid.Col>
                     </Grid>
@@ -153,4 +238,4 @@ const AddProductMasterComponent = () => {
     );
 };
 
-export default AddProductMasterComponent;
+export default memo(AddItemMasterComponent);

@@ -39,6 +39,8 @@ const authenticatedRoutes: string[] = [
     "/handling-unit/add-unit",
     "/production-order/scan/:dynamicPath",
     "/assign-handling-unit",
+    "/sales-order",
+    "/delivery-order",
     // Note: Defining New Master Routes...!
     "/master",
     "/master/customer-data",
@@ -75,6 +77,8 @@ const routes: Routes = {
     addHandlingUnit: "/handling-unit/add-unit",
     scanProductionOrder: "/production-order/scan/:dynamicPath",
     assignHandlingUnit: "/assign-handling-unit",
+    salesOrder: "/sales-order",
+    deliveryOrder: "/delivery-order",
     // Note: Master Parent Route...!
     master: "/master",
     // Note: Nested Master Pages
@@ -184,12 +188,24 @@ const drawerRoutes: DrawerRoute[] = [
     },
 
     {
+        icon: <IconContainer color='currentColor' size={24} />,
+        label: "Sales Order",
+        route: routes.salesOrder
+    },
+
+    {
+        icon: <IconContainer color='currentColor' size={24} />,
+        label: "Delivery Order",
+        route: routes.deliveryOrder
+    },
+
+    {
         icon: <IconUsersGroup size={24} />,
         label: "Master",
         route: routes.master,
         children: [ // Note: Add nested tabs
             { label: "Customer Master", route: routes.customerMaster },
-            { label: "Product Master", route: routes.productMaster },
+            { label: "Item Master", route: routes.productMaster },
             { label: "Vehicle Master", route: routes.vehicleMaster },
             { label: "Driver Master", route: routes.driverMaster },
             { label: "Contractor Master", route: routes.contractorMaster }

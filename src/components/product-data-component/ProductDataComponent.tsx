@@ -1,4 +1,4 @@
-// Note: Product data component...!
+// Note: Item Master data component...!
 
 'use client';
 
@@ -16,58 +16,31 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { apiGet } from '@/lib/api-service';
 
-interface ProductDataProps {
-    productCode: string;
-    productName: string;
-    uom: string;
-    packagingType: string;
-    batch_expiry: string;
-}
+interface ItemMasterDataProps {
+    id:string,
+    itemCode: string,
+    itemName: string,
+    productCategory: string,
+    litres: string,
+    canQTY: string,
+    cartonSize: string,
+    uom: string,
+    subUOM: string,
+    groupCode: string,
+    createdBy: string,
+    updatedBy: string,
+    createdDate: string,
+    updatedDate: string,
+    isActive: boolean,
+    isArchived: boolean
+};
 
-// Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
-export const dummyProductData: ProductDataProps[] = [
-  {
-    productCode: "PROD-001",
-    productName: "Cement OPC",
-    uom: "Bag",
-    packagingType: "50kg Bag",
-    batch_expiry: "2026-12-31",
-  },
-  {
-    productCode: "PROD-002",
-    productName: "Steel Rod 16mm",
-    uom: "Piece",
-    packagingType: "Bundle",
-    batch_expiry: "N/A",
-  },
-  {
-    productCode: "PROD-003",
-    productName: "PVC Pipe 4 inch",
-    uom: "Meter",
-    packagingType: "Loose",
-    batch_expiry: "N/A",
-  },
-  {
-    productCode: "PROD-004",
-    productName: "Paint (White Emulsion)",
-    uom: "Liter",
-    packagingType: "Bucket (15L)",
-    batch_expiry: "2027-06-15",
-  },
-  {
-    productCode: "PROD-005",
-    productName: "Electric Cable 2.5mm",
-    uom: "Roll",
-    packagingType: "100m Roll",
-    batch_expiry: "N/A",
-  },
-];
+const ItemMasterDataComponent: FC = () => {
 
-
-const ProductDataComponent: FC = () => {
-
-    const [data, setProductData] = useState<ProductDataProps[]>(dummyProductData); // Note: This is the dummy data for vehicle information which can be replaced with actual data from the server.
+    const [itemsList, setItemsList] = useState<ItemMasterDataProps[]>([]);
+    const [itemsCount, setItemsCount] = useState<number>(0);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -82,12 +55,6 @@ const ProductDataComponent: FC = () => {
 
     // Note: State for Authentication
     const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-
-    // Note: State for Users List
-    // const { usersList: {
-    //     users: data,
-    //     totalCount
-    // } } = useAppSelector(({ userStates }) => userStates);
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -122,7 +89,7 @@ const ProductDataComponent: FC = () => {
     };
 
     // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<ProductDataProps>[]>(
+    const columns = useMemo<ColumnDef<ItemMasterDataProps>[]>(
         () => [
             {
                 // accessorKey: 'userId',
@@ -139,99 +106,77 @@ const ProductDataComponent: FC = () => {
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
-                accessorKey: 'productCode',
-                header: 'Product Code',
+                accessorKey: 'itemCode',
+                header: 'Item Code',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Product Code', (data || []).map(item => item.productCode), 200, 400),
+                size: calculateColumnWidth('Item Code', (itemsList || []).map(item => item.itemCode), 150, 200),
             },
             {
-                accessorKey: 'productName',
-                header: 'Product Name',
+                accessorKey: 'itemName',
+                header: 'Item Name',
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Product Name', (data || []).map(item => item.productName), 200, 450),
+                size: calculateColumnWidth('Item Name', (itemsList || []).map(item => item.itemName), 150, 150),
+            },
+            {
+                accessorKey: 'productCategory',
+                header: 'Category',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Category', (itemsList || []).map(item => item.productCategory), 200, 200),
+            },
+            {
+                accessorKey: 'litres',
+                header: 'Litres',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Litres', (itemsList || []).map(item => item.litres), 200, 200),
+            },
+            {
+                accessorKey: 'canQTY',
+                header: 'Cans',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Cans', (itemsList || []).map(item => item.canQTY), 150, 200),
+            },
+            {
+                accessorKey: 'cartonSize',
+                header: 'Carton Size',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Carton Size', (itemsList || []).map(item => item.cartonSize), 150, 200),
             },
             {
                 accessorKey: 'uom',
-                header: 'Unit of Measure',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Unit of Measure', (data || []).map(item => item.uom), 180, 200),
-            },
-            {
-                accessorKey: 'packagingType',
-                header: 'Packaging Type',
+                header: 'UOM',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Packaging Type', (data || []).map(item => item.packagingType), 200, 200),
+                size: calculateColumnWidth('UOM', (itemsList || []).map(item => item.uom), 150, 200),
             },
-            {
-                accessorKey: 'batch_expiry',
-                header: 'Batch/Expiry',
-                cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
-                    </Text>
-                ),
-                size: calculateColumnWidth('Batch/Expiry', (data || []).map(item => item.batch_expiry), 220, 250),
-            },
-            {
-                accessorKey: 'userId',
-                header: 'Action',
-                cell: ({ getValue }) => {
-                    const userId = getValue() as string;
-                    return (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "row",
-                            }}
-                        >
-                            <Button
-                                variant="transparent"
-                                className={"outlineButton"}
-                                radius={8}
-                                size="sm"
-                                w={120}
-                            >
-                                Edit
-                            </Button>
-
-                            <Button
-                                variant="transparent"
-                                // className={'outlineButton'}
-                                radius={8}
-                                size="sm"
-                                // w={"100%"}
-                                w={120}
-                                style={{
-                                    color: "red",
-                                    backgroundColor: "#E1E7EC",
-                                    marginLeft: 8,
-                                }}
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    )
-                },
-                size: calculateColumnWidth('Action', ['Delete'], 100, 120)
-            }
         ],
-        [data] // Add data as dependency to recalculate when data changes
+        [itemsList] // Add data as dependency to recalculate when data changes
     );
 
     // Custom global filter function to handle Status column properly
@@ -267,7 +212,7 @@ const ProductDataComponent: FC = () => {
     };
 
     const table = useReactTable({
-        data: data,
+        data: itemsList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -291,7 +236,7 @@ const ProductDataComponent: FC = () => {
         // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(data.length / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(itemsCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -304,28 +249,44 @@ const ProductDataComponent: FC = () => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
-    // useEffect(() => {
-    //     if (authenticatedUser) {
-    //         setIsLoading(true);
+    // Note: Fetch all items master...!
+    const fetchAllItems = async () => {
+        try {
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const params: { [key: string]: number } = {};
 
-    //         const skipRecord = pagination.pageIndex * pagination.pageSize;
+            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
-    //         dispatch(fetchAllUsers({
-    //             authToken: authenticatedUser?.token,
-    //             LastCount: pagination.pageSize, // Fetch only current page records
-    //             skipRecord: skipRecord
-    //         })).finally(() => {
-    //             setIsLoading(false);
-    //         });
-    //     };
-    // }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, authenticatedUser?.token, params);
+            console.log(response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                setItemsList(data?.data?.items || []);
+                setItemsCount(data?.data?.totalRecords || 0);
+                setIsLoading(false);
+            };
+        }
+
+        catch (error) {
+            console.log('Something went wrong while fetching all items', error);
+        };
+    };
+
+    useEffect(() => {
+        if (authenticatedUser) {
+            setIsLoading(true);
+            fetchAllItems();
+        };
+    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
     return (
         <Box p={8}>
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>List of product, Create product, edit product amd & delete product</Text>
+                    <Text c={customStyles.colors._909090}>List of Items, Create item, edit item amd & delete item</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -335,7 +296,7 @@ const ProductDataComponent: FC = () => {
                     radius={8}
                     onClick={() => router.push(routes.addProductMaster)}
                 >
-                    Add Product
+                    Add Item
                 </Button>
             </Group>
 
@@ -344,9 +305,9 @@ const ProductDataComponent: FC = () => {
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Product Master
+                            Item Master
                         </Title>
-                        <Text c={customStyles.colors._909090}>Track, edit and review Product Master seamlessly</Text>
+                        <Text c={customStyles.colors._909090}>Track, edit and review Item Master seamlessly</Text>
                     </Stack>
                     <Group gap="xs">
                         <GlobalSearchFilter
@@ -390,7 +351,7 @@ const ProductDataComponent: FC = () => {
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: '0 16px 24px 10px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
@@ -604,7 +565,7 @@ const ProductDataComponent: FC = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, data.length)} of {data.length} entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, itemsCount)} of { itemsCount } entries
                         </Text>
                     </Group>
                 </Group>
@@ -613,4 +574,4 @@ const ProductDataComponent: FC = () => {
     )
 }
 
-export default ProductDataComponent;
+export default ItemMasterDataComponent;
