@@ -18,7 +18,8 @@ import {
     IconTruckDelivery,
     IconTruckReturn,
     IconSortAscendingShapes,
-    IconShieldLock
+    IconShieldLock,
+    IconBuildings
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -153,7 +154,7 @@ const drawerRoutes: DrawerRoute[] = [
     //     route: routes.assignGroup,
     // },
     {
-        icon: <IconPlant color='currentColor' size={24} />,
+        icon: <IconBuildings color='currentColor' size={24} />,
         label: "Assign Plants",
         route: routes.assignPlants,
     },
