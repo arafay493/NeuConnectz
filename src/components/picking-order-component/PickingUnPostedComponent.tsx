@@ -11,6 +11,7 @@ import { confirmPickingReservationOrders, fetchListAllReservation, postPickingRe
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
+import { IconFileImport } from '@tabler/icons-react';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -193,50 +194,67 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
             />
 
             {/* Tabs */}
-            <Group
-                justify={customStyles.alignment.left}
-                // mb="sm"
-                // mb={-20}
-                gap={0}
-                className="tabGroup"
-                style={{
-                    display: "flex",
-                    alignItems: customStyles.alignment.center,
-                    border: "1px solid",
-                    borderColor: customStyles.colors._1B59F8,
-                    borderRadius: "5px"
-                }}
-            >
-                <Button
-                    variant="transparent"
-                    radius={0}
-                    size="md"
-                    flex={1}
-                    onClick={() => setHeaderBtnType("Reservation")}
+            <Group justify='space-between'>
+                <Group
+                    justify={customStyles.alignment.left}
+                    // mb="sm"
+                    // mb={-20}
+                    gap={0}
+                    className="tabGroup"
                     style={{
-                        backgroundColor: headerBtnType === "Reservation" ? "#DEE4F5" : "white"
+                        display: "flex",
+                        alignItems: customStyles.alignment.center,
+                        border: "1px solid",
+                        borderColor: customStyles.colors._1B59F8,
+                        borderRadius: "5px",
+                        overflow: 'hidden',
                     }}
-                    color={customStyles.colors._1B59F8}
                 >
-                    Reservation
-                </Button>
+                    <Button
+                        variant="transparent"
+                        radius={0}
+                        size="md"
+                        w={250}
+                        onClick={() => setHeaderBtnType("Reservation")}
+                        style={{
+                            backgroundColor: headerBtnType === "Reservation" ? "#DEE4F5" : "white",
+                            overflow: "hidden"
+                        }}
+                        color={customStyles.colors._1B59F8}
+                    >
+                        Reservation
+                    </Button>
 
-                <Button
-                    variant="transparent"
-                    className={headerBtnType === "Outbound" ? "myFilledButton" : "myOutlineButton"}
-                    radius={0}
-                    size="md"
-                    flex={1}
-                    onClick={() => setHeaderBtnType("Outbound")}
-                    style={{
-                        borderLeftWidth: 1,
-                        borderLeftColor: "#228be6",
-                        backgroundColor: headerBtnType === "Outbound" ? "#DEE4F5" : "white"
-                    }}
-                    color={customStyles.colors._1B59F8}
-                >
-                    Outbound
-                </Button>
+                    <Button
+                        variant="transparent"
+                        className={headerBtnType === "Outbound" ? "myFilledButton" : "myOutlineButton"}
+                        radius={0}
+                        size="md"
+                        w={250}
+                        onClick={() => setHeaderBtnType("Outbound")}
+                        style={{
+                            borderLeftWidth: 1,
+                            borderLeftColor: "#228be6",
+                            backgroundColor: headerBtnType === "Outbound" ? "#DEE4F5" : "white",
+                            overflow: "hidden"
+                        }}
+                        color={customStyles.colors._1B59F8}
+                    >
+                        Outbound
+                    </Button>
+                </Group>
+                <Group gap={0}>
+                    <Button
+                        variant='transparent'
+                        className='filledButton'
+                        radius={8}
+                        size='md'
+                        leftSection={<IconFileImport size={24} />}
+                        onClick={handleExportToCSV}
+                    >
+                        Export To CSV
+                    </Button>
+                </Group>
             </Group>
 
             {/* Table */}
@@ -251,8 +269,8 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
                 title={" Unposted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecord}
-                isCsvExport={true}
-                handleExportToCSV={handleExportToCSV}
+            // isCsvExport={true}
+            // handleExportToCSV={handleExportToCSV}
             />}
 
 
@@ -269,8 +287,8 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
                 title={" Unposted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecord}
-                isCsvExport={true}
-                handleExportToCSV={handleExportToCSV}
+            // isCsvExport={true}
+            // handleExportToCSV={handleExportToCSV}
             />}
         </Stack>
     );
