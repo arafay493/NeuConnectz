@@ -126,9 +126,9 @@ const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: a
             },
 
             {
-                id: "pickingUnposted_reservation_createdOn",
-                accessorKey: "createdOn",
-                header: "Date",
+                id: "pickingUnposted_reservation_createdDate",
+                accessorKey: "createdDate",
+                header: "Created Date",
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate
@@ -142,7 +142,23 @@ const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: a
                 },
                 enableColumnFilter: true,
             },
-
+            {
+                id: "pickingUnposted_reservation_postedDate",
+                accessorKey: "postedDate",
+                header: "Posted Date",
+                cell: ({ getValue }: any) => {
+                    const rawDate = getValue();
+                    const formatted = rawDate
+                        ? dayjs(rawDate).format("DD/MM/YYYY")
+                        : "-";
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
+                            {formatted}
+                        </Text>
+                    );
+                },
+                enableColumnFilter: true,
+            },
             {
                 id: "totalQuantity",
                 accessorKey: "totalQuantity",

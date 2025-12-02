@@ -126,9 +126,9 @@ const PickingOrderUnPosted_Reservation_Columns = ({ pagination, list, actions }:
             },
 
             {
-                id: "pickingUnposted_reservation_createdOn",
-                accessorKey: "createdOn",
-                header: "Date",
+                id: "pickingUnposted_reservation_createdDate",
+                accessorKey: "createdDate",
+                header: "Created Date",
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate

@@ -218,8 +218,24 @@ const PutAwayOrderPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                accessorKey: "createdOn",
-                header: "Date",
+                accessorKey: "createdDate",
+                header: "Created Date",
+                cell: ({ getValue }: any) => {
+                    const rawDate = getValue();
+                    const formatted = rawDate
+                        ? dayjs(rawDate).format("DD/MM/YYYY")
+                        : "-";
+                    return (
+                        <Text fw={500} c={customStyles.colors._909090}>
+                            {formatted}
+                        </Text>
+                    );
+                },
+                enableColumnFilter: true,
+            },
+            {
+                accessorKey: "postedDate",
+                header: "Posted Date",
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate

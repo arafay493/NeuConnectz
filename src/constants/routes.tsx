@@ -175,11 +175,11 @@ const drawerRoutes: DrawerRoute[] = [
     //     label: "Column Access Control",
     //     route: routes.columnAccessControl
     // },
-    {
-        icon: <IconSettingsCog color='currentColor' size={24} />,
-        label: "Configuration",
-        route: routes.configuration
-    },
+    // {
+    //     icon: <IconSettingsCog color='currentColor' size={24} />,
+    //     label: "Configuration",
+    //     route: routes.configuration
+    // },
     // {
     //     icon: <IconListCheck size={20} />,
     //     label: "item movement",

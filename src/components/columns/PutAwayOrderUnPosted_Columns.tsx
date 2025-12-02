@@ -188,9 +188,9 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                 enableColumnFilter: true,
             },
             {
-                id: "putawayUnposted_createdOn",
-                accessorKey: "createdOn",
-                header: "Date",
+                id: "putawayUnposted_createdDate",
+                accessorKey: "createdDate",
+                header: "Created Date",
                 cell: ({ getValue }: any) => {
                     const rawDate = getValue();
                     const formatted = rawDate
