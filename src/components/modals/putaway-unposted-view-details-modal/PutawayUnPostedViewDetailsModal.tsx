@@ -35,6 +35,7 @@ interface ModalProps {
     apiUrl: string,
     poNumber: number,
     handlePost: (rowData: any) => void
+    isConfirmed: boolean
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -63,7 +64,8 @@ export default function PutawayUnPostedViewDetailsModal({
     setIsLoading,
     apiUrl,
     poNumber,
-    handlePost
+    handlePost,
+    isConfirmed
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
@@ -159,7 +161,7 @@ export default function PutawayUnPostedViewDetailsModal({
             </Box> */}
 
             {/* Footer Section */}
-            <Flex
+            {isConfirmed && <Flex
                 justify="flex-end"
                 align="center"
                 mt="lg"
@@ -174,7 +176,7 @@ export default function PutawayUnPostedViewDetailsModal({
                 >
                     Post
                 </Button>
-            </Flex>
+            </Flex>}
         </Modal>
     );
 }

@@ -184,6 +184,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 apiUrl={"/IPutAwayFeature/GetPutAwayDetails"}
                 poNumber={selectedRow?.docNum || ""}
                 handlePost={handlePost}
+                isConfirmed={selectedRow?.confirmationStatus === "Confirmed"}
             />
 
             <TanStackTable
