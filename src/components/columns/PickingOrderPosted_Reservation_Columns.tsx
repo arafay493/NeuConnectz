@@ -171,6 +171,28 @@ const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: a
             },
 
             {
+                id: "erpMaterialDocument",
+                accessorKey: "erpMaterialDocument",
+                header: "ERP Material Doc",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
+                        {String(getValue() || "-")}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "erpTransferOrder",
+                accessorKey: "erpTransferOrder",
+                header: "ERP Transfer Order",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
+                        {String(getValue() || "-")}
+                    </Text>
+                ),
+            },
+
+            {
                 id: "pickingUnposted_reservation_confirmationStatus",
                 accessorKey: "confirmationStatus",
                 header: "Status",
@@ -195,28 +217,6 @@ const PickingOrderPosted_Reservation_Columns = ({ pagination, list, actions }: a
                         </Text>
                 ),
                 enableColumnFilter: true,
-            },
-
-            {
-                id: "erpMaterialDocument",
-                accessorKey: "erpMaterialDocument",
-                header: "ERP Material Doc",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
-                        {String(getValue() || "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "erpTransferOrder",
-                accessorKey: "erpTransferOrder",
-                header: "ERP Transfer Order",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
-                        {String(getValue() || "-")}
-                    </Text>
-                ),
             },
 
             // ========== ACTIONS COLUMN ==========

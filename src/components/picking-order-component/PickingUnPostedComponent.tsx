@@ -12,18 +12,27 @@ import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
 import { IconFileImport } from '@tabler/icons-react';
+import PickingOrderUnPosted_Outbound_Columns from '../columns/PickingOrderUnPosted_Outbound_Columns';
 
-// export interface GoodsIssueDataType {
-//     docNum: number,
-//     whsCode: string,
-//     itemCode: string,
-//     itemName: string,
-//     binCode: string,
-//     quantity: number,
-//     resource: string,
-//     uoM: string,
-//     barCode: string
-// }
+const listOutbound = [
+    {
+        delivery: "881000109",
+        item: 20,
+        material: "1400000049",
+        itemDescription: "MELAMINE GLAZING POWDER - 20",
+        itemCategory: "NLN",
+        batch: "",
+        plant: "1200",
+        storageLocation: "FG20",
+        deliveryQuantity: 200000,
+        baseUom: "KG",
+        referenceDocument: "4800003525",
+        movementType: "641",
+        precedingDocCateg: "V",
+        itemOverallStatus: "A",
+        itemGoodsMovementSts: "A"
+    }
+]
 
 type ApiProp = {
     apiUrl: string;
@@ -141,6 +150,15 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
 
     const reservationColumns = PickingOrderUnPosted_Reservation_Columns({
         pagination, list: ListAllReservation?.data, actions: {
+            handleConfirmModalOpen: handleConfirmModalOpen,
+            handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+            handlePost: handlePostReservation,
+            // handlePost: () => { },
+        }
+    })
+
+    const outboundColumns = PickingOrderUnPosted_Outbound_Columns({
+        pagination, list: listOutbound, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePostReservation,
@@ -276,10 +294,9 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) =>
 
             {/* Table */}
             {headerBtnType === "Outbound" && <TanStackTable
-                // data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
-                data={[]}
-                dataCount={0}
-                columns={reservationColumns}
+                data={Array.isArray(listOutbound) ? listOutbound : []}
+                dataCount={listOutbound.length}
+                columns={outboundColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
                 pagination={pagination}
