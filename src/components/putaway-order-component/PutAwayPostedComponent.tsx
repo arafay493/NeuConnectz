@@ -88,7 +88,7 @@ const PutAwayPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     }
 
     return (
-        <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
+        <Stack>
             {/* View Modal */}
             <PutAwayPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}
