@@ -164,7 +164,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         setIsFullPageLoading(true)
         dispatch(postPickingOutBoundOrders({
             payload: {
-                docNums: [String(rowData?.docNum)]
+                docNums: rowData?.docNum
             },
             token: authenticatedUser?.token || '',
             resHandler: handlePostOutboundResponse
