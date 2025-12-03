@@ -227,9 +227,10 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 pagination={paginationViewDetails}
                 setPagination={setPaginationViewDetails}
                 title={"Picking Unposted"}
+                subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"apiUrlAgainstPO"}
-                poNumber={0}
+                apiUrl={"/IStockTransferOrderFeature/GetDetailsOfSto"}
+                docNumber={selectedRow?.docNum}
             />
 
             {/* Tabs */}

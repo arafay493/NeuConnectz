@@ -137,7 +137,7 @@ export interface PickingOrdersStateType {
         data: any,
         totalCount: number
     };
-    ListAllPutAwayDetailsByDocNo: {
+    ListAllPickingOutBoundViewDetailsData: {
         // data: Array<ListAllPlantsCodesProps>,
         data: any,
         totalCount: number

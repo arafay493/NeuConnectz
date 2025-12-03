@@ -13,10 +13,11 @@ import {
     IconCircleX,
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
-import ITR_Columns from "@/components/columns/ITR_Columns";
 import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
+import PickingOrderUnPosted_Outbound_View_Columns from "@/components/columns/PickingOrderUnPosted_Outbound_View_Columns";
+import { fetchListAllOutboundDetailsByDocNo } from "@/redux/actions/picking-actions/picking-actions";
 import IT_Columns from "@/components/columns/IT_Columns";
 
 
@@ -28,10 +29,11 @@ interface ModalProps {
     pagination: any
     setPagination: any,
     title: string,
+    subTitle: string,
     skipRecord: number,
     setIsLoading: any,
     apiUrl: string,
-    poNumber: number
+    docNumber: number
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -56,29 +58,26 @@ export default function PickingUnPostedViewDetailsModal({
     pagination,
     setPagination,
     title,
+    subTitle,
     skipRecord,
     setIsLoading,
     apiUrl,
-    poNumber
+    docNumber
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
-    const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
-        ({ sapStates }) => {
-            return sapStates;
-        }
-    );
+    const { ListAllPickingOutBoundViewDetailsData } = useAppSelector(({ pickingStates }) => { return pickingStates });
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (authenticatedUser?.token && opened) {
             setIsLoading(true)
             dispatch(
-                fetchAgainstPoNumber({
-                    token: authenticatedUser?.token || "",
-                    poNumber: poNumber,
+                fetchListAllOutboundDetailsByDocNo({
+                    authToken: authenticatedUser?.token || "",
+                    docNumber: docNumber,
                     apiUrl: apiUrl,
                     lastCount: pagination.pageSize,
                     skipRecords: skipRecord,
@@ -91,10 +90,11 @@ export default function PickingUnPostedViewDetailsModal({
         pagination.pageIndex,
         pagination.pageSize,
         apiUrl,
-        poNumber
+        docNumber
     ]);
 
-    const columns = IT_Columns({ pagination, listAgainstPo })
+    const columns = PickingOrderUnPosted_Outbound_View_Columns({ pagination, list: ListAllPickingOutBoundViewDetailsData?.data, actions: {} })
+    // const columns = IT_Columns({ pagination, list: [], actions: {} })
 
     return (
         <Modal
@@ -138,24 +138,21 @@ export default function PickingUnPostedViewDetailsModal({
             <Divider my="sm" />
 
             <TanStackTable
-                data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
-                dataCount={totalRecordsAgainstPo}
+                data={Array.isArray(ListAllPickingOutBoundViewDetailsData?.data) ? ListAllPickingOutBoundViewDetailsData?.data : []}
+                // dataCount={ListAllPickingOutBoundViewDetailsData?.totalCount}
+                dataCount={1}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
+                subTitle={subTitle}
                 title={title}
                 skipRecord={skipRecord}
             />
 
-            <Box my={20}>
-                <Text>Remarks</Text>
-                <TextInput placeholder="Write your description" radius={"md"} my={10} size="lg" />
-            </Box>
-
             {/* Footer Section */}
-            <Flex
+            {/* <Flex
                 justify="flex-end"
                 align="center"
                 mt="lg"
@@ -170,7 +167,7 @@ export default function PickingUnPostedViewDetailsModal({
                 >
                     Post
                 </Button>
-            </Flex>
+            </Flex> */}
         </Modal>
     );
 }

@@ -197,15 +197,29 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                             View Details
                         </Button>
 
-                        <Button
-                            variant="transparent"
-                            className="filledButton"
-                            radius={8}
-                            miw={121}
-                            onClick={() => actions.handleConfirmModalOpen(row.original)}
-                        >
-                            Confirm
-                        </Button>
+                        {row?.original?.confirmationStatus !== "Confirmed" ? (
+                            <Button
+                                variant="transparent"
+                                className={row?.original?.confirmationStatus === "Confirmed" ? "filledDisabledButton" : "filledButton"}
+                                disabled={row?.original?.confirmationStatus === "Confirmed"}
+                                radius={8}
+                                miw={121}
+                                onClick={() => actions.handleConfirmModalOpen(row.original)}
+                            >
+                                Confirm
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="transparent"
+                                className={"filledButton"}
+                                disabled={row?.original?.confirmationStatus !== "Confirmed"}
+                                radius={8}
+                                miw={121}
+                                onClick={() => actions.handlePost(row.original)}
+                            >
+                                Post
+                            </Button>
+                        )}
                     </Group>
                 ),
             },

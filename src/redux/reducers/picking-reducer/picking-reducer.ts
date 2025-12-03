@@ -13,7 +13,7 @@ const initialState: PickingOrdersStateType = {
         data: [],
         totalCount: 0
     },
-    ListAllPutAwayDetailsByDocNo: {
+    ListAllPickingOutBoundViewDetailsData: {
         data: [],
         totalCount: 0
     },
@@ -42,13 +42,13 @@ const pickingOrdersSlice = createSlice({
             state.ListAllOutbound = action?.payload?.data;
         },
 
-        FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
+        FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
             state.PickingErrorState = "";
-            state.ListAllPutAwayDetailsByDocNo = action?.payload?.data;
+            state.ListAllPickingOutBoundViewDetailsData = action?.payload;
         },
 
-        CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO: (state) => {
-            state.ListAllPutAwayDetailsByDocNo = {
+        CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO: (state) => {
+            state.ListAllPickingOutBoundViewDetailsData = {
                 data: [],
                 totalCount: 0
             };
@@ -76,10 +76,10 @@ const pickingOrdersSlice = createSlice({
 export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PICKING_DATA,
-        FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO,
+        FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
         FETCH_ALL_RESERVATIONS,
         FETCH_ALL_OUTBOUNDS,
-        CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO,
+        CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
         CLEAR_ALL_RESERVATION_STATES,
         CLEAR_ALL_OUTBOUND_STATES
     } = pickingOrdersSlice.actions;
