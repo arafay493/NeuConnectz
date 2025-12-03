@@ -3,7 +3,7 @@ import { Button, Group, Text } from '@mantine/core';
 import { IconCircleFilled } from '@tabler/icons-react';
 import React, { useMemo } from 'react';
 
-const PickingOrderUnPosted_Outbound_View_Columns = ({ pagination, list, actions }: any) => {
+const PickingOrder_Outbound_View_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
             // =================== SERIAL NUMBER (UNCHANGED) ===================
@@ -85,4 +85,4 @@ const PickingOrderUnPosted_Outbound_View_Columns = ({ pagination, list, actions 
     return columns;
 };
 
-export default PickingOrderUnPosted_Outbound_View_Columns;
+export default PickingOrder_Outbound_View_Columns;

@@ -6,8 +6,6 @@ import {
     Divider,
     SimpleGrid,
     Box,
-    TextInput,
-    Button,
 } from "@mantine/core";
 import {
     IconCircleX,
@@ -15,10 +13,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useEffect } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
-import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
-import PickingOrderUnPosted_Outbound_View_Columns from "@/components/columns/PickingOrderUnPosted_Outbound_View_Columns";
 import { fetchListAllOutboundDetailsByDocNo } from "@/redux/actions/picking-actions/picking-actions";
-import IT_Columns from "@/components/columns/IT_Columns";
+import PickingOrder_Outbound_View_Columns from "@/components/columns/PickingOrder_Outbound_View_Columns";
 
 
 interface ModalProps {
@@ -93,7 +89,7 @@ export default function PickingUnPostedViewDetailsModal({
         docNumber
     ]);
 
-    const columns = PickingOrderUnPosted_Outbound_View_Columns({ pagination, list: ListAllPickingOutBoundViewDetailsData?.data, actions: {} })
+    const columns = PickingOrder_Outbound_View_Columns({ pagination, list: ListAllPickingOutBoundViewDetailsData?.data, actions: {} })
     // const columns = IT_Columns({ pagination, list: [], actions: {} })
 
     return (
