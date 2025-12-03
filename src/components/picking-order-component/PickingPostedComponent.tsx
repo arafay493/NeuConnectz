@@ -5,7 +5,7 @@ import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
+import { fetchListAllOutbounds, fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
 import PickingPostedViewDetailsModal from '../modals/picking-posted-view-details-modal/PickingPostedViewDetailsModal';
 import PickingOrderPosted_Reservation_Columns from '../columns/PickingOrderPosted_Reservation_Columns';
 import { IconFileImport } from '@tabler/icons-react';
@@ -33,16 +33,21 @@ const listOutbound = [
 
 type ApiProp = {
     apiUrl: string;
-    reservationApiUrl: string
+    reservationApiUrl: string,
+    outboundApiUrl: string,
 };
 
-const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
+const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl }) => {
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
     const [isLoading, setIsLoading] = useState(false);
     const [isViewLoading, setIsViewLoading] = useState(false);
     const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [paginationOutbound, setPaginationOutbound] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
     });
@@ -59,16 +64,18 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const skipRecordOutbound = paginationOutbound.pageIndex * paginationOutbound.pageSize;
     const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { ListAllReservation } = useAppSelector(({ pickingStates }) => { return pickingStates });
+    const { ListAllReservation, ListAllOutbound } = useAppSelector(({ pickingStates }) => { return pickingStates });
     // // console.log("productionOrdersList: ", productionOrdersList);
 
     useEffect(() => {
-        if (authenticatedUser?.token) {
+        if (authenticatedUser?.token && headerBtnType === "Reservation") {
+            // Reservation
             setIsLoading(true);
             // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
@@ -80,8 +87,22 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
             })).finally(() => {
                 setIsLoading(false)
             });
+        }
+        else if (authenticatedUser?.token && headerBtnType === "Outbound") {
+            // Outbound
+            setIsLoading(true);
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+            dispatch(fetchListAllOutbounds({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: outboundApiUrl,
+                lastCount: paginationOutbound.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordOutbound
+            })).finally(() => {
+                setIsLoading(false)
+            });
         };
-    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize]);
+    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize, paginationOutbound.pageSize, paginationOutbound.pageIndex, headerBtnType]);
 
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
@@ -111,10 +132,10 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
     })
 
     const outboundColumns = PickingOrderPosted_Outbound_Columns({
-        pagination, list: ListAllReservation?.data, actions: {
+        pagination, list: ListAllOutbound?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
-            // handlePost: handlePost,
+            // handlePost: handlePostReservation,
             handlePost: () => { },
         }
     })
@@ -241,13 +262,13 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl }) => {
 
             {/* Table */}
             {headerBtnType === "Outbound" && <TanStackTable
-                data={Array.isArray(listOutbound) ? listOutbound : []}
-                dataCount={listOutbound?.length}
+                data={Array.isArray(ListAllOutbound?.data) ? ListAllOutbound?.data : []}
+                dataCount={ListAllOutbound?.totalCount}
                 columns={outboundColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
                 pagination={pagination}
-                setPagination={setPagination}
+                setPagination={setPaginationOutbound}
                 title={" Posted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecord}

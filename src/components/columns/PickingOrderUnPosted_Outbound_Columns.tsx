@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
-            // ========== SERIAL NUMBER (UNCHANGED) ==========
+            // =================== SERIAL NUMBER (UNCHANGED) ===================
             {
                 id: "serialNumber",
                 header: "S.No",
@@ -23,26 +23,37 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                 },
             },
 
-            // ========== NEW API COLUMNS ==========
+            // =================== API MAPPED COLUMNS ===================
 
             {
-                id: "delivery",
-                accessorKey: "delivery",
-                header: "Delivery",
+                id: "docNum",
+                accessorKey: "docNum",
+                header: "Doc Num",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
             },
 
             {
-                id: "item",
-                accessorKey: "item",
-                header: "Item",
+                id: "deliveryNo",
+                accessorKey: "deliveryNo",
+                header: "Delivery No",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "itemNo",
+                accessorKey: "itemNo",
+                header: "Item No",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
                     </Text>
                 ),
             },
@@ -52,7 +63,7 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                 accessorKey: "material",
                 header: "Material",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -61,32 +72,10 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
             {
                 id: "itemDescription",
                 accessorKey: "itemDescription",
-                header: "Material Name",
+                header: "Description",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() || "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "itemCategory",
-                accessorKey: "itemCategory",
-                header: "Item Category",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "batch",
-                accessorKey: "batch",
-                header: "Batch",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
+                        {getValue() || "-"}
                     </Text>
                 ),
             },
@@ -96,40 +85,40 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                 accessorKey: "plant",
                 header: "Plant",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
             },
 
             {
-                id: "storageLocation",
-                accessorKey: "storageLocation",
-                header: "Storage Location",
+                id: "warehouse",
+                accessorKey: "warehouse",
+                header: "Warehouse",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
             },
 
             {
-                id: "deliveryQuantity",
-                accessorKey: "deliveryQuantity",
-                header: "Delivery Qty",
+                id: "quantity",
+                accessorKey: "quantity",
+                header: "Quantity",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "baseUom",
-                accessorKey: "baseUom",
-                header: "Base UOM",
+                id: "uom",
+                accessorKey: "uom",
+                header: "UOM",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
@@ -140,57 +129,12 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                 accessorKey: "referenceDocument",
                 header: "Reference Doc",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {String(getValue() ?? "-")}
                     </Text>
                 ),
             },
 
-            {
-                id: "movementType",
-                accessorKey: "movementType",
-                header: "Movement Type",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "precedingDocCateg",
-                accessorKey: "precedingDocCateg",
-                header: "Preceding Doc Category",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "itemOverallStatus",
-                accessorKey: "itemOverallStatus",
-                header: "Overall Status",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "itemGoodsMovementSts",
-                accessorKey: "itemGoodsMovementSts",
-                header: "Goods Movement Status",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {String(getValue() ?? "-")}
-                    </Text>
-                ),
-            },
-
-            // ========== CREATED DATE (UNCHANGED IF NOT IN RESPONSE) ==========
             {
                 id: "createdDate",
                 accessorKey: "createdDate",
@@ -199,18 +143,20 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                     const rawDate = getValue();
                     const formatted = rawDate ? dayjs(rawDate).format("DD/MM/YYYY") : "-";
                     return (
-                        <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        <Text fw={500} ta="center" c={customStyles.colors._909090}>
                             {formatted}
                         </Text>
                     );
                 },
             },
+
+            // =================== CONFIRMATION STATUS (UNCHANGED) ===================
             {
                 id: "pickingUnposted_outbound_confirmationStatus",
                 accessorKey: "confirmationStatus",
                 header: "Status",
-                cell: ({ getValue }: any) => (
-                    getValue() !== "UnConfirmed" ?
+                cell: ({ getValue }: any) =>
+                    getValue() === "Confirmed" ? (
                         <Text
                             fw={500}
                             c={customStyles.colors.green}
@@ -219,20 +165,24 @@ const PickingOrderUnPosted_Outbound_Columns = ({ pagination, list, actions }: an
                             bg={customStyles.colors.lightgreen}
                             style={{ borderRadius: 20, textAlign: "center" }}
                         >
-                            <IconCircleFilled size={10} />{" "}
-                            {/* {String(getValue() ?? "-")} */}
-                            {"Confirmed"}
-                        </Text> :
-                        <Text fw={500} c={customStyles.colors._909090} px={20} py={5} bg={customStyles.colors.evenTableColor} style={{ borderRadius: 20, textAlign: "center" }}>
-                            <IconCircleFilled size={10} />
-                            {/* {" " + String(getValue() ?? "-")} */}
-                            {" " + "Unconfirmed"}
+                            <IconCircleFilled size={10} /> Confirmed
                         </Text>
-                ),
+                    ) : (
+                        <Text
+                            fw={500}
+                            c={customStyles.colors._909090}
+                            px={20}
+                            py={5}
+                            bg={customStyles.colors.evenTableColor}
+                            style={{ borderRadius: 20, textAlign: "center" }}
+                        >
+                            <IconCircleFilled size={10} /> Unconfirmed
+                        </Text>
+                    ),
                 enableColumnFilter: true,
             },
 
-            // ========== ACTIONS COLUMN (UNCHANGED) ==========
+            // =================== ACTIONS COLUMN (UNCHANGED) ===================
             {
                 id: "actions",
                 header: "Actions",

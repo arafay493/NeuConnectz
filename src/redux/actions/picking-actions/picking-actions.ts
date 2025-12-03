@@ -1,9 +1,41 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
-import { CLEAR_ALL_RESERVATION_STATES, FETCH_ALL_RESERVATIONS } from "@/redux/reducers/picking-reducer/picking-reducer";
+import { CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_RESERVATION_STATES, FETCH_ALL_OUTBOUNDS, FETCH_ALL_RESERVATIONS } from "@/redux/reducers/picking-reducer/picking-reducer";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+
+const fetchListAllOutbounds = createAsyncThunk(
+    "putaway/fetchListAllOutbounds",
+    async (
+        { authToken, lastCount, skipRecords, apiUrl }:
+            {
+                authToken: string,
+                apiUrl: string
+                lastCount?: number,
+                skipRecords?: number
+            },
+        { dispatch }
+    ) => {
+        try {
+            const params: { [key: string]: number } = {};
+            if (lastCount !== undefined) params.lastCount = lastCount;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
+
+            const response = await apiGet(`/neu-connect/v2${apiUrl}`, authToken, params);
+
+            const { status, data } = response;
+
+            const { data: ReservationDataData } = data
+
+            if (status == 200) {
+                dispatch(FETCH_ALL_OUTBOUNDS({ data: ReservationDataData }));
+            }
+        } catch (error) {
+            dispatch(CLEAR_ALL_OUTBOUND_STATES())
+        }
+    }
+);
 
 const fetchListAllReservation = createAsyncThunk(
     "putaway/fetchListAllReservation",
@@ -115,6 +147,7 @@ const postPickingReservationOrders = createAsyncThunk(
 
 export {
     fetchListAllReservation,
+    fetchListAllOutbounds,
     fetchListAllPutAwayDetalisByDocNo,
     confirmPickingReservationOrders,
     postPickingReservationOrders

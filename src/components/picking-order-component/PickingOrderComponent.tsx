@@ -134,8 +134,8 @@ const PickingOrderComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Posted' && (<PickingPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=Integrated" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
-                {tab === 'Unposted' && (<PickingUnPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=pending" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
+                {tab === 'Posted' && (<PickingPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=Integrated" outboundApiUrl = "/IStockTransferOrderFeature/ListAllStos?sapStatus=Integrated" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=pending` as string} />)}
+                {tab === 'Unposted' && (<PickingUnPostedComponent reservationApiUrl = "/IReservationFeature/ListAllReservations?sapStatus=pending" outboundApiUrl = "/IStockTransferOrderFeature/ListAllStos?sapStatus=pending" apiUrl={`${process.env.NEXT_PUBLIC_FETCH_ALL_GOOD_ISSUES}?sapStatus=Integrated` as string} />)}
             </div>
         </Box>
     );
