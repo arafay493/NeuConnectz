@@ -124,6 +124,25 @@ const confirmPickingReservationOrders = createAsyncThunk(
     }
 );
 
+const confirmPickingOutBoundOrders = createAsyncThunk(
+    "putaway/confirmPickingOutBoundOrders",
+    async (
+        { payload, token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPost('/neu-connect/v2/IStockTransferOrderFeature/ConfirmStockTransferOrder', payload, token);
+            const { status, data, error } = response;
+            resHandler(status, data, error);
+        } catch (error) {
+            resHandler(400, error)
+            console.log("response error", error)
+        }
+
+    }
+);
+
 const postPickingReservationOrders = createAsyncThunk(
     "putaway/postPickingReservationOrders",
     async (
@@ -171,6 +190,7 @@ export {
     fetchListAllOutbounds,
     fetchListAllOutboundDetailsByDocNo,
     confirmPickingReservationOrders,
+    confirmPickingOutBoundOrders,
     postPickingReservationOrders,
     postPickingOutBoundOrders
 };
