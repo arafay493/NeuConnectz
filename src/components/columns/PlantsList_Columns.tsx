@@ -52,6 +52,17 @@ const PlantsList_Columns = ({
                 enableColumnFilter: true,
             },
             {
+                accessorKey: "companyCode",
+                header: "Company Code",
+                minSize: 180,
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {String(getValue() ?? "-")}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
                 id: "allow",
                 header: ({ table }: any) => {
                     // const isCheckedArray = selectedPlants?.length === transformedPlantsList?.length

@@ -8,8 +8,9 @@ interface TableColumnsFilterProps {
     value: string;
     setValue: (value: string) => void;
     areTableFiltersVisible: boolean;
+    onClick: any
 }
-export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, value, setValue, areTableFiltersVisible }) => {
+export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, value, setValue, areTableFiltersVisible, onClick }) => {
     return (
         <Box
             mt={8}
@@ -23,6 +24,7 @@ export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, v
                 transitionDuration: '0.4s',
                 transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
             }}
+            onClick={onClick}
         >
             <TextInput
                 mr={12}
@@ -30,7 +32,7 @@ export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, v
                 value={value}
                 onChange={e => setValue(e.currentTarget.value)}
                 size="xs"
-                style={{maxWidth: "150px"}}
+                style={{ maxWidth: "150px" }}
             />
         </Box>
     )

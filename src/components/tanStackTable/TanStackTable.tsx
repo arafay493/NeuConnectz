@@ -183,13 +183,15 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                             // maxWidth: `${header.getSize()}px`,
                                             verticalAlign: "top",
                                             whiteSpace: "nowrap",
+                                            userSelect: "none",
                                         }}
+                                        onClick={header.column.getToggleSortingHandler()}
                                     >
                                         <Group wrap="nowrap" justify="center">
                                             <Group
                                                 wrap="nowrap"
                                                 justify="center"
-                                                onClick={header.column.getToggleSortingHandler()}
+                                            // onClick={header.column.getToggleSortingHandler()}
                                             >
                                                 <Box fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(
@@ -200,14 +202,15 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
 
                                             </Group>
                                             {header.column.getCanSort() && (
-                                                <ActionIcon
+                                                <Button
                                                     variant="subtle"
                                                     size="xs"
                                                     c={customStyles.colors._4D4D4D}
-                                                    style={{
-                                                        cursor: "pointer",
+                                                    p={0}
+                                                    px={5}
+                                                    onClick={(e) => {
+                                                        header.column.getToggleSortingHandler()
                                                     }}
-                                                    ml={4}
                                                 >
                                                     {(() => {
                                                         const sortDirection = header.column.getIsSorted();
@@ -219,7 +222,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                                             return <IconArrowsUpDown size={16} />;
                                                         }
                                                     })()}
-                                                </ActionIcon>
+                                                </Button>
                                             )}
                                         </Group>
                                         {/* Note: Table Filter Input */}
@@ -233,6 +236,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                                 setValue={(value) =>
                                                     header.column.setFilterValue(value)
                                                 }
+                                                onClick={(e: any) => e.stopPropagation()} // 💥 prevent sorting click
                                             />
                                         )}
                                     </th>
