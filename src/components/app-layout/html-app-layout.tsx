@@ -22,6 +22,7 @@ import {
     memo,
     ReactNode,
     useEffect,
+    useLayoutEffect,
     useState,
 } from 'react';
 import HtmlCollapsedNavbar from './html-collapsed-navbar';
@@ -98,9 +99,19 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     // Note: Show layout only on authenticated routes...!
     const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string);
 
+    useEffect(() => {
+        if (!showLayout) {
+            router.push("not-found")
+        }
+    }, [showLayout])
+
     if (!showLayout) {
-        return <>{children}</>;
+        return null;
     }
+
+    // if (!showLayout) {
+    //     return <>{children}</>;
+    // }
 
     return (
         <div style={{
