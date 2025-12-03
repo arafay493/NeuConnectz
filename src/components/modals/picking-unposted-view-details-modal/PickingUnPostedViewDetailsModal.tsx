@@ -125,7 +125,7 @@ export default function PickingUnPostedViewDetailsModal({
                     <InfoRow label="Plant" value={row?.plant} />
 
                     <InfoRow
-                        label="Date"
+                        label="Created Date"
                         value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
                     />
 
@@ -134,9 +134,6 @@ export default function PickingUnPostedViewDetailsModal({
 
                     <InfoRow label="Delivery No" value={row?.deliveryNo} />
                     <InfoRow label="Reference Document" value={row?.referenceDocument} />
-
-                    <InfoRow label="ERP Transfer Order No" value={row?.erpTransferOrderNo ?? "-"} />
-                    <InfoRow label="ERP Material Document" value={row?.erpMaterialDocument ?? "-"} />
                 </SimpleGrid>
             </Box>
 

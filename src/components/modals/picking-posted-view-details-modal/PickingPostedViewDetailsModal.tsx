@@ -6,19 +6,15 @@ import {
     Divider,
     SimpleGrid,
     Box,
-    TextInput,
-    Button,
 } from "@mantine/core";
 import {
     IconCircleX,
 } from "@tabler/icons-react";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
-import ITR_Columns from "@/components/columns/ITR_Columns";
-import { fetchAgainstPoNumber } from "@/redux/actions/sap-actions/sap-actions";
-import IT_Columns from "@/components/columns/IT_Columns";
-import { customStyles } from "@/styles/custom-theme";
+import { fetchListAllOutboundDetailsByDocNo } from "@/redux/actions/picking-actions/picking-actions";
+import PickingOrder_Outbound_View_Columns from "@/components/columns/PickingOrder_Outbound_View_Columns";
 
 
 interface ModalProps {
@@ -29,10 +25,11 @@ interface ModalProps {
     pagination: any
     setPagination: any,
     title: string,
+    subTitle: string,
     skipRecord: number,
     setIsLoading: any,
     apiUrl: string,
-    poNumber: number
+    docNumber: number
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -57,29 +54,26 @@ export default function PickingPostedViewDetailsModal({
     pagination,
     setPagination,
     title,
+    subTitle,
     skipRecord,
     setIsLoading,
     apiUrl,
-    poNumber
+    docNumber
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
     });
-    const { listAgainstPo, totalRecordsAgainstPo } = useAppSelector(
-        ({ sapStates }) => {
-            return sapStates;
-        }
-    );
+    const { ListAllPickingOutBoundViewDetailsData } = useAppSelector(({ pickingStates }) => { return pickingStates });
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (authenticatedUser?.token && opened) {
             setIsLoading(true)
             dispatch(
-                fetchAgainstPoNumber({
-                    token: authenticatedUser?.token || "",
-                    poNumber: poNumber,
+                fetchListAllOutboundDetailsByDocNo({
+                    authToken: authenticatedUser?.token || "",
+                    docNumber: docNumber,
                     apiUrl: apiUrl,
                     lastCount: pagination.pageSize,
                     skipRecords: skipRecord,
@@ -92,10 +86,11 @@ export default function PickingPostedViewDetailsModal({
         pagination.pageIndex,
         pagination.pageSize,
         apiUrl,
-        poNumber
+        docNumber
     ]);
 
-    const columns = IT_Columns({ pagination, listAgainstPo })
+    const columns = PickingOrder_Outbound_View_Columns({ pagination, list: ListAllPickingOutBoundViewDetailsData?.data, actions: {} })
+    // const columns = IT_Columns({ pagination, list: [], actions: {} })
 
     return (
         <Modal
@@ -120,45 +115,69 @@ export default function PickingPostedViewDetailsModal({
 
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
-                    <InfoRow label="Document No" value={row?.number} />
-                    <InfoRow label="Type" value={row?.type} />
-                    <InfoRow label="Item Code" value={row?.itemCode} />
-                    <InfoRow label="From Warehouse" value={row?.fromWarehouse} />
-                    <InfoRow label="To Warehouse" value={row?.toWarehouse} />
-                    <InfoRow label="From Bin" value={row?.fromBin} />
-                    <InfoRow label="To Bin" value={row?.toBin} />
+                    <InfoRow label="Document No" value={row?.docNum} />
+                    <InfoRow label="Type" value={row?.confirmationStatus} />
+                    <InfoRow label="Item Code" value={row?.material} />
+                    <InfoRow label="Item No" value={row?.itemNo} />
+                    <InfoRow label="Description" value={row?.itemDescription} />
+
+                    <InfoRow label="Warehouse" value={row?.warehouse} />
+                    <InfoRow label="Plant" value={row?.plant} />
+
                     <InfoRow
-                        label="Date"
-                        value={new Date(row?.date).toLocaleDateString()}
+                        label="Created Date"
+                        value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
                     />
-                    <InfoRow label="User" value={row?.username} />
-                    <InfoRow label="ERP Doc Entry" value={row?.erpDocEntry} />
+                    <InfoRow
+                        label="Posted Date"
+                        value={row?.postedDate ? new Date(row.postedDate).toLocaleDateString() : "-"}
+                    />
+
+                    <InfoRow label="Quantity" value={row?.quantity} />
+                    <InfoRow label="UOM" value={row?.uom} />
+
+                    <InfoRow label="Delivery No" value={row?.deliveryNo} />
+                    <InfoRow label="Reference Document" value={row?.referenceDocument} />
+
+                    <InfoRow label="ERP Transfer Order No" value={row?.erpTransferOrderNo ?? "-"} />
+                    <InfoRow label="ERP Material Document" value={row?.erpMaterialDocument ?? "-"} />
                 </SimpleGrid>
             </Box>
+
 
             <Divider my="sm" />
 
             <TanStackTable
-                data={Array.isArray(listAgainstPo) ? listAgainstPo : []}
-                dataCount={totalRecordsAgainstPo}
+                data={Array.isArray(ListAllPickingOutBoundViewDetailsData?.data) ? ListAllPickingOutBoundViewDetailsData?.data : []}
+                // dataCount={ListAllPickingOutBoundViewDetailsData?.totalCount}
+                dataCount={1}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
+                subTitle={subTitle}
                 title={title}
                 skipRecord={skipRecord}
             />
 
-            <Box my={20}>
-                <Text>Remarks</Text>
-                <TextInput placeholder="Write your description" radius={"md"} my={10} size="lg" value={"Good"} readOnly styles={{
-                    input: {
-                        backgroundColor: customStyles.colors.evenTableColor,
-                        cursor: "default",
-                    },
-                }} />
-            </Box>
+            {/* Footer Section */}
+            {/* <Flex
+                justify="flex-end"
+                align="center"
+                mt="lg"
+                pt="md"
+            >
+                <Button
+                    variant="transparent"
+                    className="filledButton"
+                    radius={8}
+                    miw={200}
+                // onClick={() => actions.handleConfirmModalOpen(row.original)}
+                >
+                    Post
+                </Button>
+            </Flex> */}
         </Modal>
     );
 }
