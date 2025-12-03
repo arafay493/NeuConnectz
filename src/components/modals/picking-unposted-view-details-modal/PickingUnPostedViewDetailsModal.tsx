@@ -64,6 +64,7 @@ export default function PickingUnPostedViewDetailsModal({
     apiUrl,
     docNumber
 }: ModalProps) {
+    console.log("🚀 ~ PickingUnPostedViewDetailsModal ~ row:", row)
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
@@ -119,21 +120,31 @@ export default function PickingUnPostedViewDetailsModal({
 
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
-                    <InfoRow label="Document No" value={row?.number} />
-                    <InfoRow label="Type" value={row?.type} />
-                    <InfoRow label="Item Code" value={row?.itemCode} />
-                    <InfoRow label="From Warehouse" value={row?.fromWarehouse} />
-                    <InfoRow label="To Warehouse" value={row?.toWarehouse} />
-                    <InfoRow label="From Bin" value={row?.fromBin} />
-                    <InfoRow label="To Bin" value={row?.toBin} />
+                    <InfoRow label="Document No" value={row?.docNum} />
+                    <InfoRow label="Type" value={row?.confirmationStatus} />
+                    <InfoRow label="Item Code" value={row?.material} />
+                    <InfoRow label="Item No" value={row?.itemNo} />
+                    <InfoRow label="Description" value={row?.itemDescription} />
+
+                    <InfoRow label="Warehouse" value={row?.warehouse} />
+                    <InfoRow label="Plant" value={row?.plant} />
+
                     <InfoRow
                         label="Date"
-                        value={new Date(row?.date).toLocaleDateString()}
+                        value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
                     />
-                    <InfoRow label="User" value={row?.username} />
-                    <InfoRow label="ERP Doc Entry" value={row?.erpDocEntry} />
+
+                    <InfoRow label="Quantity" value={row?.quantity} />
+                    <InfoRow label="UOM" value={row?.uom} />
+
+                    <InfoRow label="Delivery No" value={row?.deliveryNo} />
+                    <InfoRow label="Reference Document" value={row?.referenceDocument} />
+
+                    <InfoRow label="ERP Transfer Order No" value={row?.erpTransferOrderNo ?? "-"} />
+                    <InfoRow label="ERP Material Document" value={row?.erpMaterialDocument ?? "-"} />
                 </SimpleGrid>
             </Box>
+
 
             <Divider my="sm" />
 
