@@ -7,7 +7,7 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPickingReservationOrders, fetchListAllOutbounds, fetchListAllReservation, postPickingReservationOrders } from '@/redux/actions/picking-actions/picking-actions';
+import { confirmPickingReservationOrders, fetchListAllOutbounds, fetchListAllReservation, postPickingOutBoundOrders, postPickingReservationOrders } from '@/redux/actions/picking-actions/picking-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
@@ -159,6 +159,29 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         })
     }
 
+    const handlePostOutbound = (rowData: any) => {
+        handleModalClose()
+        setIsFullPageLoading(true)
+        dispatch(postPickingOutBoundOrders({
+            payload: {
+                docNums: [String(rowData?.docNum)]
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handlePostOutboundResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllOutbounds({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: outboundApiUrl,
+                lastCount: paginationOutbound.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordOutbound
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -182,8 +205,8 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         pagination, list: ListAllOutbound?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
-            // handlePost: handlePostReservation,
-            handlePost: () => { },
+            handlePost: handlePostOutbound,
+            // handlePost: () => { },
         }
     })
 
@@ -198,6 +221,15 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     const handlePostReservationResponse = (status: number, message: string, error: string) => {
         if (status === 201) {
             ToastMessage("Reservation Post", message, status, error)
+            // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else {
+            ToastMessage("Error", message, status, error)
+        }
+    }
+
+    const handlePostOutboundResponse = (status: number, message: string, error: string) => {
+        if (status === 201) {
+            ToastMessage("Outbound Post", message, status, error)
             // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
         } else {
             ToastMessage("Error", message, status, error)
