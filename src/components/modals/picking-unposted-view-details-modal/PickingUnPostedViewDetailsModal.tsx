@@ -64,7 +64,6 @@ export default function PickingUnPostedViewDetailsModal({
     apiUrl,
     docNumber
 }: ModalProps) {
-    console.log("🚀 ~ PickingUnPostedViewDetailsModal ~ row:", row)
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;
