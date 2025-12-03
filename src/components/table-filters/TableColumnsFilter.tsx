@@ -23,6 +23,8 @@ export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, v
                 transitionProperty: 'height, opacity, transform',
                 transitionDuration: '0.4s',
                 transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                display: "flex",
+                justifyContent: "center",
             }}
             onClick={onClick}
         >
