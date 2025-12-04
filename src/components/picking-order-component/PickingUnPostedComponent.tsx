@@ -64,7 +64,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
-    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound">("Reservation");
+    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound" | "SalesOrder">("Reservation");
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -345,6 +345,24 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                     >
                         Outbound
                     </Button>
+
+                    <Button
+                        variant="transparent"
+                        className={headerBtnType === "SalesOrder" ? "myFilledButton" : "myOutlineButton"}
+                        radius={0}
+                        size="md"
+                        w={250}
+                        onClick={() => setHeaderBtnType("SalesOrder")}
+                        style={{
+                            borderLeftWidth: 1,
+                            borderLeftColor: "#228be6",
+                            backgroundColor: headerBtnType === "SalesOrder" ? "#DEE4F5" : "white",
+                            overflow: "hidden"
+                        }}
+                        color={customStyles.colors._1B59F8}
+                    >
+                        Sales Order
+                    </Button>
                 </Group>
                 <Group gap={0}>
                     <Button
@@ -379,6 +397,23 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
 
             {/* Table */}
             {headerBtnType === "Outbound" && <TanStackTable
+                data={Array.isArray(ListAllOutbound?.data) ? ListAllOutbound?.data : []}
+                dataCount={ListAllOutbound?.totalCount}
+                columns={outboundColumns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={pagination}
+                setPagination={setPaginationOutbound}
+                title={" Unposted Picking Orders"}
+                subTitle={"Track and review picking order seemlessly."}
+                skipRecord={skipRecord}
+            // isCsvExport={true}
+            // handleExportToCSV={handleExportToCSV}
+            />}
+
+
+            {/* Table */}
+            {headerBtnType === "SalesOrder" && <TanStackTable
                 data={Array.isArray(ListAllOutbound?.data) ? ListAllOutbound?.data : []}
                 dataCount={ListAllOutbound?.totalCount}
                 columns={outboundColumns}
