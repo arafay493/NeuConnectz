@@ -14,6 +14,7 @@ import { ToastMessage } from '@/utils/ToastMessage';
 import { IconFileImport } from '@tabler/icons-react';
 import PickingOrderUnPosted_Outbound_Columns from '../columns/PickingOrderUnPosted_Outbound_Columns';
 import PickingOrderUnPosted_Sales_Order_Columns from '../columns/PickingOrderUnPosted_Sales_Order_Columns';
+import { useMediaQuery } from '@mantine/hooks';
 
 type ApiProp = {
     apiUrl: string;
@@ -23,6 +24,7 @@ type ApiProp = {
 };
 
 const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl, salesOrderApiUrl }) => {
+    const isTabletView = useMediaQuery('(max-width: 968px)'); // TRUE below 968px
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
@@ -377,6 +379,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                     className="tabGroup"
                     style={{
                         display: "flex",
+                        flexDirection: isTabletView ? "column" : "row",
                         alignItems: customStyles.alignment.center,
                         border: "1px solid",
                         borderColor: customStyles.colors._1B59F8,
