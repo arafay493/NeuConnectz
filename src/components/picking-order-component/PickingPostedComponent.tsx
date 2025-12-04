@@ -5,11 +5,13 @@ import { PaginationState } from '@tanstack/react-table';
 import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchListAllOutbounds, fetchListAllReservation } from '@/redux/actions/picking-actions/picking-actions';
+import { fetchListAllOutbounds, fetchListAllReservation, fetchListAllSalesOrder } from '@/redux/actions/picking-actions/picking-actions';
 import PickingPostedViewDetailsModal from '../modals/picking-posted-view-details-modal/PickingPostedViewDetailsModal';
 import PickingOrderPosted_Reservation_Columns from '../columns/PickingOrderPosted_Reservation_Columns';
 import { IconFileImport } from '@tabler/icons-react';
 import PickingOrderPosted_Outbound_Columns from '../columns/PickingOrderPosted_Outbound_Columns';
+import { useMediaQuery } from '@mantine/hooks';
+import PickingOrderPosted_Sales_Order_Columns from '../columns/PickingOrderPosted_Sales_Order_Columns';
 
 type ApiProp = {
     apiUrl: string;
@@ -19,6 +21,7 @@ type ApiProp = {
 };
 
 const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl, salesOrderApiUrl }) => {
+    const isTabletView = useMediaQuery('(max-width: 968px)'); // TRUE below 968px
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
@@ -32,6 +35,10 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
         pageIndex: 0,
         pageSize: 10,
     });
+    const [paginationSalesOrder, setPaginationSalesOrder] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
     const [paginationViewDetails, setPaginationViewDetails] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
@@ -41,17 +48,18 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
-    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound">("Reservation");
+    const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound" | "SalesOrder">("Reservation");
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const skipRecordOutbound = paginationOutbound.pageIndex * paginationOutbound.pageSize;
+    const skipRecordSalesOrder = paginationSalesOrder.pageIndex * paginationSalesOrder.pageSize;
     const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { ListAllReservation, ListAllOutbound } = useAppSelector(({ pickingStates }) => { return pickingStates });
+    const { ListAllReservation, ListAllOutbound, ListAllSalesOrder } = useAppSelector(({ pickingStates }) => { return pickingStates });
     // // console.log("productionOrdersList: ", productionOrdersList);
 
     useEffect(() => {
@@ -82,8 +90,22 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
             })).finally(() => {
                 setIsLoading(false)
             });
-        };
-    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize, paginationOutbound.pageSize, paginationOutbound.pageIndex, headerBtnType]);
+        }
+        else if (authenticatedUser?.token && headerBtnType === "SalesOrder") {
+            // Outbound
+            setIsLoading(true);
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+            dispatch(fetchListAllSalesOrder({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: salesOrderApiUrl,
+                lastCount: paginationSalesOrder.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordSalesOrder
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        }
+    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize, paginationOutbound.pageSize, paginationOutbound.pageIndex, paginationSalesOrder.pageSize, paginationSalesOrder.pageIndex, headerBtnType]);
 
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
@@ -120,6 +142,15 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
             handlePost: () => { },
         }
     })
+    
+    const salesOrderColumns = PickingOrderPosted_Sales_Order_Columns({
+        pagination, list: ListAllSalesOrder?.data, actions: {
+            handleConfirmModalOpen: handleConfirmModalOpen,
+            handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+            // handlePost: handlePostSalesOrder,
+            handlePost: () => { },
+        }
+    })
 
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
@@ -141,7 +172,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                 title={"Picking Posted"}
                 subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"/IStockTransferOrderFeature/GetDetailsOfSto"}
+                apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : ""}
                 docNumber={selectedRow?.docNum}
             />
 
@@ -155,6 +186,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                     className="tabGroup"
                     style={{
                         display: "flex",
+                        flexDirection: isTabletView ? "column" : "row",
                         alignItems: customStyles.alignment.center,
                         border: "1px solid",
                         borderColor: customStyles.colors._1B59F8,
@@ -193,6 +225,24 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                         color={customStyles.colors._1B59F8}
                     >
                         Outbound
+                    </Button>
+
+                    <Button
+                        variant="transparent"
+                        className={headerBtnType === "SalesOrder" ? "myFilledButton" : "myOutlineButton"}
+                        radius={0}
+                        size="md"
+                        w={250}
+                        onClick={() => setHeaderBtnType("SalesOrder")}
+                        style={{
+                            borderLeftWidth: 1,
+                            borderLeftColor: "#228be6",
+                            backgroundColor: headerBtnType === "SalesOrder" ? "#DEE4F5" : "white",
+                            overflow: "hidden"
+                        }}
+                        color={customStyles.colors._1B59F8}
+                    >
+                        Sales Order
                     </Button>
                 </Group>
                 <Group gap={0}>
@@ -241,7 +291,6 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
             // handleExportToCSV={handleExportToCSV}
             />}
 
-
             {/* Table */}
             {headerBtnType === "Outbound" && <TanStackTable
                 data={Array.isArray(ListAllOutbound?.data) ? ListAllOutbound?.data : []}
@@ -249,11 +298,27 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                 columns={outboundColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
-                pagination={pagination}
+                pagination={paginationOutbound}
                 setPagination={setPaginationOutbound}
                 title={" Posted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
-                skipRecord={skipRecord}
+                skipRecord={skipRecordOutbound}
+            // isCsvExport={true}
+            // handleExportToCSV={handleExportToCSV}
+            />}
+
+            {/* Table */}
+            {headerBtnType === "SalesOrder" && <TanStackTable
+                data={Array.isArray(ListAllSalesOrder?.data) ? ListAllSalesOrder?.data : []}
+                dataCount={ListAllSalesOrder?.totalCount}
+                columns={salesOrderColumns}
+                isLoading={isLoading}
+                isInsideModalTable={true}
+                pagination={paginationSalesOrder}
+                setPagination={setPaginationSalesOrder}
+                title={" Posted Picking Orders"}
+                subTitle={"Track and review picking order seemlessly."}
+                skipRecord={skipRecordSalesOrder}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}
             />}
