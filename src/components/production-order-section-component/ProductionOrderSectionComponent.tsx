@@ -339,7 +339,26 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Doc No",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string}
+            {getValue() as string || "-"}
+          </Text>
+        ),
+        filterFn: stringFilterFn,
+        enableColumnFilter: true,
+        size: calculateColumnWidth(
+          "Doc Num",
+          (productionOrdersList || []).map((item) =>
+            String(item.documentNumber)
+          ),
+          150,
+          220
+        ),
+      },
+      {
+        accessorKey: "docketNo",
+        header: "Docket No",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -358,7 +377,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Item Code",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string}
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -375,7 +394,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Item Description",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500} style={{ whiteSpace: "nowrap" }}>
-            {getValue() as string}
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -397,7 +416,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
           const val = row.original.uom != null ? row.original.uom : "N/A";
           return (
             <Text c={customStyles.colors._909090} fw={500}>
-              {val as string}
+              {val as string || "-"}
             </Text>
           );
         },
@@ -415,7 +434,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Quantity",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {String(getValue())}
+            {String(getValue()) || "-"}
           </Text>
         ),
         filterFn: numberFilterFn,
@@ -432,7 +451,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Remaining Qty",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string}
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -451,7 +470,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Planned Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {new Date(getValue() as string).toLocaleDateString()}
+            {new Date(getValue() as string).toLocaleDateString() || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -468,7 +487,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Origin No",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string}
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -485,7 +504,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Warehouse",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string}
+            {getValue() as string || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -502,7 +521,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Created Date",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {new Date(getValue() as string).toLocaleDateString()}
+            {new Date(getValue() as string).toLocaleDateString() || "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -522,7 +541,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
             row.original.productionOrderStatus?.replace("bopos", "") || "N/A";
           return (
             <Text c={customStyles.colors._909090} fw={500}>
-              {val as string}
+              {val as string || "-"}
             </Text>
           );
         },
