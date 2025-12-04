@@ -101,8 +101,8 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
             dispatch(fetchListAllSalesOrder({
                 authToken: authenticatedUser?.token || '',
                 apiUrl: salesOrderApiUrl,
-                lastCount: paginationOutbound.pageSize, // Use page size for server-side pagination
-                skipRecords: skipRecordOutbound
+                lastCount: paginationSalesOrder.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordSalesOrder
             })).finally(() => {
                 setIsLoading(false)
             });
@@ -157,7 +157,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 });
             })
             setIsConfirmModalOpen(false)
-        }else if (headerBtnType === "SalesOrder") {
+        } else if (headerBtnType === "SalesOrder") {
             setIsFullPageLoading(true)
             dispatch(confirmPickingSalesOrders({
                 payload: {
@@ -363,7 +363,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 title={"Picking Unposted"}
                 subTitle={"Track and review picking order seemlessly."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"/IStockTransferOrderFeature/GetDetailsOfSto"}
+                apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : ""}
                 docNumber={selectedRow?.docNum}
             />
 

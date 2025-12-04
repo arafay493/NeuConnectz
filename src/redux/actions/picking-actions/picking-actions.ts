@@ -219,7 +219,7 @@ const confirmPickingSalesOrders = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/IStockTransferOrderFeature/ConfirmStockTransferOrder', payload, token);
+            const response = await apiPost('/neu-connect/v2/ISalesOrderFeature/ConfirmSalesOrder', payload, token);
             const { status, data, error } = response;
             resHandler(status, data, error);
         } catch (error) {
@@ -280,7 +280,7 @@ const postPickingSalesOrders = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/ISapFeature/PostStoToSap', payload, token);
+            const response = await apiPost('/neu-connect/v2/ISapFeature/PostSalesOrderToSap', payload, token);
             // console.log("payload>>>>>>>> " , payload)
             const { data, status } = response;
             const { message, error } = data?.data;
