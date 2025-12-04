@@ -142,7 +142,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
             handlePost: () => { },
         }
     })
-    
+
     const salesOrderColumns = PickingOrderPosted_Sales_Order_Columns({
         pagination, list: ListAllSalesOrder?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
@@ -217,7 +217,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                         w={250}
                         onClick={() => setHeaderBtnType("Outbound")}
                         style={{
-                            borderLeftWidth: 1,
+                            borderLeftWidth: !isTabletView ? 1 : 0,
                             borderLeftColor: "#228be6",
                             backgroundColor: headerBtnType === "Outbound" ? "#DEE4F5" : "white",
                             overflow: "hidden"
@@ -235,7 +235,7 @@ const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outbou
                         w={250}
                         onClick={() => setHeaderBtnType("SalesOrder")}
                         style={{
-                            borderLeftWidth: 1,
+                            borderLeftWidth: !isTabletView ? 1 : 0,
                             borderLeftColor: "#228be6",
                             backgroundColor: headerBtnType === "SalesOrder" ? "#DEE4F5" : "white",
                             overflow: "hidden"

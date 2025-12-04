@@ -410,7 +410,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                         w={250}
                         onClick={() => setHeaderBtnType("Outbound")}
                         style={{
-                            borderLeftWidth: 1,
+                            borderLeftWidth: !isTabletView ? 1 : 0,
                             borderLeftColor: "#228be6",
                             backgroundColor: headerBtnType === "Outbound" ? "#DEE4F5" : "white",
                             overflow: "hidden"
@@ -428,7 +428,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                         w={250}
                         onClick={() => setHeaderBtnType("SalesOrder")}
                         style={{
-                            borderLeftWidth: 1,
+                            borderLeftWidth: !isTabletView ? 1 : 0,
                             borderLeftColor: "#228be6",
                             backgroundColor: headerBtnType === "SalesOrder" ? "#DEE4F5" : "white",
                             overflow: "hidden"
