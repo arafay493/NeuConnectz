@@ -11,33 +11,14 @@ import PickingOrderPosted_Reservation_Columns from '../columns/PickingOrderPoste
 import { IconFileImport } from '@tabler/icons-react';
 import PickingOrderPosted_Outbound_Columns from '../columns/PickingOrderPosted_Outbound_Columns';
 
-const listOutbound = [
-    {
-        delivery: "881000109",
-        item: 20,
-        material: "1400000049",
-        itemDescription: "MELAMINE GLAZING POWDER - 20",
-        itemCategory: "NLN",
-        batch: "",
-        plant: "1200",
-        storageLocation: "FG20",
-        deliveryQuantity: 200000,
-        baseUom: "KG",
-        referenceDocument: "4800003525",
-        movementType: "641",
-        precedingDocCateg: "V",
-        itemOverallStatus: "A",
-        itemGoodsMovementSts: "A"
-    }
-]
-
 type ApiProp = {
     apiUrl: string;
     reservationApiUrl: string,
     outboundApiUrl: string,
+    salesOrderApiUrl: string,
 };
 
-const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl }) => {
+const PickingPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl, salesOrderApiUrl }) => {
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!

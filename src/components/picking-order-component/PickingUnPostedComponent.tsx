@@ -7,40 +7,22 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPickingOutBoundOrders, confirmPickingReservationOrders, fetchListAllOutbounds, fetchListAllReservation, postPickingOutBoundOrders, postPickingReservationOrders } from '@/redux/actions/picking-actions/picking-actions';
+import { confirmPickingOutBoundOrders, confirmPickingReservationOrders, confirmPickingSalesOrders, fetchListAllOutbounds, fetchListAllReservation, fetchListAllSalesOrder, postPickingOutBoundOrders, postPickingReservationOrders, postPickingSalesOrders } from '@/redux/actions/picking-actions/picking-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
 import { IconFileImport } from '@tabler/icons-react';
 import PickingOrderUnPosted_Outbound_Columns from '../columns/PickingOrderUnPosted_Outbound_Columns';
-
-const listOutbound = [
-    {
-        delivery: "881000109",
-        item: 20,
-        material: "1400000049",
-        itemDescription: "MELAMINE GLAZING POWDER - 20",
-        itemCategory: "NLN",
-        batch: "",
-        plant: "1200",
-        storageLocation: "FG20",
-        deliveryQuantity: 200000,
-        baseUom: "KG",
-        referenceDocument: "4800003525",
-        movementType: "641",
-        precedingDocCateg: "V",
-        itemOverallStatus: "A",
-        itemGoodsMovementSts: "A"
-    }
-]
+import PickingOrderUnPosted_Sales_Order_Columns from '../columns/PickingOrderUnPosted_Sales_Order_Columns';
 
 type ApiProp = {
     apiUrl: string;
     reservationApiUrl: string
-    outboundApiUrl: string
+    outboundApiUrl: string,
+    salesOrderApiUrl: string,
 };
 
-const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl }) => {
+const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outboundApiUrl, salesOrderApiUrl }) => {
     console.log("API URL Unposted:", apiUrl);
 
     // Note: Handling states here...!
@@ -52,6 +34,10 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         pageSize: 10,
     });
     const [paginationOutbound, setPaginationOutbound] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+    const [paginationSalesOrder, setPaginationSalesOrder] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
     });
@@ -69,12 +55,13 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
     const skipRecordOutbound = paginationOutbound.pageIndex * paginationOutbound.pageSize;
+    const skipRecordSalesOrder = paginationSalesOrder.pageIndex * paginationSalesOrder.pageSize;
     const skipRecordViewDetails = paginationViewDetails.pageIndex * paginationViewDetails.pageSize;
 
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { ListAllReservation, ListAllOutbound } = useAppSelector(({ pickingStates }) => { return pickingStates });
+    const { ListAllReservation, ListAllOutbound, ListAllSalesOrder } = useAppSelector(({ pickingStates }) => { return pickingStates });
     // // console.log("productionOrdersList: ", productionOrdersList);
 
     useEffect(() => {
@@ -105,8 +92,22 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
             })).finally(() => {
                 setIsLoading(false)
             });
-        };
-    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize, paginationOutbound.pageSize, paginationOutbound.pageIndex, headerBtnType]);
+        }
+        else if (authenticatedUser?.token && headerBtnType === "SalesOrder") {
+            // Outbound
+            setIsLoading(true);
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+
+            dispatch(fetchListAllSalesOrder({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: salesOrderApiUrl,
+                lastCount: paginationOutbound.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordOutbound
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        }
+    }, [authenticatedUser, dispatch, apiUrl, pagination.pageIndex, pagination.pageSize, paginationOutbound.pageSize, paginationOutbound.pageIndex, paginationSalesOrder.pageSize, paginationSalesOrder.pageIndex, headerBtnType]);
 
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
@@ -151,6 +152,27 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                     apiUrl: outboundApiUrl,
                     lastCount: paginationOutbound.pageSize,
                     skipRecords: skipRecordOutbound
+                })).finally(() => {
+                    setIsLoading(false)
+                });
+            })
+            setIsConfirmModalOpen(false)
+        }else if (headerBtnType === "SalesOrder") {
+            setIsFullPageLoading(true)
+            dispatch(confirmPickingSalesOrders({
+                payload: {
+                    docNum: selectedRow?.docNum
+                },
+                token: authenticatedUser?.token || '',
+                resHandler: handleSalesOrderResponse
+            })).finally(() => {
+                setIsFullPageLoading(false)
+                setIsLoading(true);
+                dispatch(fetchListAllSalesOrder({
+                    authToken: authenticatedUser?.token || '',
+                    apiUrl: salesOrderApiUrl,
+                    lastCount: paginationSalesOrder.pageSize,
+                    skipRecords: skipRecordSalesOrder
                 })).finally(() => {
                     setIsLoading(false)
                 });
@@ -205,6 +227,29 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         })
     }
 
+    const handlePostSalesOrder = (rowData: any) => {
+        handleModalClose()
+        setIsFullPageLoading(true)
+        dispatch(postPickingSalesOrders({
+            payload: {
+                docNum: rowData?.docNum
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handlePostSalesOrderResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllSalesOrder({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: salesOrderApiUrl,
+                lastCount: paginationSalesOrder.pageSize, // Use page size for server-side pagination
+                skipRecords: skipRecordSalesOrder
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -233,6 +278,15 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         }
     })
 
+    const salesOrderColumns = PickingOrderUnPosted_Sales_Order_Columns({
+        pagination, list: ListAllSalesOrder?.data, actions: {
+            handleConfirmModalOpen: handleConfirmModalOpen,
+            handleViewDetailsModalOpen: handleViewDetailsModalOpen,
+            handlePost: handlePostSalesOrder,
+            // handlePost: () => { },
+        }
+    })
+
     const handleReservationResponse = (status: number, data: any, error: string) => {
         if (status === 200) {
             showNotificationToast("Confirm Reservation", data.message, customStyles.colors._408CCE);
@@ -244,6 +298,14 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     const handleOutboundResponse = (status: number, data: any, error: string) => {
         if (status === 200) {
             showNotificationToast("Confirm Outbound", data.message, customStyles.colors._408CCE);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
+
+    const handleSalesOrderResponse = (status: number, data: any, error: string) => {
+        if (status === 200) {
+            showNotificationToast("Confirm Sale Order", data.message, customStyles.colors._408CCE);
         } else if (error) {
             showNotificationToast("Error", error, customStyles.colors.red);
         }
@@ -261,6 +323,15 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     const handlePostOutboundResponse = (status: number, message: string, error: string) => {
         if (status === 201) {
             ToastMessage("Outbound Post", message, status, error)
+            // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else {
+            ToastMessage("Error", message, status, error)
+        }
+    }
+
+    const handlePostSalesOrderResponse = (status: number, message: string, error: string) => {
+        if (status === 201) {
+            ToastMessage("Sale Order Post", message, status, error)
             // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
         } else {
             ToastMessage("Error", message, status, error)
@@ -402,11 +473,11 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 columns={outboundColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
-                pagination={pagination}
+                pagination={paginationOutbound}
                 setPagination={setPaginationOutbound}
                 title={" Unposted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
-                skipRecord={skipRecord}
+                skipRecord={skipRecordOutbound}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}
             />}
@@ -414,16 +485,16 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
 
             {/* Table */}
             {headerBtnType === "SalesOrder" && <TanStackTable
-                data={Array.isArray(ListAllOutbound?.data) ? ListAllOutbound?.data : []}
-                dataCount={ListAllOutbound?.totalCount}
-                columns={outboundColumns}
+                data={Array.isArray(ListAllSalesOrder?.data) ? ListAllSalesOrder?.data : []}
+                dataCount={ListAllSalesOrder?.totalCount}
+                columns={salesOrderColumns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
-                pagination={pagination}
-                setPagination={setPaginationOutbound}
+                pagination={paginationSalesOrder}
+                setPagination={setPaginationSalesOrder}
                 title={" Unposted Picking Orders"}
                 subTitle={"Track and review picking order seemlessly."}
-                skipRecord={skipRecord}
+                skipRecord={skipRecordSalesOrder}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}
             />}
