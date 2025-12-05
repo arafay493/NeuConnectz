@@ -2,7 +2,7 @@
 
 'use client';
 
-import { authenticatedRoutes, drawerRoutes, routes } from '@/constants/routes';
+import { authenticatedRoutes, drawerRoutes, dynamicRoutes, routes } from '@/constants/routes';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import {
@@ -97,7 +97,17 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     };
 
     // Note: Show layout only on authenticated routes...!
-    const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string);
+    // const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string);
+    const showLayout = authenticatedRoutes.includes(pathName) || pathName.startsWith(dynamicRoutes[0] as string);
+
+    // const showLayout = authenticatedRoutes.some((route) => {
+    //     if (route.includes(":")) {
+    //         const base = route.split("/:")[0];
+    //         return pathName.startsWith(base);
+    //     }
+
+    //     return route === pathName;
+    // });
 
     useEffect(() => {
         if (!showLayout) {

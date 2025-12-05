@@ -48,7 +48,7 @@ const authenticatedRoutes: String[] = [
     "/column-access-control",
     "/configuration",
     // "/integration-monitor",
-    // "/edit",
+    "/edit",
     // "/grn-movement",
     // "/generate-barcode",
     // "/production-order",
@@ -60,6 +60,8 @@ const authenticatedRoutes: String[] = [
 const initialRoute: string = "/putaway-order"
 
 const settingsInitialRoute: string = "/users-list"
+
+const dynamicRoutes: string[] = ["/edit"]
 
 // Note: Defining all routes...!
 const routes: Routes = {
@@ -218,5 +220,6 @@ export {
     routes,
     drawerRoutes,
     initialRoute,
-    settingsInitialRoute
+    settingsInitialRoute,
+    dynamicRoutes
 };

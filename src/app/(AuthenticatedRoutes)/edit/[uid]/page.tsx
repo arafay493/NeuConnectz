@@ -31,6 +31,7 @@ import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { customStyles } from '@/styles/custom-theme';
 import axios from 'axios';
+import { handleRefreshToken } from '@/constants/refresh-token';
 // import UserIcon from "@/assets/images/user.png";
 const userIcon = "https://res.cloudinary.com/dxhp0pmrw/image/upload/v1757448710/lwvnmz1516dwacf90hyh.png";
 
@@ -76,7 +77,8 @@ const EditUserScreen = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://zconnectstaging.qbscocloud.net:31155/ZCAPI/IUserManagementFeature/GetUserDataByUserId?userId=${uid}`,
+          `http://163.61.91.146:31146/ZCAPI-Dynea-Stg/IUserManagementFeature/GetUserDataByUserId?userId=${uid}`,
+          // `${process.env.BASE_URL}${process.env.NEU_CONNECTZ}/IUserManagementFeature/GetUserDataByUserId?userId=${uid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -93,7 +95,10 @@ const EditUserScreen = () => {
         }));
         setIsUserActiveState(response?.data?.data?.isActive)
       } catch (err: any) {
-        console.log(err.message || "Something went wrong");
+        const {message, status} = err
+
+        // if(status === 401) handleRefreshToken("Session Expired")
+        console.log(err || "Something went wrong");
       }
     };
 
