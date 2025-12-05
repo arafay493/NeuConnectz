@@ -129,7 +129,14 @@ export default function PutAwayPostedViewDetailsModal({
                     <InfoRow label="Supplier" value={row?.supplierName} />
                     <InfoRow label="Movement Type" value={row?.movementType} />
                     <InfoRow label="Purchase Order" value={row?.purchaseOrder} />
-                    <InfoRow label="Date" value={row?.createdOn} />
+                    <InfoRow
+                        label="Created Date"
+                        value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
+                    />
+                    <InfoRow
+                        label="Posted Date"
+                        value={row?.postedDate ? new Date(row.postedDate).toLocaleDateString() : "-"}
+                    />
                     <InfoRow label="Qty" value={row?.totalQuantity} />
                     {/* <InfoRow
                                         label="Date"
