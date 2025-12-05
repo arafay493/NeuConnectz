@@ -31,6 +31,7 @@ interface ModalProps {
     pagination: any
     setPagination: any,
     title: string,
+    subTitle: string,
     skipRecord: number,
     setIsLoading: any,
     apiUrl: string,
@@ -62,7 +63,8 @@ export default function PutAwayPostedViewDetailsModal({
     skipRecord,
     setIsLoading,
     apiUrl,
-    poNumber
+    poNumber,
+    subTitle
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
@@ -148,6 +150,7 @@ export default function PutAwayPostedViewDetailsModal({
                 isInsideModalTable={true}
                 pagination={pagination}
                 setPagination={setPagination}
+                subTitle={subTitle}
                 title={title}
                 skipRecord={skipRecord}
             />

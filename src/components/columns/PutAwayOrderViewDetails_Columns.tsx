@@ -27,17 +27,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
             },
 
             {
-                accessorKey: "id",
-                header: "ID",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
                 accessorKey: "docNum",
                 header: "Doc No",
                 minSize: 140,
@@ -63,86 +52,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
                 accessorKey: "trNumber",
                 header: "TR Number",
                 minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "headerStatus",
-                header: "Header Status",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "shipmentType",
-                header: "Shipment Type",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "user",
-                header: "User",
-                minSize: 120,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "createdOn",
-                header: "Created On",
-                minSize: 160,
-                cell: ({ getValue }: any) => {
-                    const rawDate = getValue();
-                    return (
-                        <Text c={customStyles.colors._909090} fw={500}>
-                            {rawDate ? dayjs(rawDate).format("DD/MM/YYYY") : "-"}
-                        </Text>
-                    );
-                },
-            },
-
-            {
-                accessorKey: "timeOfCreation",
-                header: "Created Time",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "requirementType",
-                header: "Req Type",
-                minSize: 150,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "requirementNumber",
-                header: "Req Number",
-                minSize: 160,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {safeValue(getValue())}
@@ -184,17 +93,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
             },
 
             {
-                accessorKey: "dynamicSourceBin",
-                header: "Dynamic Source Bin",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
                 accessorKey: "destStorageType",
                 header: "Dest Storage Type",
                 minSize: 160,
@@ -217,28 +115,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
             },
 
             {
-                accessorKey: "binLocationId",
-                header: "Bin Location ID",
-                minSize: 180,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "materialDocument",
-                header: "Material Doc",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
                 accessorKey: "materialDocYear",
                 header: "Doc Year",
                 minSize: 140,
@@ -249,16 +125,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
                 ),
             },
 
-            {
-                accessorKey: "numberOfItems",
-                header: "Items",
-                minSize: 120,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
 
             {
                 accessorKey: "quantity",
@@ -278,28 +144,6 @@ const PutAwayOrderViewDetails_Columns = ({ pagination, list }: any) => {
                 accessorKey: "baseUOM",
                 header: "UOM",
                 minSize: 120,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "supplier",
-                header: "Supplier Code",
-                minSize: 160,
-                cell: ({ getValue }: any) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
-                        {safeValue(getValue())}
-                    </Text>
-                ),
-            },
-
-            {
-                accessorKey: "supplierName",
-                header: "Supplier Name",
-                minSize: 180,
                 cell: ({ getValue }: any) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {safeValue(getValue())}

@@ -99,6 +99,7 @@ const PutAwayPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 pagination={paginationViewDetails}
                 setPagination={setPaginationViewDetails}
                 title={"Putaway Posted"}
+                subTitle={"Track and review putaway order seemlessly."}
                 skipRecord={skipRecordViewDetails}
                 apiUrl={"/IPutAwayFeature/GetPutAwayDetails"}
                 poNumber={selectedRow?.docNum || ""}
@@ -113,7 +114,7 @@ const PutAwayPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 pagination={pagination}
                 setPagination={setPagination}
                 title={"Posted Putaway Orders"}
-                subTitle={"Track and review stock transfer order seemlessly."}
+                subTitle={"Track and review putaway order seemlessly."}
                 skipRecord={skipRecord}
                 isCsvExport={true}
                 handleExportToCSV={handleExportToCSV}

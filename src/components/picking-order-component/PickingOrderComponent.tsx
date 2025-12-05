@@ -34,8 +34,8 @@ const PickingOrderComponent = () => {
         <Box>
             {/* Header section */}
             <TitleComponent
-                title="Picking Order"
-                description="Confirm transfer order for picking"
+                title="Picking Orders"
+                description="Confirm transfer orders for picking"
             />
 
             {/* Tabs section */}

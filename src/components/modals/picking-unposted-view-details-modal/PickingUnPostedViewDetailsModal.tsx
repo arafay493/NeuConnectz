@@ -29,7 +29,8 @@ interface ModalProps {
     skipRecord: number,
     setIsLoading: any,
     apiUrl: string,
-    docNumber: number
+    docNumber: number,
+    isReservation: boolean
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -58,7 +59,8 @@ export default function PickingUnPostedViewDetailsModal({
     skipRecord,
     setIsLoading,
     apiUrl,
-    docNumber
+    docNumber,
+    isReservation
 }: ModalProps) {
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
@@ -114,27 +116,52 @@ export default function PickingUnPostedViewDetailsModal({
         >
 
             <Box mb="md">
-                <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
-                    <InfoRow label="Document No" value={row?.docNum} />
-                    <InfoRow label="Type" value={row?.confirmationStatus} />
-                    <InfoRow label="Item Code" value={row?.material} />
-                    <InfoRow label="Item No" value={row?.itemNo} />
-                    <InfoRow label="Description" value={row?.itemDescription} />
+                {!isReservation ? <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
+                    <InfoRow label="Document No" value={row?.docNum || "-"} />
+                    <InfoRow label="Type" value={row?.confirmationStatus || "-"} />
+                    <InfoRow label="Item Code" value={row?.material || "-"} />
+                    <InfoRow label="Item No" value={row?.itemNo || "-"} />
+                    <InfoRow label="Description" value={row?.itemDescription || "-"} />
 
-                    <InfoRow label="Warehouse" value={row?.warehouse} />
-                    <InfoRow label="Plant" value={row?.plant} />
+                    <InfoRow label="Warehouse" value={row?.warehouse || "-"} />
+                    <InfoRow label="Plant" value={row?.plant || "-"} />
 
                     <InfoRow
                         label="Created Date"
                         value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
                     />
 
-                    <InfoRow label="Quantity" value={row?.quantity} />
-                    <InfoRow label="UOM" value={row?.uom} />
+                    <InfoRow label="Quantity" value={row?.quantity || "-"} />
+                    <InfoRow label="UOM" value={row?.uom || "-"} />
 
-                    <InfoRow label="Delivery No" value={row?.deliveryNo} />
-                    <InfoRow label="Reference Document" value={row?.referenceDocument} />
-                </SimpleGrid>
+                    <InfoRow label="Delivery No" value={row?.deliveryNo || "-"} />
+                    <InfoRow label="Reference Document" value={row?.referenceDocument || "-"} />
+                </SimpleGrid> :
+                    <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
+                        <InfoRow label="Document No" value={row?.docNum || "-"} />
+                        <InfoRow label="Reservation No" value={row?.reservationNumber || "-"} />
+                        <InfoRow label="Material" value={row?.material || "-"} />
+                        <InfoRow label="Description" value={row?.materialDescription || "-"} />
+
+                        <InfoRow label="UOM" value={row?.baseUnitOfMeasure || "-"} />
+                        <InfoRow label="Movement Type" value={row?.selectedMovementType || "-"} />
+
+                        <InfoRow label="Receiving Plant" value={row?.receivingPlant || "-"} />
+                        <InfoRow label="Receiving Storage Location" value={row?.receivingStorageLocation || "-"} />
+
+                        <InfoRow label="Source Storage Bin" value={row?.sourceStorageBin || "-"} />
+
+                        <InfoRow
+                            label="Created Date"
+                            value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
+                        />
+
+                        <InfoRow label="Total Quantity" value={row?.totalQuantity || "-"} />
+                        <InfoRow label="Status" value={row?.confirmationStatus || "-"} />
+
+                        {/* <InfoRow label="ERP Material Doc" value={row?.erpMaterialDocument || "-"} />
+                        <InfoRow label="ERP Transfer Order" value={row?.erpTransferOrder || "-"} /> */}
+                    </SimpleGrid>}
             </Box>
 
 

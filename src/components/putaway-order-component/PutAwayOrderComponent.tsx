@@ -40,8 +40,8 @@ const PutAwayOrderComponent = () => {
         <Box>
             {/* Header section */}
             <TitleComponent
-                title="Putaway Order"
-                description="Confirm transfer order for putaway"
+                title="Putaway Orders"
+                description="Confirm transfer orders for putaway"
             />
 
             {/* Tabs section */}

@@ -363,10 +363,11 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 pagination={paginationViewDetails}
                 setPagination={setPaginationViewDetails}
                 title={"Picking Unposted"}
-                subTitle={"Track and review picking order seemlessly."}
+                subTitle={"Track and review picking orders seemlessly."}
                 skipRecord={skipRecordViewDetails}
                 apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : ""}
                 docNumber={selectedRow?.docNum}
+                isReservation={headerBtnType === "Reservation"}
             />
 
             {/* Tabs */}
@@ -462,7 +463,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 pagination={pagination}
                 setPagination={setPagination}
                 title={" Unposted Picking Orders"}
-                subTitle={"Track and review picking order seemlessly."}
+                subTitle={"Track and review picking orders seemlessly."}
                 skipRecord={skipRecord}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}
@@ -479,7 +480,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 pagination={paginationOutbound}
                 setPagination={setPaginationOutbound}
                 title={" Unposted Picking Orders"}
-                subTitle={"Track and review picking order seemlessly."}
+                subTitle={"Track and review picking orders seemlessly."}
                 skipRecord={skipRecordOutbound}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}
@@ -496,7 +497,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                 pagination={paginationSalesOrder}
                 setPagination={setPaginationSalesOrder}
                 title={" Unposted Picking Orders"}
-                subTitle={"Track and review picking order seemlessly."}
+                subTitle={"Track and review picking orders seemlessly."}
                 skipRecord={skipRecordSalesOrder}
             // isCsvExport={true}
             // handleExportToCSV={handleExportToCSV}

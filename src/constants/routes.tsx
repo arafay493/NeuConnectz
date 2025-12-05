@@ -126,12 +126,12 @@ const drawerRoutes: DrawerRoute[] = [
     // },
     {
         icon: <IconTruckDelivery color='currentColor' size={24} />,
-        label: "Putaway Order",
+        label: "Putaway Orders",
         route: routes.putAwayOrder
     },
     {
         icon: <IconTruckReturn color='currentColor' size={24} />,
-        label: "Picking Order",
+        label: "Picking Orders",
         route: routes.pickingOrder
     },
     // {
