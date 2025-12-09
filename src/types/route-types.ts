@@ -29,6 +29,7 @@ export type Routes = {
     // stockTransferOrder: string,
     putAwayOrder: string,
     pickingOrder: string,
+    binToBinTransferOrder: string,
     assignMovementType: string,
 };
 

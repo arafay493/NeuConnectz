@@ -20,7 +20,8 @@ import {
     IconSortAscendingShapes,
     IconShieldLock,
     IconBuildings,
-    IconBuildingCog
+    IconBuildingCog,
+    IconAB2
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -45,10 +46,11 @@ const authenticatedRoutes: String[] = [
     "/assign-plants",
     "/assign-warehouse",
     "/add-user",
-    "/column-access-control",
-    "/configuration",
+    // "/column-access-control",
+    // "/configuration",
     // "/integration-monitor",
     "/edit",
+    "/bin-to-bin-transfer-order",
     // "/grn-movement",
     // "/generate-barcode",
     // "/production-order",
@@ -91,6 +93,7 @@ const routes: Routes = {
     // stockTransferOrder: "/stock-transfer-order",
     putAwayOrder: "/putaway-order",
     pickingOrder: "/picking-order",
+    binToBinTransferOrder: "/bin-to-bin-transfer-order",
     assignMovementType: "/assign-movement-type",
 };
 
@@ -135,6 +138,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconTruckReturn color='currentColor' size={24} />,
         label: "Picking Orders",
         route: routes.pickingOrder
+    },
+    {
+        icon: <IconAB2 color='currentColor' size={24} />,
+        label: "Bin To Bin Transfer",
+        route: routes.binToBinTransferOrder
     },
     // {
     //     icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
