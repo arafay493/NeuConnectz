@@ -3,7 +3,11 @@ import { customStyles } from "@/styles/custom-theme";
 
 const ToastMessage = (title: string, message: string, statusCode: number, error: string | null = null) => {
     if (statusCode === 201) {
-        return showNotificationToast(title, `${message}\n${error}`, customStyles.colors._408CCE);
+        if (error) {
+            return showNotificationToast(title, `${message}\n${error}`, customStyles.colors._408CCE);
+        } else {
+            return showNotificationToast(title, `${message}`, customStyles.colors._408CCE);
+        }
     } else if (statusCode === 200) {
         return showNotificationToast(title, `${message}\n${error}`, customStyles.colors.green);
     } else {

@@ -239,7 +239,6 @@ const postBinToBinTransferOrders = createAsyncThunk(
     ) => {
         try {
             const response = await apiPost('/neu-connect/v2/ISapFeature/PostBinTransferToSap', payload, token);
-            console.log("🚀 ~ response:", response)
             // console.log("payload>>>>>>>> " , payload)
             const { data, status } = response;
             const { message, error } = data;
