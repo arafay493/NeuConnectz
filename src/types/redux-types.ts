@@ -166,6 +166,46 @@ export interface PickingOrdersStateType {
     PickingErrorState: string
 };
 
+export interface BinToBinTransferOrdersStateType {
+    ListAllBinToBin: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllOutbound: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllSalesOrder: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllPickingOutBoundViewDetailsData: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    ListAllPickingSalesOrderViewDetailsData: {
+        // data: Array<ListAllPlantsCodesProps>,
+        data: any,
+        totalCount: number
+    };
+    // listGroupCodesByUserId: {
+    //     id: string,
+    //     groupCode: number | string,
+    //     groupName: string,
+    //     createdBy: string,
+    //     updatedBy: string,
+    //     createdDate: string,
+    //     updatedDate: string,
+    //     isActive: boolean,
+    //     isArchived: boolean
+    // }[];
+    PickingErrorState: string
+};
+
 // Note: Plants reducer state types...!
 export interface PlantsStateType {
     ListAllPlantsCodes: {

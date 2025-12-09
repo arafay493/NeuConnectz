@@ -1,6 +1,6 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
-import { CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_RESERVATION_STATES, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_OUTBOUNDS, FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_RESERVATIONS, FETCH_ALL_SALES_ORDER } from "@/redux/reducers/picking-reducer/picking-reducer";
+import { CLEAR_ALL_BIN_TO_BIN_STATES, CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_BIN_TO_BIN, FETCH_ALL_OUTBOUNDS, FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_SALES_ORDER } from "@/redux/reducers/bin-to-bin-reducer/bin-to-bin-reducer";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -29,10 +29,10 @@ const fetchListAllBinToBin = createAsyncThunk(
             const { data: BinToBinTransferData } = data
 
             if (status == 200) {
-                dispatch(FETCH_ALL_RESERVATIONS({ data: BinToBinTransferData }));
+                dispatch(FETCH_ALL_BIN_TO_BIN({ data: BinToBinTransferData }));
             }
         } catch (error) {
-            dispatch(CLEAR_ALL_RESERVATION_STATES())
+            dispatch(CLEAR_ALL_BIN_TO_BIN_STATES())
         }
     }
 );

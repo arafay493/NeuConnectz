@@ -58,7 +58,8 @@ const BinToBinTransferOrderPostedComponent: FC<ApiProp> = ({ apiUrl, reservation
     // Note: Handeling redux here...!
     const dispatch = useAppDispatch();
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { ListAllReservation, ListAllOutbound, ListAllSalesOrder } = useAppSelector(({ pickingStates }) => { return pickingStates });
+    // const { ListAllReservation, ListAllOutbound, ListAllSalesOrder } = useAppSelector(({ pickingStates }) => { return pickingStates });
+    const { ListAllBinToBin, ListAllOutbound, ListAllSalesOrder } = useAppSelector(({ binToBinStates }) => { return binToBinStates });
     // // console.log("productionOrdersList: ", productionOrdersList);
 
     useEffect(() => {
@@ -123,7 +124,7 @@ const BinToBinTransferOrderPostedComponent: FC<ApiProp> = ({ apiUrl, reservation
     }
 
     const columns = BinToBinTransferOrderPosted_Columns({
-        pagination, list: ListAllReservation?.data, actions: {
+        pagination, list: ListAllBinToBin?.data, actions: {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             // handlePost: handlePost,
@@ -276,8 +277,8 @@ const BinToBinTransferOrderPostedComponent: FC<ApiProp> = ({ apiUrl, reservation
 
             {/* Table */}
             {headerBtnType === "Reservation" && <TanStackTable
-                data={Array.isArray(ListAllReservation?.data) ? ListAllReservation?.data : []}
-                dataCount={ListAllReservation?.totalCount}
+                data={Array.isArray(ListAllBinToBin?.data) ? ListAllBinToBin?.data : []}
+                dataCount={ListAllBinToBin?.totalCount}
                 columns={columns}
                 isLoading={isLoading}
                 isInsideModalTable={true}
@@ -286,8 +287,8 @@ const BinToBinTransferOrderPostedComponent: FC<ApiProp> = ({ apiUrl, reservation
                 title={"Posted bin to bin transfer orders"}
                 subTitle={"Track and review bin to bin transfer orders seemlessly."}
                 skipRecord={skipRecord}
-                // isCsvExport={true}
-                // handleExportToCSV={handleExportToCSV}
+            // isCsvExport={true}
+            // handleExportToCSV={handleExportToCSV}
             />}
 
             {/* Table */}

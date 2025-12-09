@@ -1,11 +1,11 @@
 /***** Note: GroupReducer *****/
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PickingOrdersStateType, PutAwayOrdersStateType } from "@/types/redux-types";
+import { BinToBinTransferOrdersStateType} from "@/types/redux-types";
 
 // Note: Reducer states...!
-const initialState: PickingOrdersStateType = {
-    ListAllReservation: {
+const initialState: BinToBinTransferOrdersStateType = {
+    ListAllBinToBin: {
         data: [],
         totalCount: 0
     },
@@ -33,16 +33,16 @@ const pickingOrdersSlice = createSlice({
     initialState,
     reducers: {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PICKING_DATA: (state) => {
-            state.ListAllReservation = {
+            state.ListAllBinToBin = {
                 data: [],
                 totalCount: 0
             };
             state.PickingErrorState = "You are not authorized to access this data!";
         },
 
-        FETCH_ALL_RESERVATIONS: (state, action: PayloadAction<any>) => {
+        FETCH_ALL_BIN_TO_BIN: (state, action: PayloadAction<any>) => {
             state.PickingErrorState = "";
-            state.ListAllReservation = action?.payload?.data;
+            state.ListAllBinToBin = action?.payload?.data;
         },
 
         FETCH_ALL_OUTBOUNDS: (state, action: PayloadAction<any>) => {
@@ -81,8 +81,8 @@ const pickingOrdersSlice = createSlice({
             state.PickingErrorState = "";
         },
 
-        CLEAR_ALL_RESERVATION_STATES: (state) => {
-            state.ListAllReservation = {
+        CLEAR_ALL_BIN_TO_BIN_STATES: (state) => {
+            state.ListAllBinToBin = {
                 data: [],
                 totalCount: 0
             };
@@ -112,12 +112,12 @@ export const
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PICKING_DATA,
         FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
         FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO,
-        FETCH_ALL_RESERVATIONS,
+        FETCH_ALL_BIN_TO_BIN,
         FETCH_ALL_OUTBOUNDS,
         FETCH_ALL_SALES_ORDER,
         CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
         CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO,
-        CLEAR_ALL_RESERVATION_STATES,
+        CLEAR_ALL_BIN_TO_BIN_STATES,
         CLEAR_ALL_OUTBOUND_STATES,
         CLEAR_ALL_SALES_ORDER_STATES
     } = pickingOrdersSlice.actions;
