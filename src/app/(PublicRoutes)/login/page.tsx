@@ -345,13 +345,13 @@ const LoginScreen = () => {
                     gap={8}
                     justify="center"
                     p='sm'
-                    style={{
-                        position: 'absolute',
-                        bottom: 80,
-                        left: 0,
-                        right: 0,
-                        borderRadius: '6px',
-                    }}
+                    // style={{
+                    //     position: 'relative',
+                    //     bottom: 80,
+                    //     left: 0,
+                    //     right: 0,
+                    //     borderRadius: '6px',
+                    // }}
                 >
                     <Text size='sm' fw={500} c={customStyles.colors._909090}>
                         Powered By
