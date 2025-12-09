@@ -154,7 +154,7 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
                     const date = getValue();
                     return (
                         <Text fw={500} c={customStyles.colors._909090} ta="center">
-                            {date ? dayjs(date).format("DD/MM/YYYY HH:mm") : "-"}
+                            {date ? dayjs(date).format("DD/MM/YYYY") : "-"}
                         </Text>
                     );
                 },
