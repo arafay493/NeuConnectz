@@ -251,28 +251,6 @@ const postPickingReservationOrders = createAsyncThunk(
     }
 );
 
-const deletePickingOrders = createAsyncThunk(
-    "picking/deletePickingOrders",
-    async (
-        { apiUrl , token, resHandler }:
-            any,
-        { dispatch }
-    ) => {
-        try {
-            const response = await apiPut(`/neu-connect/v2${apiUrl}`, token);
-            console.log("🚀 ~ response:", response)
-            // console.log("payload>>>>>>>> " , payload)
-            const { data, status } = response;
-            const { message, error } = data;
-            resHandler(status, message, error);
-        } catch (error) {
-            // resHandler(400, error)
-            console.log("response error", error)
-        }
-
-    }
-);
-
 const postPickingOutBoundOrders = createAsyncThunk(
     "picking/postPickingOutBoundOrders",
     async (
@@ -312,6 +290,27 @@ const postPickingSalesOrders = createAsyncThunk(
             console.log("response error", error)
         }
 
+    }
+);
+
+
+const deletePickingOrders = createAsyncThunk(
+    "picking/deletePickingOrders",
+    async (
+        { apiUrl , token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPut(`/neu-connect/v2${apiUrl}`, token);
+            // console.log("payload>>>>>>>> " , payload)
+            const { data, status, error } = response;
+            const { message } = data;
+            resHandler(status, message, error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
     }
 );
 
