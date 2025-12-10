@@ -302,6 +302,12 @@ const AssignWarehouseComponent = () => {
     const [isMainLoading, setIsMainLoading] = useState(false);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
 
+    useEffect(() => {
+        if (selectedUser === null) {
+            handleUserRemoved()
+        }
+    }, [])
+
 
     useEffect(() => {
         const assignedIds = warehouseByUserPlantsList.map((p: any) => p.id);
@@ -556,9 +562,10 @@ const AssignWarehouseComponent = () => {
                 skipRecords: skipRecord,
             })
         ).finally(() => {
-            setSelectedWarehousesAllow([])
-            setSelectedWarehousesReceive([])
-            setSelectedUser(null)
+            // setSelectedWarehousesAllow([])
+            // setSelectedWarehousesReceive([])
+            // setSelectedUser(null)
+            // handleUserRemoved()
             setIsLoading(false);
         });
     }
