@@ -1,6 +1,6 @@
 import { customStyles } from '@/styles/custom-theme';
 import { Button, Group, Text } from '@mantine/core';
-import { IconCircleFilled } from '@tabler/icons-react';
+import { IconCircleFilled, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
@@ -219,6 +219,21 @@ const PickingOrderUnPosted_Reservation_Columns = ({ pagination, list, actions }:
                                 Post
                             </Button>
                         )}
+                        {/* handleDelete */}
+                        <Button
+                            variant="filled"
+                            // className={"filledButton"}
+                            color={customStyles.colors.red}
+                            // disabled={row?.original?.confirmationStatus !== "Confirmed"}
+                            leftSection={<IconTrash size={18} />}
+                            radius={8}
+                            miw={121}
+                            onClick={() =>
+                                actions.handleDelete(row.original)
+                            }
+                        >
+                            Delete
+                        </Button>
                     </Group>
                 ),
                 enableColumnFilter: false,

@@ -1,12 +1,12 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { apiGet, apiPost } from "@/lib/api-service";
+import { apiGet, apiPost, apiPut } from "@/lib/api-service";
 import { CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_RESERVATION_STATES, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_OUTBOUNDS, FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_RESERVATIONS, FETCH_ALL_SALES_ORDER } from "@/redux/reducers/picking-reducer/picking-reducer";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchListAllReservation = createAsyncThunk(
-    "putaway/fetchListAllReservation",
+    "picking/fetchListAllReservation",
     async (
         { authToken, lastCount, skipRecords, apiUrl }:
             {
@@ -38,7 +38,7 @@ const fetchListAllReservation = createAsyncThunk(
 );
 
 const fetchListAllOutbounds = createAsyncThunk(
-    "putaway/fetchListAllOutbounds",
+    "picking/fetchListAllOutbounds",
     async (
         { authToken, lastCount, skipRecords, apiUrl }:
             {
@@ -70,7 +70,7 @@ const fetchListAllOutbounds = createAsyncThunk(
 );
 
 const fetchListAllSalesOrder = createAsyncThunk(
-    "putaway/fetchListAllSalesOrder",
+    "picking/fetchListAllSalesOrder",
     async (
         { authToken, lastCount, skipRecords, apiUrl }:
             {
@@ -102,7 +102,7 @@ const fetchListAllSalesOrder = createAsyncThunk(
 );
 
 const fetchListAllSalesOrderDetailsByDocNo = createAsyncThunk(
-    "putaway/fetchListAllSalesOrderDetailsByDocNo",
+    "picking/fetchListAllSalesOrderDetailsByDocNo",
     async (
         { authToken, docNumber, lastCount, skipRecords, apiUrl }:
             {
@@ -138,7 +138,7 @@ const fetchListAllSalesOrderDetailsByDocNo = createAsyncThunk(
 );
 
 const fetchListAllOutboundDetailsByDocNo = createAsyncThunk(
-    "putaway/fetchListAllOutboundDetailsByDocNo",
+    "picking/fetchListAllOutboundDetailsByDocNo",
     async (
         { authToken, docNumber, lastCount, skipRecords, apiUrl }:
             {
@@ -174,7 +174,7 @@ const fetchListAllOutboundDetailsByDocNo = createAsyncThunk(
 );
 
 const confirmPickingReservationOrders = createAsyncThunk(
-    "putaway/confirmPickingReservationOrders",
+    "picking/confirmPickingReservationOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -193,7 +193,7 @@ const confirmPickingReservationOrders = createAsyncThunk(
 );
 
 const confirmPickingOutBoundOrders = createAsyncThunk(
-    "putaway/confirmPickingOutBoundOrders",
+    "picking/confirmPickingOutBoundOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -212,7 +212,7 @@ const confirmPickingOutBoundOrders = createAsyncThunk(
 );
 
 const confirmPickingSalesOrders = createAsyncThunk(
-    "putaway/confirmPickingSalesOrders",
+    "picking/confirmPickingSalesOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -231,7 +231,7 @@ const confirmPickingSalesOrders = createAsyncThunk(
 );
 
 const postPickingReservationOrders = createAsyncThunk(
-    "putaway/postPickingReservationOrders",
+    "picking/postPickingReservationOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -251,8 +251,30 @@ const postPickingReservationOrders = createAsyncThunk(
     }
 );
 
+const deletePickingOrders = createAsyncThunk(
+    "picking/deletePickingOrders",
+    async (
+        { apiUrl , token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPut(`/neu-connect/v2${apiUrl}`, token);
+            console.log("🚀 ~ response:", response)
+            // console.log("payload>>>>>>>> " , payload)
+            const { data, status } = response;
+            const { message, error } = data;
+            resHandler(status, message, error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
+
+    }
+);
+
 const postPickingOutBoundOrders = createAsyncThunk(
-    "putaway/postPickingOutBoundOrders",
+    "picking/postPickingOutBoundOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -273,7 +295,7 @@ const postPickingOutBoundOrders = createAsyncThunk(
 );
 
 const postPickingSalesOrders = createAsyncThunk(
-    "putaway/postPickingSalesOrders",
+    "picking/postPickingSalesOrders",
     async (
         { payload, token, resHandler }:
             any,
@@ -305,5 +327,6 @@ export {
     postPickingReservationOrders,
     postPickingOutBoundOrders,
     postPickingSalesOrders,
+    deletePickingOrders
 };
 

@@ -101,7 +101,7 @@ const postPutAwayOrders = createAsyncThunk(
         try {
             const response = await apiPost('/neu-connect/v2/ISapFeature/PostPutAwayAgainstGR', payload, token);
             // console.log("payload>>>>>>>> " , payload)
-            const { data, status} = response;
+            const { data, status } = response;
             const { message, error } = data?.data;
             resHandler(status, message, error);
         } catch (error) {
@@ -120,12 +120,14 @@ const deletePutAwayOrders = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPut('/neu-connect/v2/IPutAwayFeature/DeletePutAwayRequest', payload, token);
+            const params: any = {
+                docNum: String(payload?.docNum)
+            };
+            const response = await apiPut(`/neu-connect/v2/IPutAwayFeature/DeletePutAwayRequest?docNum=${params.docNum}`, token);
             // console.log("payload>>>>>>>> " , payload)
-            const { status, error} = response;
-            // const { message } = data
-            // resHandler(status, message, error);
-            resHandler(status, "", error);
+            const { status, error, data } = response;
+            const { message } = data
+            resHandler(status, message, error);
         } catch (error) {
             // resHandler(400, error)
             console.log("response error", error)

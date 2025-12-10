@@ -7,7 +7,7 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import PickingOrderUnPosted_Reservation_Columns from '../columns/PickingOrderUnPosted_Reservation_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPickingOutBoundOrders, confirmPickingReservationOrders, confirmPickingSalesOrders, fetchListAllOutbounds, fetchListAllReservation, fetchListAllSalesOrder, postPickingOutBoundOrders, postPickingReservationOrders, postPickingSalesOrders } from '@/redux/actions/picking-actions/picking-actions';
+import { confirmPickingOutBoundOrders, confirmPickingReservationOrders, confirmPickingSalesOrders, deletePickingOrders, fetchListAllOutbounds, fetchListAllReservation, fetchListAllSalesOrder, postPickingOutBoundOrders, postPickingReservationOrders, postPickingSalesOrders } from '@/redux/actions/picking-actions/picking-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
@@ -15,6 +15,7 @@ import { IconFileImport } from '@tabler/icons-react';
 import PickingOrderUnPosted_Outbound_Columns from '../columns/PickingOrderUnPosted_Outbound_Columns';
 import PickingOrderUnPosted_Sales_Order_Columns from '../columns/PickingOrderUnPosted_Sales_Order_Columns';
 import { useMediaQuery } from '@mantine/hooks';
+import DeleteModal from '../modals/delete-modal/DeleteModal';
 
 type ApiProp = {
     apiUrl: string;
@@ -50,6 +51,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
 
     // Note: Table modal state...!
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound" | "SalesOrder">("Reservation");
@@ -114,6 +116,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
         setIsViewDetailsModalOpen(false)
+        setIsDeleteModalOpen(false)
     }
 
     const handleConfirm = () => {
@@ -252,6 +255,34 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         })
     }
 
+    const handleDelete = () => {
+        if(headerBtnType === "Reservation"){
+            handleModalClose()
+            setIsFullPageLoading(true)
+            dispatch(deletePickingOrders({
+                apiUrl: `/IReservationFeature/DeleteReservation?docNum=${selectedRow?.docNum}`,
+                token: authenticatedUser?.token || '',
+                resHandler: handleDeleteResponse
+            })).finally(() => {
+                setIsFullPageLoading(false)
+                setIsLoading(true);
+                dispatch(fetchListAllReservation({
+                    authToken: authenticatedUser?.token || '',
+                    apiUrl: reservationApiUrl,
+                    lastCount: pagination.pageSize,
+                    skipRecords: skipRecord
+                })).finally(() => {
+                    setIsLoading(false)
+                });
+            })
+        }
+    }
+
+    const handleDeleteModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
+        setIsDeleteModalOpen(true)
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -267,6 +298,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePostReservation,
+            handleDelete: handleDeleteModalOpen
             // handlePost: () => { },
         }
     })
@@ -340,6 +372,15 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         }
     }
 
+    const handleDeleteResponse = (status: number, message: string, error: string) => {
+        if (status === 200) {
+            ToastMessage("Picking Delete", message, status, error)
+            // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else {
+            ToastMessage("Error", message, status, error)
+        }
+    }
+
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
     }
@@ -353,6 +394,8 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
         <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
             {/* Confirm Modal */}
             <ConfirmModal description='Are you sure you want to proceed? This action cannot be undone.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
+            {/* Delete Modal */}
+            <DeleteModal description='Are you sure you want to proceed? This action cannot be undone.' opened={isDeleteModalOpen} handleCancel={handleModalClose} handleConfirm={handleDelete} handleModalClose={handleModalClose} />
             {/* View Modal */}
             <PickingUnPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}
