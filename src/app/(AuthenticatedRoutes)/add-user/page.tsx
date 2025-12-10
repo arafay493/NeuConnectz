@@ -18,7 +18,7 @@ import {
     Text,
     Stack,
 } from '@mantine/core';
-import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff, IconUserCheck } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
@@ -283,19 +283,256 @@ const AddUserScreen = () => {
             {/* Note: Loading Component */}
             <Loader loadingState={userData.loading} />
 
-            <Title order={2} style={{
-                color: customStyles.colors._4D4D4D,
-                textTransform: customStyles.textTransformation.capitalize
-            }}>
-                add user
-            </Title>
 
-            <Text size="sm" c="dimmed" mb="xl" style={{ color: customStyles.colors._909090 }}>
-                Username, email, phone, upload picture
-            </Text>
+
+            <Group justify='space-between' mb={"lg"}>
+                <Group gap={5} ps={5} style={{flexDirection: "column", justifyContent: "start",alignItems: "start"}}>
+
+                    <Title order={2} style={{
+                        color: customStyles.colors._4D4D4D,
+                        textTransform: customStyles.textTransformation.capitalize
+                    }}>
+                        add user
+                    </Title>
+
+                    <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+                        Username, email, phone, upload picture
+                    </Text>
+                </Group>
+                <Group justify="flex-end" mt="xl">
+                    <Button
+                        size="md"
+                        radius={"md"}
+                        leftSection={<IconUserCheck size={18} />}
+                        fullWidth
+                        color={customStyles.colors._1B59F8}
+                        onClick={addUserHandler}
+                    >
+                        Save User
+                    </Button>
+                </Group>
+            </Group>
 
             <Grid gutter="xl">
                 <Grid.Col span={{ base: 12, md: 8 }}>
+                    <Card
+                        withBorder
+                        radius="lg"
+                        p="xl"
+                        shadow="md"
+                        style={{
+                            height: "auto",
+                            borderColor: "#e0e0e0",
+                            background: "#fcfcff"
+                        }}
+                    >
+                        <Stack gap="lg">
+
+                            {/* USERNAME + EMAIL */}
+                            <Group grow gap="lg">
+                                <TextInput
+                                    label="User Name"
+                                    placeholder="Enter user name"
+                                    value={userData.userName}
+                                    onChange={(e) => handleChange("userName", e.target.value)}
+                                    radius="md"
+                                    size="md"
+                                    required
+                                />
+
+                                <TextInput
+                                    label="Email"
+                                    placeholder="Enter email address"
+                                    type="email"
+                                    value={userData.email}
+                                    onChange={(e) => handleChange("email", e.target.value)}
+                                    radius="md"
+                                    size="md"
+                                    required
+                                />
+                            </Group>
+
+                            {/* DEPARTMENT + ROLE */}
+                            <Group grow gap="lg">
+                                <Select
+                                    label="Department"
+                                    placeholder="Select department"
+                                    data={depOptions}
+                                    value={userData.department}
+                                    radius="md"
+                                    size="md"
+                                    onChange={(val) => handleChange("department", val)}
+                                    required
+                                />
+
+                                <Select
+                                    label="User Role"
+                                    placeholder="Select role"
+                                    data={rolesOptions}
+                                    value={userData.role}
+                                    radius="md"
+                                    size="md"
+                                    onChange={(val) => handleChange("role", val)}
+                                    required
+                                    maxDropdownHeight={150}
+                                    rightSection={
+                                        rolesOptionsLoading ? (
+                                            <FadeLoader
+                                                height={12}
+                                                width={3}
+                                                radius={1}
+                                                margin={1}
+                                                color="#1b59f8"
+                                            />
+                                        ) : null
+                                    }
+                                    scrollAreaProps={{
+                                        onScrollEndCapture: (e) => OnScrollEndPaginate(e),
+                                    }}
+                                />
+                            </Group>
+
+                            {/* PHONE + PASSWORD */}
+                            <Group grow gap="lg">
+                                <TextInput
+                                    type="text"
+                                    inputMode="numeric"
+                                    label="Phone Number"
+                                    placeholder="03XX-XXXXXXX"
+                                    value={userData.phone}
+                                    onChange={(e) => handleChange("phone", e.target.value)}
+                                    maxLength={13}
+                                    radius="md"
+                                    size="md"
+                                    required
+                                />
+
+                                <PasswordInput
+                                    label="Password"
+                                    placeholder="Enter password"
+                                    value={userData.password}
+                                    onChange={(e) => handleChange("password", e.target.value)}
+                                    radius="md"
+                                    size="md"
+                                    required
+                                    visibilityToggleIcon={({ reveal }) =>
+                                        reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />
+                                    }
+                                />
+                            </Group>
+
+                            {/* CONFIRM PASSWORD */}
+                            <PasswordInput
+                                label="Confirm Password"
+                                placeholder="Re-enter password"
+                                value={userData.confirmPassword}
+                                onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                                radius="md"
+                                size="md"
+                                required
+                                visibilityToggleIcon={({ reveal }) =>
+                                    reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />
+                                }
+                            />
+
+                        </Stack>
+                    </Card>
+                </Grid.Col>
+
+                <Grid.Col span={{ base: 12, md: 4 }}>
+                    <Card
+                        withBorder
+                        radius="lg"
+                        p="xl"
+                        shadow="md"
+                        // style={{
+                        //     height: "auto",
+                        //     borderColor: "#e0e0e0",
+                        //     background: "#fcfcff",
+                        // }}
+                        style={{
+                            height: "100%",        // ⭐ This will make height match left-side
+                            background: "#fcfcff",
+                            borderColor: "#e0e0e0",
+                            display: "flex",       // ⭐ Make content stretch vertically
+                            flexDirection: "column",
+                            justifyContent: "space-between"
+                        }}
+                    >
+                        <Stack align="center" gap="lg">
+
+                            {/* IMAGE PREVIEW */}
+                            {userData.preview ? (
+                                <Image
+                                    src={userData.preview}
+                                    alt="Profile Preview"
+                                    width={200}
+                                    height={200}
+                                    unoptimized
+                                    style={{
+                                        objectFit: "cover",
+                                        borderRadius: "12px",
+                                        boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
+                                    }}
+                                />
+                            ) : (
+                                <Image
+                                    src={userIcon}
+                                    alt="User Icon"
+                                    width={180}
+                                    height={180}
+                                    unoptimized={true}
+                                    priority={true}
+                                    style={{
+                                        objectFit: "cover",
+                                        borderRadius: "12px",
+                                        opacity: 0.9,
+                                        boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
+                                    }}
+                                />
+                            )}
+
+                            {/* UPLOAD BUTTON */}
+                            <FileButton onChange={handleImageChange} accept="image/png,image/jpeg">
+                                {(props) => (
+                                    <Button
+                                        fullWidth
+                                        radius="md"
+                                        size="md"
+                                        leftSection={<IconUpload size={16} />}
+                                        {...props}
+                                        color={customStyles.colors._1B59F8}
+                                        style={{
+                                            fontWeight: 500,
+                                        }}
+                                    >
+                                        Upload Picture
+                                    </Button>
+                                )}
+                            </FileButton>
+
+                            {/* DELETE BUTTON */}
+                            <Button
+                                variant="light"
+                                color={customStyles.colors.red}
+                                fullWidth
+                                radius="md"
+                                size="md"
+                                leftSection={<IconTrash size={16} />}
+                                onClick={removeUploadedImage}
+                                disabled={!userData.image}
+                                style={{
+                                    fontWeight: 500,
+                                }}
+                            >
+                                Delete Picture
+                            </Button>
+
+                        </Stack>
+                    </Card>
+                </Grid.Col>
+
+                {/* <Grid.Col span={{ base: 12, md: 8 }}>
                     <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: "auto" }}>
                         <Stack gap="md">
                             <Group grow>
@@ -379,9 +616,9 @@ const AddUserScreen = () => {
                             />
                         </Stack>
                     </Card>
-                </Grid.Col>
+                </Grid.Col> */}
 
-                <Grid.Col span={{ base: 12, md: 4 }}>
+                {/* <Grid.Col span={{ base: 12, md: 4 }}>
                     <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: "auto" }}>
                         <Stack align="center" gap="md">
                             {
@@ -445,10 +682,10 @@ const AddUserScreen = () => {
                             </Button>
                         </Stack>
                     </Card>
-                </Grid.Col>
+                </Grid.Col> */}
             </Grid>
 
-            <Group justify="flex-end" mt="xl">
+            {/* <Group justify="flex-end" mt="xl">
                 <Button
                     size="md"
                     leftSection={<IconUserPlus size={18} />}
@@ -458,7 +695,7 @@ const AddUserScreen = () => {
                 >
                     Save User
                 </Button>
-            </Group>
+            </Group> */}
         </Container>
     );
 };
