@@ -331,7 +331,7 @@ const AddUserScreen = () => {
                         withBorder
                         radius="lg"
                         p="xl"
-                        shadow="md"
+                        // shadow="md"
                         style={{
                             height: "auto",
                             borderColor: "#e0e0e0",
@@ -456,7 +456,7 @@ const AddUserScreen = () => {
                         withBorder
                         radius="lg"
                         p="xl"
-                        shadow="md"
+                        // shadow="md"
                         // style={{
                         //     height: "auto",
                         //     borderColor: "#e0e0e0",
