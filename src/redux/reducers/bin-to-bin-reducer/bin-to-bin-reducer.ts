@@ -1,7 +1,7 @@
 /***** Note: GroupReducer *****/
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BinToBinTransferOrdersStateType} from "@/types/redux-types";
+import { BinToBinTransferOrdersStateType } from "@/types/redux-types";
 
 // Note: Reducer states...!
 const initialState: BinToBinTransferOrdersStateType = {
@@ -17,7 +17,7 @@ const initialState: BinToBinTransferOrdersStateType = {
         data: [],
         totalCount: 0
     },
-    ListAllPickingOutBoundViewDetailsData: {
+    ListAllBinToBinViewDetailsData: {
         data: [],
         totalCount: 0
     },
@@ -55,9 +55,12 @@ const pickingOrdersSlice = createSlice({
             state.ListAllSalesOrder = action?.payload?.data;
         },
 
-        FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
+        FETCH_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
             state.PickingErrorState = "";
-            state.ListAllPickingOutBoundViewDetailsData = action?.payload;
+            state.ListAllBinToBinViewDetailsData = {
+                data: action?.payload?.data?.lineItems,
+                totalCount: action?.payload?.data?.totalCount
+            };
         },
 
         FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
@@ -73,8 +76,8 @@ const pickingOrdersSlice = createSlice({
             state.PickingErrorState = "";
         },
 
-        CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO: (state) => {
-            state.ListAllPickingOutBoundViewDetailsData = {
+        CLEAR_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO: (state) => {
+            state.ListAllBinToBinViewDetailsData = {
                 data: [],
                 totalCount: 0
             };
@@ -110,12 +113,12 @@ const pickingOrdersSlice = createSlice({
 export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_PICKING_DATA,
-        FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
+        FETCH_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO,
         FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO,
         FETCH_ALL_BIN_TO_BIN,
         FETCH_ALL_OUTBOUNDS,
         FETCH_ALL_SALES_ORDER,
-        CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO,
+        CLEAR_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO,
         CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO,
         CLEAR_ALL_BIN_TO_BIN_STATES,
         CLEAR_ALL_OUTBOUND_STATES,

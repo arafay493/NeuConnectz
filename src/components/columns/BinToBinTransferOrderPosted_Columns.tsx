@@ -217,44 +217,44 @@ const BinToBinTransferOrderPosted_Columns = ({ pagination, list, actions }: any)
             },
 
             // ========== ACTIONS COLUMN (UNCHANGED) ==========
-            // {
-            //     id: "reservation_actions",
-            //     header: "Actions",
-            //     cell: ({ row }: any) => (
-            //         <Group gap="xs" justify="center" style={{ flexWrap: "nowrap" }}>
-            //             <Button
-            //                 variant="transparent"
-            //                 className="outlineButton"
-            //                 radius={8}
-            //                 onClick={() => actions.handleViewDetailsModalOpen(row.original)}
-            //             >
-            //                 View Details
-            //             </Button>
+            {
+                id: "reservation_actions",
+                header: "Actions",
+                cell: ({ row }: any) => (
+                    <Group gap="xs" justify="center" style={{ flexWrap: "nowrap" }}>
+                        <Button
+                            variant="transparent"
+                            className="outlineButton"
+                            radius={8}
+                            onClick={() => actions.handleViewDetailsModalOpen(row.original)}
+                        >
+                            View Details
+                        </Button>
 
-            //             {row.original?.confirmationStatus !== "Confirmed" ? (
-            //                 <Button
-            //                     variant="transparent"
-            //                     className="filledButton"
-            //                     radius={8}
-            //                     miw={121}
-            //                     onClick={() => actions.handleConfirmModalOpen(row.original)}
-            //                 >
-            //                     Confirm
-            //                 </Button>
-            //             ) : (
-            //                 <Button
-            //                     variant="transparent"
-            //                     className="filledButton"
-            //                     radius={8}
-            //                     miw={121}
-            //                     onClick={() => actions.handlePost(row.original)}
-            //                 >
-            //                     Post
-            //                 </Button>
-            //             )}
-            //         </Group>
-            //     ),
-            // },
+                        {/* {row.original?.confirmationStatus !== "Confirmed" ? (
+                            <Button
+                                variant="transparent"
+                                className="filledButton"
+                                radius={8}
+                                miw={121}
+                                onClick={() => actions.handleConfirmModalOpen(row.original)}
+                            >
+                                Confirm
+                            </Button>
+                        ) : (
+                            <Button
+                                variant="transparent"
+                                className="filledButton"
+                                radius={8}
+                                miw={121}
+                                onClick={() => actions.handlePost(row.original)}
+                            >
+                                Post
+                            </Button>
+                        )} */}
+                    </Group>
+                ),
+            },
         ],
         [list, pagination]
     );

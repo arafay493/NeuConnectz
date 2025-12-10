@@ -15,6 +15,7 @@ import PickingOrderUnPosted_Sales_Order_Columns from '../columns/PickingOrderUnP
 import { useMediaQuery } from '@mantine/hooks';
 import BinToBinTransferOrderUnPosted_Columns from '../columns/BinToBinTransferOrderUnPosted_Columns';
 import DeleteModal from '../modals/delete-modal/DeleteModal';
+import BinToBinViewDetailsModal from '../modals/bin-to-bin-view-details-modal/BinToBinViewDetailsModal';
 
 type ApiProp = {
     apiUrl: string;
@@ -439,7 +440,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
             {/* Delete Modal */}
             <DeleteModal description='Are you sure you want to proceed? This action cannot be undone.' opened={isDeleteModalOpen} handleCancel={handleModalClose} handleConfirm={handleDelete} handleModalClose={handleModalClose} />
             {/* View Modal */}
-            <PickingUnPostedViewDetailsModal
+            <BinToBinViewDetailsModal
                 opened={isViewDetailsModalOpen}
                 handleModalClose={handleModalClose}
                 row={selectedRow}
@@ -447,10 +448,10 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
                 setIsLoading={setIsViewLoading}
                 pagination={paginationViewDetails}
                 setPagination={setPaginationViewDetails}
-                title={"Picking Unposted"}
-                subTitle={"Track and review picking orders seemlessly."}
+                title={"Bin To Bin Transfer Unposted"}
+                subTitle={"Confirm transfer orders for bin to bin transfer."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : ""}
+                apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : "/IBinManagementFeature/GetDetailsofBinTransfer"}
                 docNumber={selectedRow?.docNum}
                 isReservation={headerBtnType === "Reservation"}
             />

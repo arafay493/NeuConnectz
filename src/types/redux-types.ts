@@ -182,7 +182,7 @@ export interface BinToBinTransferOrdersStateType {
         data: any,
         totalCount: number
     };
-    ListAllPickingOutBoundViewDetailsData: {
+    ListAllBinToBinViewDetailsData: {
         // data: Array<ListAllPlantsCodesProps>,
         data: any,
         totalCount: number

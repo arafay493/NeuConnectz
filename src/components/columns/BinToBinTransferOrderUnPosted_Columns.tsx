@@ -197,14 +197,14 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
                 header: "Actions",
                 cell: ({ row }: any) => (
                     <Group gap="xs" justify="center" style={{ flexWrap: "nowrap" }}>
-                        {/* <Button
+                        <Button
                             variant="transparent"
                             className="outlineButton"
                             radius={8}
                             onClick={() => actions.handleViewDetailsModalOpen(row.original)}
                         >
                             View Details
-                        </Button> */}
+                        </Button>
 
                         {row.original?.confirmationStatus !== "Confirmed" ? (
                             <Button

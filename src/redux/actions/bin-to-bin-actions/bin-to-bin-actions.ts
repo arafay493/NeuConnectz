@@ -1,8 +1,5 @@
-import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost, apiPut } from "@/lib/api-service";
-import { CLEAR_ALL_BIN_TO_BIN_STATES, CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_BIN_TO_BIN, FETCH_ALL_OUTBOUNDS, FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_SALES_ORDER } from "@/redux/reducers/bin-to-bin-reducer/bin-to-bin-reducer";
-import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
-import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
+import { CLEAR_ALL_BIN_TO_BIN_STATES, CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_BIN_TO_BIN, FETCH_ALL_OUTBOUNDS, FETCH_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_SALES_ORDER, CLEAR_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO } from "@/redux/reducers/bin-to-bin-reducer/bin-to-bin-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchListAllBinToBin = createAsyncThunk(
@@ -137,7 +134,7 @@ const fetchListAllSalesOrderDetailsByDocNo = createAsyncThunk(
     }
 );
 
-const fetchListAllOutboundDetailsByDocNo = createAsyncThunk(
+const fetchListAllBinToBinTransferOrderDetailsByDocNo = createAsyncThunk(
     "putaway/fetchListAllOutboundDetailsByDocNo",
     async (
         { authToken, docNumber, lastCount, skipRecords, apiUrl }:
@@ -165,10 +162,10 @@ const fetchListAllOutboundDetailsByDocNo = createAsyncThunk(
             const { data: PickingOutBoundViewDetailsData } = data
 
             if (status == 200) {
-                dispatch(FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO({ data: PickingOutBoundViewDetailsData, totalCount: 0 }));
+                dispatch(FETCH_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO({ data: PickingOutBoundViewDetailsData, totalCount: 0 }));
             }
         } catch (error) {
-            dispatch(CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO())
+            dispatch(CLEAR_ALL_BIN_TO_BIN_DETAILS_BY_DOC_NO())
         }
     }
 );
@@ -318,7 +315,7 @@ export {
     fetchListAllOutbounds,
     fetchListAllSalesOrder,
     fetchListAllSalesOrderDetailsByDocNo,
-    fetchListAllOutboundDetailsByDocNo,
+    fetchListAllBinToBinTransferOrderDetailsByDocNo,
     confirmBinToBinTransferOrders,
     confirmPickingOutBoundOrders,
     confirmPickingSalesOrders,
