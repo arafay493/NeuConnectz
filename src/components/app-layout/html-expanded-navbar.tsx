@@ -72,7 +72,7 @@ const HtmlExpandedNavbar = ({
             onClick={() => handleNavigation(item.route, index)}
             w='100%'
             // w={260}
-            miw={260}
+            // miw={260}
             title={item?.label}
             h={48}
             style={{
@@ -103,7 +103,7 @@ const HtmlExpandedNavbar = ({
 
     return (
         <aside style={{
-            width: isMobile ? '100%' : '240px',
+            width: isMobile ? '100%' : '260px',
             backgroundColor: customStyles.colors.white,
             height: '100%',
             display: 'flex',
@@ -189,7 +189,7 @@ const HtmlExpandedNavbar = ({
                                                 display: "flex",
                                                 alignItems: "center",
                                                 margin: "12px 0",
-                                                width: "100%",
+                                                // width: "100%",
                                                 position: "relative"
                                             }}
                                         >

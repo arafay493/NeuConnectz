@@ -150,7 +150,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
                 top: 0,
                 left: 0,
                 bottom: 0,
-                width: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '100%' : '240px'),
+                width: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '100%' : '260px'),
                 backgroundColor: customStyles.colors.white,
                 zIndex: 1000,
                 transition: 'width 0.3s ease',
@@ -178,7 +178,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
             {/* Main Content Area */}
             <div style={{
                 flex: 1,
-                marginLeft: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '0' : '230px'),
+                marginLeft: collapsed ? (isMobile ? '0' : '80px') : (isMobile ? '0' : '250px'),
                 transition: 'margin-left 0.3s ease',
                 display: 'flex',
                 flexDirection: 'column',
