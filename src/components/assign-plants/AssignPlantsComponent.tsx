@@ -445,8 +445,7 @@ const AssignPlantsComponent = () => {
         <Group>
           <Button
             variant="transparent"
-            // className={!selectedUser ? "filledDisabledButton" : "filledButton"}
-            className={"outlineButton"}
+            className={!selectedUser ? "outlineDisabledButton" : "outlineButton"}
             radius={8}
             size={isSmallScreen ? "sm" : "md"}
             leftSection={<IconBuilding size={isSmallScreen ? 20 : 24} />}
