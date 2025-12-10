@@ -49,6 +49,7 @@ const AddUserScreen = () => {
         preview: null as string | null,
         loading: false
     });
+    const allFieldsCheck = userData.userName && userData.email && userData.department && userData.role && userData.phone && userData.password && userData.confirmPassword ? true : false
     const [rolesOptions, setRolesOptions] = useState<{ value: string, label: string }[]>([]);
     const [rolesOptionsLoading, setRolesOptionsLoading] = useState<boolean>(false);
     const [depOptions, setDepOptions] = useState<{ value: string, label: string }[]>([]);
@@ -169,7 +170,6 @@ const AddUserScreen = () => {
             password,
             confirmPassword,
         } = userData;
-        console.log("🚀 ~ addUserHandler ~ userData:", userData)
 
         try {
             if (userName.trim().length < 1) throw "Username is required";
@@ -296,7 +296,7 @@ const AddUserScreen = () => {
                         color={"transparent"}
                         // onClick={addUserHandler}
                     > */}
-                    <Box onClick={() => router.push("/users-list")} style={{cursor: "pointer"}}>
+                    <Box onClick={() => router.push("/users-list")} style={{ cursor: "pointer" }}>
                         <IconArrowLeft size={25} color={customStyles.colors._4D4D4D} />
                     </Box>
                     {/* </Button> */}
@@ -317,6 +317,8 @@ const AddUserScreen = () => {
                         radius={"md"}
                         leftSection={<IconUserCheck size={18} />}
                         fullWidth
+                        className={!allFieldsCheck ? "filledDisabledButton" : "filledButton"}
+                        disabled={!allFieldsCheck}
                         color={customStyles.colors._1B59F8}
                         onClick={addUserHandler}
                     >
