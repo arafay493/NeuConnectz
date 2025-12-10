@@ -17,9 +17,10 @@ import {
   Title,
   Text,
   Stack,
-  Switch
+  Switch,
+  Box
 } from '@mantine/core';
-import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff, IconArrowLeft, IconUserCheck } from '@tabler/icons-react';
 import { useRouter, useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
@@ -95,7 +96,7 @@ const EditUserScreen = () => {
         }));
         setIsUserActiveState(response?.data?.data?.isActive)
       } catch (err: any) {
-        const {message, status} = err
+        const { message, status } = err
 
         // if(status === 401) handleRefreshToken("Session Expired")
         console.log(err || "Something went wrong");
@@ -210,7 +211,37 @@ const EditUserScreen = () => {
       {/* Note: Loading Component */}
       <Loader loadingState={userData.loading} />
 
-      <Title
+      <Group justify='space-between' mb={"lg"}>
+        <Group gap={5} ps={5} style={{ flexDirection: "column", justifyContent: "start", alignItems: "start" }}>
+          <Box onClick={() => router.push("/users-list")} style={{ cursor: "pointer" }}>
+            <IconArrowLeft size={25} color={customStyles.colors._4D4D4D} />
+          </Box>
+          {/* </Button> */}
+          <Title order={2} style={{
+            color: customStyles.colors._4D4D4D,
+            textTransform: customStyles.textTransformation.capitalize
+          }}>
+            update user
+          </Title>
+
+          <Text size="sm" c="dimmed" style={{ color: customStyles.colors._909090 }}>
+            Username, email, phone, upload picture
+          </Text>
+        </Group>
+        <Group justify="flex-end" mt="xl">
+          <Button
+            size="md"
+            radius={"md"}
+            leftSection={<IconUserCheck size={18} />}
+            fullWidth
+            color={customStyles.colors._1B59F8}
+            onClick={updateUserHandler}
+          >
+            Update User
+          </Button>
+        </Group>
+      </Group>
+      {/* <Title
         order={2}
         style={{
           color: customStyles.colors._4D4D4D,
@@ -222,10 +253,231 @@ const EditUserScreen = () => {
 
       <Text size="sm" c="dimmed" mb="xl" style={{ color: customStyles.colors._909090 }}>
         Username, email, phone, upload picture
-      </Text>
+      </Text> */}
 
       <Grid gutter="xl">
         <Grid.Col span={{ base: 12, md: 8 }}>
+          <Card
+            withBorder
+            radius="lg"
+            p="xl"
+            // shadow="md"
+            style={{
+              height: "100%",
+              background: "#fcfcff",
+              borderColor: "#e0e0e0",
+            }}
+          >
+            <Stack gap="lg">
+
+              {/* USERNAME + EMAIL */}
+              <Group grow gap="lg">
+                <TextInput
+                  label="User Name"
+                  placeholder="User Name"
+                  value={userData.userName}
+                  onChange={(e) => handleChange("userName", e.target.value)}
+                  radius="md"
+                  size="md"
+                  required
+                  disabled
+                />
+
+                <TextInput
+                  label="Email"
+                  placeholder="Email"
+                  type="email"
+                  value={userData.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  radius="md"
+                  size="md"
+                  required
+                  disabled
+                />
+              </Group>
+
+              {/* DEPARTMENT + ROLE */}
+              <Group grow gap="lg">
+                <TextInput
+                  label="Department"
+                  placeholder="Department"
+                  value={userData.department}
+                  onChange={(e) => handleChange("department", e.target.value)}
+                  radius="md"
+                  size="md"
+                  required
+                  disabled
+                />
+
+                <TextInput
+                  label="User Role"
+                  placeholder="User Role"
+                  value={userData.role}
+                  onChange={(e) => handleChange("role", e.target.value)}
+                  radius="md"
+                  size="md"
+                  required
+                  disabled
+                />
+              </Group>
+
+              {/* PHONE + PASSWORD */}
+              <Group grow gap="lg">
+                <TextInput
+                  type="text"
+                  inputMode="numeric"
+                  label="Phone Number"
+                  placeholder="Phone Number"
+                  value={userData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  maxLength={13}
+                  radius="md"
+                  size="md"
+                  required
+                  disabled
+                />
+
+                <PasswordInput
+                  label="Password"
+                  placeholder="Password"
+                  value={userData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  radius="md"
+                  size="md"
+                  required
+                  visibilityToggleIcon={({ reveal }) =>
+                    reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />
+                  }
+                  disabled
+                />
+              </Group>
+
+              {/* CONFIRM PASSWORD */}
+              <PasswordInput
+                label="Confirm Password"
+                placeholder="Confirm Password"
+                value={userData.confirmPassword}
+                onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                radius="md"
+                size="md"
+                required
+                visibilityToggleIcon={({ reveal }) =>
+                  reveal ? <IconEye size={16} /> : <IconEyeOff size={16} />
+                }
+                disabled
+              />
+
+              {/* ACTIVE SWITCH */}
+              <Group gap="sm" mt="sm">
+                <Switch
+                  size="md"
+                  checked={isUserActiveState}
+                  onChange={(event) => setIsUserActiveState(event.currentTarget.checked)}
+                />
+
+                <Text size="sm" c="dimmed">
+                  Activate User
+                </Text>
+              </Group>
+
+            </Stack>
+          </Card>
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 12, md: 4 }}>
+          <Card
+            withBorder
+            radius="lg"
+            p="xl"
+            // shadow="md"
+            style={{
+              height: "100%",
+              background: "#fcfcff",
+              borderColor: "#e0e0e0",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Stack align="center" gap="lg" style={{ width: "100%" }}>
+
+              {/* IMAGE SECTION */}
+              {userData.preview ? (
+                <Image
+                  src={userData.preview}
+                  alt="Profile Preview"
+                  width={200}
+                  height={200}
+                  unoptimized
+                  style={{
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
+                  }}
+                />
+              ) : (
+                <Image
+                  src={userIcon}
+                  alt="User Icon"
+                  width={180}
+                  height={180}
+                  unoptimized
+                  priority
+                  style={{
+                    objectFit: "cover",
+                    borderRadius: 12,
+                    opacity: 0.95,
+                    marginBottom: 10,
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.12)",
+                  }}
+                />
+              )}
+
+              {/* UPLOAD BUTTON */}
+              <FileButton onChange={handleImageChange} accept="image/png,image/jpeg">
+                {(props) => (
+                  <Button
+                    fullWidth
+                    radius="md"
+                    size="md"
+                    leftSection={<IconUpload size={16} />}
+                    {...props}
+                    disabled
+                    style={{
+                      fontWeight: 500,
+                      opacity: 0.6,
+                      cursor: "not-allowed",
+                    }}
+                    color={customStyles.colors._1B59F8}
+                  >
+                    Upload Picture
+                  </Button>
+                )}
+              </FileButton>
+
+              {/* DELETE BUTTON */}
+              <Button
+                variant="light"
+                color={customStyles.colors.red}
+                fullWidth
+                radius="md"
+                size="md"
+                leftSection={<IconTrash size={16} />}
+                onClick={removeUploadedImage}
+                disabled={!userData.image}
+                style={{
+                  fontWeight: 500,
+                }}
+              >
+                Delete Picture
+              </Button>
+
+            </Stack>
+          </Card>
+        </Grid.Col>
+
+
+        {/* <Grid.Col span={{ base: 12, md: 8 }}>
           <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: "auto" }}>
             <Stack gap="md">
               <Group grow>
@@ -320,9 +572,9 @@ const EditUserScreen = () => {
               </div>
             </Stack>
           </Card>
-        </Grid.Col>
+        </Grid.Col> */}
 
-        <Grid.Col span={{ base: 12, md: 4 }}>
+        {/* <Grid.Col span={{ base: 12, md: 4 }}>
           <Card withBorder radius="lg" p="lg" shadow="sm" style={{ height: '100%' }}>
             <Stack align="center" gap="md">
               {
@@ -387,7 +639,7 @@ const EditUserScreen = () => {
               </Button>
             </Stack>
           </Card>
-        </Grid.Col>
+        </Grid.Col> */}
       </Grid>
 
       <Group justify="flex-end" mt="xl">
