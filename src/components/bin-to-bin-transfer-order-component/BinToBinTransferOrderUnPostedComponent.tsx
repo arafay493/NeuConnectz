@@ -54,6 +54,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
+    console.log("🚀 ~ BinToBinTransferOrderUnPostedComponent ~ selectedRow:", selectedRow)
     const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound" | "SalesOrder">("Reservation");
 
     // Pagination values for Api call
@@ -190,7 +191,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         setIsFullPageLoading(true)
         dispatch(postBinToBinTransferOrders({
             payload: {
-                id: String(rowData?.id)
+                docNum: Number(rowData?.docNum)
             },
             token: authenticatedUser?.token || '',
             resHandler: handlePostBinToBinResponse
