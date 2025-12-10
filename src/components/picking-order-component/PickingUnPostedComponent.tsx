@@ -256,7 +256,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
     }
 
     const handleDelete = () => {
-        if(headerBtnType === "Reservation"){
+        if (headerBtnType === "Reservation") {
             handleModalClose()
             setIsFullPageLoading(true)
             dispatch(deletePickingOrders({
@@ -271,6 +271,44 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
                     apiUrl: reservationApiUrl,
                     lastCount: pagination.pageSize,
                     skipRecords: skipRecord
+                })).finally(() => {
+                    setIsLoading(false)
+                });
+            })
+        } else if (headerBtnType === "Outbound") {
+            handleModalClose()
+            setIsFullPageLoading(true)
+            dispatch(deletePickingOrders({
+                apiUrl: `/IStockTransferOrderFeature/DeleteSto?docNum=${selectedRow?.docNum}`,
+                token: authenticatedUser?.token || '',
+                resHandler: handleDeleteResponse
+            })).finally(() => {
+                setIsFullPageLoading(false)
+                setIsLoading(true);
+                dispatch(fetchListAllOutbounds({
+                    authToken: authenticatedUser?.token || '',
+                    apiUrl: outboundApiUrl,
+                    lastCount: paginationOutbound.pageSize,
+                    skipRecords: skipRecordOutbound
+                })).finally(() => {
+                    setIsLoading(false)
+                });
+            })
+        } else if (headerBtnType === "SalesOrder") {
+            handleModalClose()
+            setIsFullPageLoading(true)
+            dispatch(deletePickingOrders({
+                apiUrl: `/ISalesOrderFeature/DeleteSalesOrder?docNum=${selectedRow?.docNum}`,
+                token: authenticatedUser?.token || '',
+                resHandler: handleDeleteResponse
+            })).finally(() => {
+                setIsFullPageLoading(false)
+                setIsLoading(true);
+                dispatch(fetchListAllSalesOrder({
+                    authToken: authenticatedUser?.token || '',
+                    apiUrl: salesOrderApiUrl,
+                    lastCount: paginationSalesOrder.pageSize, // Use page size for server-side pagination
+                    skipRecords: skipRecordSalesOrder
                 })).finally(() => {
                     setIsLoading(false)
                 });
@@ -308,6 +346,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePostOutbound,
+            handleDelete: handleDeleteModalOpen
             // handlePost: () => { },
         }
     })
@@ -317,6 +356,7 @@ const PickingUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservationApiUrl, outb
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePostSalesOrder,
+            handleDelete: handleDeleteModalOpen
             // handlePost: () => { },
         }
     })
