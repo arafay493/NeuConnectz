@@ -174,6 +174,7 @@ const BinToBinTransferOrderPostedComponent: FC<ApiProp> = ({ apiUrl, reservation
                 skipRecord={skipRecordViewDetails}
                 apiUrl={headerBtnType === "Outbound" ? "/IStockTransferOrderFeature/GetDetailsOfSto" : headerBtnType === "SalesOrder" ? "/ISalesOrderFeature/GetDetailsOfSalesOrder" : "/IBinManagementFeature/GetDetailsofBinTransfer"}
                 docNumber={selectedRow?.docNum}
+                isPosted={true}
                 isReservation={headerBtnType === "Reservation"}
             />
 

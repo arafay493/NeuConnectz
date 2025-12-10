@@ -31,6 +31,7 @@ interface ModalProps {
     apiUrl: string,
     docNumber: number,
     isReservation: boolean
+    isPosted: boolean
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -60,6 +61,7 @@ export default function BinToBinViewDetailsModal({
     setIsLoading,
     apiUrl,
     docNumber,
+    isPosted,
     isReservation
 }: ModalProps) {
     console.log("🚀 ~ BinToBinViewDetailsModal ~ row:", row)
@@ -116,53 +118,40 @@ export default function BinToBinViewDetailsModal({
         >
 
             <Box mb="md">
-                {!isReservation ? <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
+                <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
                     <InfoRow label="Document No" value={row?.docNum || "-"} />
-                    <InfoRow label="Type" value={row?.confirmationStatus || "-"} />
-                    <InfoRow label="Item Code" value={row?.material || "-"} />
-                    <InfoRow label="Item No" value={row?.itemNo || "-"} />
-                    <InfoRow label="Description" value={row?.itemDescription || "-"} />
-
-                    <InfoRow label="Warehouse" value={row?.warehouse || "-"} />
                     <InfoRow label="Plant" value={row?.plant || "-"} />
-
+                    <InfoRow label="Warehouse" value={row?.warehouseNumber || "-"} />
+                    <InfoRow label="Storage Location" value={row?.storageLocation || "-"} />
+                    <InfoRow label="Source Storage Type" value={row?.sourceStorageType || "-"} />
+                    <InfoRow label="Source Storage Section" value={row?.sourceStorageSection || "-"} />
+                    <InfoRow label="Source Storage Bin" value={row?.sourceStorageBin || "-"} />
+                    <InfoRow label="Destination Storage Type" value={row?.destinationStorageType || "-"} />
+                    <InfoRow label="Destination Storage Section" value={row?.destinationStorageSection || "-"} />
+                    <InfoRow label="Destination Storage Bin" value={row?.destinationStorageBin || "-"} />
                     <InfoRow
                         label="Created Date"
-                        value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
+                        value={
+                            row?.createdDate
+                                ? new Date(row.createdDate).toLocaleDateString()
+                                : "-"
+                        }
                     />
-
-                    <InfoRow label="Quantity" value={row?.quantity || "-"} />
-                    <InfoRow label="UOM" value={row?.uom || "-"} />
-
-                    <InfoRow label="Delivery No" value={row?.deliveryNo || "-"} />
-                    <InfoRow label="Reference Document" value={row?.referenceDocument || "-"} />
-                </SimpleGrid> :
-                    <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
-                        <InfoRow label="Document No" value={row?.docNum || "-"} />
-                        <InfoRow label="Reservation No" value={row?.reservationNumber || "-"} />
-                        <InfoRow label="Material" value={row?.material || "-"} />
-                        <InfoRow label="Description" value={row?.materialDescription || "-"} />
-
-                        <InfoRow label="UOM" value={row?.baseUnitOfMeasure || "-"} />
-                        <InfoRow label="Movement Type" value={row?.selectedMovementType || "-"} />
-
-                        <InfoRow label="Receiving Plant" value={row?.receivingPlant || "-"} />
-                        <InfoRow label="Receiving Storage Location" value={row?.receivingStorageLocation || "-"} />
-
-                        <InfoRow label="Source Storage Bin" value={row?.sourceStorageBin || "-"} />
-
-                        <InfoRow
-                            label="Created Date"
-                            value={row?.createdDate ? new Date(row.createdDate).toLocaleDateString() : "-"}
-                        />
-
-                        <InfoRow label="Total Quantity" value={row?.totalQuantity || "-"} />
-                        <InfoRow label="Status" value={row?.confirmationStatus || "-"} />
-
-                        {/* <InfoRow label="ERP Material Doc" value={row?.erpMaterialDocument || "-"} />
-                        <InfoRow label="ERP Transfer Order" value={row?.erpTransferOrder || "-"} /> */}
-                    </SimpleGrid>}
+                    {isPosted && <InfoRow
+                        label="Posted Date"
+                        value={
+                            row?.postedDate
+                                ? new Date(row.postedDate).toLocaleDateString()
+                                : "-"
+                        }
+                    />}
+                    <InfoRow label="Total Quantity" value={row?.totalQuantity || "-"} />
+                    <InfoRow label="Material Count" value={row?.materialCount || "-"} />
+                    {isPosted && <InfoRow label="ERP Transfer Order No" value={row?.erpTransferOrderNo || "-"} />}
+                    <InfoRow label="Status" value={row?.status || "-"} />
+                </SimpleGrid>
             </Box>
+
 
 
             <Divider my="sm" />
