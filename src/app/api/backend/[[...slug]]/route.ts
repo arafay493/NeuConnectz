@@ -130,9 +130,10 @@ async function proxyRequest(req: NextRequest, method: string) {
     const newHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
 
     // 👇 Add real backend URL only in development
-    if (process.env.NODE_ENV === 'development') {
-        newHeaders['real-backend-url'] = url;
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     newHeaders['real-backend-url'] = url;
+    // }
+    newHeaders['real-backend-url'] = url;
 
     if (response.ok) {
         const json = await response.json();
