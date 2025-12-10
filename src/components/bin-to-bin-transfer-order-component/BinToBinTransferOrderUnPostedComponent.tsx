@@ -6,7 +6,7 @@ import TanStackTable from '../tanStackTable/TanStackTable';
 import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PickingUnPostedViewDetailsModal from '../modals/picking-unposted-view-details-modal/PickingUnPostedViewDetailsModal';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmBinToBinTransferOrders, confirmPickingOutBoundOrders, confirmPickingSalesOrders, fetchListAllBinToBin, fetchListAllOutbounds, fetchListAllSalesOrder, postBinToBinTransferOrders, postPickingOutBoundOrders, postPickingSalesOrders } from '@/redux/actions/bin-to-bin-actions/bin-to-bin-actions';
+import { confirmBinToBinTransferOrders, confirmPickingOutBoundOrders, confirmPickingSalesOrders, deleteBinToBinTransferOrders, fetchListAllBinToBin, fetchListAllOutbounds, fetchListAllSalesOrder, postBinToBinTransferOrders, postPickingOutBoundOrders, postPickingSalesOrders } from '@/redux/actions/bin-to-bin-actions/bin-to-bin-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
 import { ToastMessage } from '@/utils/ToastMessage';
@@ -14,6 +14,7 @@ import PickingOrderUnPosted_Outbound_Columns from '../columns/PickingOrderUnPost
 import PickingOrderUnPosted_Sales_Order_Columns from '../columns/PickingOrderUnPosted_Sales_Order_Columns';
 import { useMediaQuery } from '@mantine/hooks';
 import BinToBinTransferOrderUnPosted_Columns from '../columns/BinToBinTransferOrderUnPosted_Columns';
+import DeleteModal from '../modals/delete-modal/DeleteModal';
 
 type ApiProp = {
     apiUrl: string;
@@ -49,6 +50,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
 
     // Note: Table modal state...!
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
     const [headerBtnType, setHeaderBtnType] = useState<"Reservation" | "Outbound" | "SalesOrder">("Reservation");
@@ -111,6 +113,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
         setIsViewDetailsModalOpen(false)
+        setIsDeleteModalOpen(false)
     }
 
     const handleConfirm = () => {
@@ -204,6 +207,68 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         })
     }
 
+    const handleDelete = () => {
+        if (headerBtnType === "Reservation") {
+            handleModalClose()
+            setIsFullPageLoading(true)
+            dispatch(deleteBinToBinTransferOrders({
+                apiUrl: `/IBinManagementFeature/DeleteBinRecord?docNum=${selectedRow?.docNum}`,
+                token: authenticatedUser?.token || '',
+                resHandler: handleDeleteResponse
+            })).finally(() => {
+                setIsFullPageLoading(false)
+                setIsLoading(true);
+                dispatch(fetchListAllBinToBin({
+                    authToken: authenticatedUser?.token || '',
+                    apiUrl: apiUrl,
+                    lastCount: pagination.pageSize,
+                    skipRecords: skipRecord
+                })).finally(() => {
+                    setIsLoading(false)
+                });
+            })
+        }
+        // else if (headerBtnType === "Outbound") {
+        //     handleModalClose()
+        //     setIsFullPageLoading(true)
+        //     dispatch(deletePickingOrders({
+        //         apiUrl: `/IStockTransferOrderFeature/DeleteSto?docNum=${selectedRow?.docNum}`,
+        //         token: authenticatedUser?.token || '',
+        //         resHandler: handleDeleteResponse
+        //     })).finally(() => {
+        //         setIsFullPageLoading(false)
+        //         setIsLoading(true);
+        //         dispatch(fetchListAllOutbounds({
+        //             authToken: authenticatedUser?.token || '',
+        //             apiUrl: outboundApiUrl,
+        //             lastCount: paginationOutbound.pageSize,
+        //             skipRecords: skipRecordOutbound
+        //         })).finally(() => {
+        //             setIsLoading(false)
+        //         });
+        //     })
+        // } else if (headerBtnType === "SalesOrder") {
+        //     handleModalClose()
+        //     setIsFullPageLoading(true)
+        //     dispatch(deletePickingOrders({
+        //         apiUrl: `/ISalesOrderFeature/DeleteSalesOrder?docNum=${selectedRow?.docNum}`,
+        //         token: authenticatedUser?.token || '',
+        //         resHandler: handleDeleteResponse
+        //     })).finally(() => {
+        //         setIsFullPageLoading(false)
+        //         setIsLoading(true);
+        //         dispatch(fetchListAllSalesOrder({
+        //             authToken: authenticatedUser?.token || '',
+        //             apiUrl: salesOrderApiUrl,
+        //             lastCount: paginationSalesOrder.pageSize, // Use page size for server-side pagination
+        //             skipRecords: skipRecordSalesOrder
+        //         })).finally(() => {
+        //             setIsLoading(false)
+        //         });
+        //     })
+        // }
+    }
+
     const handlePostOutbound = (rowData: any) => {
         handleModalClose()
         setIsFullPageLoading(true)
@@ -250,6 +315,11 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         })
     }
 
+    const handleDeleteModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
+        setIsDeleteModalOpen(true)
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -265,6 +335,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePostBinToBin,
+            handleDelete: handleDeleteModalOpen
             // handlePost: () => { },
         }
     })
@@ -342,6 +413,15 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         }
     }
 
+    const handleDeleteResponse = (status: number, message: string, error: string) => {
+        if (status === 200) {
+            ToastMessage("Bin To Bin Transfer Delete", message, status, error)
+            // showNotificationToast("Reservation Post", message, customStyles.colors._408CCE);
+        } else {
+            ToastMessage("Error", message, status, error)
+        }
+    }
+
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
     }
@@ -356,6 +436,8 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         <Stack>
             {/* Confirm Modal */}
             <ConfirmModal description='Are you sure you want to proceed? This action cannot be undone.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
+            {/* Delete Modal */}
+            <DeleteModal description='Are you sure you want to proceed? This action cannot be undone.' opened={isDeleteModalOpen} handleCancel={handleModalClose} handleConfirm={handleDelete} handleModalClose={handleModalClose} />
             {/* View Modal */}
             <PickingUnPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}

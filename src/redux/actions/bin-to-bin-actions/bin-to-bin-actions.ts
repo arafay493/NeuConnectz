@@ -1,5 +1,5 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { apiGet, apiPost } from "@/lib/api-service";
+import { apiGet, apiPost, apiPut } from "@/lib/api-service";
 import { CLEAR_ALL_BIN_TO_BIN_STATES, CLEAR_ALL_OUTBOUND_STATES, CLEAR_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, CLEAR_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, CLEAR_ALL_SALES_ORDER_STATES, FETCH_ALL_BIN_TO_BIN, FETCH_ALL_OUTBOUNDS, FETCH_ALL_PICKING_OUTBOUND_DETAILS_BY_DOC_NO, FETCH_ALL_PICKING_SALES_ORDER_DETAILS_BY_DOC_NO, FETCH_ALL_SALES_ORDER } from "@/redux/reducers/bin-to-bin-reducer/bin-to-bin-reducer";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
@@ -293,6 +293,26 @@ const postPickingSalesOrders = createAsyncThunk(
     }
 );
 
+const deleteBinToBinTransferOrders = createAsyncThunk(
+    "binToBin/deleteBinToBinTransferOrders",
+    async (
+        { apiUrl, token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPut(`/neu-connect/v2${apiUrl}`, token);
+            // console.log("payload>>>>>>>> " , payload)
+            const { data, status, error } = response;
+            const { message } = data;
+            resHandler(status, message, error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
+    }
+);
+
 export {
     fetchListAllBinToBin,
     fetchListAllOutbounds,
@@ -305,5 +325,6 @@ export {
     postBinToBinTransferOrders,
     postPickingOutBoundOrders,
     postPickingSalesOrders,
+    deleteBinToBinTransferOrders,
 };
 
