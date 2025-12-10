@@ -70,17 +70,6 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
             },
 
             {
-                id: "material",
-                accessorKey: "material",
-                header: "Material",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
                 id: "sourceStorageType",
                 accessorKey: "sourceStorageType",
                 header: "Source Storage Type",
@@ -147,6 +136,28 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
             },
 
             {
+                id: "materialCount",
+                accessorKey: "materialCount",
+                header: "Material Count",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "totalQuantity",
+                accessorKey: "totalQuantity",
+                header: "Total Qty",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            {
                 id: "createdDate",
                 accessorKey: "createdDate",
                 header: "Created Date",
@@ -163,7 +174,7 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
             // ========== STATUS COLUMN (UNCHANGED) ==========
             {
                 id: "pickingUnposted_reservation_confirmationStatus",
-                accessorKey: "confirmationStatus",
+                accessorKey: "status",
                 header: "Status",
                 cell: ({ getValue }: any) =>
                     getValue() !== "UnConfirmed" ? (
@@ -206,7 +217,7 @@ const BinToBinTransferOrderUnPosted_Columns = ({ pagination, list, actions }: an
                             View Details
                         </Button>
 
-                        {row.original?.confirmationStatus !== "Confirmed" ? (
+                        {row.original?.status !== "Confirmed" ? (
                             <Button
                                 variant="transparent"
                                 className="filledButton"

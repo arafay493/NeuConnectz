@@ -62,6 +62,7 @@ export default function BinToBinViewDetailsModal({
     docNumber,
     isReservation
 }: ModalProps) {
+    console.log("🚀 ~ BinToBinViewDetailsModal ~ row:", row)
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => {
         return authStates;

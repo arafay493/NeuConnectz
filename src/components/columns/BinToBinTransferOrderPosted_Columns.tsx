@@ -70,17 +70,6 @@ const BinToBinTransferOrderPosted_Columns = ({ pagination, list, actions }: any)
             },
 
             {
-                id: "material",
-                accessorKey: "material",
-                header: "Material",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
                 id: "sourceStorageType",
                 accessorKey: "sourceStorageType",
                 header: "Source Storage Type",
@@ -147,8 +136,30 @@ const BinToBinTransferOrderPosted_Columns = ({ pagination, list, actions }: any)
             },
 
             {
-                id: "ERPTransferOrderNo",
-                accessorKey: "ERPTransferOrderNo",
+                id: "materialCount",
+                accessorKey: "materialCount",
+                header: "Material Count",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "totalQuantity",
+                accessorKey: "totalQuantity",
+                header: "Total Qty",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "erpTransferOrderNo",
+                accessorKey: "erpTransferOrderNo",
                 header: "ERP Transfer Order No",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} c={customStyles.colors._909090} ta="center">
@@ -188,7 +199,7 @@ const BinToBinTransferOrderPosted_Columns = ({ pagination, list, actions }: any)
             // ========== STATUS COLUMN (UNCHANGED) ==========
             {
                 id: "pickingUnposted_reservation_confirmationStatus",
-                accessorKey: "confirmationStatus",
+                accessorKey: "status",
                 header: "Status",
                 cell: ({ getValue }: any) =>
                     getValue() !== "UnConfirmed" ? (
