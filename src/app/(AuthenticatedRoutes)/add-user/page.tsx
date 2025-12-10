@@ -17,8 +17,9 @@ import {
     Title,
     Text,
     Stack,
+    Box,
 } from '@mantine/core';
-import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff, IconUserCheck } from '@tabler/icons-react';
+import { IconUpload, IconTrash, IconUserPlus, IconEye, IconEyeOff, IconUserCheck, IconArrowLeft } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import Loader from '@/components/loader/loader';
@@ -286,8 +287,19 @@ const AddUserScreen = () => {
 
 
             <Group justify='space-between' mb={"lg"}>
-                <Group gap={5} ps={5} style={{flexDirection: "column", justifyContent: "start",alignItems: "start"}}>
-
+                <Group gap={5} ps={5} style={{ flexDirection: "column", justifyContent: "start", alignItems: "start" }}>
+                    {/* <Button
+                        // size="md"
+                        // radius={"md"}
+                        // leftSection={}
+                        // fullWidth
+                        color={"transparent"}
+                        // onClick={addUserHandler}
+                    > */}
+                    <Box onClick={() => router.push("/users-list")} style={{cursor: "pointer"}}>
+                        <IconArrowLeft size={25} color={customStyles.colors._4D4D4D} />
+                    </Box>
+                    {/* </Button> */}
                     <Title order={2} style={{
                         color: customStyles.colors._4D4D4D,
                         textTransform: customStyles.textTransformation.capitalize
