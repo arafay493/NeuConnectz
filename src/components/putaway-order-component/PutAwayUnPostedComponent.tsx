@@ -8,9 +8,10 @@ import ConfirmModal from '../modals/confirm-modal/ConfirmModal';
 import PutawayUnPostedViewDetailsModal from '../modals/putaway-unposted-view-details-modal/PutawayUnPostedViewDetailsModal';
 import PutAwayOrderUnPosted_Columns from '../columns/PutAwayOrderUnPosted_Columns';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { confirmPutAwayOrders, fetchListAllPutAway, postPutAwayOrders } from '@/redux/actions/putaway-actions/putaway-actions';
+import { confirmPutAwayOrders, deletePutAwayOrders, fetchListAllPutAway, postPutAwayOrders } from '@/redux/actions/putaway-actions/putaway-actions';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import Loader from '../loader/loader';
+import DeleteModal from '../modals/delete-modal/DeleteModal';
 
 // export interface GoodsIssueDataType {
 //     docNum: number,
@@ -46,6 +47,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
 
     // Note: Table modal state...!
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any>(null);
 
@@ -77,6 +79,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
     const handleModalClose = () => {
         setIsConfirmModalOpen(false)
         setIsViewDetailsModalOpen(false)
+        setIsDeleteModalOpen(false)
     }
 
     const handleConfirm = () => {
@@ -125,6 +128,34 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         })
     }
 
+    const handleDelete = () => {
+        handleModalClose()
+        setIsFullPageLoading(true)
+        dispatch(deletePutAwayOrders({
+            payload: {
+                docNum: Number(selectedRow?.docNum)
+            },
+            token: authenticatedUser?.token || '',
+            resHandler: handleDeleteResponse
+        })).finally(() => {
+            setIsFullPageLoading(false)
+            setIsLoading(true);
+            dispatch(fetchListAllPutAway({
+                authToken: authenticatedUser?.token || '',
+                apiUrl: apiUrl,
+                lastCount: pagination.pageSize,
+                skipRecords: skipRecord
+            })).finally(() => {
+                setIsLoading(false)
+            });
+        })
+    }
+
+    const handleDeleteModalOpen = (rowData: any) => {
+        setSelectedRow(rowData)
+        setIsDeleteModalOpen(true)
+    }
+
     const handleConfirmModalOpen = (rowData: any) => {
         setSelectedRow(rowData)
         setIsConfirmModalOpen(true)
@@ -139,6 +170,7 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
             handleConfirmModalOpen: handleConfirmModalOpen,
             handleViewDetailsModalOpen: handleViewDetailsModalOpen,
             handlePost: handlePost,
+            handleDelete: handleDeleteModalOpen,
         }
     })
 
@@ -158,6 +190,14 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         }
     }
 
+    const handleDeleteResponse = (status: number, message: string , error: string) => {
+        if (status === 200) {
+            showNotificationToast("Putaway Delete", message, customStyles.colors.green);
+        } else if (error) {
+            showNotificationToast("Error", error, customStyles.colors.red);
+        }
+    }
+
     const handleExportToCSV = () => {
         console.log("Export to CSV Running.............")
     }
@@ -170,6 +210,8 @@ const PutAwayUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         <Stack>
             {/* Confirm Modal */}
             <ConfirmModal description='Are you sure you want to proceed? This action cannot be undone.' handleCancel={handleModalClose} handleConfirm={handleConfirm} handleModalClose={handleModalClose} opened={isConfirmModalOpen} />
+            {/* Delete Modal */}
+            <DeleteModal description='Are you sure you want to proceed? This action cannot be undone.' opened = {isDeleteModalOpen} handleCancel={handleModalClose} handleConfirm={handleDelete} handleModalClose={handleModalClose}/>
             {/* View Modal */}
             <PutawayUnPostedViewDetailsModal
                 opened={isViewDetailsModalOpen}

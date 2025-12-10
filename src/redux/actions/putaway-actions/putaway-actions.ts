@@ -1,5 +1,5 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
-import { apiGet, apiPost } from "@/lib/api-service";
+import { apiGet, apiPost, apiPut } from "@/lib/api-service";
 import { FETCH_ALL_PLANTS_CODES_BY_USER } from "@/redux/reducers/plants-reducer/plants-reducer";
 import { CLEAR_ALL_PUTAWAY_DETAILS_BY_DOC_NO, CLEAR_ALL_PUTAWAY_STATES, FETCH_ALL_PUTAWAY, FETCH_ALL_PUTAWAY_DETAILS_BY_DOC_NO } from "@/redux/reducers/putaway-reducer/putaway-reducer";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -112,10 +112,33 @@ const postPutAwayOrders = createAsyncThunk(
     }
 );
 
+const deletePutAwayOrders = createAsyncThunk(
+    "putaway/deletePutAwayOrders",
+    async (
+        { payload, token, resHandler }:
+            any,
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPut('/neu-connect/v2/IPutAwayFeature/DeletePutAwayRequest', payload, token);
+            // console.log("payload>>>>>>>> " , payload)
+            const { status, error} = response;
+            // const { message } = data
+            // resHandler(status, message, error);
+            resHandler(status, "", error);
+        } catch (error) {
+            // resHandler(400, error)
+            console.log("response error", error)
+        }
+
+    }
+);
+
 export {
     fetchListAllPutAway,
     fetchListAllPutAwayDetalisByDocNo,
     confirmPutAwayOrders,
-    postPutAwayOrders
+    postPutAwayOrders,
+    deletePutAwayOrders
 };
 

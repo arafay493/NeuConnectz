@@ -1,6 +1,6 @@
 import { customStyles } from '@/styles/custom-theme';
 import { Button, Chip, Group, Text } from '@mantine/core';
-import { IconCircle, IconCircleDotFilled, IconCircleFilled } from '@tabler/icons-react';
+import { IconCircle, IconCircleDotFilled, IconCircleFilled, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
@@ -251,6 +251,21 @@ const PutAwayOrderUnPosted_Columns = ({ pagination, list, actions }: any) => {
                         >
                             Post
                         </Button>}
+                        {/* handleDelete */}
+                        <Button
+                            variant="filled"
+                            // className={"filledButton"}
+                            color={customStyles.colors.red}
+                            // disabled={row?.original?.confirmationStatus !== "Confirmed"}
+                            leftSection={<IconTrash size={18} />}
+                            radius={8}
+                            miw={121}
+                            onClick={() =>
+                                actions.handleDelete(row.original)
+                            }
+                        >
+                            Delete
+                        </Button>
                     </Group>
                 ),
                 enableColumnFilter: false,
