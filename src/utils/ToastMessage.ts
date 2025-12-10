@@ -9,7 +9,11 @@ const ToastMessage = (title: string, message: string, statusCode: number, error:
             return showNotificationToast(title, `${message}`, customStyles.colors._408CCE);
         }
     } else if (statusCode === 200) {
-        return showNotificationToast(title, `${message}\n${error}`, customStyles.colors.green);
+        if (error) {
+            return showNotificationToast(title, `${message}\n${error}`, customStyles.colors.green);
+        } else {
+            return showNotificationToast(title, `${message}`, customStyles.colors.green);
+        }
     } else {
         // return showNotificationToast(title, message + error, customStyles.colors.red);
         return showNotificationToast(title, `${message}\n${error}`, customStyles.colors.red);
