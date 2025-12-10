@@ -178,7 +178,7 @@ const confirmBinToBinTransferOrders = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/IReservationFeature/ConfirmBinTransfer', payload, token);
+            const response = await apiPost('/neu-connect/v2/IBinManagementFeature/ConfirmBinTransfer', payload, token);
             const { status, data, error } = response;
             resHandler(status, data, error);
         } catch (error) {

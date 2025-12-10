@@ -122,7 +122,7 @@ const BinToBinTransferOrderUnPostedComponent: FC<ApiProp> = ({ apiUrl, reservati
         setIsFullPageLoading(true)
         dispatch(confirmBinToBinTransferOrders({
             payload: {
-                id: String(selectedRow?.id)
+                docNum: Number(selectedRow?.docNum)
             },
             token: authenticatedUser?.token || '',
             resHandler: handleBinToBinResponse
