@@ -1,13 +1,13 @@
 import { customStyles } from '@/styles/custom-theme';
 import { Button, Group, Text } from '@mantine/core';
-import { IconCircleFilled } from '@tabler/icons-react';
+import { IconCircleFilled, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import React, { useMemo } from 'react';
 
 const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
     const columns = useMemo(
         () => [
-            // ========== SERIAL NUMBER (UNCHANGED) ==========
+            // ================= SERIAL NUMBER (UNCHANGED) =================
             {
                 id: "reservation_serialNumber",
                 header: "S.No",
@@ -16,131 +16,98 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                     const serialNumber =
                         pagination.pageIndex * pagination.pageSize + row.index + 1;
                     return (
-                        <Text fw={500} c={customStyles.colors._909090} style={{ textAlign: "center" }}>
+                        <Text fw={500} c={customStyles.colors._909090} ta="center">
                             {serialNumber}
                         </Text>
                     );
                 },
             },
 
-            // ========== NEW API-DATA COLUMNS ==========
+            // ================= UPDATED API COLUMNS =================
 
             {
                 id: "docNum",
                 accessorKey: "docNum",
-                header: "Doc Number",
+                header: "Document Number",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "plant",
-                accessorKey: "plant",
-                header: "Plant",
+                id: "stoNo",
+                accessorKey: "stoNo",
+                header: "STO Number",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "warehouseNumber",
-                accessorKey: "warehouseNumber",
-                header: "Warehouse No",
+                id: "outboundDeliveryNo",
+                accessorKey: "outboundDeliveryNo",
+                header: "Outbound Delivery No",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "storageLocation",
-                accessorKey: "storageLocation",
-                header: "Storage Location",
+                id: "issuingPlant",
+                accessorKey: "issuingPlant",
+                header: "Issuing Plant",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "sourceStorageType",
-                accessorKey: "sourceStorageType",
-                header: "Source Storage Type",
+                id: "receivingPlant",
+                accessorKey: "receivingPlant",
+                header: "Receiving Plant",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "sourceStorageSection",
-                accessorKey: "sourceStorageSection",
-                header: "Source Section",
+                id: "receivingStorageLocation",
+                accessorKey: "receivingStorageLocation",
+                header: "Receiving Storage Location",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "sourceStorageBin",
-                accessorKey: "sourceStorageBin",
-                header: "Source Bin",
+                id: "receivingWarehouse",
+                accessorKey: "receivingWarehouse",
+                header: "Receiving Warehouse",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
             },
 
             {
-                id: "destinationStorageType",
-                accessorKey: "destinationStorageType",
-                header: "Destination Type",
+                id: "totalItems",
+                accessorKey: "totalItems",
+                header: "Total Items",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "destinationStorageSection",
-                accessorKey: "destinationStorageSection",
-                header: "Destination Section",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "destinationStorageBin",
-                accessorKey: "destinationStorageBin",
-                header: "Destination Bin",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "materialCount",
-                accessorKey: "materialCount",
-                header: "Material Count",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
@@ -149,20 +116,9 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
             {
                 id: "totalQuantity",
                 accessorKey: "totalQuantity",
-                header: "Total Qty",
+                header: "Total Quantity",
                 cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
-                        {getValue() ?? "-"}
-                    </Text>
-                ),
-            },
-
-            {
-                id: "erpTransferOrderNo",
-                accessorKey: "erpTransferOrderNo",
-                header: "ERP Transfer Order No",
-                cell: ({ getValue }: any) => (
-                    <Text fw={500} c={customStyles.colors._909090} ta="center">
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
                     </Text>
                 ),
@@ -175,7 +131,7 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                 cell: ({ getValue }: any) => {
                     const date = getValue();
                     return (
-                        <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        <Text ta="center" fw={500} c={customStyles.colors._909090}>
                             {date ? dayjs(date).format("DD/MM/YYYY") : "-"}
                         </Text>
                     );
@@ -189,16 +145,38 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                 cell: ({ getValue }: any) => {
                     const date = getValue();
                     return (
-                        <Text fw={500} c={customStyles.colors._909090} ta="center">
+                        <Text ta="center" fw={500} c={customStyles.colors._909090}>
                             {date ? dayjs(date).format("DD/MM/YYYY") : "-"}
                         </Text>
                     );
                 },
             },
 
-            // ========== STATUS COLUMN (UNCHANGED) ==========
             {
-                id: "pickingUnposted_reservation_confirmationStatus",
+                id: "erpMaterialDocument",
+                accessorKey: "erpMaterialDocument",
+                header: "ERP Material Doc",
+                cell: ({ getValue }: any) => (
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            {
+                id: "erpTransferOrder",
+                accessorKey: "erpTransferOrder",
+                header: "ERP Transfer Order",
+                cell: ({ getValue }: any) => (
+                    <Text ta="center" fw={500} c={customStyles.colors._909090}>
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            // ================= STATUS (UNCHANGED) =================
+            {
+                id: "status",
                 accessorKey: "status",
                 header: "Status",
                 cell: ({ getValue }: any) =>
@@ -227,9 +205,9 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                     ),
             },
 
-            // ========== ACTIONS COLUMN (UNCHANGED) ==========
+            // ================= ACTIONS (UNCHANGED) =================
             {
-                id: "reservation_actions",
+                id: "actions",
                 header: "Actions",
                 cell: ({ row }: any) => (
                     <Group gap="xs" justify="center" style={{ flexWrap: "nowrap" }}>
@@ -242,7 +220,7 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                             View Details
                         </Button>
 
-                        {/* {row.original?.confirmationStatus !== "Confirmed" ? (
+                        {row.original?.confirmationStatus !== "Confirmed" ? (
                             <Button
                                 variant="transparent"
                                 className="filledButton"
@@ -262,7 +240,18 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
                             >
                                 Post
                             </Button>
-                        )} */}
+                        )}
+
+                        <Button
+                            variant="filled"
+                            color={customStyles.colors.red}
+                            leftSection={<IconTrash size={18} />}
+                            radius={8}
+                            miw={121}
+                            onClick={() => actions.handleDelete(row.original)}
+                        >
+                            Delete
+                        </Button>
                     </Group>
                 ),
             },
@@ -272,6 +261,5 @@ const InBoundStoPosted_Columns = ({ pagination, list, actions }: any) => {
 
     return columns;
 };
-
 
 export default InBoundStoPosted_Columns;

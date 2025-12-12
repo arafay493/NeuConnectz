@@ -17,7 +17,7 @@ const initialState: InBoundStoStateType = {
 };
 
 const inboundStoSlice = createSlice({
-    name: "pickingOrdersSlice",
+    name: "inboundStoSlice",
     initialState,
     reducers: {
         FETCH_ALL_INBOUND_STO: (state, action: PayloadAction<any>) => {
@@ -27,11 +27,10 @@ const inboundStoSlice = createSlice({
 
         FETCH_ALL_INBOUND_STO_DETAILS_BY_DOC_NO: (state, action: PayloadAction<any>) => {
             state.InBoundErrorState = "";
-            state.ListAllInBoundStoViewDetailsData = action?.payload?.data
-            // state.ListAllInBoundStoViewDetailsData = {
-            //     data: action?.payload?.data?.lineItems,
-            //     totalCount: action?.payload?.data?.totalCount
-            // };
+            state.ListAllInBoundStoViewDetailsData = {
+                data: action?.payload?.data?.materialDetails,
+                totalCount: action?.payload?.data?.totalCount
+            };
         },
 
         CLEAR_ALL_INBOUND_STO_STATES: (state) => {

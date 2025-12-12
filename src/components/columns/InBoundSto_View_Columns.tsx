@@ -21,11 +21,11 @@ const InBoundSto_View_Columns = ({ pagination, list }: any) => {
                 },
             },
 
-            // =================== MATERIAL ===================
+            // =================== MATERIAL NO ===================
             {
-                id: "material",
-                accessorKey: "material",
-                header: "Material",
+                id: "materialNo",
+                accessorKey: "materialNo",
+                header: "Material No",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
@@ -33,10 +33,22 @@ const InBoundSto_View_Columns = ({ pagination, list }: any) => {
                 ),
             },
 
-            // =================== BATCH ===================
+            // =================== MATERIAL DESCRIPTION ===================
             {
-                id: "batch",
-                accessorKey: "batch",
+                id: "materialDescription",
+                accessorKey: "materialDescription",
+                header: "Material Description",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            // =================== BATCH NO ===================
+            {
+                id: "batchNo",
+                accessorKey: "batchNo",
                 header: "Batch",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} ta="center" c={customStyles.colors._909090}>
@@ -60,8 +72,20 @@ const InBoundSto_View_Columns = ({ pagination, list }: any) => {
             // =================== UOM ===================
             {
                 id: "uom",
-                accessorKey: "uoM",
+                accessorKey: "uom",
                 header: "UoM",
+                cell: ({ getValue }: any) => (
+                    <Text fw={500} ta="center" c={customStyles.colors._909090}>
+                        {getValue() ?? "-"}
+                    </Text>
+                ),
+            },
+
+            // =================== BIN LOCATION ===================
+            {
+                id: "binLocation",
+                accessorKey: "binLocation",
+                header: "Bin Location",
                 cell: ({ getValue }: any) => (
                     <Text fw={500} ta="center" c={customStyles.colors._909090}>
                         {getValue() ?? "-"}
