@@ -104,7 +104,7 @@ const InBoundStoPostedComponent: FC<ApiProp> = ({ apiUrl}) => {
                 title={"Inbound Stock Transfer Order Posted"}
                 subTitle={"Confirm transfer orders for inbound stock transfer order."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"/IBinManagementFeature/GetDetailsofBinTransfer"}
+                apiUrl={"/IInboundDeliveryStoFeature/GetInBoundStoDetails"}
                 docNumber={selectedRow?.docNum}
                 isPosted={true}
             />

@@ -13,8 +13,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useEffect } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
-import { fetchListAllBinToBinTransferOrderDetailsByDocNo } from "@/redux/actions/bin-to-bin-actions/bin-to-bin-actions";
 import InBoundSto_View_Columns from "@/components/columns/InBoundSto_View_Columns";
+import { fetchListAllInboundStoDetailsByDocNo } from "@/redux/actions/inbound-sto-actions/inbound-sto-actions";
 
 
 interface ModalProps {
@@ -73,7 +73,7 @@ export default function InBoundStoViewDetailsModal({
         if (authenticatedUser?.token && opened) {
             setIsLoading(true)
             dispatch(
-                fetchListAllBinToBinTransferOrderDetailsByDocNo({
+                fetchListAllInboundStoDetailsByDocNo({
                     authToken: authenticatedUser?.token || "",
                     docNumber: docNumber,
                     apiUrl: apiUrl,

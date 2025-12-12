@@ -78,7 +78,7 @@ const confirmInBoundSto = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/IBinManagementFeature/ConfirmBinTransfer', payload, token);
+            const response = await apiPost('/neu-connect/v2/IInboundDeliveryStoFeature/ConfirmInBoundSto', payload, token);
             const { status, data, error } = response;
             resHandler(status, data, error);
         } catch (error) {
@@ -98,7 +98,7 @@ const postInBoundSto = createAsyncThunk(
         { dispatch }
     ) => {
         try {
-            const response = await apiPost('/neu-connect/v2/ISapFeature/PostBinTransferToSap', payload, token);
+            const response = await apiPost('/neu-connect/v2/ISapFeature/PostInBoundStoToSap', payload, token);
             // console.log("payload>>>>>>>> " , payload)
             const { data, status } = response;
             const { message, error } = data;

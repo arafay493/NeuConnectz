@@ -133,8 +133,8 @@ const InBoundStoComponent = () => {
 
             {/* Custom Tab Panels */}
             <div>
-                {tab === 'Unposted' && (<BinToBinTransferOrderUnPostedComponent apiUrl={`/IBinManagementFeature/GetBinTransferList?sapStatus=Pending` as string} />)}
-                {tab === 'Posted' && (<BinToBinTransferOrderPostedComponent apiUrl={`/IBinManagementFeature/GetBinTransferList?sapStatus=Integrated` as string} />)}
+                {tab === 'Unposted' && (<BinToBinTransferOrderUnPostedComponent apiUrl={`/IInboundDeliveryStoFeature/GetInBoundStoList?sapStatus=Pending` as string} />)}
+                {tab === 'Posted' && (<BinToBinTransferOrderPostedComponent apiUrl={`/IInboundDeliveryStoFeature/GetInBoundStoList?sapStatus=Integrated` as string} />)}
             </div>
         </Box>
     );

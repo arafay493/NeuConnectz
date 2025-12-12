@@ -120,7 +120,7 @@ const InBoundStoUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
         handleModalClose()
         setIsFullPageLoading(true)
         dispatch(deleteInBoundSto({
-            apiUrl: `/IBinManagementFeature/DeleteBinRecord?docNum=${selectedRow?.docNum}`,
+            apiUrl: `/IInboundDeliveryStoFeature/DeleteInBoundSto?docNum=${selectedRow?.docNum}`,
             token: authenticatedUser?.token || '',
             resHandler: handleDeleteResponse
         })).finally(() => {
@@ -180,7 +180,7 @@ const InBoundStoUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
 
     const handleDeleteResponse = (status: number, message: string, error: string) => {
         if (status === 200) {
-            ToastMessage("Bin To Bin Transfer Delete", message, status, error)
+            ToastMessage("Inbound Stock Transfer Order Delete", message, status, error)
         } else {
             ToastMessage("Error", message, status, error)
         }
@@ -214,7 +214,7 @@ const InBoundStoUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 title={"Inbound Stock Transfer Order Unposted"}
                 subTitle={"Confirm transfer orders for inbound stock transfer order."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"/IBinManagementFeature/GetDetailsofBinTransfer"}
+                apiUrl={"/IInboundDeliveryStoFeature/GetInBoundStoDetails"}
                 docNumber={selectedRow?.docNum}
                 isPosted={false}
             />
