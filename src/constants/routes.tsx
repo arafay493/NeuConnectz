@@ -21,7 +21,8 @@ import {
     IconShieldLock,
     IconBuildings,
     IconBuildingCog,
-    IconAB2
+    IconAB2,
+    IconBrandDatabricks
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -51,6 +52,7 @@ const authenticatedRoutes: String[] = [
     // "/integration-monitor",
     "/edit",
     "/bin-to-bin-transfer-order",
+    "/inbound-sto",
     // "/grn-movement",
     // "/generate-barcode",
     // "/production-order",
@@ -94,6 +96,7 @@ const routes: Routes = {
     putAwayOrder: "/putaway-order",
     pickingOrder: "/picking-order",
     binToBinTransferOrder: "/bin-to-bin-transfer-order",
+    inboundSto: "/inbound-sto",
     assignMovementType: "/assign-movement-type",
 };
 
@@ -138,6 +141,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconTruckReturn color='currentColor' size={24} />,
         label: "Picking Orders",
         route: routes.pickingOrder
+    },
+    {
+        icon: <IconBrandDatabricks color='currentColor' size={24} />,
+        label: "Inbound Sto",
+        route: routes.inboundSto
     },
     {
         icon: <IconAB2 color='currentColor' size={24} />,

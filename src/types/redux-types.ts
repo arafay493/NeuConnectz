@@ -206,6 +206,18 @@ export interface BinToBinTransferOrdersStateType {
     PickingErrorState: string
 };
 
+export interface InBoundStoStateType {
+    ListAllInBoundSto: {
+        data: any,
+        totalCount: number
+    };
+    ListAllInBoundStoViewDetailsData: {
+        data: any,
+        totalCount: number
+    };
+    InBoundErrorState: string
+};
+
 // Note: Plants reducer state types...!
 export interface PlantsStateType {
     ListAllPlantsCodes: {

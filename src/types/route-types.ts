@@ -29,8 +29,9 @@ export type Routes = {
     // stockTransferOrder: string,
     putAwayOrder: string,
     pickingOrder: string,
-    binToBinTransferOrder: string,
     assignMovementType: string,
+    binToBinTransferOrder: string,
+    inboundSto: string,
 };
 
 export type DrawerRoute = {

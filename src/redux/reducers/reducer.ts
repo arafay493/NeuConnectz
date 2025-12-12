@@ -22,6 +22,7 @@ import movementTypeReducer from "@/redux/reducers/movement-type-reducer/movement
 import columnBasedAccessControlReducer from "@/redux/reducers/column-based-access-control/column-based-access-control-reducer"
 import pickingReducer from "./picking-reducer/picking-reducer";
 import binToBinReducer from "@/redux/reducers/bin-to-bin-reducer/bin-to-bin-reducer";
+import inboundStoReducer from "@/redux/reducers/inbound-sto-reducer/inbound-sto-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
     putawayStates: putawayReducer,
     pickingStates: pickingReducer,
     binToBinStates: binToBinReducer,
+    inboundStoStates: inboundStoReducer,
     plantStates: plantReducer,
     movementTypeStates: movementTypeReducer,
     sapStates: sapReducer,
