@@ -53,6 +53,7 @@ const authenticatedRoutes: String[] = [
     "/edit",
     "/bin-to-bin-transfer-order",
     "/inbound-sto",
+    "/production-reciept",
     // "/grn-movement",
     // "/generate-barcode",
     // "/production-order",
@@ -97,6 +98,7 @@ const routes: Routes = {
     pickingOrder: "/picking-order",
     binToBinTransferOrder: "/bin-to-bin-transfer-order",
     inboundSto: "/inbound-sto",
+    productionReciept: "/production-reciept",
     assignMovementType: "/assign-movement-type",
 };
 
@@ -146,6 +148,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconBrandDatabricks color='currentColor' size={24} />,
         label: "Inbound Sto",
         route: routes.inboundSto
+    },
+    {
+        icon: <IconBrandDatabricks color='currentColor' size={24} />,
+        label: "Production Reciept",
+        route: routes.productionReciept
     },
     {
         icon: <IconAB2 color='currentColor' size={24} />,

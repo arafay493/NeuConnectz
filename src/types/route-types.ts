@@ -32,6 +32,7 @@ export type Routes = {
     assignMovementType: string,
     binToBinTransferOrder: string,
     inboundSto: string,
+    productionReciept: string,
 };
 
 export type DrawerRoute = {

@@ -218,6 +218,18 @@ export interface InBoundStoStateType {
     InBoundErrorState: string
 };
 
+export interface ProductionRecieptStateType {
+    ListAllProductionReciept: {
+        data: any,
+        totalCount: number
+    };
+    ListAllProductionRecieptViewDetailsData: {
+        data: any,
+        totalCount: number
+    };
+    ProductionRecieptErrorState: string
+};
+
 // Note: Plants reducer state types...!
 export interface PlantsStateType {
     ListAllPlantsCodes: {
