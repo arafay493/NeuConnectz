@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import TanStackTable from "@/components/tanStackTable/TanStackTable";
 import InBoundSto_View_Columns from "@/components/columns/InBoundSto_View_Columns";
 import { fetchListAllProductionRecieptDetailsByDocNo } from "@/redux/actions/production-reciept-actions/production-reciept-actions";
+import ProductionReciept_View_Columns from "@/components/columns/ProductionReciept_View_Columns";
 
 
 interface ModalProps {
@@ -91,7 +92,7 @@ export default function ProductionRecieptViewDetailsModal({
         docNumber
     ]);
 
-    const columns = InBoundSto_View_Columns({ pagination, list: ListAllProductionRecieptViewDetailsData?.data, actions: {} })
+    const columns = ProductionReciept_View_Columns({ pagination, list: ListAllProductionRecieptViewDetailsData?.data, actions: {} })
 
     return (
         <Modal

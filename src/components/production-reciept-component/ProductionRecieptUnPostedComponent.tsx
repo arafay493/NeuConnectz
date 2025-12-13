@@ -214,7 +214,7 @@ const ProductionRecieptUnPostedComponent: FC<ApiProp> = ({ apiUrl }) => {
                 title={"Production Receipt Unposted"}
                 subTitle={"Confirm transfer orders for production receipt."}
                 skipRecord={skipRecordViewDetails}
-                apiUrl={"/IProductionReceiptFeature/GetProductionReceiptDetails"}
+                apiUrl={"/IProductionReceiptFeature/GetProductionReceiptsDetails"}
                 docNumber={selectedRow?.docNum}
                 isPosted={false}
             />
