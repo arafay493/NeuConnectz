@@ -22,7 +22,8 @@ import {
     IconBuildings,
     IconBuildingCog,
     IconAB2,
-    IconBrandDatabricks
+    IconBrandDatabricks,
+    IconReceipt
 } from "@tabler/icons-react";
 import { Routes, DrawerRoute } from "@/types/route-types";
 import { customStyles } from "@/styles/custom-theme";
@@ -150,7 +151,7 @@ const drawerRoutes: DrawerRoute[] = [
         route: routes.inboundSto
     },
     {
-        icon: <IconBrandDatabricks color='currentColor' size={24} />,
+        icon: <IconReceipt color='currentColor' size={24} />,
         label: "Production Reciept",
         route: routes.productionReciept
     },
