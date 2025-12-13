@@ -117,15 +117,12 @@ export default function ProductionRecieptViewDetailsModal({
             <Box mb="md">
                 <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="md" verticalSpacing="sm">
                     <InfoRow label="Document No" value={row?.docNum || "-"} />
+                    <InfoRow label="TR Number" value={row?.trNumber || "-"} />
+                    <InfoRow label="Material Document" value={row?.materialDocument || "-"} />
                     <InfoRow label="Plant" value={row?.plant || "-"} />
-                    <InfoRow label="Warehouse" value={row?.warehouseNumber || "-"} />
+                    <InfoRow label="Warehouse" value={row?.warehouse || "-"} />
                     <InfoRow label="Storage Location" value={row?.storageLocation || "-"} />
-                    <InfoRow label="Source Storage Type" value={row?.sourceStorageType || "-"} />
-                    <InfoRow label="Source Storage Section" value={row?.sourceStorageSection || "-"} />
-                    <InfoRow label="Source Storage Bin" value={row?.sourceStorageBin || "-"} />
-                    <InfoRow label="Destination Storage Type" value={row?.destinationStorageType || "-"} />
-                    <InfoRow label="Destination Storage Section" value={row?.destinationStorageSection || "-"} />
-                    <InfoRow label="Destination Storage Bin" value={row?.destinationStorageBin || "-"} />
+
                     <InfoRow
                         label="Created Date"
                         value={
@@ -134,19 +131,36 @@ export default function ProductionRecieptViewDetailsModal({
                                 : "-"
                         }
                     />
-                    {isPosted && <InfoRow
-                        label="Posted Date"
-                        value={
-                            row?.postedDate
-                                ? new Date(row.postedDate).toLocaleDateString()
-                                : "-"
-                        }
-                    />}
+
+                    {isPosted && (
+                        <InfoRow
+                            label="Posted Date"
+                            value={
+                                row?.postedDate
+                                    ? new Date(row.postedDate).toLocaleDateString()
+                                    : "-"
+                            }
+                        />
+                    )}
+
                     <InfoRow label="Total Quantity" value={row?.totalQuantity || "-"} />
-                    <InfoRow label="Material Count" value={row?.materialCount || "-"} />
-                    {isPosted && <InfoRow label="ERP Transfer Order No" value={row?.erpTransferOrderNo || "-"} />}
-                    <InfoRow label="Status" value={row?.status || "-"} />
+                    <InfoRow label="Total Items" value={row?.totalItems || "-"} />
+                    <InfoRow label="Confirmation Status" value={row?.confirmationStatus || "-"} />
+
+                    {isPosted && (
+                        <>
+                            <InfoRow
+                                label="ERP Transfer Order"
+                                value={row?.erpTransferOrder || "-"}
+                            />
+                            <InfoRow
+                                label="ERP Material Document"
+                                value={row?.erpMaterialDocument || "-"}
+                            />
+                        </>
+                    )}
                 </SimpleGrid>
+
             </Box>
 
 
