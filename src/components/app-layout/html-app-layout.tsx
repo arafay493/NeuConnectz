@@ -83,8 +83,28 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     }, [collapsed]);
 
     // Note: Handling the activeTab based on pathName...!
+    // useEffect(() => {
+    //     const currentIndex = drawerRoutes.findIndex(route => route.route === pathName);
+    //     if (currentIndex !== -1) {
+    //         setActiveTab(currentIndex);
+    //     }
+    // }, [pathName]);
+
     useEffect(() => {
-        const currentIndex = drawerRoutes.findIndex(route => route.route === pathName);
+        let currentIndex = drawerRoutes.findIndex(
+            route => route.route === pathName
+        );
+
+        // handle special routes
+        if (
+            pathName === "/add-user" ||
+            pathName.startsWith(dynamicRoutes[0])
+        ) {
+            currentIndex = drawerRoutes.findIndex(
+                route => route.route === "/users-list"
+            );
+        }
+
         if (currentIndex !== -1) {
             setActiveTab(currentIndex);
         }
@@ -112,12 +132,13 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         if (!showLayout) {
             router.push("not-found")
-        } else if ((showLayout && pathName === "/add-user") || (showLayout && pathName.startsWith(dynamicRoutes[0]))) {
-            const currentIndex = drawerRoutes.findIndex(routes => routes.route === "/users-list");
-            if (currentIndex !== -1) {
-                setActiveTab(currentIndex);
-            }
         } 
+        // else if ((showLayout && pathName === "/add-user") || (showLayout && pathName.startsWith(dynamicRoutes[0]))) {
+        //     const currentIndex = drawerRoutes.findIndex(routes => routes.route === "/users-list");
+        //     if (currentIndex !== -1) {
+        //         setActiveTab(currentIndex);
+        //     }
+        // }
         // else if () {
         //     const currentIndex = drawerRoutes.findIndex(routes => routes.route === "/users-list");
         //     if (currentIndex !== -1) {
