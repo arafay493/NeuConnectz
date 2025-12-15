@@ -147,7 +147,7 @@ const AddUserScreen = () => {
                 ...userData,
                 loading: false
             });
-            showNotificationToast(`Error with the status code: ${response?.status}`, response?.data?.error, customStyles.colors.red);
+            showNotificationToast(`Error Creating User`, response?.error, customStyles.colors.red);
             return;
         };
     };
