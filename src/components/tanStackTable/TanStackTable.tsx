@@ -44,7 +44,9 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
         setGlobalFilter("");
-        setApiFilter("")
+        if (searchable) {
+            setApiFilter("")
+        }
     };
 
     const handleTableFiltersVisibility = () => {
