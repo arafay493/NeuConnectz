@@ -447,8 +447,8 @@ const AssignWarehouseComponent = () => {
                 setScrollItemUserListLoading(false);
             });
         } else if (authenticatedUser && apiFilter !== "") {
-            setScrollItemUserListLoading(true);
             const interval = setTimeout(() => {
+                setScrollItemUserListLoading(true);
                 dispatch(
                     fetchAllUsers({
                         authToken: authenticatedUser?.token || "",
