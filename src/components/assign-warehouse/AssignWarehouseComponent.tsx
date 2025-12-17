@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter"
 import { TableColumnsFilter } from "../table-filters/TableColumnsFilter"
 import classes from "../production-order-section-component/po.module.css";
+import { FadeLoader } from "react-spinners"
 
 const AssignWarehouseComponent = () => {
     // Note: media query for responsive design
@@ -41,7 +42,7 @@ const AssignWarehouseComponent = () => {
 
     // Note: State for User List
     const { usersList: {
-        users
+        users, totalCount
     } } = useAppSelector(({ userStates }) => userStates);
 
     // Note: State for warehouse Data
@@ -55,15 +56,22 @@ const AssignWarehouseComponent = () => {
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
+    const [userListPagination, setUserListPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10, // Adjusted to a more reasonable default
+      });
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const skipRecordUserList = userListPagination.pageIndex * userListPagination.pageSize;
     const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
+    const [apiFilter, setApiFilter] = useState("");
 
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -420,13 +428,41 @@ const AssignWarehouseComponent = () => {
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
+    // useEffect(() => {
+    //     if (authenticatedUser?.token) {
+    //         dispatch(fetchAllUsers({
+    //             authToken: authenticatedUser?.token as string,
+    //         }))
+    //     }
+    // }, [authenticatedUser?.token, dispatch])
+
     useEffect(() => {
-        if (authenticatedUser?.token) {
+        if (authenticatedUser?.token && apiFilter === "") {
+            setScrollItemUserListLoading(true);
             dispatch(fetchAllUsers({
                 authToken: authenticatedUser?.token as string,
-            }))
+                LastCount: userListPagination.pageSize,
+                skipRecord: skipRecordUserList,
+            })).finally(() => {
+                setScrollItemUserListLoading(false);
+            });
+        } else if (authenticatedUser && apiFilter !== "") {
+            setScrollItemUserListLoading(true);
+            const interval = setTimeout(() => {
+                dispatch(
+                    fetchAllUsers({
+                        authToken: authenticatedUser?.token || "",
+                        LastCount: pagination.pageSize,
+                        skipRecord: skipRecord,
+                        keywords: apiFilter,
+                    })
+                ).finally(() => {
+                    setScrollItemUserListLoading(false);
+                });
+            }, 1500);
+            return () => clearInterval(interval)
         }
-    }, [authenticatedUser?.token, dispatch])
+    }, [authenticatedUser?.token, apiFilter]);
 
     // Note: warehouse list call with server-side pagination
     useEffect(() => {
@@ -549,6 +585,37 @@ const AssignWarehouseComponent = () => {
         table.setGlobalFilter(String(value));
     };
 
+    const OnScrollEndPaginateUserList = (e: any) => {
+        const target = e.currentTarget;
+        const hasMore = users?.length < totalCount;
+        const reachedBottom =
+            target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+        if (hasMore && reachedBottom && !scrollItemUserListLoading) {
+            setScrollItemUserListLoading(true);
+
+            setUserListPagination((prev) => {
+                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageIndex = prev.pageIndex + 1;
+
+                dispatch(
+                    fetchAllUsers({
+                        authToken: authenticatedUser?.token as string,
+                        LastCount: updatedPageSize,
+                        skipRecord: 0, // ya logic ke mutabiq
+                    })
+                ).finally(() => {
+                    setScrollItemUserListLoading(false);
+                });
+
+                return {
+                    pageSize: updatedPageSize,
+                    pageIndex: updatedPageIndex,
+                };
+            });
+        }
+    };
+
     return (
         <Box>
             <Title
@@ -596,10 +663,23 @@ const AssignWarehouseComponent = () => {
                             data={activeUsersData}
                             value={selectedUser}
                             onChange={(value) => setSelectedUser(value ?? '')}
+                            searchable
+                            onSearchChange={(searchValue) => {
+                                setApiFilter(searchValue);
+                            }}
                             clearable
                             w='100%'
                             radius={8}
                             size={isSmallScreen ? 'sm' : 'md'}
+                            rightSection={scrollItemUserListLoading ? <FadeLoader
+                                height={15}
+                                width={3}
+                                margin={1}
+                                radius={1}
+                                color="#1b59f8" /> : null}
+                            scrollAreaProps={{
+                                onScrollEndCapture: (e) => OnScrollEndPaginateUserList(e),
+                            }}
                         />
                     </Stack>
 
