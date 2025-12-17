@@ -7,8 +7,9 @@ import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import NextImage from "next/image";
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
+import { APIGlobalSearchFilter } from '../table-filters/APIGlobalSearchFilter';
 
-const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord }: any) => {
+const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable, pagination, setPagination, title, skipRecord, searchable = false, apiFilter, setApiFilter }: any) => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState("");
@@ -43,6 +44,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
         setGlobalFilter("");
+        setApiFilter("")
     };
 
     const handleTableFiltersVisibility = () => {
@@ -55,6 +57,10 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
         });
     };
     const handleGlobalSearch = (value: string) => {
+        if(searchable){
+            setApiFilter(value)
+            return
+        }
         table.setGlobalFilter(String(value));
     };
     return (
@@ -85,7 +91,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                         {title}
                     </Title>
                 </Stack>
-                <Group gap="xs">
+                {!searchable && <Group gap="xs">
                     <GlobalSearchFilter
                         filters={globalFilter}
                         // setFilters={setGlobalFilter}
@@ -122,7 +128,45 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                     <IconBorderCorners cursor="pointer" size={24}
                     // onClick={() => setIsFullscreen(!isFullscreen)} 
                     />
-                </Group>
+                </Group>}
+                {searchable && <Group gap="xs">
+                    <APIGlobalSearchFilter
+                        filters={apiFilter}
+                        // setFilters={setGlobalFilter}
+                        handleGlobalSearch={handleGlobalSearch}
+                        isSearchInputVisible={isSearchInputVisible}
+                    />
+                    {!isSearchInputVisible ? (
+                        <IconSearch
+                            cursor="pointer"
+                            size={24}
+                            onClick={handleSearchInputVisibility}
+                        />
+                    ) : (
+                        <IconSearchOff
+                            cursor="pointer"
+                            size={24}
+                            onClick={handleSearchInputVisibility}
+                        />
+                    )}
+                    {!areTableFiltersVisible ? (
+                        <IconFilter
+                            cursor="pointer"
+                            size={24}
+                            onClick={handleTableFiltersVisibility}
+                        />
+                    ) : (
+                        <IconFilterOff
+                            cursor="pointer"
+                            size={24}
+                            onClick={handleTableFiltersVisibility}
+                        />
+                    )}
+                    <IconColumns cursor="pointer" size={24} />
+                    <IconBorderCorners cursor="pointer" size={24}
+                    // onClick={() => setIsFullscreen(!isFullscreen)} 
+                    />
+                </Group>}
             </Group>
             <Box w="100%" className={"custom-scroll"} style={{ overflow: "auto" }}>
                 <table

@@ -9,25 +9,34 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 const fetchAllUsers = createAsyncThunk(
     "user/fetchAllUsers",
     async (
-        { authToken, LastCount, skipRecord }:
+        { authToken, LastCount, skipRecord, keywords }:
             {
                 authToken: string,
                 LastCount?: number,
-                skipRecord?: number
+                skipRecord?: number,
+                keywords?: string
             },
         { dispatch }
     ) => {
-        const params: { [key: string]: number } = {};
-        if (LastCount !== undefined) params.LastCount = LastCount;
-        if (skipRecord !== undefined) params.skipRecord = skipRecord;
-
-        const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
-
-        const { status, data } = response;
-
-        if (status == 200) {
-            dispatch(FETCH_ALL_USERS(data?.data));
-        };
+        try {
+            const params: { [key: string]: number | string } = {};
+            if (LastCount !== undefined) params.LastCount = LastCount;
+            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (keywords !== undefined) params.keywords = keywords;
+    
+            const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
+            // console.log("🚀 ~ response:", response)
+    
+            const { status, data } = response;
+    
+            if (status == 200) {
+                dispatch(FETCH_ALL_USERS(data?.data));
+            };
+            
+        } catch (error) {
+            console.log("🚀 ~ error:", error)
+            
+        }
     }
 );
 
@@ -49,7 +58,7 @@ const addUser = createAsyncThunk(
         const { status, data } = response;
 
         // if (status == 201) {
-            resHandler(response);
+        resHandler(response);
         // };
     }
 );
