@@ -236,6 +236,17 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
           200
         ),
       },
+
+      {
+        accessorKey: "createdDate",
+        header: "Doc Date",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {new Date(getValue() as string).toLocaleDateString()}
+          </Text>
+        ),
+        enableColumnFilter: true,
+      },
       {
         accessorKey: "uniqueId",
         header: "Base Doc Num",

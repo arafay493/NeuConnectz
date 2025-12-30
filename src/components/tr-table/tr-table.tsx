@@ -187,6 +187,16 @@ const TR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
                 size: calculateColumnWidth('Document Number', trData.map(item => String(item.docNum)), 120, 200),
             },
             {
+                accessorKey: "createdDate",
+                header: "Doc Date",
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {new Date(getValue() as string).toLocaleDateString()}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
                 accessorKey: 'fromWareHouseCode',
                 header: 'From WH Code',
                 cell: ({ getValue }) => (

@@ -300,6 +300,16 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                 size: calculateColumnWidth('User Name', list_GRNS_Data.map(item => item.userName), 150, 250),
             },
             {
+                accessorKey: "quantity",
+                header: "Quantity",
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {String(getValue()) ?? "-"}
+                    </Text>
+                ),
+                enableColumnFilter: true,
+            },
+            {
                 accessorKey: 'erpDocEntry',
                 header: 'ERP Doc Entry',
                 cell: ({ getValue }) => (
@@ -861,6 +871,16 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('To Warehouse', listAll_ITR_IT_TRS.map(item => item.toWarehouse), 150, 250),
+            },
+            {
+                accessorKey: "quantity",
+                header: "Quantity",
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {String(getValue()) ?? "-"}
+                    </Text>
+                ),
+                enableColumnFilter: true,
             },
             {
                 accessorKey: 'userName',
