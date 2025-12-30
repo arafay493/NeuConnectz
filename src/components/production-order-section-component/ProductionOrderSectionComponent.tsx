@@ -30,6 +30,7 @@ import {
   IconFilterOff,
   IconSearch,
   IconSearchOff,
+  IconReload,
 } from "@tabler/icons-react";
 import {
   ColumnDef,
@@ -53,6 +54,7 @@ import {
   fetchAllProductionOrders,
   fetchProductionOrderDocumentStats,
   fetchProductionOrdersLinesList,
+  postProcessProductionOrdersFromStaging,
 } from "@/redux/actions/sap-actions/sap-actions";
 import TableModalComponent from "../table-modal/TableModalComponent";
 import { CLEAR_ALL_PRODUCTION_ORDERS_LINES_DATA, CLEAR_LIST_AGAINST_PO } from "@/redux/reducers/sap-reducer/sap-reducer";
@@ -63,6 +65,7 @@ import ITViewDetailsModal from "../modals/it-view-details-modal/ITViewDetailsMod
 import TRViewDetailsModal from "../modals/tr-view-details-modal/TRViewDetailsModal";
 import IssuenceViewDetailsModal from "../modals/issuance-view-details-modal/IssuenceViewDetailsModal";
 import RecevingViewDetailsModal from "../modals/receving-view-details-modal/RecevingViewDetailsModal";
+import Loader from "../loader/loader";
 
 export interface ProductionOrderDataType {
   absoluteEntry: number;
@@ -94,6 +97,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
 
   // Note: Handling states here...!
   const [isLoading, setIsLoading] = useState(false);
+  const [isFullPageLoading, setIsFullPageLoading] = useState(false);
   const [isLoadingAgainstPO, setIsLoadingAgainstPO] = useState(false);
   const [apiUrlAgainstPO, setApiUrlAgainstPO] = useState<string>("");
   const [poNumber, setPoNumber] = useState<number>(0);
@@ -358,7 +362,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Docket No",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string || "-"}
+            {getValue() as string ?? "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -434,7 +438,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Quantity",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {String(getValue()) || "-"}
+            {String(getValue()) ?? "-"}
           </Text>
         ),
         filterFn: numberFilterFn,
@@ -451,7 +455,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Remaining Qty",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string || "-"}
+            {getValue() as string ?? "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -487,7 +491,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
         header: "Origin No",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
-            {getValue() as string || "-"}
+            {getValue() as string ?? "-"}
           </Text>
         ),
         filterFn: stringFilterFn,
@@ -686,7 +690,7 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   useEffect(() => {
     if (authenticatedUser?.token) {
       setIsLoading(true);
-      const skipRecord = pagination.pageIndex * pagination.pageSize;
+      // const skipRecord = pagination.pageIndex * pagination.pageSize;
 
       dispatch(
         fetchAllProductionOrders({
@@ -785,6 +789,40 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
     dispatch(CLEAR_LIST_AGAINST_PO())
   }
 
+  const handlePostProcessProductionOrdersFromStagingResponse = (data: any) => {
+    // setIsLoading(true);
+    setPagination({
+      pageIndex: 0,
+      pageSize: 10,
+    })
+    // dispatch(
+    //   fetchAllProductionOrders({
+    //     token: authenticatedUser?.token || "",
+    //     apiUrl: apiUrl,
+    //     lastCount: pagination.pageSize,
+    //     skipRecords: skipRecord,
+    //   })
+    // ).finally(() => {
+    //   setIsLoading(false);
+    // });
+  }
+
+  const handleTableRefresh = () => {
+    setIsFullPageLoading(true)
+    dispatch(
+      postProcessProductionOrdersFromStaging({
+        token: authenticatedUser?.token || "",
+        resHandler: handlePostProcessProductionOrdersFromStagingResponse
+      })
+    ).finally(() => {
+      setIsFullPageLoading(false)
+    });
+  }
+
+
+  if (isFullPageLoading) {
+    return <Loader loadingState={isFullPageLoading} />
+  }
   return (
     <Stack
       p={24}
@@ -930,9 +968,10 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
               onClick={handleTableFiltersVisibility}
             />
           )}
-          <IconColumns cursor="pointer" size={24} />
+          <IconReload cursor="pointer" size={24} onClick={handleTableRefresh} />
+          {/* <IconColumns cursor="pointer" size={24} /> */}
 
-          <IconBorderCorners cursor="pointer" size={24} />
+          {/* <IconBorderCorners cursor="pointer" size={24} /> */}
         </Group>
       </Group>
 

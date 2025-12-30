@@ -368,8 +368,8 @@ const fetchAllProductionOrders = createAsyncThunk(
         { dispatch }
     ) => {
         const params: { [key: string]: number } = {};
-        if (lastCount !== undefined) params.pageSize = lastCount;
-        if (skipRecords !== undefined) params.pageNumber = skipRecords;
+        if (lastCount !== undefined) params.lastCount = lastCount;
+        if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
         const response = await apiGet(`/neu-connect/v2${apiUrl}`, token, params);
         // console.log("Fetch all production orders api response: ", response);
@@ -579,6 +579,41 @@ const fetchAgainstPoNumber = createAsyncThunk(
     }
 );
 
+// Note: Action function to post ITR, TR, IT , GRN request to SAP...!
+const postProcessProductionOrdersFromStaging = createAsyncThunk(
+    "sap/postProcessProductionOrdersFromStaging",
+    async (
+        { token, resHandler }:
+            {
+                token: string,
+                resHandler: ResHandler
+            },
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPost(`/neu-connect/v2/ISapFeature/ProcessProductionOrdersFromStaging`, token);
+            // console.log('SAP Api Res: ', response);
+
+            const { status, data } = response;
+
+            if (status == 200) {
+                resHandler(response);
+            };
+        }
+
+        catch (error: any) {
+            resHandler(error?.response);
+
+            const { status, data } = error?.response;
+
+            // 401:
+            if (status == 401) {
+                handleRefreshToken(data?.error);
+            };
+        };
+    }
+);
+
 export {
     addSAPConfiguration,
     checkSAPConfigExist,
@@ -597,6 +632,7 @@ export {
     fetchProductionOrdersLinesList,
     closeProductionOrder,
     fetchProductionOrderDocumentStats,
-    fetchAgainstPoNumber
+    fetchAgainstPoNumber,
+    postProcessProductionOrdersFromStaging
 };
 
