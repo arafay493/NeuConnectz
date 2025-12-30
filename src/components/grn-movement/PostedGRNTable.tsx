@@ -7,7 +7,7 @@ import {
   fetchAll_INTEGRATED_GRNS,
   fetchAllVendorCodes,
 } from "@/redux/actions/sap-actions/sap-actions";
-import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
+import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions1/warehouse-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
 import { GRN_Props } from "@/types/redux-types";
@@ -625,8 +625,8 @@ const PostedGRNTable = () => {
     //   // }
     // }, 500); // Debounce API calls by 500ms
     // return () => clearTimeout(timeoutId);
-    
-    if(authenticatedUser?.token){
+
+    if (authenticatedUser?.token) {
       fetchFilteredData();
     }
 
@@ -638,7 +638,7 @@ const PostedGRNTable = () => {
     pagination.pageIndex,
     pagination.pageSize,
     authenticatedUser
-  ]); 
+  ]);
 
   const numbersArray = useMemo<number[]>(() => {
     return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);

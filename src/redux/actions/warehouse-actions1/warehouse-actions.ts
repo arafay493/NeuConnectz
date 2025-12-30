@@ -1,12 +1,10 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
 import {
-    CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES,
     FETCH_ALL_WAREHOUSES,
-    FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES,
     FETCH_WAREHOUSES_BY_USER_ID,
     UNAUTHORIZE_USER_TRYING_TO_ACCESS_WAREHOUSE_DATA
-} from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
+} from "@/redux/reducers/warehouse-reducer1/warehouse-reducer";
 import { ResHandler } from "@/types/api-types";
 import { WareHouseDataObj } from "@/types/modules/warehouse-types/warehouse-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -54,53 +52,30 @@ const fetchWarehousesListByUserId = createAsyncThunk(
     }
 );
 
-// Note: Action function to fetch warehouses list by user id...!
-const fetchWarehousesListByUserPlants = createAsyncThunk(
-    "warehouse/fetchWarehousesListByUserPlants",
-    async (
-        { authToken, lastCount, skipRecords, userId }: { authToken: string, lastCount?: number, skipRecords?: number, userId: string },
-        { dispatch }
-    ) => {
-        const params: { [key: string]: number | string } = {};
-        if (lastCount !== undefined) params.lastCount = lastCount;
-        if (skipRecords !== undefined) params.skipRecords = skipRecords;
-        const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
-
-        const { status, data } = response;
-        console.log("🚀 ~ data:", data)
-
-        if (status == 200) {
-            dispatch(FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES(data?.data));
-        };
-    }
-);
-
 // Note: Action function to assign warehouse to user...!
 const assignWareHouseToUser = createAsyncThunk(
     "warehouse/assignWareHouseToUser",
     async (
-        { payload, token, resHandler }:
+        { wareHouseData, token, resHandler }:
             {
-                payload: WareHouseDataObj,
+                wareHouseData: WareHouseDataObj,
                 token: string,
                 resHandler: ResHandler
             },
         { dispatch }
     ) => {
-        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', payload, token);
+        const response = await apiPost('/neu-connect/v2/IWarehouseFeature/AddWarehousesToUser', wareHouseData, token);
 
         const { status, data } = response;
 
         if (status == 201) {
-            resHandler(data);
+            resHandler(response);
         };
     }
 );
 
 export {
-    assignWareHouseToUser,
-    fetchAllWareHouses,
-    fetchWarehousesListByUserId,
-    fetchWarehousesListByUserPlants
+    assignWareHouseToUser, fetchAllWareHouses,
+    fetchWarehousesListByUserId
 };
 

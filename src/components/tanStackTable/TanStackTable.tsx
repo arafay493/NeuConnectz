@@ -200,12 +200,12 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                             wrap="nowrap"
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
-                                            <Text fw={600} c={customStyles.colors._4D4D4D}>
+                                            <Box fw={600} c={customStyles.colors._4D4D4D}>
                                                 {flexRender(
                                                     header.column.columnDef.header,
                                                     header.getContext()
                                                 )}
-                                            </Text>
+                                            </Box>
                                             {header.column.getCanSort() && (
                                                 <ActionIcon
                                                     variant="subtle"

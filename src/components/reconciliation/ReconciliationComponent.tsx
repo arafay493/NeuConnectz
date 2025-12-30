@@ -1,7 +1,7 @@
 'use client';
 
 import { fetchItemCodesData, fetchReconciliationData, fetchUnReconciledITSData, fetchUnReconciledTRSData, postAutoReconcile, postCreateAdjustedITRInReconciliation, postCreateRemainingAdjustedTR, postReverseITofTRInReconciliation, postTransferToLostWarehouse } from '@/redux/actions/reconciliation-action/reconciliation-action';
-import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions1/warehouse-actions';
 import { AppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
 import { InventoryTransferItems, QuantityDifferenceData, TransferReceiptItems } from '@/types/redux-types';

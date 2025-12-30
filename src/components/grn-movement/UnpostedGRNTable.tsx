@@ -3,7 +3,7 @@
 import calculateColumnWidth from "@/constants/calculateColumnWidth";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import { exportDataToCsvFile, fetchAll_PENDING_GRNS, fetchAllVendorCodes } from "@/redux/actions/sap-actions/sap-actions";
-import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
+import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions1/warehouse-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
 import { GRN_Props } from "@/types/redux-types";

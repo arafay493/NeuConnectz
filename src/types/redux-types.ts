@@ -62,6 +62,33 @@ export interface WareHouseStateType {
     warehouseErrorState: string
 };
 
+
+export interface WareHouseStateType1 {
+    wareHousesList: {
+        data: Array<WarehousesListData>
+        totalCount: number
+    };
+    // wareHousesListByUserPlants: {
+    //     data: Array<WarehousesListData>
+    //     totalCount: number
+    // };
+    wareHousesListByUserPlants: any
+    warehousesListByUserId: {
+        id: string,
+        whsCode: string,
+        whsName: string,
+        isReceiver: boolean,
+        binActivat: string,
+        createdBy: string,
+        updatedBy: string,
+        createdDate: string,
+        updatedDate: string,
+        isActive: boolean,
+        isArchived: boolean
+    }[];
+    warehouseErrorState: string
+};
+
 export interface WarehousesListData {
     id: string,
     whsCode: string,
@@ -544,7 +571,7 @@ export interface UnRecognizedTRs {
 }
 
 export interface ItemCodes {
-    
+
 }
 
 

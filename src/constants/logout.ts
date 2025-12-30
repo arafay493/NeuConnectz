@@ -4,7 +4,7 @@ import { deleteCookie } from 'cookies-next';
 import { store } from "@/redux/store";
 import { LOG_OUT_USER } from "@/redux/reducers/auth-reducer/auth-reducer";
 import { CLEAR_ALL_USER_STATES } from "@/redux/reducers/user-reducer/user-reducer";
-import { CLEAR_ALL_WAREHOUSE_STATES } from "@/redux/reducers/warehouse-reducer/warehouse-reducer";
+import { CLEAR_ALL_WAREHOUSE_STATES } from "@/redux/reducers/warehouse-reducer1/warehouse-reducer";
 import { CLEAR_ALL_GROUP_STATES } from "@/redux/reducers/group-reducer/group-reducer";
 import { CLEAR_ALL_SAP_STATES } from "@/redux/reducers/sap-reducer/sap-reducer";
 import { CLEAR_ALL_ROLES_STATES } from '@/redux/reducers/roles-reducer/roles-reducer';
@@ -15,7 +15,7 @@ export const logout = (message: string, description: string): void => {
     if (message) {
         // Note: For showing logout message...!
         showNotificationToast(message, description, customStyles.colors._408CCE);
-        
+
         setTimeout(() => {
 
             // Note: Clearing redux states...!

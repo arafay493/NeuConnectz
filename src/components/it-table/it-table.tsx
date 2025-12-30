@@ -5,7 +5,7 @@ import { GlobalSearchFilter } from "@/components/table-filters/GlobalSearchFilte
 import { localAssets } from "@/lib/file-paths/file-paths";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { fetchAllItData } from "@/redux/actions/itr-actions/itr-actions";
-import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions/warehouse-actions";
+import { fetchAllWareHouses } from "@/redux/actions/warehouse-actions1/warehouse-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
 import {
