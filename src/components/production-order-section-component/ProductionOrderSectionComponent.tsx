@@ -790,21 +790,17 @@ const ProductionOrderSectionComponent: FC<ApiProp> = ({ apiUrl }) => {
   }
 
   const handlePostProcessProductionOrdersFromStagingResponse = (data: any) => {
-    // setIsLoading(true);
-    setPagination({
-      pageIndex: 0,
-      pageSize: 10,
-    })
-    // dispatch(
-    //   fetchAllProductionOrders({
-    //     token: authenticatedUser?.token || "",
-    //     apiUrl: apiUrl,
-    //     lastCount: pagination.pageSize,
-    //     skipRecords: skipRecord,
-    //   })
-    // ).finally(() => {
-    //   setIsLoading(false);
-    // });
+    setIsLoading(true);
+    dispatch(
+      fetchAllProductionOrders({
+        token: authenticatedUser?.token || "",
+        apiUrl: apiUrl,
+        lastCount: pagination.pageSize,
+        skipRecords: skipRecord,
+      })
+    ).finally(() => {
+      setIsLoading(false);
+    });
   }
 
   const handleTableRefresh = () => {
