@@ -316,7 +316,9 @@ const GRN_Table_Component: React.FC<TableProps> = ({ type, areTableFiltersVisibl
                 header: 'ERP Line ID',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() ? String(getValue()) : '-'}
+                        {getValue() !== null && getValue() !== undefined
+                            ? String(getValue())
+                            : '-'}
                     </Text>
                 ),
                 filterFn: numberFilterFn,
@@ -889,7 +891,9 @@ const Stock_Movement_Table_Component: React.FC<SMTableProps> = ({ type, sapType,
                 header: 'ERP Line ID',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() ? String(getValue()) : '-'}
+                        {getValue() !== null && getValue() !== undefined
+                            ? String(getValue())
+                            : '-'}
                     </Text>
                 ),
                 filterFn: numberFilterFn,
@@ -1821,9 +1825,9 @@ const IntegrationComponent = () => {
                     <Group>
                         <Text size='md' fw={500}>Select Status</Text>
                         <Select
-                            data={[{ label: 'Pending', value: 'Pending' }, { label: 'Success', value: 'Integrated' }]}
+                            data={[{ label: 'Pending', value: 'Pending' }, { label: 'Integrated', value: 'Integrated' }]}
                             rightSection={<IconChevronDown size={18} />}
-                            defaultValue='Success'
+                            defaultValue='Integrated'
                             placeholder="Select Status"
                             value={statusColor}
                             onChange={(value) => handleStatusChange(value as 'Pending' || 'Integrated')}

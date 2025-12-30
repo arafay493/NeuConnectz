@@ -416,6 +416,27 @@ const ITR_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         ),
       },
       {
+        accessorKey: "seriesName",
+        header: "Series Name",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() != null ? String(getValue()) : "-"}
+          </Text>
+        ),
+        size: 200,
+        enableColumnFilter: true,
+      },
+      {
+        accessorKey: "series",
+        header: "Series",
+        cell: ({ getValue }) => (
+          <Text c={customStyles.colors._909090} fw={500}>
+            {getValue() != null ? String(getValue()) : "-"}
+          </Text>
+        ),
+        enableColumnFilter: true,
+      },
+      {
         accessorKey: "quantity",
         header: "Quantity",
         cell: ({ getValue, row }) => {

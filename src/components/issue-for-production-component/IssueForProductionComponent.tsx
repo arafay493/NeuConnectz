@@ -378,6 +378,54 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       ...(tab === "Posted"
         ? [
           {
+            accessorKey: "erpDocEntry",
+            header: "ERP Doc Entry",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {String(getValue()) as string}
+              </Text>
+            ),
+            enableColumnFilter: true,
+            // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+            size: 180,
+          },
+          {
+            accessorKey: "erpDocLine",
+            header: "ERP Doc Line",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {String(getValue()) as string}
+              </Text>
+            ),
+            enableColumnFilter: true,
+            // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+            size: 180,
+          },
+          {
+            accessorKey: "erpLinePosted",
+            header: "ERP Line Posted",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {String(getValue()) as string}
+              </Text>
+            ),
+            enableColumnFilter: true,
+            // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+            size: 200,
+          },
+          {
+            accessorKey: "erpObjectType",
+            header: "ERP Object Type",
+            cell: ({ getValue }: any) => (
+              <Text c={customStyles.colors._909090} fw={500}>
+                {String(getValue()) as string}
+              </Text>
+            ),
+            enableColumnFilter: true,
+            // size: calculateColumnWidth('Planned Qty', (issuesForProductionList || []).map(item => String(item.plannedQuantity)), 150, 220),
+            size: 200,
+          },
+          {
             accessorKey: "postedDate",
             header: "Posted Date",
             cell: ({ getValue }: any) => (
