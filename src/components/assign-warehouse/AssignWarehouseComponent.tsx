@@ -53,7 +53,7 @@ const AssignWarehouseComponent = () => {
         wareHousesList: { data: warehouseList, totalCount: warehouseCount },
         wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
-    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseByUserPlantsList , warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseByUserPlantsList, warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
 
     // Transform users data for Select component
     const activeUsersData =
@@ -102,11 +102,22 @@ const AssignWarehouseComponent = () => {
         // setSelectedPlants(transformedAssignedList)
         setSelectedWarehousesAllow(transformedAssignedList)
         setSelectedWarehousesReceive(transformedAssignedList)
-        const updatedList: any = warehouseList.map((item: any) => ({
-            ...item,
-            allowed: assignedIds?.includes(item.id),
-            recieverAllowed: item?.isReceiver,
-        }));
+        // const updatedList: any = warehouseList.map((item: any) => ({
+        //     ...item,
+        //     allowed: assignedIds?.includes(item.id),
+        //     recieverAllowed: item?.isReceiver,
+        // }));
+        const updatedList: any = warehouseList.map((item: any) => {
+            const matchedWarehouse = warehouseByUserPlantsList?.find(
+                (p: any) => p.id === item.id
+            );
+
+            return {
+                ...item,
+                allowed: assignedIds?.includes(item.id),
+                recieverAllowed: matchedWarehouse?.isReceiver ?? false,
+            };
+        });
 
         setTransformedWarehousesList(updatedList);
     }, [warehouseByUserPlantsList]);
@@ -397,10 +408,10 @@ const AssignWarehouseComponent = () => {
                 skipRecords: skipRecord,
             })
         ).finally(() => {
-            // setSelectedWarehousesAllow([])
-            // setSelectedWarehousesReceive([])
-            // setSelectedUser(null)
-            // handleUserRemoved()
+            setSelectedWarehousesAllow([])
+            setSelectedWarehousesReceive([])
+            setSelectedUser(null)
+            handleUserRemoved()
             setIsLoading(false);
         });
     }
