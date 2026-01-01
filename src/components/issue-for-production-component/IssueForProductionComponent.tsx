@@ -48,6 +48,7 @@ import { localAssets } from "@/lib/file-paths/file-paths";
 import classes from "../production-order-section-component/po.module.css";
 import { useAppSelector, useAppDispatch } from "@/redux/store";
 import { fetchIssuesForProductionList } from "@/redux/actions/sap-actions/sap-actions";
+import IssueForProductionViewDetailsModal from "../modals/issue-for-production-view-details-modal/IssueForProductionViewDetailsModal";
 // import TableModalComponent from '../table-modal/TableModalComponent';
 
 interface IssuesForProductionDataType {
@@ -90,6 +91,8 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [tab, setTab] = useState<"Unposted" | "Posted">("Unposted");
   const [viewMode, setViewMode] = useState<"document" | "column">("document");
+  const [isViewDetailsModalOpen, setIsViewDetailsModalOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<any>(null);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10, // Adjusted to a more reasonable default
@@ -119,6 +122,15 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
     setIsSearchInputVisible(!isSearchInputVisible);
     setGlobalFilter("");
   };
+
+  const handleModalClose = () => {
+    setIsViewDetailsModalOpen(false)
+  }
+
+  const handleViewDetailsModalOpen = (rowData: any) => {
+    setSelectedRow(rowData)
+    setIsViewDetailsModalOpen(true)
+  }
 
   const handleTableFiltersVisibility = () => {
     setAreTableFiltersVisible(!areTableFiltersVisible);
@@ -476,7 +488,35 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
             enableColumnFilter: true,
             size: 200,
           }
-        ])
+        ]),
+      {
+        id: "putawayUnposted_Actions",
+        header: "Actions",
+        cell: ({ row }: any) => (
+          <Group
+            gap="xs"
+            justify="center"
+            style={{
+              flexWrap: "nowrap",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              variant="transparent"
+              className="outlineButton"
+              radius={8}
+              onClick={() =>
+                handleViewDetailsModalOpen(row.original)
+              }
+            >
+              Issue Details
+            </Button>
+          </Group>
+        ),
+        enableColumnFilter: false,
+      },
       // {
       //   header: "Action",
       //   cell: ({ getValue, row }) => {
@@ -653,6 +693,22 @@ const IssueForProductionComponent: FC<ApiProp> = ({ apiUrl }) => {
       bg={customStyles.colors.white}
       style={{ borderRadius: "16px", width: "100%" }}
     >
+      <IssueForProductionViewDetailsModal
+        opened={isViewDetailsModalOpen}
+        handleModalClose={handleModalClose}
+        row={selectedRow}
+      // isLoading={isViewLoading}
+      // setIsLoading={setIsViewLoading}
+      // pagination={paginationViewDetails}
+      // setPagination={setPaginationViewDetails}
+      // title={"Putaway Unposted"}
+      // subTitle={"Track and review putaway order seemlessly."}
+      // skipRecord={skipRecordViewDetails}
+      // apiUrl={"/IPurchaseReceiptFeature/GetPurchaseReceiptDetails"}
+      // poNumber={selectedRow?.docNum || ""}
+      // handlePost={handlePost}
+      // isConfirmed={selectedRow?.confirmationStatus === "Confirmed"}
+      />
 
       {/* Header Section */}
       <Group
