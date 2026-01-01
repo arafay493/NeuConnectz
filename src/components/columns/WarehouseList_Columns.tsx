@@ -110,7 +110,6 @@ const WarehouseList_Columns = ({
             {
                 id: "receiver",
                 header: ({ row }: any) => {
-                    console.log("🚀 ~ WarehouseList_Columns ~ row:", row?.original)
                     const isAllowed = row?.original?.allowed
                     const isRecieved = row?.original?.recieverAllowed
                     const isChecked = isAllowed && isRecieved

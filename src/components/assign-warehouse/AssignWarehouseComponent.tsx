@@ -39,8 +39,8 @@ const AssignWarehouseComponent = () => {
     const [selectedWarehousesAllow, setSelectedWarehousesAllow] = useState<any>([]);
     const [selectedWarehousesReceive, setSelectedWarehousesReceive] = useState<any>([]);
     const [transformedWarehousesList, setTransformedWarehousesList] = useState([])
-    console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
-    console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
     // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
     // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
 
@@ -101,6 +101,16 @@ const AssignWarehouseComponent = () => {
         }
     }, [])
 
+    useEffect(() => {
+        const assignedIds = warehouseByUserPlantsList?.map((p: any) => p.id);
+
+        const updatedList: any = warehouseList?.map((item: any) => ({
+            ...item,
+            allowed: assignedIds?.includes(item.id),
+            recieverAllowed: item?.isReceiver,
+        }));
+        setTransformedWarehousesList(updatedList);
+    }, [warehouseList]);
 
     useEffect(() => {
         const assignedIds = warehouseByUserPlantsList?.map((p: any) => p.id);
@@ -146,7 +156,7 @@ const AssignWarehouseComponent = () => {
         });
 
         setTransformedWarehousesList(updatedList);
-    }, [warehouseByUserPlantsList]);
+    }, [warehouseList, warehouseByUserPlantsList, sourceWarehouses, destinationWarehouses]);
 
     useEffect(() => {
         if (authenticatedUser?.token && apiFilter === "") {
@@ -215,17 +225,6 @@ const AssignWarehouseComponent = () => {
 
         }
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, selectedUser]);
-
-    useEffect(() => {
-        const assignedIds = warehouseByUserPlantsList?.map((p: any) => p.id);
-
-        const updatedList: any = warehouseList?.map((item: any) => ({
-            ...item,
-            allowed: assignedIds?.includes(item.id),
-            recieverAllowed: item?.isReceiver,
-        }));
-        setTransformedWarehousesList(updatedList);
-    }, [warehouseList]);
 
     // useEffect(() => {
     //     if (authenticatedUser?.token) {
@@ -316,7 +315,8 @@ const AssignWarehouseComponent = () => {
             const updatedList1: any = transformedWarehousesList?.map((item: any) => ({
                 ...item,
                 allowed: item?.id === warehouse?.id ? !item.allowed : item.allowed,
-                recieverAllowed: item?.id === warehouse?.id ? !item.recieverAllowed : item.recieverAllowed
+                // recieverAllowed: item?.id === warehouse?.id ? !item.recieverAllowed : item.recieverAllowed
+                recieverAllowed: false
             }));
 
             setTransformedWarehousesList(updatedList1);
@@ -378,7 +378,7 @@ const AssignWarehouseComponent = () => {
         handleSelectSpecificWarehouseReciever,
         selectedWarehousesAllow,
         selectedWarehousesReceive,
-        warehouseList,
+        warehouseList: transformedWarehousesList,
     })
 
     // const OnScrollEndPaginateUserList = (e: any) => {

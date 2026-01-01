@@ -67,7 +67,7 @@ const fetchWarehousesListByUserPlants = createAsyncThunk(
         const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
 
         const { status, data } = response;
-        console.log("🚀 ~ data:", data)
+        // console.log("🚀 ~ data:", data)
 
         if (status == 200) {
             dispatch(FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES(data?.data));
