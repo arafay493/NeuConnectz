@@ -248,21 +248,15 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
         enableColumnFilter: true,
       },
       {
-        accessorKey: "uniqueId",
+        accessorKey: "itrDocNum",
         header: "Base Doc Num",
         cell: ({ getValue }) => (
           <Text c={customStyles.colors._909090} fw={500}>
             {String(getValue())}
           </Text>
         ),
-        filterFn: stringFilterFn,
         enableColumnFilter: true,
-        size: calculateColumnWidth(
-          "Base Document Number",
-          itData.map((item) => String(item.uniqueId)),
-          180,
-          220
-        ),
+        size: 180
       },
       {
         accessorKey: "fromWarehouseId",
@@ -445,7 +439,7 @@ const IT_TableCom: React.FC<ApiProp> = ({ apiUrl }) => {
           const { receivedQuantity } = row?.original;
           return (
             <Text c={customStyles.colors._909090} fw={500}>
-              {receivedQuantity != null ? Math.floor(receivedQuantity).toFixed(2) : "-"}
+              {receivedQuantity != null ? Number(receivedQuantity).toFixed(2) : "-"}
             </Text>
           );
         },

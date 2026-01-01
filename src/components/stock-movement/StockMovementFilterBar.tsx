@@ -81,7 +81,7 @@ const StockMovementFilterBar: FC<StockMovementFilterBarProps> = ({
                 <Text size="md" mb={8} fw={500}>Sap Status</Text>
                 <Select
                     placeholder="Select Sap Status"
-                    data={['Updated', 'Integrated', 'Pending']}
+                    data={sapType === "ITR" ? ['Updated', 'Integrated', 'Pending'] : ['Integrated', 'Pending']}
                     value={sapStatus}
                     onChange={(value) => setSapStatus(value as SapStatusProp | undefined)}
                     clearable

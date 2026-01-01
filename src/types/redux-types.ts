@@ -73,6 +73,8 @@ export interface WareHouseStateType1 {
     //     totalCount: number
     // };
     wareHousesListByUserPlants: any
+    sourceWarehouses: any
+    destinationWarehouses: any
     warehousesListByUserId: {
         id: string,
         whsCode: string,

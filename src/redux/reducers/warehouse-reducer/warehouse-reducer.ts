@@ -13,6 +13,8 @@ const initialState: WareHouseStateType1 = {
         data: [],
         totalCount: 0
     },
+    destinationWarehouses: [],
+    sourceWarehouses: [],
     warehousesListByUserId: [],
     warehouseErrorState: ""
 };
@@ -38,9 +40,11 @@ const wareHouseSlice = createSlice({
         FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES: (state, action: PayloadAction<any>) => {
             state.warehouseErrorState = "";
             state.wareHousesListByUserPlants = {
-                data: [...action?.payload?.destinationWarehouses, ...action?.payload?.sourceWarehouses],
+                data: [...action?.payload?.sourceWarehouses, ...action?.payload?.destinationWarehouses],
                 totalCount: 0
             };
+            state.sourceWarehouses = action?.payload?.sourceWarehouses
+            state.destinationWarehouses = action?.payload?.destinationWarehouses
         },
 
         FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {
@@ -54,6 +58,8 @@ const wareHouseSlice = createSlice({
                 data: [],
                 totalCount: 0
             };
+            state.sourceWarehouses = []
+            state.destinationWarehouses = []
             state.warehousesListByUserId = [];
             state.warehouseErrorState = "";
         },

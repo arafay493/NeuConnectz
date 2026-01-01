@@ -47,7 +47,6 @@ import NextImage from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import classes from "../production-order-section-component/po.module.css";
 import Loader from '@/components/loader/loader';
 
 const cardsData = [

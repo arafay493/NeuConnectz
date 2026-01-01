@@ -39,6 +39,10 @@ const AssignWarehouseComponent = () => {
     const [selectedWarehousesAllow, setSelectedWarehousesAllow] = useState<any>([]);
     const [selectedWarehousesReceive, setSelectedWarehousesReceive] = useState<any>([]);
     const [transformedWarehousesList, setTransformedWarehousesList] = useState([])
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
 
 
     // Note: Dispatcher for all Actions
@@ -51,8 +55,11 @@ const AssignWarehouseComponent = () => {
     } = useAppSelector(({ userStates }) => userStates);
     const {
         wareHousesList: { data: warehouseList, totalCount: warehouseCount },
-        wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }
+        wareHousesListByUserPlants: { data: warehouseByUserPlantsList, totalCount: warehouseByUserPlantsCount }, sourceWarehouses, destinationWarehouses
     } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
+    // console.log("🚀 ~ AssignWarehouseComponent ~ destinationWarehouses:", destinationWarehouses)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ sourceWarehouses:", sourceWarehouses)
+    // console.log("🚀 ~ AssignWarehouseComponent ~ warehouseByUserPlantsList:", warehouseByUserPlantsList)
     // console.log("🚀 ~ AssignWarehouseComponent ~ transformedWarehousesList:", warehouseByUserPlantsList, warehouseList, transformedWarehousesList, selectedWarehousesAllow, selectedWarehousesReceive)
 
     // Transform users data for Select component
@@ -97,25 +104,35 @@ const AssignWarehouseComponent = () => {
 
     useEffect(() => {
         const assignedIds = warehouseByUserPlantsList?.map((p: any) => p.id);
+        // const assignedSourceIds = sourceWarehouses?.map((p: any) => p.id);
+        // const assignedRecieverIds = destinationWarehouses?.map((p: any) => p.id);
         // console.log("🚀 ~ AssignWarehouseComponent ~ assignedIds:", assignedIds, warehouseByUserPlantsList)
         const transformedAssignedList = warehouseByUserPlantsList?.map((p: any) => p);
         // setSelectedPlants(transformedAssignedList)
-        setSelectedWarehousesAllow(transformedAssignedList)
-        setSelectedWarehousesReceive(transformedAssignedList)
+        // setSelectedWarehousesAllow(transformedAssignedList)
+        // setSelectedWarehousesReceive(transformedAssignedList)
+        setSelectedWarehousesAllow(sourceWarehouses)
+        setSelectedWarehousesReceive(destinationWarehouses)
         // const updatedList: any = warehouseList.map((item: any) => ({
         //     ...item,
         //     allowed: assignedIds?.includes(item.id),
         //     recieverAllowed: item?.isReceiver,
         // }));
         const updatedList: any = warehouseList.map((item: any) => {
-            const matchedWarehouse = warehouseByUserPlantsList?.find(
+            const matchedWarehouseSource = sourceWarehouses?.find(
+                (p: any) => p.id === item.id
+            );
+            // console.log("🚀 ~ AssignWarehouseComponent ~ matchedWarehouseSource:", matchedWarehouseSource)
+            const matchedWarehouseDestination = destinationWarehouses?.find(
                 (p: any) => p.id === item.id
             );
 
             return {
                 ...item,
-                allowed: assignedIds?.includes(item.id),
-                recieverAllowed: matchedWarehouse?.isReceiver ?? false,
+                // allowed: assignedIds?.includes(item.id),
+                // recieverAllowed: matchedWarehouse?.isReceiver ?? false,
+                allowed: matchedWarehouseSource ? true : false,
+                recieverAllowed: matchedWarehouseDestination?.isReceiver ?? false,
             };
         });
 
@@ -417,7 +434,7 @@ const AssignWarehouseComponent = () => {
     }
 
     const handleAssignWarehouses = () => {
-        setIsMainLoading(true)
+        // setIsMainLoading(true)
         const payload: any = {
             userId: selectedUser,
             normalWarehouseIds: selectedWarehousesAllow.map((item: any) => item?.id),

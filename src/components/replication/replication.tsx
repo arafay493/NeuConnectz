@@ -47,10 +47,10 @@ const ReplicationComponent = () => {
     // Note: Fetching data from redux...!
     const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
     const { sapStagingDataCounts } = useAppSelector(({ sapStates }) => { return sapStates });
-    
+
     // Note: Get SAP data api response handler...!
     const handleResponse = (response: any): void => {
-    
+
         if (response && response.statusCode == 200) {
             showNotificationToast("Great", "Data fetched successfully", customStyles.colors._408CCE);
 
@@ -102,12 +102,12 @@ const ReplicationComponent = () => {
     const progressPercentage = (currentStep / 5) * 100;
     useEffect(() => {
         if (sapStagingDataCounts) {
-            const statsArray: any = Object.entries(sapStagingDataCounts).map(([key, value], index) => ({
+            const statsArray: any = Object.entries(sapStagingDataCounts).filter(([key]) => key !== "vendorMasterTotal").map(([key, value], index) => ({
                 label: key,
                 value,
                 displayLabel: data[index],
                 icon: iconMapping[data[index] as keyof typeof iconMapping] || IconChartBar
-            }));
+            }))
             statsArray && setReplicationStats(statsArray);
         };
     }, [sapStagingDataCounts]);

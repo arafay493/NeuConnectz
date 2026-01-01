@@ -71,6 +71,7 @@ const WarehouseList_Columns = ({
                     );
                 },
                 cell: ({ row }: any) => {
+                    // console.log("🚀 ~ WarehouseList_Columns ~ row:", row?.original)
                     // const isChecked = selectedWarehousesAllow.includes(row?.original)
                     const isChecked = row?.original?.allowed
                     return (
@@ -109,6 +110,7 @@ const WarehouseList_Columns = ({
             {
                 id: "receiver",
                 header: ({ row }: any) => {
+                    console.log("🚀 ~ WarehouseList_Columns ~ row:", row?.original)
                     const isAllowed = row?.original?.allowed
                     const isRecieved = row?.original?.recieverAllowed
                     const isChecked = isAllowed && isRecieved
