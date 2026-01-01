@@ -447,13 +447,14 @@ const AssignWarehouseComponent = () => {
             setSelectedWarehousesAllow([])
             setSelectedWarehousesReceive([])
             setSelectedUser(null)
+            dispatch(CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES())
             handleUserRemoved()
             setIsLoading(false);
         });
     }
 
     const handleAssignWarehouses = () => {
-        // setIsMainLoading(true)
+        setIsMainLoading(true)
         const payload: any = {
             userId: selectedUser,
             normalWarehouseIds: selectedWarehousesAllow.map((item: any) => item?.id),

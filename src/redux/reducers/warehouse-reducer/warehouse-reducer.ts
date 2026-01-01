@@ -54,12 +54,12 @@ const wareHouseSlice = createSlice({
         },
 
         CLEAR_ALL_WAREHOUSE_BY_USER_PLANTS_STATES: (state) => {
+            state.sourceWarehouses = []
+            state.destinationWarehouses = []
             state.wareHousesListByUserPlants = {
                 data: [],
                 totalCount: 0
             };
-            state.sourceWarehouses = []
-            state.destinationWarehouses = []
             state.warehousesListByUserId = [];
             state.warehouseErrorState = "";
         },
