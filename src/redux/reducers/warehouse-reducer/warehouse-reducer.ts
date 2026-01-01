@@ -39,12 +39,12 @@ const wareHouseSlice = createSlice({
 
         FETCH_ALL_WAREHOUSES_BY_USER_PLANTS_STATES: (state, action: PayloadAction<any>) => {
             state.warehouseErrorState = "";
+            state.sourceWarehouses = action?.payload?.sourceWarehouses
+            state.destinationWarehouses = action?.payload?.destinationWarehouses
             state.wareHousesListByUserPlants = {
                 data: [...action?.payload?.sourceWarehouses, ...action?.payload?.destinationWarehouses],
                 totalCount: 0
             };
-            state.sourceWarehouses = action?.payload?.sourceWarehouses
-            state.destinationWarehouses = action?.payload?.destinationWarehouses
         },
 
         FETCH_WAREHOUSES_BY_USER_ID: (state, action: PayloadAction<any>) => {

@@ -39,8 +39,8 @@ const AssignWarehouseComponent = () => {
     const [selectedWarehousesAllow, setSelectedWarehousesAllow] = useState<any>([]);
     const [selectedWarehousesReceive, setSelectedWarehousesReceive] = useState<any>([]);
     const [transformedWarehousesList, setTransformedWarehousesList] = useState([])
-    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
-    // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
+    console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
+    console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
     // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesAllow:", selectedWarehousesAllow)
     // console.log("🚀 ~ AssignWarehouseComponent ~ selectedWarehousesReceive:", selectedWarehousesReceive)
 
@@ -107,12 +107,21 @@ const AssignWarehouseComponent = () => {
         // const assignedSourceIds = sourceWarehouses?.map((p: any) => p.id);
         // const assignedRecieverIds = destinationWarehouses?.map((p: any) => p.id);
         // console.log("🚀 ~ AssignWarehouseComponent ~ assignedIds:", assignedIds, warehouseByUserPlantsList)
-        const transformedAssignedList = warehouseByUserPlantsList?.map((p: any) => p);
+        // const transformedAssignedList = warehouseByUserPlantsList?.map((p: any) => p);
+        const transformedSourceWarehouseList = sourceWarehouses?.map((p: any) => ({
+            ...p,
+            allowed: true,
+        }));
+        const transformedRecieveWarehouseList = destinationWarehouses?.map((p: any) => ({
+            ...p,
+            recieverAllowed: true,
+        }));
+
         // setSelectedPlants(transformedAssignedList)
         // setSelectedWarehousesAllow(transformedAssignedList)
         // setSelectedWarehousesReceive(transformedAssignedList)
-        setSelectedWarehousesAllow(sourceWarehouses)
-        setSelectedWarehousesReceive(destinationWarehouses)
+        setSelectedWarehousesAllow(transformedSourceWarehouseList)
+        setSelectedWarehousesReceive(transformedRecieveWarehouseList)
         // const updatedList: any = warehouseList.map((item: any) => ({
         //     ...item,
         //     allowed: assignedIds?.includes(item.id),
@@ -299,8 +308,18 @@ const AssignWarehouseComponent = () => {
         } else {
             setSelectedWarehousesAllow([...(selectedWarehousesAllow || []), warehouse]);
         }
-        if (selectedWarehousesAllow?.includes(warehouse)) {
+        // if (selectedWarehousesAllow?.includes(warehouse)) {
+        //     setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
+        // }
+        if (selectedWarehousesAllow?.some((p: any) => p.id === warehouse.id)) {
             setSelectedWarehousesReceive(selectedWarehousesReceive.filter((p: any) => p.id !== warehouse.id));
+            const updatedList1: any = transformedWarehousesList?.map((item: any) => ({
+                ...item,
+                allowed: item?.id === warehouse?.id ? !item.allowed : item.allowed,
+                recieverAllowed: item?.id === warehouse?.id ? !item.recieverAllowed : item.recieverAllowed
+            }));
+
+            setTransformedWarehousesList(updatedList1);
         }
     };
 
