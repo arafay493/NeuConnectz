@@ -59,7 +59,7 @@ const AddItemMasterComponent = () => {
             const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_ITEM_MASTER}`, itemData, authenticatedUser?.token);
             console.log(response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 showNotificationToast("Success", "Item added successfully", customStyles.colors._1B59F8);
                 setFormData({
@@ -74,7 +74,15 @@ const AddItemMasterComponent = () => {
                     loading: false,
                 });
                 router.push(routes.productMaster);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
+                setFormData({
+                    ...formData,
+                    loading: false,
+                });
+            }
         }
 
         catch (error) {

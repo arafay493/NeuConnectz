@@ -13,9 +13,10 @@ import { IconBox, IconBuilding, IconMinus, IconPackage, IconPlus } from '@tabler
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import TitleComponent from '../common/component-title';
+import { FadeLoader } from "react-spinners";
 
 const initialFormData: ListProductionOrder = {
-    groupId: '',
+    groupId: '0d5d14fd-a450-48d5-9fa0-e76aeab14927',
     qty: 0,
     actualQty: 0,
     itemCode: '',
@@ -25,11 +26,18 @@ const initialFormData: ListProductionOrder = {
     warehouse: '',
 }
 
+
 const AddProductionOrderComponent = () => {
     const [formData, setFormData] = useState<ListProductionOrder>(initialFormData);
 
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
     const [itemSelected, setItemSelected] = useState<ItemDataProps | null>(null);
+    const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
+
+    const [itemCodesPagination, setItemCodesPagination] = useState({
+        pageSize: 10,
+        pageIndex: 0,
+    })
 
     const router = useRouter();
 
@@ -41,7 +49,9 @@ const AddProductionOrderComponent = () => {
     } } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
 
     // Item Code List State
-    const { list_Item_Code_Data } = useAppSelector(({ sapStates }) => sapStates);
+    const { list_Item_Code_Data , totalItemCodeCount } = useAppSelector(({ sapStates }) => sapStates);
+    // console.log('item codes: ', list_Item_Code_Data)
+    // console.log('total item code count: ', totalItemCodeCount);
 
     // Handling Unit States
     const { handlingUnitByItemId } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; })
@@ -53,73 +63,6 @@ const AddProductionOrderComponent = () => {
         }));
     };
 
-    // // Helper function to get all stage IDs in hierarchical order
-    // const getAllStageIds = (handlingUnit: any): string[] => {
-    //     if (!handlingUnit) return [];
-
-    //     const stageIds = [handlingUnit.groupStages.id];
-
-    //     const collectSubStageIds = (subStages: any[]): string[] => {
-    //         let ids: string[] = [];
-    //         subStages.forEach(subStage => {
-    //             ids.push(subStage.id);
-    //             if (subStage.subStages && subStage.subStages.length > 0) {
-    //                 ids = ids.concat(collectSubStageIds(subStage.subStages));
-    //             }
-    //         });
-    //         return ids;
-    //     };
-
-    //     if (handlingUnit.groupStages.subStages) {
-    //         stageIds.push(...collectSubStageIds(handlingUnit.groupStages.subStages));
-    //     }
-
-    //     return stageIds;
-    // };
-
-    // // Helper function to get parent stages for a given stage ID
-    // const getParentStages = (targetStageId: string, handlingUnit: any): string[] => {
-    //     if (!handlingUnit) return [];
-
-    //     const allStageIds = getAllStageIds(handlingUnit);
-    //     const targetIndex = allStageIds.indexOf(targetStageId);
-
-    //     if (targetIndex === -1) return [];
-
-    //     // Return all stages up to and including the target stage
-    //     return allStageIds.slice(0, targetIndex + 1);
-    // };
-
-    // const handleStageSelection = (stageId: string) => {
-    //     if (!handlingUnitByItemId) return;
-
-    //     // If clicking on already selected stage, unselect the entire group
-    //     if (formData.selectedStageId === stageId) {
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             selectedStageId: ''
-    //         }));
-    //         return;
-    //     }
-
-    //     // Get all parent stages that should be selected
-    //     const stagesToSelect = getParentStages(stageId, handlingUnitByItemId);
-
-    //     // For now, we'll just store the clicked stage ID, but the UI will show hierarchy
-    //     setFormData(prev => ({
-    //         ...prev,
-    //         selectedStageId: stageId
-    //     }));
-    // };
-
-    // // Helper function to check if a stage should be visually selected (highlighted)
-    // const isStageSelected = (stageId: string): boolean => {
-    //     if (!formData.selectedStageId || !handlingUnitByItemId) return false;
-
-    //     const selectedParents = getParentStages(formData.selectedStageId, handlingUnitByItemId);
-    //     return selectedParents.includes(stageId);
-    // };
-
     // Handle response from API
     const handleResponse = (status: number) => {
         const errorResponseCodes = {
@@ -130,7 +73,7 @@ const AddProductionOrderComponent = () => {
 
         if (status === 200 || status === 201) {
             showNotificationToast("Production Order Added", "Production Order added successfully", customStyles.colors._408CCE);
-            dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID())
+            dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID());
             setFormData(initialFormData);
             setItemSelected(null);
             router.back();
@@ -173,12 +116,14 @@ const AddProductionOrderComponent = () => {
             // Find the selected item from the list to get item name
             const selectedItem = list_Item_Code_Data?.find(item => item.itemCode === itemCode);
             setItemSelected(selectedItem || null);
+            console.log('Selected item code: ', selectedItem);
 
             setFormData(prev => ({
                 ...prev,
                 itemCode: itemCode,
                 itemName: selectedItem?.itemName || '',
-                unitOfMeasurement: selectedItem?.uoms?.[0]?.uomCode || ''
+                // unitOfMeasurement: selectedItem?.uoms?.[0]?.uomCode || ''
+                unitOfMeasurement: selectedItem?.uom || ''
             }));
         } else {
             setFormData(prev => ({
@@ -201,6 +146,7 @@ const AddProductionOrderComponent = () => {
 
     useEffect(() => {
         if (itemSelected) {
+            console.log('Selected item: ', itemSelected);
             dispatch(getHandlingUnitByItemId({ itemId: itemSelected.id }))
         }
     }, [itemSelected])
@@ -217,6 +163,35 @@ const AddProductionOrderComponent = () => {
             }
         };
     }, [searchTimeout])
+
+    const OnScrollEndPaginateUserList = (e: any) => {
+        const target = e.currentTarget;
+        const hasMore = (list_Item_Code_Data || []).length < totalItemCodeCount // list_Item_Code_Data?.length < totalCount;
+        const reachedBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+        if (hasMore && reachedBottom && !scrollItemUserListLoading) {
+            setScrollItemUserListLoading(true);
+
+            setItemCodesPagination((prev) => {
+                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageIndex = prev.pageIndex + 1;
+
+                dispatch(
+                    listItemCodes({
+                        lastCount: updatedPageSize,
+                        skipRecords: 0, // ya logic ke mutabiq
+                    })
+                ).finally(() => {
+                    setScrollItemUserListLoading(false);
+                });
+
+                return {
+                    pageSize: updatedPageSize,
+                    pageIndex: updatedPageIndex,
+                };
+            });
+        }
+    };
 
     return (
         <Box>
@@ -240,19 +215,38 @@ const AddProductionOrderComponent = () => {
                             <GridCol span={{ base: 12, md: 4 }}>
                                 <Text size="md" mb={8} fw={500}>Item Code</Text>
                                 <Select
+                                    placeholder="Select or Search Item Code"
                                     data={list_Item_Code_Data ? list_Item_Code_Data.map(item => ({
                                         value: item.itemCode,
                                         label: `${item.itemCode}`
                                     })) : []}
-                                    size='md'
-                                    placeholder="Select or Search Item Code"
                                     value={formData.itemCode}
-                                    onChange={(value) => handleItemCodeChange(value)}
-                                    onSearchChange={(searchTerm) => handleItemCodeSearch(searchTerm)}
-                                    radius={8}
+                                    onChange={(value: any) => {
+                                        if (value === null) {
+                                            console.log('User removed');
+                                            handleItemCodeChange(null);
+                                            dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID());
+                                            // handleUserRemoved();
+                                        } else {
+                                            handleItemCodeChange(value)
+                                        }
+                                    }}
                                     searchable
+                                    onSearchChange={(searchTerm) => handleItemCodeSearch(searchTerm)}
                                     clearable
                                     nothingFoundMessage="No items found"
+                                    w="100%"
+                                    radius={8}
+                                    size='md'
+                                    rightSection={scrollItemUserListLoading ? <FadeLoader
+                                        height={15}
+                                        width={3}
+                                        margin={1}
+                                        radius={1}
+                                        color="#1b59f8" /> : null}
+                                    scrollAreaProps={{
+                                        onScrollEndCapture: (e) => OnScrollEndPaginateUserList(e),
+                                    }}
                                 />
                             </GridCol>
                             <GridCol span={{ base: 12, md: 4 }}>

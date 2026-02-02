@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState, memo } from "react";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import { fetchProductionById, scanProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
@@ -23,14 +24,16 @@ import {
     Tabs,
     Text,
     TextInput,
-    Title
+    Title,
+    Tooltip
 } from "@mantine/core";
-import { IconBarcode, IconChevronDown, IconRefresh, IconScan, IconX } from "@tabler/icons-react";
+import { IconBarcode, IconChevronDown, IconRefresh, IconScan, IconBottle, IconTrash } from "@tabler/icons-react";
 import NextImage from "next/image";
-import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
 import TitleComponent from "../common/component-title";
 import LoaderComponent from "../common/loader/loader";
+import { apiPost } from "@/lib/api-service";
+import { useRouter, usePathname } from 'next/navigation';
+import { routes } from "@/constants/routes";
 
 const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     const dispatch = useAppDispatch();
@@ -41,11 +44,21 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     const [currentScannedCode, setCurrentScannedCode] = useState<Array<ScanProductionOrderProps> | null>(null)
     const [expandedItems, setExpandedItems] = useState<string[]>([])
     const [scannedValue, setScannedValue] = useState<string>('')
-    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const inputRef = useRef<HTMLInputElement>(null)
     const [isProductionOrderComplete, setIsProductionOrderComplete] = useState<boolean>(false)
     const [isScanning, setIsScanning] = useState<boolean>(false)
+    const [completePOLoadingState, setCompletePOLoadingState] = useState<boolean>(false);
+    const [pausePOLoadingState, setPausePOLoadingState] = useState<boolean>(false);
+    const [scannedList, setScannedList] = useState<string[]>([]);
+    const [notFoundSet, setNotFoundSet] = useState<Set<string>>(new Set());
 
+    // const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const inputRef = useRef<HTMLInputElement>(null);
+    const bufferRef = useRef('');
+
+    console.log('Current scanned code state:', currentScannedCode);
+
+    // Note: Router for switch page
+    const router = useRouter();
     const pathname = usePathname();
 
     const productionOrderId = pathname.split('/')[3]
@@ -55,9 +68,13 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         return total > 0 ? Math.round((scanned / total) * 100) : 0;
     };
 
+    // Auth states...!
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
+
     // Simple sorted stages - just use production order data directly
     const sortedStages = productionOrderById?.stages ?
         [...productionOrderById.stages].sort((a, b) => a.level - b.level) : [];
+    console.log('Sorted stages: ', sortedStages);
 
     const toggleExpanded = (stageId: string) => {
         setExpandedItems(prev =>
@@ -119,7 +136,9 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                     stage.stageName.toLowerCase() === stageType.toLowerCase()
                 );
                 console.log("Using scanned production order data:", currentStage);
-            } else {
+            }
+
+            else {
                 // Fall back to original production order data
                 stageData = productionOrderById?.stages?.find(stage =>
                     stage.stageName.toLowerCase() === stageType.toLowerCase()
@@ -134,7 +153,9 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                 // For box, get the bottle stage quantity
                 bottleQuantity = currentStage?.stageQty || stageData?.stageQty || 0;
 
-            } else if (stageType === 'pallet') {
+            }
+
+            else if (stageType === 'pallet') {
                 // For pallet, get the total bottle quantity from all boxes
                 bottleQuantity = currentStage?.stageQty || stageData?.stageQty || 0;
             }
@@ -152,20 +173,36 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
 
                 zplData = `
                             ^XA
-                            ^CF0,30
-                            ^FO60,30^FDItem: ${itemName}^FS
-                            
+                            ^PW406
+                            ^LL406
+                            ^LH0,0
+                            ^CI28
 
-                            ^FO60,70^FD${itemDisplayName}^FS
-                            ^FO300,70^FDBox Qty: ${quantityDisplay}^FS
-                            ^FO600,70^FDTotal Bottles: ${bottleQuantity}^FS
-                            
-                            ^FX Barcode section (centered)
-                            ^BY3,2,100
-                            ^FO160,150^BC^FD${code}^FS
+                            ^CF0,30,30
+                            ^FO20,30^FDItem:^FS
+                            ^FO80,30^FD${itemName}^FS
+
+                            ^CF0,26,26
+                            ^FO20,70^FDBox:^FS
+                            ^FO120,70^FD${itemDisplayName}^FS
+
+                            ^FO20,105^FDQty:^FS
+                            ^FO120,105^FD${quantityDisplay}^FS
+
+                            ^FO20,140^FDTotal Bottles:^FS
+                            ^FO160,140^FD${bottleQuantity}^FS
+
+                            ^BY2,2,70
+                            ^FO60,250^BCN,90,Y,N,N
+                            ^FD${code}^FS
+
                             ^XZ
                             `;
-            } else if (stageType === 'pallet') {
+
+
+            }
+
+            else if (stageType === 'pallet') {
                 // Get box data from either scanned or original data
                 let boxStage, boxStageData;
                 if (currentScannedCode && currentScannedCode.length > 0) {
@@ -191,22 +228,33 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
 
                 zplData = `
                             ^XA
-                            ^CF0,30
-                            ^FO60,30^FDItem: ${itemName}^FS
-                            
-                            ^FO60,70^FD${itemDisplayName}^FS
-                            ^FO300,70^FDPallet Qty: ${quantityDisplay}^FS
-                            ^FO600,70^FDTotal Bottles: ${bottleQuantity}^FS
-                            
+                            ^PW406
+                            ^LL406
+                            ^LH0,0
+                            ^CI28
 
-                            ^FX Barcode section (centered)
-                            ^BY3,2,100
-                            ^FO150,160^BC^FD${code}^FS
+                            ^CF0,30,30
+                            ^FO20,30^FDItem:^FS
+                            ^FO80,30^FD${itemName}^FS
+
+                            ^CF0,26,26
+                            ^FO20,70^FDPallet:^FS
+                            ^FO120,70^FD${itemDisplayName}^FS
+                            ^FO20,105^FDQty:^FS
+                            ^FO120,105^FD${quantityDisplay}^FS
+
+                            ^FO20,140^FDTotal Bottles:^FS
+                            ^FO160,140^FD${bottleQuantity}^FS
+
+                            ^BY2,2,60
+                            ^FO60,260^BCN,90,Y,N,N
+                            ^FD${code}^FS
+
                             ^XZ
-                            `;
+                    `;
             }
 
-            console.log(`ZPL Data for ${stageType}:`, zplData);
+            console.log(`ZPL Data for pallete ${stageType}:`, zplData);
 
             // Step 6: Send print command
             const printResponse = await fetch("http://127.0.0.1:9100/write", {
@@ -256,68 +304,132 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         }
     };
 
+    const handleDelete = (code: string) => {
+        setScannedList((prev) => prev.filter(item => item !== code));
+        notFoundSet.delete(code); // optional: clean related state
+    };
+
+
     // Handle response from API
-    const handleResponse = (status: number) => {
+    const handleResponse = (status: number, apiMessage: string) => {
+        console.log("Api message:", apiMessage);
         const errorResponseCodes = {
             400: "Bad Request - Invalid data provided",
             500: "Server Error - Please try again later",
-            404: "Data not found - Invalid barcode",
-            409: "Conflict - Bottle with this code already scanned"
+            // 404: "Data not found - Invalid barcode",
+            404: "Something went wrong - The following codes were not found",
+            406: "Production order is paused. Please resume before scanning.",
+            409: "Bottle with this code already scanned"
+        };
+
+        if (status === 404 && apiMessage?.toLowerCase().includes("not found")) {
+            const match = apiMessage.match(/not found[:\-]?\s*(.*)/i);
+
+            if (match && match[1]) {
+                const codes = match[1]
+                    .split(",")
+                    .map(code => code.trim())
+                    .filter(Boolean);
+
+                setNotFoundSet(new Set(codes));
+            }
         }
 
         if (status === 200 || status === 201) {
-            showNotificationToast("Production Order Scanned", "Production Order scanned successfully", customStyles.colors._408CCE);
-            setIsScanning(false);
-            setScannedValue('');
-            return;
+            showNotificationToast(
+                "Production Order Scanned",
+                "Production Order scanned successfully",
+                customStyles.colors._408CCE
+            );
+            setScannedList([]);
+            // console.log(`Box ${boxNumber} completed, printing label with code:`, boxCode)
+            // handlePrint('box', boxCode, boxNumber);
         }
 
-        if (errorResponseCodes[status as keyof typeof errorResponseCodes]) {
-            showNotificationToast("Error Scanning Production Order", errorResponseCodes[status as keyof typeof errorResponseCodes], customStyles.colors.red);
-            setIsScanning(false);
-            setScannedValue('');
-            return;
+        else if (errorResponseCodes[status as keyof typeof errorResponseCodes]) {
+            showNotificationToast(
+                "Error Scanning Production Order",
+                apiMessage ? apiMessage : errorResponseCodes[status as keyof typeof errorResponseCodes],
+                customStyles.colors.red
+            );
         }
-    }
 
-    const handleScanProductionOrder = useCallback((barcode: string) => {
-        if (!barcode.trim()) return;
+        setIsScanning(false);
+        setScannedValue('');
+    };
 
-        setIsScanning(true);
+    const submitScan = (setOf12Codes: string[]) => {
+        console.log("Submitting batch scan for codes:", setOf12Codes);
+
         const body = {
             productionOrderId,
-            barcodes: [barcode]
+            barcodes: setOf12Codes
+        };
+        console.log('Payload for scan: ', body);
+
+        setIsScanning(true);
+        dispatch(scanProductionOrder({ body, resHandler: handleResponse }))
+            .finally(() => {
+                inputRef.current?.focus();
+            });
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (isScanning) {
+            e.preventDefault();
+            return;
         }
 
-        dispatch(scanProductionOrder({ body: body, resHandler: handleResponse }))
-    }, [productionOrderId, dispatch])
+        if (e.key === "Enter") {
+            e.preventDefault();
 
-    // Debounced input handler
-    const handleInputChange = useCallback((value: string) => {
-        setScannedValue(value);
-        setIsScanning(false); // Reset scanning state when user types
+            const raw = e.currentTarget.value;
 
-        // Clear existing timeout
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current);
+            const firstEight = raw
+                .replace(/[^a-fA-F0-9]/g, "")   // remove hyphens
+                .substring(0, 8);              // ALWAYS from start
+
+            // if (firstEight.length === 8) {
+            //     submitScan(firstEight);
+            // }
+
+            if (scannedList.includes(firstEight)) {
+                showNotificationToast("Duplication Error", `${firstEight} already exist`, customStyles.colors.red);
+            }
+
+            setScannedList((prev) =>
+                prev.includes(firstEight) ? prev : [...prev, firstEight]
+            );
+
+            // clear for next scan
+            e.currentTarget.value = "";
+            setScannedValue("");
         }
+    };
 
-        // Set new timeout to call API after 1 second of no typing
-        if (value.trim()) {
-            debounceTimeoutRef.current = setTimeout(() => {
-                handleScanProductionOrder(value);
-            }, 1000);
-        }
-    }, [handleScanProductionOrder])
-
-    // Cleanup timeout on unmount
     useEffect(() => {
-        return () => {
-            if (debounceTimeoutRef.current) {
-                clearTimeout(debounceTimeoutRef.current);
+        if (scannedList.length === 0) return;
+        console.log("Scanned List:", scannedList);
+
+        const itemsLength = sortedStages.find(stage => stage.stageName.toLowerCase() === 'box')?.stageQty || 0;
+        console.log('Items length: ', itemsLength);
+
+        if (scannedList.length == itemsLength) {
+            console.log('12 items scanned, submitting batch scan');
+            submitScan(scannedList);
+        };
+    }, [scannedList]);
+
+    useEffect(() => {
+        const keepFocus = () => {
+            if (!isScanning) {
+                inputRef.current?.focus();
             }
         };
-    }, [])
+
+        const i = setInterval(keepFocus, 50);
+        return () => clearInterval(i);
+    }, [isScanning]);
 
     useEffect(() => {
         dispatch(fetchProductionById({ id: productionOrderId }));
@@ -335,13 +447,15 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         if (!currentScannedCode || currentScannedCode.length === 0) return;
         const isBoxCompleted = currentScannedCode?.find(scannedStage => scannedStage.stageName.toLocaleLowerCase() === 'box');
         const isPalletCompleted = currentScannedCode?.find(scannedStage => scannedStage.stageName.toLocaleLowerCase() === 'pallet');
+        console.log('Checking completed stages for printing labels:', isBoxCompleted);
+        console.log("Current scanned code state changed:", currentScannedCode);
 
         if (isBoxCompleted) {
             const boxStage = currentScannedCode
                 ?.find(stage => stage.stageName.toLowerCase() === 'box');
             const boxCode = boxStage?.codes?.[0]?.code || "";
             const boxNumber = boxStage?.scanned || 1; // Use the current scanned count as the box number
-            console.log(`Box ${boxNumber} completed, printing label with code:`, boxCode)
+            console.log(`Box ${boxNumber} completed, printing label with code:`, boxCode);
             handlePrint('box', boxCode, boxNumber);
         }
 
@@ -354,28 +468,75 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
             handlePrint('pallet', palletCode, palletNumber);
         }
 
-        setCurrentScannedCode(null)
+        setTimeout(() => {
+            setCurrentScannedCode(null);
+        }, 300);
     }, [currentScannedCode])
 
     useEffect(() => {
         setCurrentScannedCode(scannedProductionOrder)
         dispatch(fetchProductionById({ id: productionOrderId }));
     }, [scannedProductionOrder])
-    // Auto-focus input when scanning is complete
-    useEffect(() => {
-        if (!isScanning && !isProductionOrderComplete && inputRef.current) {
-            // Small delay to ensure the input is not disabled before focusing
-            setTimeout(() => {
-                inputRef.current?.focus();
-            }, 100);
+
+    // Function to complete production order...!
+    const completePO = async () => {
+        // console.log('PO Id: ', productionOrderId);
+        setCompletePOLoadingState(true);
+
+        try {
+            const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_COMPLETE_PO}`, { productionOrderId: productionOrderId }, authenticatedUser?.token);
+            // console.log('Complete PO res: ', response);
+            const { status, data, error } = response;
+
+            if (status == 201) {
+                showNotificationToast("Production Order Completed", data?.message, customStyles.colors._1B59F8);
+                setCompletePOLoadingState(false);
+                router.push(routes.productionOrder)
+            };
+
+            if (!String(status).startsWith('2')) {
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
+                setCompletePOLoadingState(false);
+            };
         }
-    }, [isScanning, isProductionOrderComplete])
+
+        catch (error) {
+            console.log("Something went wrong while completing production order: ", error);
+        };
+    };
+
+    // Function to pause production order...!
+    const pausePO = async () => {
+        // console.log('PO Id: ', productionOrderId);
+        setPausePOLoadingState(true);
+
+        try {
+            const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_PAUSE_PO}`, { productionOrderId: productionOrderId }, authenticatedUser?.token);
+            // console.log('Pause PO res: ', response);
+            const { status, data, error } = response;
+
+            if (status == 201) {
+                showNotificationToast("Production Order Paused", data?.message, customStyles.colors._1B59F8);
+                setPausePOLoadingState(false);
+                router.push(routes.productionOrder)
+            };
+
+            if (!String(status).startsWith('2')) {
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
+                setPausePOLoadingState(false);
+            };
+        }
+
+        catch (error) {
+            console.log("Something went wrong while completing production order: ", error);
+        };
+    };
 
     if (loading) {
         return (
             <LoaderComponent />
         )
-    }
+    };
 
     if (!productionOrderById) {
         return (
@@ -393,8 +554,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                 </Stack>
             </Box>
         );
-    }
-
+    };
 
     return (
         <Box>
@@ -612,18 +772,6 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                         )}
                                     </Stack>
                                 </Box>
-
-                                {/* <Button
-                                    className="filledButton"
-                                    variant="transparent"
-                                    fullWidth
-                                    size="md"
-                                    my={8}
-                                    radius={8}
-                                    onClick={() => handlePrint('box', String(Date.now()))}
-                                >
-                                    Generate QR Code
-                                </Button> */}
                             </Stack>
                         </Card>
                     </GridCol>
@@ -636,6 +784,42 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                     <ActionIcon variant="subtle" size="md" c={customStyles.colors._1B59F8}>
                                         <IconRefresh size={24} />
                                     </ActionIcon>
+                                </Group>
+
+                                <Group
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        justifyContent: "flex-end"
+                                    }}
+                                >
+                                    <Button
+                                        className="filledButton"
+                                        variant="transparent"
+                                        size="md"
+                                        my={8}
+                                        radius={8}
+                                        style={{ width: "30%" }}
+                                        onClick={pausePO}
+                                        loading={pausePOLoadingState}
+                                        disabled={pausePOLoadingState}
+                                    >
+                                        Pause PO
+                                    </Button>
+
+                                    <Button
+                                        className="filledButton"
+                                        variant="transparent"
+                                        size="md"
+                                        my={8}
+                                        radius={8}
+                                        style={{ width: "30%" }}
+                                        onClick={completePO}
+                                        loading={completePOLoadingState}
+                                        disabled={completePOLoadingState}
+                                    >
+                                        End PO
+                                    </Button>
                                 </Group>
 
                                 <Divider size="xs" my="xs" />
@@ -701,7 +885,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
 
                                             <TextInput
                                                 ref={inputRef}
-                                                label="Barcode Value"
+                                                label="Scan Barcode"
                                                 placeholder={
                                                     isProductionOrderComplete
                                                         ? "Production Order Completed"
@@ -709,35 +893,23 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                             ? "Scanning..."
                                                             : "Enter or paste barcode value..."
                                                 }
-                                                readOnly={isProductionOrderComplete}
-                                                disabled={isScanning}
                                                 value={scannedValue}
-                                                onChange={(event) => handleInputChange(event.currentTarget.value)}
-                                                size="lg"
-                                                radius="md"
-                                                leftSection={<IconBarcode size={18} color={isScanning ? "#1976d2" : "#666"} />}
-                                                rightSection={
-                                                    isScanning ? (
-                                                        <Loader size="sm" color="blue" />
-                                                    ) : scannedValue && (
-                                                        <ActionIcon
-                                                            variant="subtle"
-                                                            size="sm"
-                                                            color="gray"
-                                                            onClick={() => {
-                                                                setIsScanning(false);
-                                                                setScannedValue('');
-                                                                // Clear any pending timeout when clearing input
-                                                                if (debounceTimeoutRef.current) {
-                                                                    clearTimeout(debounceTimeoutRef.current);
-                                                                }
-                                                            }}
-                                                            style={{ cursor: 'pointer' }}
-                                                        >
-                                                            <IconX size={16} />
-                                                        </ActionIcon>
-                                                    )
-                                                }
+                                                onChange={(e) => {
+                                                    const cleaned = e.currentTarget.value
+                                                        .replace(/[^a-fA-F0-9]/g, "")
+                                                        .substring(0, 8);
+
+                                                    setScannedValue(cleaned);
+                                                }}
+                                                onKeyDown={handleKeyDown}
+                                                autoFocus
+                                                onFocus={() => {
+                                                    bufferRef.current = '';
+                                                    setScannedValue('');
+                                                }}
+                                                autoComplete="off"
+                                                spellCheck={false}
+                                                disabled={isScanning}
                                                 styles={{
                                                     input: {
                                                         fontSize: '16px',
@@ -750,6 +922,66 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                     }
                                                 }}
                                             />
+
+                                            {/* Scanned codes list section */}
+                                            <Grid gutter="sm">
+                                                {scannedList?.map((bottle: any, index: number) => {
+                                                    const isNotFound = notFoundSet.has(bottle);
+
+                                                    return (
+                                                        <Grid.Col key={index} span={{ base: 12, sm: 6 }}>
+                                                            <Card
+                                                                radius="md"
+                                                                padding="sm"
+                                                                withBorder
+                                                                style={{
+                                                                    borderColor: isNotFound ? customStyles.colors.red : undefined
+                                                                }}
+                                                            >
+                                                                <Group justify="space-between" align="flex-start" wrap="nowrap">
+                                                                    {/* Left section */}
+                                                                    <Group gap="sm" wrap="nowrap">
+                                                                        <Box
+                                                                            w={32}
+                                                                            h={32}
+                                                                            bg="blue.0"
+                                                                            style={{
+                                                                                borderRadius: 6,
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'center',
+                                                                            }}
+                                                                        >
+                                                                            <IconBottle size={18} color="#228be6" />
+                                                                        </Box>
+
+                                                                        <Stack gap={2}>
+                                                                            <Text fw={600} size="sm">
+                                                                                {`Bottle ${index + 1}`}
+                                                                            </Text>
+                                                                            <Text size="xs" c="dimmed">
+                                                                                Code: {bottle}
+                                                                            </Text>
+                                                                        </Stack>
+                                                                    </Group>
+
+                                                                    {/* Right section - Delete */}
+                                                                    <Tooltip label="Delete" withArrow>
+                                                                        <ActionIcon
+                                                                            color="red"
+                                                                            variant="subtle"
+                                                                            onClick={() => handleDelete(bottle)}
+                                                                        >
+                                                                            <IconTrash size={16} />
+                                                                        </ActionIcon>
+                                                                    </Tooltip>
+                                                                </Group>
+
+                                                            </Card>
+                                                        </Grid.Col>
+                                                    )
+                                                })}
+                                            </Grid>
 
                                             {/* Show recent scan results - only when there are actual updates */}
                                             {scannedProductionOrder && scannedProductionOrder.length > 0 && (
@@ -781,29 +1013,6 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                             )}
 
                                             <Box style={{ flex: 1 }} />
-
-                                            {/* <Button
-                                                className="filledButton"
-                                                variant="transparent"
-                                                size="lg"
-                                                radius="md"
-                                                disabled={!scannedValue.trim()}
-                                                leftSection={<IconFocus2 size={18} />}
-                                                onClick={() => {
-                                                    // Handle manual scan submission
-                                                    console.log('Manual scan value:', scannedValue);
-                                                    // Add your scan processing logic here
-                                                }}
-                                                styles={{
-                                                    root: {
-                                                        height: '48px',
-                                                        fontSize: '16px',
-                                                        fontWeight: 600
-                                                    }
-                                                }}
-                                            >
-                                                Process Barcode
-                                            </Button> */}
                                         </Stack>
                                     </Tabs.Panel>
 
@@ -936,4 +1145,4 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     )
 }
 
-export default ScanProductionOrderComponent
+export default ScanProductionOrderComponent;

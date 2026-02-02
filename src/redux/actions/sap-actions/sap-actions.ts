@@ -341,7 +341,9 @@ const listItemCodes = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = String(lastCount);
         if (skipRecords !== undefined) params.skipRecords = String(skipRecords);
 
-        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_ITEM_CODES}`, '', params);
+        // const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_ITEM_CODES}`, '', params);
+        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, '', params);
+        console.log('Res: ' , response);
 
         const { status, data } = response;
 

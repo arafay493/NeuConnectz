@@ -4,7 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import apiRequestRoutes from "@/constants/api-request";
 import API_METHODS from "@/constants/api-methods";
-import { apiGet, apiPost, apiPut } from "@/lib/api-service";
+import { apiGet } from "@/lib/api-service";
 import { FETCH_ALL_LIST_ROLES, UNAUTHORIZE_USER_TRYING_TO_ACCESS_ROLES_DATA } from "@/redux/reducers/roles-reducer/roles-reducer";
 import { handleRefreshToken } from "@/constants/refresh-token";
 

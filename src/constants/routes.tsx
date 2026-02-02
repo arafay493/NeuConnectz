@@ -22,16 +22,16 @@ const unAuthenticatedRoutes: String[] = ["/login"];
 // Note: Authenticated routes...!
 const authenticatedRoutes: string[] = [
     "/dashboard",
-    "/stock-movement",
-    "/reconciliation",
+    // "/stock-movement",
+    // "/reconciliation",
     "/users-list",
     "/assign-group",
     "/assign-warehouse",
     "/add-user",
-    "/configuration",
-    "/integration-monitor",
+    // "/configuration",
+    // "/integration-monitor",
     "/edit",
-    "/grn-movement",
+    // "/grn-movement",
     "/generate-barcode",
     "/production-order",
     "/production-order/add-order",
@@ -40,7 +40,9 @@ const authenticatedRoutes: string[] = [
     "/production-order/scan/:dynamicPath",
     "/assign-handling-unit",
     "/sales-order",
+    "/add-sale-order",
     "/delivery-order",
+    "/add-delivery-order",
     // Note: Defining New Master Routes...!
     "/master",
     "/master/customer-data",
@@ -52,7 +54,13 @@ const authenticatedRoutes: string[] = [
     "/master/add-product",
     "/master/add-vehicle",
     "/master/add-driver",
-    "/master/add-contractor"
+    "/master/add-contractor",
+    "/assign-customer",
+    "/master/update-contractor",
+    "/master/update-item-master",
+    "/master/update-driver",
+    "/master/update-customer",
+    "/master/update-vehicle",
 ];
 
 // Note: Defining all routes...!
@@ -60,16 +68,16 @@ const routes: Routes = {
     root: "/",
     login: "/login",
     dashboard: "/dashboard",
-    stockMovement: "/stock-movement",
-    reconciliation: "/reconciliation",
+    // stockMovement: "/stock-movement",
+    // reconciliation: "/reconciliation",
     usersList: "/users-list",
     assignGroup: "/assign-group",
     assignWareHouse: "/assign-warehouse",
     addUser: "/add-user",
-    configuration: "/configuration",
-    integrationMonitor: "/integration-monitor",
+    // configuration: "/configuration",
+    // integrationMonitor: "/integration-monitor",
     editUser: (uid: string) => `/edit/${uid}`,
-    grnMovement: "/grn-movement",
+    // grnMovement: "/grn-movement",
     generateBarcode: "/generate-barcode",
     productionOrder: "/production-order",
     addProductionOrder: "/production-order/add-order",
@@ -78,7 +86,10 @@ const routes: Routes = {
     scanProductionOrder: "/production-order/scan/:dynamicPath",
     assignHandlingUnit: "/assign-handling-unit",
     salesOrder: "/sales-order",
+    addSaleOrder: "/add-sale-order",
     deliveryOrder: "/delivery-order",
+    addDeliveryOrder: "/add-delivery-order",
+    assignCustomer: "/assign-customer",
     // Note: Master Parent Route...!
     master: "/master",
     // Note: Nested Master Pages
@@ -92,6 +103,11 @@ const routes: Routes = {
     addDriverMaster: "/master/add-driver",
     contractorMaster: "/master/contractor-data",
     addContractorMaster: "/master/add-contractor",
+    updateContractor: "/master/update-contractor",
+    updateItemMaster: "/master/update-item-master",
+    updateDriver: "/master/update-driver",
+    updateCustomer: "/master/update-customer",
+    updateVehicle: "/master/update-vehicle"
 };
 
 // Note: Defining drawer routes...!
@@ -101,45 +117,20 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Dashboard",
         route: routes.dashboard,
     },
-    {
-        icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
-        label: "Stock Movement",
-        route: routes.stockMovement,
-    },
-    {
-        icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "GRN Movement",
-        route: routes.grnMovement
-    },
-    {
-        icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
-        label: "Reconciliation",
-        route: routes.reconciliation,
-    },
     // {
-    //     icon: <IconListCheck size={20} />,
-    //     label: "item movement",
-    //     route: routes.itemMovement,
+    //     icon: <IconStack3Filled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Stock Movement",
+    //     route: routes.stockMovement,
     // },
     // {
-    //     icon: <IconListCheck size={20} />,
-    //     label: "inventory transfer",
-    //     route: routes.inventoryTransfer,
+    //     icon: <IconFileInvoiceFilled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "GRN Movement",
+    //     route: routes.grnMovement
     // },
     // {
-    //     icon: <IconListCheck size={20} />,
-    //     label: "IT - TR difference",
-    //     route: routes.itTrDifference,
-    // },
-    // {
-    //     icon: <IconListCheck size={20} />,
-    //     label: "IT posted documents",
-    //     route: routes.itPostedDocuments,
-    // },
-    // {
-    //     icon: <IconListCheck size={20} />,
-    //     label: "TR posted documents",
-    //     route: routes.trPostedDocuments,
+    //     icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Reconciliation",
+    //     route: routes.reconciliation,
     // },
     {
         icon: <IconUsersGroup color='currentColor' size={24} />,
@@ -156,16 +147,16 @@ const drawerRoutes: DrawerRoute[] = [
         label: "Assign Warehouse",
         route: routes.assignWareHouse,
     },
-    {
-        icon: <IconSettingsCog color='currentColor' size={24} />,
-        label: "Configuration",
-        route: routes.configuration
-    },
-    {
-        icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
-        label: "Integration Monitor",
-        route: routes.integrationMonitor
-    },
+    // {
+    //     icon: <IconSettingsCog color='currentColor' size={24} />,
+    //     label: "Configuration",
+    //     route: routes.configuration
+    // },
+    // {
+    //     icon: <IconPresentationAnalyticsFilled fill="currentColor" color='currentColor' size={24} />,
+    //     label: "Integration Monitor",
+    //     route: routes.integrationMonitor
+    // },
     {
         icon: <IconBarcode color='currentColor' size={24} />,
         label: "Generate Barcode",
@@ -180,6 +171,11 @@ const drawerRoutes: DrawerRoute[] = [
         icon: <IconPackage color='currentColor' size={24} />,
         label: "Assign Handling Unit",
         route: routes.assignHandlingUnit
+    },
+    {
+        icon: <IconPackage color='currentColor' size={24} />,
+        label: "Assign Customer",
+        route: routes.assignCustomer
     },
     {
         icon: <IconContainer color='currentColor' size={24} />,
@@ -214,11 +210,17 @@ const drawerRoutes: DrawerRoute[] = [
 ];
 
 function routeExists(path: string, routes: string[]) {
-    return routes.some(route => {
-        // Convert `:param` into regex match
-        const regex = new RegExp("^" + route.replace(/:[^/]+/g, "[^/]+") + "$");
-        return regex.test(path);
-    });
+    // console.log('Path:', path);
+    if (path.startsWith('/edit/')) {
+        return true;
+    }
+    else {
+        return routes.some(route => {
+            // Convert `:param` into regex match
+            const regex = new RegExp("^" + route.replace(/:[^/]+/g, "[^/]+") + "$");
+            return regex.test(path);
+        });
+    }
 }
 
 export {

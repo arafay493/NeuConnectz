@@ -16,7 +16,10 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { apiGet } from '@/lib/api-service';
+import { apiGet, apiPut } from '@/lib/api-service';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import ViewDistributers from './view-distributers';
+import DeleteModal from './delete-modal';
 
 interface CustomerDataProps {
     createdBy: string,
@@ -27,6 +30,7 @@ interface CustomerDataProps {
     isArchived: boolean,
     id: string,
     customerName: string,
+    customerCode: string,
     country: string,
     province: string,
     city: string,
@@ -58,10 +62,14 @@ const CustomerDataComponent: FC = () => {
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [viewDistributerModal, setViewDistributerModal] = useState(false);
+    const [distributersDetails, setDistributersDetails] = useState<any>(null);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
+    const [targetRow, setTargetRow] = useState<any>(null);
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
@@ -84,6 +92,35 @@ const CustomerDataComponent: FC = () => {
 
         // Return the larger of header or content width, within min/max bounds
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
+    };
+
+    // Function to delete customer...!
+    const deleteCusomer = async () => {
+
+        try {
+            const response = await apiPut(`/neu-connect/v2/${process.env.NEXT_PUBLIC_DELETE_CUSTOMER}?customerCode=${targetRow?.customerCode}`, authenticatedUser?.token);
+            // console.log("Delete customer response: ", response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                showNotificationToast('Success', 'Customer deleted successfully', customStyles.colors._1B59F8);
+                fetchAllCustomers();
+                setOpenDeleteModal(false);
+                setTargetRow(null);
+            };
+        }
+
+        catch (error) {
+            console.log("Something went wrong while deleting customer: ", error);
+        };
+    };
+
+    // Note: View distributers function
+    const viewDistributers = (rowData: CustomerDataProps) => {
+        console.log('Row Data: ', rowData);
+        setViewDistributerModal(true);
+        setDistributersDetails(null);
+        setDistributersDetails(rowData || null);
     };
 
     // Note: Column definitions for the table
@@ -111,7 +148,19 @@ const CustomerDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Customer Name', (customersList || []).map(item => item.customerName), 150, 200),
+                size: calculateColumnWidth('Customer Name', (customersList || []).map(item => item.customerName), 200, 200),
+            },
+            {
+                accessorKey: 'customerCode',
+                header: 'Customer Code',
+                cell: ({ getValue, row }) => {
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {row?.original?.customerCode?.slice(0, 5) as string}
+                        </Text>
+                    )
+                },
+                size: calculateColumnWidth('Customer Code', (customersList || []).map(item => item.customerCode), 200, 200),
             },
             {
                 accessorKey: 'country',
@@ -153,6 +202,60 @@ const CustomerDataComponent: FC = () => {
                 ),
                 size: calculateColumnWidth('Address', (customersList || []).map(item => item.address), 150, 200),
             },
+            {
+                accessorKey: 'view-action',
+                header: 'Sub Customers',
+                cell: ({ getValue, row }) => (
+                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                        <Button
+                            className='filledButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => viewDistributers(row?.original)}
+                        >
+                            View
+                        </Button>
+                    </Group>
+                ),
+                size: 160,
+                enableSorting: false,
+            },
+            {
+                accessorKey: 'action',
+                header: 'Actions',
+                cell: ({ getValue, row }) => (
+                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                        <Button
+                            className='filledButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => router.push(`${routes.updateCustomer}?customerId=${row?.original?.id}`)}
+                        >
+                            Edit
+                        </Button>
+
+                        <Button
+                            className='outlineButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => {
+                                setTargetRow(row?.original);
+                                setOpenDeleteModal(true);
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Group>
+                ),
+                size: 200,
+                enableSorting: false,
+            }
         ],
         [customersList] // Add data as dependency to recalculate when data changes
     );
@@ -239,12 +342,17 @@ const CustomerDataComponent: FC = () => {
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CUSTOMERS}`, authenticatedUser?.token, params);
             console.log(response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setCustomersList(data?.data?.data || []);
                 setCustomersCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                setIsLoading(false);
+                showNotificationToast('Something went wrong', error, customStyles.colors.red);
+            }
         }
 
         catch (error) {
@@ -261,6 +369,24 @@ const CustomerDataComponent: FC = () => {
 
     return (
         <Box p={8}>
+
+            {/* Note: Delete modal component */}
+            <DeleteModal
+                opened={openDeleteModal}
+                close={() => setOpenDeleteModal(false)}
+                onConfirm={() => deleteCusomer()}
+            />
+
+            {/* Note: View distributers component */}
+            {
+                viewDistributerModal && distributersDetails &&
+                <ViewDistributers
+                    open={viewDistributerModal}
+                    close={() => setViewDistributerModal(false)}
+                    data={distributersDetails}
+                />
+            }
+
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>

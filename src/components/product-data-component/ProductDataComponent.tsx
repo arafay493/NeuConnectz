@@ -16,10 +16,12 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { apiGet } from '@/lib/api-service';
+import { apiGet, apiPut } from '@/lib/api-service';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import DeleteModal from '../customer-data-component/delete-modal';
 
 interface ItemMasterDataProps {
-    id:string,
+    id: string,
     itemCode: string,
     itemName: string,
     productCategory: string,
@@ -65,6 +67,9 @@ const ItemMasterDataComponent: FC = () => {
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
 
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [targetRow, setTargetRow] = useState<any>(null);
+
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
     };
@@ -86,6 +91,28 @@ const ItemMasterDataComponent: FC = () => {
 
         // Return the larger of header or content width, within min/max bounds
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
+    };
+
+    // Function to delete item master...!
+    const deleteItemMaster = async () => {
+        // console.log('Item Master Data: ', itemMasterData);
+
+        try {
+            const response = await apiPut(`/neu-connect/v2/${process.env.NEXT_PUBLIC_DELETE_ITEM_MASTER}?itemCode=${targetRow?.itemCode}`, authenticatedUser?.token);
+            // console.log("Delete item master response: ", response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                showNotificationToast('Success', 'Item master deleted successfully', customStyles.colors._1B59F8);
+                // fetchAllItems();
+                setOpenDeleteModal(false);
+                setTargetRow(null);
+            };
+        }
+
+        catch (error) {
+            console.log("Something went wrong while deleting driver: ", error);
+        };
     };
 
     // Note: Column definitions for the table
@@ -175,6 +202,40 @@ const ItemMasterDataComponent: FC = () => {
                 ),
                 size: calculateColumnWidth('UOM', (itemsList || []).map(item => item.uom), 150, 200),
             },
+            {
+                accessorKey: 'action',
+                header: 'Actions',
+                cell: ({ getValue, row }) => (
+                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                        <Button
+                            className='filledButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => router.push(`${routes.updateItemMaster}?itemMasterId=${row?.original?.id}`)}
+                        >
+                            Edit
+                        </Button>
+
+                        <Button
+                            className='outlineButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => {
+                                setTargetRow(row?.original);
+                                setOpenDeleteModal(true);
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Group>
+                ),
+                size: 200,
+                enableSorting: false,
+            }
         ],
         [itemsList] // Add data as dependency to recalculate when data changes
     );
@@ -250,23 +311,40 @@ const ItemMasterDataComponent: FC = () => {
     }, [table.getPageCount()]);
 
     // Note: Fetch all items master...!
-    const fetchAllItems = async () => {
+    const fetchAllItems = async (
+        { LastCount, skipRecord }:
+            {
+                LastCount?: number,
+                skipRecord?: number
+            }
+    ) => {
         try {
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
-            const params: { [key: string]: number } = {};
+            // const skipRecord = pagination.pageIndex * pagination.pageSize;
+            // const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            // if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
+            // if (skipRecord !== undefined) params.skipRecord = skipRecord;
+
+            const params: { [key: string]: number } = {};
+            if (LastCount !== undefined) params.lastCount = LastCount;
+            if (skipRecord !== undefined) params.skipRecords = skipRecord;
+
+            console.log('Pagination Params: ', params);
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, authenticatedUser?.token, params);
             console.log(response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setItemsList(data?.data?.items || []);
                 setItemsCount(data?.data?.totalRecords || 0);
                 setIsLoading(false);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                setIsLoading(false);
+                showNotificationToast('Something went wrong', error, customStyles.colors.red);
+            }
         }
 
         catch (error) {
@@ -276,13 +354,28 @@ const ItemMasterDataComponent: FC = () => {
 
     useEffect(() => {
         if (authenticatedUser) {
+
+            const skipRecord = pagination.pageIndex * pagination.pageSize;
+
             setIsLoading(true);
-            fetchAllItems();
+            // fetchAllItems();
+            fetchAllItems({
+                LastCount: pagination.pageSize, // Fetch only current page records
+                skipRecord: skipRecord
+            })
         };
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
 
     return (
         <Box p={8}>
+
+            {/* Note: Delete modal component */}
+            <DeleteModal
+                opened={openDeleteModal}
+                close={() => setOpenDeleteModal(false)}
+                onConfirm={() => deleteItemMaster()}
+            />
+
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
@@ -565,7 +658,7 @@ const ItemMasterDataComponent: FC = () => {
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, itemsCount)} of { itemsCount } entries
+                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, itemsCount)} of {itemsCount} entries
                         </Text>
                     </Group>
                 </Group>

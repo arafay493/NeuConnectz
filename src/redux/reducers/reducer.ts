@@ -16,6 +16,7 @@ import reconciliationReducer from '@/redux/reducers/reconciliation-reducer/recon
 import generateBarcodeReducer from '@/redux/reducers/generate-barcode-reducer/generate-barcode-reducer';
 import handlingUnitReducer from '@/redux/reducers/handling-unit-reducer/handling-unit-reducer';
 import productionOrderReducer from '@/redux/reducers/production-order-reducer/production-order-reducer';
+import customerUserReducer from "@/redux/reducers/customer-user-reducer/customer-user-reducer";
 
 // Note: Persist reducer configuration...!
 const persistConfig = {
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
     generateBarcodeStates: generateBarcodeReducer,
     handlingUnitStates: handlingUnitReducer,
     productionOrderStates: productionOrderReducer,
+    customerUserStates : customerUserReducer
 });
 
 export default persistReducer(persistConfig, rootReducer);

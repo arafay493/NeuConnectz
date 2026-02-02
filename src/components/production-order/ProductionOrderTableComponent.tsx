@@ -312,7 +312,7 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <TableTitleComponent
-                        title="Batch Printing History"
+                        title="Production Order"
                         description="View and manage the history of batch printing jobs."
                     />
                     <Group gap="xs">

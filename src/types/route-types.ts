@@ -6,16 +6,16 @@ export type Routes = {
     root: string;
     login: string;
     dashboard: string;
-    stockMovement: string;
-    reconciliation: string;
+    // stockMovement: string;
+    // reconciliation: string;
     usersList: string;
     assignGroup: string;
     assignWareHouse: string;
     addUser: string;
-    configuration: string;
-    integrationMonitor: string;
+    // configuration: string;
+    // integrationMonitor: string;
     editUser: (uid: string) => string;
-    grnMovement: string;
+    // grnMovement: string;
     generateBarcode: string;
     productionOrder: string;
     addProductionOrder: string;
@@ -24,7 +24,9 @@ export type Routes = {
     scanProductionOrder: string;
     assignHandlingUnit: string;
     salesOrder: string;
+    addSaleOrder: string;
     deliveryOrder: string;
+    addDeliveryOrder: string;
     // Note: Defining types for New Master Routes...!
     master: string;
     customerMaster: string;
@@ -37,6 +39,12 @@ export type Routes = {
     addVehicleMaster: string;
     addDriverMaster: string;
     addContractorMaster: string;
+    assignCustomer: string;
+    updateContractor: string;
+    updateItemMaster: string;
+    updateDriver: string;
+    updateCustomer: string;
+    updateVehicle: string;
 };
 
 export type DrawerRoute = {

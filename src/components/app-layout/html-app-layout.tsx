@@ -102,6 +102,7 @@ const HtmlAppLayout = ({ children }: { children: ReactNode }) => {
     };
 
     const dynamicRoute = routeExists(pathName, authenticatedRoutes);
+    // console.log("Dynamic Route:", dynamicRoute);
 
     if (!dynamicRoute) {
         return <>{children}</>;

@@ -5,7 +5,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchHandlingUnits = createAsyncThunk(
     "handlingUnit/fetchHandlingUnits",
-    async ({ lastCount, skipRecords }:
+    async ({ lastCount = 40, skipRecords = 0 }:
         {
             lastCount?: number,
             skipRecords?: number
@@ -45,7 +45,9 @@ const fetchHandlingUnits = createAsyncThunk(
 const getHandlingUnitByItemId = createAsyncThunk(
     "handlingUnit/getHandlingUnitByItemId",
     async ({ itemId }: { itemId: string }, { dispatch }) => {
+        console.log('Item Id: ', itemId);
         const response = await apiGet(`trace-and-track/v2${process.env.NEXT_PUBLIC_GET_GROUP_BY_ITEM}/${itemId}`);
+        console.log('getHandlingUnitByItemId res: ', response);
 
         const { status, data } = response;
 
@@ -71,6 +73,7 @@ const assignHandlingUnitToItems = createAsyncThunk(
     "handlingUnit/assignHandlingUnitToItems",
     async ({ body, resHandler }: { body: { groupId: string, itemIds: string[] }, resHandler: (status: number) => void }, { dispatch }) => {
         const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ASSIGN_GROUP_TO_ITEMS}`, body);
+        console.log('Assign handeling unit res: ', response);
         const { status, data } = response;
 
         resHandler(status);

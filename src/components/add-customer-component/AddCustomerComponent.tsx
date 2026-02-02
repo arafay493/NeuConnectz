@@ -175,7 +175,11 @@ const AddCustomerMasterComponent = () => {
             if (!selectedCity) throw "Please select a City";
             if (customerType == "SubCustomer" && tags.length < 1) throw "Please add at least one Sub Customer";
 
+            const timestamp = Date.now().toString(36).toUpperCase(); // 7-8 chars
+            const random = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4 chars
+
             const customerData = {
+                customerCode: (timestamp + random).slice(-12),
                 customerName: customerName,
                 country: selectedCountry,
                 provinceId: selectedProvince,

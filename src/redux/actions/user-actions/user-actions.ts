@@ -22,6 +22,7 @@ const fetchAllUsers = createAsyncThunk(
         if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
         const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
+        console.log('Users list: ' , response);
 
         const { status, data } = response;
 

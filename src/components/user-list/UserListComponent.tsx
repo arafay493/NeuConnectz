@@ -288,6 +288,8 @@ const UserListComponent: FC<UserListComponentProps> = ({
 
             const skipRecord = pagination.pageIndex * pagination.pageSize;
 
+            // console.log('Pagination Params: ', pagination.pageIndex, pagination.pageSize, skipRecord);
+
             dispatch(fetchAllUsers({
                 authToken: authenticatedUser?.token,
                 LastCount: pagination.pageSize, // Fetch only current page records

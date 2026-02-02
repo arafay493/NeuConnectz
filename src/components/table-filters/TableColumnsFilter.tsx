@@ -8,6 +8,7 @@ interface TableColumnsFilterProps {
     value: string;
     setValue: (value: string) => void;
     areTableFiltersVisible: boolean;
+    onClick?: any
 }
 export const TableColumnsFilter: FC<TableColumnsFilterProps> = ({ placeholder, value, setValue, areTableFiltersVisible }) => {
     return (

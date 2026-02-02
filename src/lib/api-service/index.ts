@@ -16,13 +16,14 @@ export const apiGet = async (endpoint: string, authToken?: string, params?: { [k
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
         const { status, data } = error?.response || {};
+        // console.log('Dataaaa: ', data);
 
         // Handle 401 - Unauthorized
         if (status === 401) {
             handleRefreshToken(error.message);
         }
 
-        return { success: false, error: error.message, status };
+        return { success: false, error: data.message, status };
     }
 };
 
@@ -40,13 +41,14 @@ export const apiPost = async (endpoint: string, payload: any, authToken?: string
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
         const { status, data } = error?.response || {};
+        console.log('Data: ', data);
 
         // Handle 401 - Unauthorized
         if (status === 401) {
             handleRefreshToken(error.message);
         }
 
-        return { success: false, error: error.message, status };
+        return { success: false, error: data.message, status };
     }
 };
 
@@ -61,6 +63,7 @@ export const apiPut = async (endpoint: string, payload: any, authToken?: string)
                 'Auth-Token': authToken
             }
         });
+        console.log('Put response: ' , response);
         return { success: true, data: response.data, status: response.status };
     } catch (error: any) {
         const { status, data } = error?.response || {};

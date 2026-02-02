@@ -5,7 +5,7 @@
 import { routes } from '@/constants/routes';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
-import { ActionIcon, Box, Button, Group, Select, Stack, Text, Title , Image } from '@mantine/core';
+import { ActionIcon, Box, Button, Group, Select, Stack, Text, Title, Image } from '@mantine/core';
 import NextImage from 'next/image';
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
@@ -13,8 +13,10 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState, memo } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { apiGet } from '@/lib/api-service';
+import { apiGet, apiPut } from '@/lib/api-service';
 import { localAssets } from '@/lib/file-paths/file-paths';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import DeleteModal from '../customer-data-component/delete-modal';
 
 interface ContractorDataProps {
     createdBy: string,
@@ -44,6 +46,7 @@ const ContractorDataComponent: FC = () => {
     // Note: Router for switch page
     const route = useRouter();
 
+    // Note: State for Authentication
     const dispatch = useAppDispatch();
 
     // Note: State for Authentication
@@ -57,6 +60,9 @@ const ContractorDataComponent: FC = () => {
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
+
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [targetRow, setTargetRow] = useState<any>(null);
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
@@ -79,6 +85,27 @@ const ContractorDataComponent: FC = () => {
 
         // Return the larger of header or content width, within min/max bounds
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
+    };
+
+    // Function to delete contractor...!
+    const deleteContractor = async () => {
+
+        try {
+            const response = await apiPut(`/neu-connect/v2/${process.env.NEXT_PUBLIC_DELETE_CONTRACTOR}?TransporterId=${targetRow?.id}`, authenticatedUser?.token);
+            // console.log("Delete contractor response: ", response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                showNotificationToast('Success', 'Contractor deleted successfully', customStyles.colors._1B59F8);
+                fetchAllContarctors();
+                setOpenDeleteModal(false);
+                setTargetRow(null);
+            };
+        }
+
+        catch (error) {
+            console.log("Something went wrong while deleting contractor: ", error);
+        };
     };
 
     // Note: Column definitions for the table
@@ -137,6 +164,40 @@ const ContractorDataComponent: FC = () => {
                     </Text>
                 ),
                 size: calculateColumnWidth('Country', (contarctorsList || []).map(item => item.country), 200, 200),
+            },
+            {
+                accessorKey: 'action',
+                header: 'Actions',
+                cell: ({ getValue, row }) => (
+                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                        <Button
+                            className='filledButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => route.push(`${routes.updateContractor}?contractorId=${row?.original?.id}`)}
+                        >
+                            Edit
+                        </Button>
+
+                        <Button
+                            className='outlineButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => {
+                                setTargetRow(row?.original);
+                                setOpenDeleteModal(true);
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Group>
+                ),
+                size: 200,
+                enableSorting: false,
             }
         ],
         [contarctorsList] // Add data as dependency to recalculate when data changes
@@ -222,14 +283,19 @@ const ContractorDataComponent: FC = () => {
             if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token, params);
-            // console.log(response);
+            // console.log('Contractors:', response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setContarctorsList(data?.data?.data || []);
                 setContractorsCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                setIsLoading(false);
+                showNotificationToast('Something went wrong', error, customStyles.colors.red);
+            }
         }
 
         catch (error) {
@@ -246,6 +312,14 @@ const ContractorDataComponent: FC = () => {
 
     return (
         <Box p={8}>
+
+            {/* Note: Delete modal component */}
+            <DeleteModal
+                opened={openDeleteModal}
+                close={() => setOpenDeleteModal(false)}
+                onConfirm={() => deleteContractor()}
+            />
+
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>

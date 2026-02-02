@@ -505,7 +505,7 @@ export interface ItemDataProps {
     pUoMEntry: number | null;
     sUoMEntry: number | null;
     iUoMEntry: number | null;
-    uomCode: string | null;
+    uom: string | null;
     baseQty: number | null;
     altQty: number | null;
     uoms: Array<UomProps>;

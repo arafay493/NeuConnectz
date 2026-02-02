@@ -4,7 +4,8 @@ import { Dispatch, FC, SetStateAction } from "react";
 interface GlobalSearchFilterProps {
     filters: string;
     setFilters: Dispatch<SetStateAction<string>>;
-    isSearchInputVisible: boolean;
+    isSearchInputVisible?: boolean;
+    handleGlobalSearch?: (value: string) => void;
 }
 
 export const GlobalSearchFilter: FC<GlobalSearchFilterProps> = ({

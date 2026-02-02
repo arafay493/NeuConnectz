@@ -21,11 +21,12 @@
     "cookies-next": "^5.1.0",
     "dayjs": "^1.11.13",
     "lottie-react": "^2.4.1",
-    "next": "15.3.0",
+    "next": "^15.5.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
     "react-scan": "^0.3.3",
+    "react-spinners": "^0.17.0",
     "recharts": "^3.0.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0"

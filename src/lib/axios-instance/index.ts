@@ -50,10 +50,10 @@ axiosInstance.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response) {
             const status = error.response.status;
-            console.log(
-                `Axios Error: Status ${status}`,
-                error.response.data || error.message
-            );
+            // console.log(
+            //     `Axios Error: Status ${status}`,
+            //     error.response.data || error.message
+            // );
         } else {
             console.log('Network or unexpected error:', error.message);
         }

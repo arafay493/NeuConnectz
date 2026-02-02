@@ -19,6 +19,7 @@ const logInUser = createAsyncThunk(
         { dispatch }
     ) => {
         const response = await apiPost(`/auth${process.env.NEXT_PUBLIC_AUTH_LOGIN_API}`, loginData);
+        console.log("Login Api Response:", response);
 
         const { status, data } = response;
 

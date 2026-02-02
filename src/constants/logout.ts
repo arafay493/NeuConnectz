@@ -35,6 +35,6 @@ export const logout = (message: string, description: string): void => {
 
             // Note: Reload the window and redirecting to login page...!
             window.location.reload();
-        }, 2000);
+        }, 1000);
     };
 };

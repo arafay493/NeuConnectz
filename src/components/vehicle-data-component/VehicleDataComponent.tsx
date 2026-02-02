@@ -16,7 +16,9 @@ import { useRouter } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
-import { apiGet } from '@/lib/api-service';
+import { apiGet, apiPut } from '@/lib/api-service';
+import showNotificationToast from '@/lib/notification-toast/notification-toast';
+import DeleteModal from '../customer-data-component/delete-modal';
 
 interface VehicleDataProps {
     "createdBy": string,
@@ -81,6 +83,9 @@ const VehicleDataComponent: FC = () => {
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
 
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [targetRow, setTargetRow] = useState<any>(null);
+
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
     };
@@ -102,6 +107,27 @@ const VehicleDataComponent: FC = () => {
 
         // Return the larger of header or content width, within min/max bounds
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
+    };
+
+    // Function to delete vehicle...!
+    const deleteVehicle = async () => {
+
+        try {
+            const response = await apiPut(`/neu-connect/v2/${process.env.NEXT_PUBLIC_DELETE_VEHICLE}?VehicleNumber=${targetRow?.vehicleNumber}`, authenticatedUser?.token);
+            // console.log("Delete vehicle response: ", response);
+
+            const { status, data } = response;
+            if (status == 200) {
+                showNotificationToast('Success', 'Vehicle deleted successfully', customStyles.colors._1B59F8);
+                fetchAllVehicles();
+                setOpenDeleteModal(false);
+                setTargetRow(null);
+            };
+        }
+
+        catch (error) {
+            console.log("Something went wrong while deleting driver: ", error);
+        };
     };
 
     // Note: Column definitions for the table
@@ -183,6 +209,40 @@ const VehicleDataComponent: FC = () => {
                     )
                 },
                 size: calculateColumnWidth('Contractor', (vehiclesList || []).map(item => item.contractorName), 200, 200),
+            },
+            {
+                accessorKey: 'action',
+                header: 'Actions',
+                cell: ({ getValue, row }) => (
+                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                        <Button
+                            className='filledButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => router.push(`${routes.updateVehicle}?vehicleId=${row?.original?.id}`)}
+                        >
+                            Edit
+                        </Button>
+
+                        <Button
+                            className='outlineButton'
+                            variant="transparent"
+                            size="sm"
+                            radius={8}
+                            w={'auto'}
+                            onClick={() => {
+                                setTargetRow(row?.original);
+                                setOpenDeleteModal(true);
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </Group>
+                ),
+                size: 200,
+                enableSorting: false,
             }
         ],
         [vehiclesList] // Add data as dependency to recalculate when data changes
@@ -268,14 +328,19 @@ const VehicleDataComponent: FC = () => {
             if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_VEHICLES}`, authenticatedUser?.token, params);
-            // console.log(response);
+            console.log('Vehicles: ', response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setVehiclesList(data?.data?.data || []);
                 setVehiclesCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                setIsLoading(false);
+                showNotificationToast('Something went wrong', error, customStyles.colors.red);
+            }
         }
 
         catch (error) {
@@ -292,6 +357,14 @@ const VehicleDataComponent: FC = () => {
 
     return (
         <Box p={8}>
+
+            {/* Note: Delete modal component */}
+            <DeleteModal
+                opened={openDeleteModal}
+                close={() => setOpenDeleteModal(false)}
+                onConfirm={() => deleteVehicle()}
+            />
+
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>

@@ -29,13 +29,19 @@ const generateBarcode = createSlice({
             if (action?.payload?.batches && Array.isArray(action?.payload?.batches)) {
                 state.data = action.payload.batches;
                 state.totalCount = action?.payload?.totalCount || 0;
-            } else if (Array.isArray(action?.payload)) {
-                state.data = action.payload;
-                state.totalCount = action.payload.length;
-            } else {
+            }
+
+            else if (action?.payload?.poList) {
+                console.log('Payload: ', action?.payload);
+                state.data = action?.payload?.poList;
+                state.totalCount = action?.payload?.dataCount;
+            }
+
+            else {
                 state.data = null;
                 state.totalCount = 0;
             }
+
             state.loading = false;
         },
 

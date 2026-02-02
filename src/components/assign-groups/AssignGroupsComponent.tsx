@@ -401,12 +401,12 @@ const AssignGroupsComponent = () => {
     const handleResponse = (response: any): void => {
 
         if (response && response.status == 201) {
-            showNotificationToast("Warehouse Assigned Successfully", "Requested groups has been assigned to the requested user", customStyles.colors._408CCE);
+            showNotificationToast("Group Code Assigned Successfully", "Requested groups has been assigned to the requested user", customStyles.colors._408CCE);
             return;
         };
 
         if (response && response.status != 201) {
-            showNotificationToast("Warehouse Assignment Failed", "Requested groups could not be assigned to the requested user", customStyles.colors.red);
+            showNotificationToast("Group Code Assignment Failed", "Requested groups could not be assigned to the requested user", customStyles.colors.red);
 
             return;
         };
