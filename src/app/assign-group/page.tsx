@@ -54,12 +54,13 @@ const AssignGroup = () => {
   const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
   const { usersList } = useAppSelector(({ userStates }) => userStates);
   const { ListAllGroupCodes, listGroupCodesByUserId, GroupErrorState } = useAppSelector(({ groupStates }) => groupStates);
-  // console.log('List all group codes:', ListAllGroupCodes);
+  console.log('List all group codes:', ListAllGroupCodes);
   // console.log('List group codes by user id:', listGroupCodesByUserId);
 
-  const filtered = [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
+  const filtered = ListAllGroupCodes.length > 0 ? [...ListAllGroupCodes]?.filter((user: GroupCodeDataType) =>
     user?.groupName?.toLowerCase().includes(search?.toLowerCase())
-  );
+  ) : [];
+  console.log('Filtered group codes:', filtered);
 
   // Note: Required variables...!
   const totalPages = Math.ceil(filtered.length / itemsPerPage);

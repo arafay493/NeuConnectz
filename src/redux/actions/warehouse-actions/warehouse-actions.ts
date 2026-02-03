@@ -29,11 +29,11 @@ const fetchAllWareHouses = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in warehouse action: ", response);
+            console.log("Response in warehouse action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_WAREHOUSES(data?.data));
+                dispatch(FETCH_ALL_WAREHOUSES(data?.data?.data));
             };
         }
 

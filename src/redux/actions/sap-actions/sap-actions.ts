@@ -124,12 +124,12 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
         { dispatch }
     ) => {
         // console.log("Auth token: ", token);
-        // console.log("Status: ", dataStatus);
-        // console.log("Type: ", type);
+        console.log("Status: ", dataStatus);
+        console.log("Type: ", type);
 
-        const apiUrl = !type ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
+        const apiUrl = type == undefined ? `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}` :
             `${process.env.NEXT_PUBLIC_FETCH_ALL_ITR_IT_TRS_LIST}=${dataStatus}&type=${type}`;
-        // console.log("Api url: ", apiUrl);
+        console.log("Api url: ", apiUrl);
 
         try {
             const response = await axios({
@@ -140,7 +140,7 @@ const fetchAllITR_IT_TRS = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in sap action: ", response);
+            console.log("Response in sap action: ", response);
             const { status } = response;
             // console.log("Api res: ", response);
 

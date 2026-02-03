@@ -29,11 +29,11 @@ const fetchListAllGroupCodes = createAsyncThunk(
                     "Auth-Token": authToken
                 }
             });
-            // console.log("Response in group action: ", response);
+            console.log("Response in group action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
-                dispatch(FETCH_ALL_GROUP_CODES(data?.data));
+                dispatch(FETCH_ALL_GROUP_CODES(data?.data?.data));
             };
         }
 

@@ -13,7 +13,7 @@ import { Urls, AxiosDefaultOptions } from "@/types/api-types";
 
 // Note: This is a configuration file for axios. It is used to set up the axios instance with the base...!
 const urls: Urls = {
-    deployedUrl: process.env.API_URL
+    deployedUrl: process.env.BASE_URL
 };
 
 // Note: Default config options...!
