@@ -21,6 +21,7 @@ import { drawerRoutes, authenticatedRoutes } from '@/constants/routes';
 import { logout } from '@/constants/logout';
 import { customStyles } from '@/styles/custom-theme';
 import { localAssets } from '@/lib/file-paths/file-paths';
+import Link from 'next/link';
 
 interface ExpandedNavbarProps {
     activeTab: number;
@@ -41,39 +42,26 @@ const ExpandedNavbar = ({
     // Note: Link component for navigation...!
     const renderNavLink = (item: DrawerRoute, index: number) => (
         <NavLink
-            href={item.route}
             key={index}
-            component="a"
+            component={Link}
+            href={item.route}
             leftSection={item?.icon}
             label={item?.label}
             variant="light"
             px={customStyles.deviceSize.md}
             py={customStyles.deviceSize.sm}
-            color={activeTab === index ? customStyles.colors._1B59F8 : customStyles.colors._4D4D4D}
+            color={
+                activeTab === index
+                    ? customStyles.colors._1B59F8
+                    : customStyles.colors._4D4D4D
+            }
             active={activeTab === index}
             onClick={() => setActiveTab(index)}
-            w='100%'
+            w="100%"
             style={{
                 textTransform: 'capitalize',
                 borderRadius: '10px',
                 transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                margin: '0',
-            }}
-            styles={{
-                label: {
-                    fontSize: 16,
-                    fontWeight: 500,
-                    transition: 'opacity 0.3s ease',
-                    opacity: 1,
-                },
-                root: {
-                    justifyContent: 'flex-start',
-                    width: '100%',
-                    transition: 'all 0.3s ease',
-                },
             }}
         />
     );
@@ -126,8 +114,10 @@ const ExpandedNavbar = ({
                 <Divider mx={26} />
                 <Stack
                     h='100%'
-                    justify='space-around'
+                    justify='space-between'
                     px={customStyles.deviceSize.sm}
+                    pt={10}
+                    pb={10}
                 >
                     <Stack
                         gap={customStyles.deviceSize.md}
@@ -138,7 +128,7 @@ const ExpandedNavbar = ({
                         {drawerRoutes.map((item, index) => renderNavLink(item, index))}
                     </Stack>
                     <NavLink
-                        component="a"
+                        // component="a"
                         leftSection={<IconLogout size={24} />}
                         label='Logout'
                         variant="light"

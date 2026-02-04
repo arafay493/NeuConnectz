@@ -22,7 +22,7 @@ const groupSlice = createSlice({
         },
 
         FETCH_ALL_GROUP_CODES: (state, action: PayloadAction<any>) => {
-            // console.log("Group codes list data in reducer: ", action.payload);
+            console.log("Group codes list data in reducer: ", action.payload);
             state.GroupErrorState = "";
             state.ListAllGroupCodes = action?.payload.groupCodesData;
             state.totalGroupCodesCount = action.payload.groupCodesCount

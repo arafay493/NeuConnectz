@@ -23,7 +23,7 @@ const authenticatedRoutes: String[] = [
     "/",
     "/dashboard",
     "/stock-movement",
-    "/reconciliation",
+    // "/reconciliation",
     // "/item-movement",
     // "/inventory-transfer",
     // "/it-tr-difference",
@@ -45,7 +45,7 @@ const routes: Routes = {
     login: "/login",
     dashboard: "/dashboard",
     stockMovement: "/stock-movement",
-    reconciliation: "/reconciliation",
+    // reconciliation: "/reconciliation",
     // itemMovement: "/item-movement",
     // inventoryTransfer: "/inventory-transfer",
     // itTrDifference: "/it-tr-difference",
@@ -78,11 +78,11 @@ const drawerRoutes: DrawerRoute[] = [
         label: "GRN movement",
         route: routes.grnMovement
     },
-    {
-        icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
-        label: "reconciliation",
-        route: routes.reconciliation,
-    },
+    // {
+    //     icon: <IconTextScan2 fill="currentColor" color='currentColor' size={24} />,
+    //     label: "reconciliation",
+    //     route: routes.reconciliation,
+    // },
     // {
     //     icon: <IconListCheck size={20} />,
     //     label: "item movement",

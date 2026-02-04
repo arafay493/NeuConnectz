@@ -9,6 +9,7 @@ import { LOG_IN_USER, REFRESH_TOKEN } from "@/redux/reducers/auth-reducer/auth-r
 import { ResHandler } from "@/types/api-types";
 import { logout } from "@/constants/logout";
 
+
 // Note: Action function to log in user...!
 const logInUser = createAsyncThunk(
     "auth/login",
@@ -16,7 +17,7 @@ const logInUser = createAsyncThunk(
         { loginData, resHandler }: { loginData: LoginUserDataType, resHandler: ResHandler },
         { dispatch }
     ) => {
-        // console.log("Login data in auth action: ", loginData);
+        console.log("Login data in auth action: ", loginData);
 
         try {
             const response = await axios({
@@ -27,7 +28,7 @@ const logInUser = createAsyncThunk(
                     "Api-Url": process.env.NEXT_PUBLIC_AUTH_LOGIN_API
                 }
             });
-            // console.log("Response in login action: ", response);
+            console.log("Response in login action: ", response);
             const { status, data } = response;
 
             if (status == 200) {
@@ -37,7 +38,7 @@ const logInUser = createAsyncThunk(
         }
 
         catch (error: any) {
-            // console.log('Error occured in login api integration: ', error);
+            console.log('Error occured in login api integration: ', error);
             resHandler(error?.response);
         };
     }

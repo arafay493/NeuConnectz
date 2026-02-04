@@ -91,7 +91,7 @@ const ReconciliationFilterBar: FC<ReconciliationFilterBarProps> = ({
                     rightSectionPointerEvents='none'
                     placeholder="DD/MM/YY"
                     value={selectDate}
-                    onChange={(value: string) => setSelectDate(value)}
+                    onChange={(value: any) => setSelectDate(value)}
                     radius={8}
                     size='md'
                     clearable

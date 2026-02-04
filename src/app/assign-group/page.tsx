@@ -63,7 +63,7 @@ const AssignGroup = () => {
       user?.groupName?.toLowerCase().includes(search?.toLowerCase())
     );
 
-  // console.log('List all group codes:', ListAllGroupCodes);
+  console.log('List all group codes:', ListAllGroupCodes);
   // console.log("Total group codes count:", totalGroupCodesCount);
   // console.log('List group codes by user id:', listGroupCodesByUserId);
 

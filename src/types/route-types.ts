@@ -7,7 +7,7 @@ export type Routes = {
     login: string;
     dashboard: string;
     stockMovement: string;
-    reconciliation: string;
+    // reconciliation: string;
     // itemMovement: string;
     // inventoryTransfer: string;
     // itTrDifference: string;

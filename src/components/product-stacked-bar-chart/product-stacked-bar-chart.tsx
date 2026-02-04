@@ -29,7 +29,11 @@ const ProductStackedBarChart = () => {
                 <BarChart data={data} stackOffset="expand">
                     <XAxis dataKey="name" />
                     <YAxis tickFormatter={(value) => `${Math.round(value * 100)}%`} />
-                    <Tooltip formatter={(value: number) => `${Math.round(value * 100)}%`} />
+                    <Tooltip
+                        formatter={(value?: number) =>
+                            value ? `${Math.round(value * 100)}%` : "0%"
+                        }
+                    />
                     <Legend />
                     <Bar dataKey="A" stackId="a" fill="#1B59F8" name="Product A" />
                     <Bar dataKey="B" stackId="a" fill="#7EA6F8" name="Product B" />

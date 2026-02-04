@@ -24,7 +24,14 @@ import MantinreUiProvider from "@/components/mantine-ui-provider/mantine-ui-prov
 // Note: Custom hook to monitor network status...!
 import { useNetworkStatus } from "@/hooks/userNetworkStatus";
 
-import Lottie from 'lottie-react';
+import dynamic from "next/dynamic";
+
+const Lottie = dynamic(() => import("lottie-react"), {
+  ssr: false
+});
+
+
+// import Lottie from 'lottie-react';
 import InternetNotConnectedAnimation from "../assets/lottie/no-internet-connection.json";
 
 // Note: Importing required components...!

@@ -4,14 +4,12 @@
 
 import React, { useState } from 'react';
 import {
-    Button,
     Group,
     SegmentedControl,
     Text,
     Title,
     Stack,
 } from '@mantine/core';
-import { IconCheckbox } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import IntegrationComponent from '@/components/integration/integration';
 import ReplicationComponent from '@/components/replication/replication';
