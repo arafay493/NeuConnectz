@@ -94,7 +94,7 @@ const CollapsedNavbar = ({
             zIndex={1000}
             style={{
                 transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
-                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string) ? 'block' : 'none',
                 opacity: 1,
                 transform: 'translateX(0)',
             }}

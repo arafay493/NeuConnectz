@@ -77,7 +77,7 @@ const ExpandedNavbar = ({
             zIndex={1000}
             style={{
                 transition: 'width 0.3s ease',
-                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+                display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string) ? 'block' : 'none',
             }}
         >
             <Stack h='100%' gap={0} >

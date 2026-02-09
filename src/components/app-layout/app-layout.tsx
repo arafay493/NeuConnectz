@@ -80,7 +80,7 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
         ml={collapsed ? 120 : 300}
         px={24}
         style={{
-          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[10] as string) ? 'block' : 'none',
+          display: authenticatedRoutes.includes(pathName) || pathName.startsWith(authenticatedRoutes[9] as string) ? 'block' : 'none',
           // transition: 'margin-left 0.3s ease', // ✨ smooth movement
         }}
       >
@@ -106,13 +106,6 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
               size={48}
               color='initials'
             />
-            {/* <Image
-              style={{ borderRadius: '50%' }}
-              src={localAssets.userIcon}
-              height={24}
-              width={24}
-              alt='User Avatar'
-            /> */}
             <Stack gap={0}>
               <Text size="sm" fw={500} c={customStyles.colors._4A4A4A}>
                 {authenticatedUser?.name?.charAt(0).toUpperCase()}{authenticatedUser?.name?.slice(1).toLowerCase()}

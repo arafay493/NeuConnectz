@@ -134,7 +134,7 @@ const updateUser = createAsyncThunk(
                     "Auth-Token": token
                 }
             });
-            // console.log("Response in user action: ", response);
+            console.log("Response in user action: ", response);
             const { status, data } = response;
 
             if (status == 201) {
