@@ -65,6 +65,15 @@ const AppLayOut = ({ children }: { children: ReactNode }) => {
     setActiveTab(activeRouteIndex >= 0 ? activeRouteIndex : -1);
   }, [pathName]);
 
+  useEffect(() => {
+    if (isMobile) {
+      // setCollapsed(false); // Always show expanded navbar on mobile
+      console.log('Mobile view detected ' + isMobile);
+      console.log('Collapsed state: ' + collapsed);
+      setCollapsed(true);
+    }
+  }, [isMobile]);
+
   return (
     <AppShell
       padding={customStyles.deviceSize.md}

@@ -12,21 +12,24 @@ import {
   Button,
   ScrollArea,
   Select,
-  TextInput
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconFileTypeCsv } from "@tabler/icons-react";
 import { customStyles } from '@/styles/custom-theme';
 import Loader from '@/components/loader/loader';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { fetchAll_ITR_Data } from '@/redux/actions/itr-actions/itr-actions';
+import { fetchAll_ITR_Data, fetchAll_IT_Data, fetchAll_TR_Data } from '@/redux/actions/itr-actions/itr-actions';
 import ITR_TableCom from '@/components/itr-table/itr-table';
 import TR_TableCom from '@/components/tr-table/tr-table';
 import IT_TableCom from '@/components/it-table/it-table';
-import { exportToCSV } from '@/constants/export-to-csv';
 import { filters, sapStatusOptions, docStatusOptions, apiFilterParams, docStatusOptionsFor_IT_TR } from '@/constants/filters';
 import { exportDataToCsvFile } from '@/redux/actions/sap-actions/sap-actions';
 import { fetchAllWareHouses } from '@/redux/actions/warehouse-actions/warehouse-actions';
+
+interface PaginationState {
+  pageIndex: number;
+  pageSize: number;
+}
 
 const StockMovementScreen = () => {
 
@@ -36,22 +39,19 @@ const StockMovementScreen = () => {
   // Note: Handeling states here...!
   const [tab, setTab] = useState<'ITR' | 'IT' | 'TR'>('ITR');
   const [loading, setLoading] = useState(false);
-  const [activePage, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-
-  // Note: For TR...!
-  const [activePage_TR, setPage_TR] = useState(1);
-  const [itemsPerPage_TR, setItemsPerPage_TR] = useState(10);
-
-  // Note: For IT...!
-  const [activePage_IT, setPage_IT] = useState(1);
-  const [itemsPerPage_IT, setItemsPerPage_IT] = useState(10);
 
   // Note: Filters states...!
 
   // Note: Multi-filter state...!
   const [appliedFilters, setAppliedFilters] = useState<Record<string, string>>({});
   const [warehousesOptions, setWarehousesOptions] = useState([]);
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  // Pagination values for Api call
+  const skipRecord = pagination.pageIndex * pagination.pageSize;
 
   // Note: Redux dispatch and selector hooks...!
   const dispatch = useAppDispatch();
@@ -60,7 +60,10 @@ const StockMovementScreen = () => {
     itrData,
     trData,
     itData,
-    itrErrorState
+    itrErrorState,
+    itrCount,
+    trCount,
+    itCount
   } = useAppSelector(({ itrStates }) => { return itrStates });
   const { wareHousesList } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
   // console.log("ITR data in Inventory Transfer Request screen: ", itrData);
@@ -69,16 +72,13 @@ const StockMovementScreen = () => {
 
   // Note: Required variables...!
   // Note: For ITR...!
-  const totalPages = Math.ceil(itrData.length / itemsPerPage);
-  const paginatedData = itrData.slice((activePage - 1) * itemsPerPage, activePage * itemsPerPage);
+  const totalPages = Math.ceil(itrCount / pagination.pageSize);
 
   // Note: For TR...!
-  const totalPages_TR = Math.ceil(trData.length / itemsPerPage_TR);
-  const paginatedData_TR = trData.slice((activePage_TR - 1) * itemsPerPage_TR, activePage_TR * itemsPerPage_TR);
+  const totalPages_TR = Math.ceil(trCount / pagination.pageSize);
 
   // Note: For IT...!
-  const totalPages_IT = Math.ceil(itData.length / itemsPerPage_IT);
-  const paginatedData_IT = itData.slice((activePage_IT - 1) * itemsPerPage_IT, activePage_IT * itemsPerPage_IT);
+  const totalPages_IT = Math.ceil(itCount / pagination.pageSize);
 
   // Note: Teb onchange handler...!
   const handleTabChange = (value: 'ITR' | 'IT' | 'TR') => {
@@ -93,26 +93,32 @@ const StockMovementScreen = () => {
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
         type: 'ITR',
         handleLoading: () => setLoading(false),
+        lastCount: pagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord
       }));
       return;
     };
 
     if (value === 'TR') {
-      dispatch(fetchAll_ITR_Data({
+      dispatch(fetchAll_TR_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_TR_DATA || '',
         type: 'TR',
-        handleLoading: () => setLoading(false)
+        handleLoading: () => setLoading(false),
+        lastCount: pagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord
       }));
       return;
     };
 
     if (value === 'IT') {
-      dispatch(fetchAll_ITR_Data({
+      dispatch(fetchAll_IT_Data({
         token: authenticatedUser?.token || '',
         apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_IT_DATA || '',
         type: 'IT',
-        handleLoading: () => setLoading(false)
+        handleLoading: () => setLoading(false),
+        lastCount: pagination.pageSize, // Use page size for server-side pagination
+        skipRecords: skipRecord
       }));
       return;
     };
@@ -120,7 +126,7 @@ const StockMovementScreen = () => {
 
   // Note: Export to CSV handler...!
   const handleExportToCSV = () => {
-    // console.log('Tab: ', tab);
+    console.log('Tab: ', tab);
 
     const isFiltersApplied = Object.keys(appliedFilters);
 
@@ -196,16 +202,26 @@ const StockMovementScreen = () => {
   useEffect(() => {
     if (authenticatedUser) {
       setLoading(true);
-      dispatch(fetchAll_ITR_Data({
-        token: authenticatedUser?.token || '',
-        apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
-        type: 'ITR',
-        handleLoading: () => setLoading(false)
-      }));
-
-      dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token || "" }));
+      handleTabChange(tab);
+      // dispatch(fetchAll_ITR_Data({
+      //   token: authenticatedUser?.token || '',
+      //   apiUrl: process.env.NEXT_PUBLIC_FETCH_ALL_ITR_DATA || '',
+      //   type: 'ITR',
+      //   handleLoading: () => setLoading(false),
+      //   lastCount: pagination.pageSize, // Use page size for server-side pagination
+      //   skipRecords: skipRecord
+      // }));
     };
+  }, [pagination.pageIndex, pagination.pageSize]);
+
+  useEffect(() => {
+    dispatch(fetchAllWareHouses({ authToken: authenticatedUser?.token || "" }));
   }, []);
+
+  useEffect(() => {
+    // Reset to first page when tab changes
+    setPagination(prev => ({ ...prev, pageIndex: 0, pageSize: 10 }));
+  }, [tab]);
 
   // Note: This hook will run when wareHousesList state wil update...!
   useEffect(() => {
@@ -369,7 +385,7 @@ const StockMovementScreen = () => {
               token: authenticatedUser?.token || '',
               apiUrl: modifiedUrl,
               type: tab,
-              handleLoading: () => setLoading(false)
+              handleLoading: () => setLoading(false),
             }));
           }}
           disabled={Object.values(appliedFilters).every(v => !v || v.trim() === '')}
@@ -440,12 +456,12 @@ const StockMovementScreen = () => {
           {
             tab === 'ITR' && (
               <ITR_TableCom
-                paginatedData={paginatedData}
+                paginatedData={itrData}
                 totalPages={totalPages}
-                activePage={activePage}
-                setPage={setPage}
-                itemsPerPage={itemsPerPage}
-                setItemsPerPage={setItemsPerPage}
+                activePage={pagination.pageIndex + 1}
+                setPage={(page: number) => setPagination(prev => ({ ...prev, pageIndex: page - 1 }))}
+                itemsPerPage={pagination.pageSize}
+                setItemsPerPage={(pageSize: number) => setPagination(prev => ({ ...prev, pageSize }))}
                 itrErrorState={itrErrorState}
               />
             )
@@ -455,12 +471,12 @@ const StockMovementScreen = () => {
           {
             tab === 'TR' && (
               <TR_TableCom
-                paginatedData={paginatedData_TR}
+                paginatedData={trData}
                 totalPages={totalPages_TR}
-                activePage={activePage_TR}
-                setPage={setPage_TR}
-                itemsPerPage={itemsPerPage_TR}
-                setItemsPerPage={setItemsPerPage_TR}
+                activePage={pagination.pageIndex + 1}
+                setPage={(page: number) => setPagination(prev => ({ ...prev, pageIndex: page - 1 }))}
+                itemsPerPage={pagination.pageSize}
+                setItemsPerPage={(pageSize: number) => setPagination(prev => ({ ...prev, pageSize }))}
                 itrErrorState={itrErrorState}
               />
             )
@@ -470,12 +486,12 @@ const StockMovementScreen = () => {
           {
             tab === 'IT' && (
               <IT_TableCom
-                paginatedData={paginatedData_IT}
+                paginatedData={itData}
                 totalPages={totalPages_IT}
-                activePage={activePage_IT}
-                setPage={setPage_IT}
-                itemsPerPage={itemsPerPage_IT}
-                setItemsPerPage={setItemsPerPage_IT}
+                activePage={pagination.pageIndex + 1}
+                setPage={(page: number) => setPagination(prev => ({ ...prev, pageIndex: page - 1 }))}
+                itemsPerPage={pagination.pageSize}
+                setItemsPerPage={(pageSize: number) => setPagination(prev => ({ ...prev, pageSize }))}
                 itrErrorState={itrErrorState}
               />
             )

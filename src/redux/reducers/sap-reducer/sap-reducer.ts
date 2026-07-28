@@ -6,6 +6,7 @@ import { SAPStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: SAPStateType = {
     listAll_ITR_IT_TRS: [],
+    totalITR_IT_TRS_Counts : 0,
     list_GRNS_Data: [],
     sapErrorState: "",
     isSAPConfigExist: false,
@@ -35,15 +36,16 @@ const SAPReducer = createSlice({
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
             state.listAll_ITR_IT_TRS = action?.payload?.listData;
+            state.totalITR_IT_TRS_Counts = action?.payload?.counts;
         },
 
         FETCH_ALL_GRNS: (state, action: PayloadAction<any>) => {
-            // console.log("GRNS list data in sap reducer: ", action?.payload);
+            console.log("GRNS list data in sap reducer: ", action?.payload);
             state.sapErrorState = "";
             state.listAll_ITR_IT_TRS = [];
             state.list_GRNS_Data = [];
             state.list_GRNS_Data = action?.payload?.grnsData;
-            state.totalGRNS_DataCounts = action?.payload?.totalGRNSCount
+            state.totalGRNS_DataCounts = action?.payload?.totalGRNSCount;
         },
 
         FETCH_ALL_VENDOR_CODES: (state, action: PayloadAction<any>) => {

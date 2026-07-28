@@ -4,7 +4,9 @@ import React, { memo } from 'react';
 import {
     Table,
     Flex,
-    Select
+    Select,
+    Group,
+    Pagination
 } from '@mantine/core';
 import PaginationComponent from '../pagination/pagination';
 import DataNotFound from '@/components/data-not-found/data-not-found';
@@ -25,7 +27,8 @@ const headers: string[] =
         "ERP Doc Entry",
         "ERP Object Type",
         "ERP Doc Line",
-        "SAP Status"
+        "SAP Status",
+        "Created By"
     ];
 
 const TR_TableCom = (props: any) => {
@@ -71,6 +74,7 @@ const TR_TableCom = (props: any) => {
                                     <Table.Td>{row.erpObjectType != null ? row.erpObjectType : "-"}</Table.Td>
                                     <Table.Td>{row.erpDocLine != null ? row.erpDocLine : "-"}</Table.Td>
                                     <Table.Td>{row.sapStatus}</Table.Td>
+                                    <Table.Td>{row.createdBy}</Table.Td>
                                 </Table.Tr>
                             ))
                     }
@@ -87,11 +91,16 @@ const TR_TableCom = (props: any) => {
                 gap="sm"
             >
                 {/* Note: Pagination section */}
-                <PaginationComponent
-                    totalPages={totalPages}
-                    pageNum={activePage}
-                    handleNewPage={setPage}
-                />
+                <Group
+                    justify={customStyles.alignment.left}
+                    mt={customStyles.deviceSize.md}
+                >
+                    <Pagination
+                        total={totalPages}
+                        value={activePage}
+                        onChange={setPage}
+                    />
+                </Group>
 
                 {/* Note: Rows per page section */}
                 <Select

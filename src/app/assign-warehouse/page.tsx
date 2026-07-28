@@ -64,9 +64,9 @@ const AssignWareHouse = () => {
   const { wareHousesList, warehousesListByUserId, warehouseErrorState } = useAppSelector(({ wareHouseStates }) => { return wareHouseStates });
 
   const wareHousesListData = useAppSelector(({ wareHouseStates }) => { return wareHousesList.data })
-    ?.filter((whData: WareHouseDataType) =>
-      whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
-    );
+    // ?.filter((whData: WareHouseDataType) =>
+    //   whData?.whsName?.toLowerCase().includes(search?.toLowerCase())
+    // );
 
 
   // const filtered = [...wareHousesList]?.filter((whData: WareHouseDataType) =>
@@ -141,21 +141,6 @@ const AssignWareHouse = () => {
         receiver: false
       }))
     }));
-
-    // setAccess((prev) => {
-    //   if (prev[value]) return prev; // already exists, do nothing
-
-    //   const initialAccess = wareHousesList.map((wh: WareHouseDataType) => ({
-    //     whsCode: wh.whsCode,
-    //     allow: false,
-    //     receiver: false
-    //   }));
-
-    //   return {
-    //     ...prev,
-    //     [value]: initialAccess
-    //   };
-    // });
   };
 
   // Note: Handle checkbox...!
@@ -385,7 +370,7 @@ const AssignWareHouse = () => {
           </Stack>
 
           {/* Note: Search by warehouse name secion */}
-          <Stack gap={4} w={{ base: "100%", sm: 300 }}>
+          {/* <Stack gap={4} w={{ base: "100%", sm: 300 }}>
             Search Warehouse Name:
             <TextInput
               placeholder="Search by warehouse name"
@@ -397,7 +382,7 @@ const AssignWareHouse = () => {
               }}
               w={300}
             />
-          </Stack>
+          </Stack> */}
         </Flex>
 
         <Button

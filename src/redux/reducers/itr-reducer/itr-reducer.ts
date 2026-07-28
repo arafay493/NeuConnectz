@@ -6,8 +6,11 @@ import { ITRStateType } from "@/types/redux-types";
 // Note: Reducer states...!
 const initialState: ITRStateType = {
     itrData: [],
+    itrCount: 0,
     trData: [],
+    trCount: 0,
     itData: [],
+    itCount: 0,
     itrErrorState: ""
 };
 
@@ -27,7 +30,8 @@ const ITRReducer = createSlice({
             state.itrErrorState = "";
             state.trData = [];
             state.itData = [];
-            state.itrData = action?.payload;
+            state.itrData = action?.payload?.data;
+            state.itrCount = action?.payload?.count;
         },
 
         FETCH_ALL_TR_DATA: (state, action: PayloadAction<any>) => {
@@ -35,7 +39,8 @@ const ITRReducer = createSlice({
             state.itrErrorState = "";
             state.itrData = [];
             state.itData = [];
-            state.trData = action?.payload;
+            state.trData = action?.payload?.data;
+            state.trCount = action?.payload?.count;
         },
 
         FETCH_ALL_IT_DATA: (state, action: PayloadAction<any>) => {
@@ -43,13 +48,17 @@ const ITRReducer = createSlice({
             state.itrErrorState = "";
             state.itrData = [];
             state.trData = [];
-            state.itData = action?.payload;
+            state.itData = action?.payload?.data;
+            state.itCount = action?.payload?.count;
         },
 
         CLEAR_ALL_ITR_STATES: (state) => {
             state.itrData = [];
             state.trData = [];
             state.itData = [];
+            state.itrCount = 0;
+            state.trCount = 0;
+            state.itCount = 0;
             state.itrErrorState = "";
         },
     }

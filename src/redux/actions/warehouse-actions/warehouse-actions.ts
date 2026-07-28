@@ -40,7 +40,7 @@ const fetchAllWareHouses = createAsyncThunk(
                 }
             });
             const { status, data } = response;
-            console.log("fetchAllWareHouses response:", response);
+            // console.log("fetchAllWareHouses response:", response);
 
             if (status == 200) {
                 dispatch(FETCH_ALL_WAREHOUSES({

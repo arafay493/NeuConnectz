@@ -27,7 +27,7 @@ const wareHouseSlice = createSlice({
         },
 
         FETCH_ALL_WAREHOUSES: (state, action: PayloadAction<any>) => {
-            console.log('action.payload:', action.payload);
+            // console.log('action.payload:', action.payload);
             state.warehouseErrorState = "";
             state.wareHousesList.data = action?.payload?.payload;
             state.wareHousesList.totalCount = action?.payload?.totalCount;

@@ -113,6 +113,7 @@ export interface SAPStateType {
         status: string,
         docStatus: string
     }[];
+    totalITR_IT_TRS_Counts: number
     list_GRNS_Data: {
         createdBy: string,
         createdDate: string,
@@ -191,6 +192,7 @@ export interface ITRStateType {
         isArchived: boolean,
         sapStatus: string
     }[];
+    itrCount: number;
     trData: {
         id: string,
         fromWareHouseCode: string,
@@ -214,6 +216,7 @@ export interface ITRStateType {
         isArchived: boolean,
         docNum: string | number,
     }[],
+    trCount: number;
     itData: {
         id: string,
         fromWarehouseId: string,
@@ -236,7 +239,8 @@ export interface ITRStateType {
         createdDate: string,
         updatedDate: string,
         isActive: boolean,
-    }[]
+    }[],
+    itCount: number;
     itrErrorState: string
 };
 
