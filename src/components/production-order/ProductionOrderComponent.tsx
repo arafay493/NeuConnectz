@@ -34,7 +34,7 @@ const ProductionOrderComponent = () => {
     }
 
     useEffect(() => {
-        dispatch(listProductionOrder({ lastCount: pagination.pageSize, skipRecords: pagination.pageIndex * pagination.pageSize }));
+        dispatch(listProductionOrder({ lastCount: pagination.pageSize, skipRecord: pagination.pageIndex * pagination.pageSize }));
     }, [dispatch, pagination.pageSize, pagination.pageIndex]);
 
     return (

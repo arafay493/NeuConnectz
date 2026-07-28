@@ -180,7 +180,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                                 </Box>
 
                                             </Group>
-                                            {header.column.getCanSort() && (
+                                            {/* {header.column.getCanSort() && (
                                                 <Button
                                                     variant="subtle"
                                                     size="xs"
@@ -202,10 +202,10 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                                         }
                                                     })()}
                                                 </Button>
-                                            )}
+                                            )} */}
                                         </Group>
                                         {/* Note: Table Filter Input */}
-                                        {header.column.getCanFilter() && (
+                                        {/* {header.column.getCanFilter() && (
                                             <TableColumnsFilter
                                                 areTableFiltersVisible={areTableFiltersVisible}
                                                 placeholder={header.column.columnDef.header as string}
@@ -217,7 +217,7 @@ const TanStackTable = ({ data, dataCount, columns, isLoading, isInsideModalTable
                                                 }
                                                 onClick={(e: any) => e.stopPropagation()} // 💥 prevent sorting click
                                             />
-                                        )}
+                                        )} */}
                                     </th>
                                 ))}
                             </tr>

@@ -188,7 +188,7 @@ const HtmlExpandedNavbar = ({
 
     return (
         <aside style={{
-            width: isMobile ? '100%' : '230px',
+            width: isMobile ? '100%' : '260px',
             backgroundColor: customStyles.colors.white,
             height: '100%',
             display: 'flex',

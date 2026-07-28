@@ -87,8 +87,11 @@ export const apiDelete = async (endpoint: string, authToken?: string) => {
                 'Auth-Token': authToken
             }
         });
+        console.log("Actual delete response: ", response);
         return { success: true, data: response.data, status: response.status };
-    } catch (error: any) {
+    }
+    
+    catch (error: any) {
         const { status, data } = error?.response || {};
 
         // Handle 401 - Unauthorized

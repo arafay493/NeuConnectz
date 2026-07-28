@@ -1,65 +1,26 @@
 // Note: Dashboard screen...!
 
 import React from 'react';
-
-import { SimpleGrid, Box } from '@mantine/core';
-
-// Note: Importing required components...!
+import { Box } from '@mantine/core';
 import DashboardsCards from '@/components/dashboard-cards/dashboards-cards';
-import ProgressBarCard from '@/components/progress-bar/progress-bar';
-import BarChart from '@/components/bar-chart/bar-chart';
-import ProductStackedBarChart from '@/components/product-stacked-bar-chart/product-stacked-bar-chart';
-import DonutChart from '@/components/donut-chart/donut-chart';
-import { customStyles } from '@/styles/custom-theme';
+import ProductionDashboard from '@/components/dashboard-components/dashboard-production/dashboard-production';
+import PoTableDashboard from '@/components/dashboard-components/po-table-dashboard/po-table-dashboard';
+import DoTableDashboard from '@/components/dashboard-components/do-table-dashboard/do-table-dashboard';
 
 const DashboardScreen = () => {
   return (
     <Box>
-      {/* Note: Dashboard cards component */}
+      {/* Note: Section 1 */}
       <DashboardsCards />
 
-      {/* Note: Progress bar component */}
-      <Box style={{ padding: '15px 0px' }} >
-        <SimpleGrid
-          cols={{ base: 1, sm: 2, md: 2 }}
-          spacing={customStyles.deviceSize.lg}
-          verticalSpacing={customStyles.deviceSize.lg}
-        >
-          {/* App Usage Card */}
-          <ProgressBarCard
-            title='App Usage'
-            completedRatio='60%'
-            remainingRatio='12%'
-            color={customStyles.colors.green}
-          />
+      {/* Note: Section 2 */}
+      <PoTableDashboard />
 
-          {/* Active Warehouse Staff Card */}
-          <ProgressBarCard
-            title='Active Warehouse Staff'
-            completedRatio='80'
-            color={customStyles.colors._1B59F8}
-          />
-        </SimpleGrid>
-      </Box>
+      {/* Note: Section 3 */}
+      <ProductionDashboard />
 
-      {/* Note: Bar chart component */}
-      <BarChart />
-
-      {/* Note: Footer charts */}
-      <Box style={{ padding: '15px 0px' }}>
-        <SimpleGrid
-          cols={{ base: 1, sm: 2, md: 2 }}
-          spacing={customStyles.deviceSize.lg}
-          verticalSpacing={customStyles.deviceSize.lg}
-          style={{ justifyContent: "space-between" }}
-        >
-          {/* Product Stacked Bar Chart */}
-          <ProductStackedBarChart />
-
-          {/* Donut Chart */}
-          <DonutChart />
-        </SimpleGrid>
-      </Box>
+      {/* Note: Section 4 */}
+      <DoTableDashboard />
     </Box>
   );
 };

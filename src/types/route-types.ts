@@ -31,9 +31,9 @@ export type Routes = {
     master: string;
     customerMaster: string;
     productMaster: string;
-    vehicleMaster: string;
-    driverMaster: string;
-    contractorMaster: string;
+    // vehicleMaster: string;
+    // driverMaster: string;
+    // contractorMaster: string;
     addCustomerMaster: string;
     addProductMaster: string;
     addVehicleMaster: string;
@@ -45,6 +45,7 @@ export type Routes = {
     updateDriver: string;
     updateCustomer: string;
     updateVehicle: string;
+    inventory: string
 };
 
 export type DrawerRoute = {

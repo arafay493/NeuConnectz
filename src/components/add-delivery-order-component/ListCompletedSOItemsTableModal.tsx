@@ -27,6 +27,7 @@ interface ListCompletedSOItemsTableModalProps {
     vehicleNumber: string,
     driverId: string,
     cnic?: string,
+    driverContact?: string,
 };
 
 interface ListCompletedSOItemsProps {
@@ -63,8 +64,20 @@ const ListCompletedSOItemsTableModal: FC<ListCompletedSOItemsTableModalProps> = 
     contractorId,
     vehicleNumber,
     driverId,
-    cnic
+    cnic,
+    driverContact
 }) => {
+    console.log(
+        customerReferenceId,
+        deliveryDate,
+        whsCode,
+        transportMode,
+        contractorId,
+        vehicleNumber,
+        driverId,
+        cnic,
+        driverContact
+    );
 
     const [listCompletedSOItems, setListCompletedSOItems] = useState<ListCompletedSOItemsProps[]>([]);
     const [listCompletedSOItemsCount, setListCompletedSOItemsCount] = useState<number>(0);
@@ -310,11 +323,11 @@ const ListCompletedSOItemsTableModal: FC<ListCompletedSOItemsTableModalProps> = 
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize, open == true, customerReferenceId, whsCode, deliveryDate]);
 
     // Note: This hook will run when row selection...!
-    useEffect(() => {
-        if (targetRow) {
-            console.log('Selected Row: ', targetRow);
-        };
-    }, [targetRow]);
+    // useEffect(() => {
+    //     if (targetRow) {
+    //         console.log('Selected Row: ', targetRow);
+    //     };
+    // }, [targetRow]);
 
     // Note: Function to create sale order...!
     const createDeliveryOrder = async () => {
@@ -330,7 +343,8 @@ const ListCompletedSOItemsTableModal: FC<ListCompletedSOItemsTableModalProps> = 
             cnic: cnic,
             itemCode: targetRow?.itemCode,
             quantity: quantity,
-            uoM: targetRow?.uoM
+            uoM: targetRow?.uoM,
+            driverContact : driverContact
         };
         console.log('DO Obj: ', obj);
 

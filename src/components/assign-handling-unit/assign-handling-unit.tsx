@@ -3,7 +3,7 @@
 import { stringFilterFn } from "@/constants/table-filteration";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import showNotificationToast from "@/lib/notification-toast/notification-toast";
-import { assignHandlingUnitToItems, fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
+import { assignHandlingUnitToItems, fetchHandlingUnits, unassignHandlingUnitFromItems } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
 import { getItemByGroupId, listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
@@ -349,11 +349,6 @@ const AssignHandlingUnitComponent = () => {
         }))
     }, [pagination.pageIndex, pagination.pageSize, dispatch]);
 
-    // Reset warehouse permissions when user changes
-    // useEffect(() => {
-    //     setItemPermission(undefined);
-    // }, [selectedHandlingUnit]);
-
     // Update group permissions when list_item_Code_Data_By_Group_Id changes
     useEffect(() => {
         if (selectedHandlingUnit) {
@@ -362,7 +357,9 @@ const AssignHandlingUnitComponent = () => {
                     groupId: selectedHandlingUnit,
                     itemIds: list_item_Code_Data_By_Group_Id.itemIds
                 });
-            } else {
+            }
+
+            else {
                 // Reset to empty array if no groups assigned to this user
                 setItemPermission(undefined);
             }
@@ -400,8 +397,17 @@ const AssignHandlingUnitComponent = () => {
         dispatch(assignHandlingUnitToItems({
             body: itemPermission!,
             resHandler: handleResponse
-        }))
-    }
+        }));
+    };
+
+    // Note: Unassign Handling Unit from items
+    const handleUnassignHandlingUnitFromItems = () => {
+        dispatch(unassignHandlingUnitFromItems({
+            body: itemPermission!
+        })).finally(() => {
+            selectedHandlingUnit && dispatch(getItemByGroupId({ groupId: selectedHandlingUnit }));
+        })
+    };
 
     return (
         <Box>
@@ -445,9 +451,19 @@ const AssignHandlingUnitComponent = () => {
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Handling Unit</Text>
                         <Select
                             placeholder="Select Handling Unit"
-                            data={selectHandlingUnitData}
+                            data={
+                                selectHandlingUnitData.length > 0 ? selectHandlingUnitData : [{ value: '', label: 'No Handling Units Available' }]
+                            }
                             value={selectedHandlingUnit}
-                            onChange={(value) => setSelectedHandlingUnit(value ?? '')}
+                            onChange={(value) => {
+                                if (!value) {
+                                    setSelectedHandlingUnit(null);
+                                    setItemPermission(undefined);   // 🔥 Clear all selections
+                                    return;
+                                }
+
+                                setSelectedHandlingUnit(value);
+                            }}
                             clearable
                             w='100%'
                             radius={8}
@@ -455,19 +471,35 @@ const AssignHandlingUnitComponent = () => {
                         />
                     </Stack>
                 </Group>
-                <Button
-                    variant='transparent'
-                    className={!selectedHandlingUnit ? 'filledDisabledButton' : 'filledButton'}
-                    radius={8}
-                    size={isSmallScreen ? 'sm' : 'md'}
-                    leftSection={<IconPackage size={isSmallScreen ? 20 : 24} />}
-                    onClick={handleAssignHandlingUnitToItems}
-                    disabled={!selectedHandlingUnit}
-                    w={isSmallScreen ? '100%' : 'auto'}
-                    mt={isSmallScreen ? 16 : 0}
-                >
-                    {isSmallScreen ? 'Assign' : 'Assign Handling Units'}
-                </Button>
+                <div>
+                    <Button
+                        variant='transparent'
+                        className={!selectedHandlingUnit ? 'filledDisabledButton' : 'filledButton'}
+                        radius={8}
+                        size={isSmallScreen ? 'sm' : 'md'}
+                        leftSection={<IconPackage size={isSmallScreen ? 20 : 24} />}
+                        onClick={handleUnassignHandlingUnitFromItems}
+                        disabled={!selectedHandlingUnit}
+                        w={isSmallScreen ? '100%' : 'auto'}
+                        mt={isSmallScreen ? 16 : 0}
+                        mr={10}
+                    >
+                        {isSmallScreen ? 'UnAssign' : 'UnAssign Handling Units'}
+                    </Button>
+                    <Button
+                        variant='transparent'
+                        className={!selectedHandlingUnit ? 'filledDisabledButton' : 'filledButton'}
+                        radius={8}
+                        size={isSmallScreen ? 'sm' : 'md'}
+                        leftSection={<IconPackage size={isSmallScreen ? 20 : 24} />}
+                        onClick={handleAssignHandlingUnitToItems}
+                        disabled={!selectedHandlingUnit}
+                        w={isSmallScreen ? '100%' : 'auto'}
+                        mt={isSmallScreen ? 16 : 0}
+                    >
+                        {isSmallScreen ? 'Assign' : 'Assign Handling Units'}
+                    </Button>
+                </div>
             </Group>
 
             {/* Main Content */}
@@ -482,7 +514,7 @@ const AssignHandlingUnitComponent = () => {
                             Select handling unit to assign items
                         </Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -499,7 +531,7 @@ const AssignHandlingUnitComponent = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -541,7 +573,7 @@ const AssignHandlingUnitComponent = () => {
                                                 {/* <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}> */}
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                                 {/* </Text> */}
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -562,10 +594,10 @@ const AssignHandlingUnitComponent = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -574,7 +606,7 @@ const AssignHandlingUnitComponent = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

@@ -1,68 +1,72 @@
 'use client';
 
-import { routes } from '@/constants/routes';
-import { localAssets } from '@/lib/file-paths/file-paths';
-import { fetchAllUsers } from '@/redux/actions/user-actions/user-actions';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { customStyles } from '@/styles/custom-theme';
-import { UserListProps } from '@/types/redux-types';
-import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
-import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
+import { stringFilterFn } from "@/constants/table-filteration";
+import { localAssets } from "@/lib/file-paths/file-paths";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
+import { assignHandlingUnitToItems, fetchHandlingUnits, unassignHandlingUnitFromItems } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
+import { getItemByGroupId, listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { customStyles } from "@/styles/custom-theme";
+import { ItemDataByHandlingUnitId, ItemDataProps } from "@/types/redux-types";
+import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconPackage, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
-import { useRouter } from 'next/navigation';
-import { FC, useEffect, useMemo, useState } from 'react';
-import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
-import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
+import { useCallback, useEffect, useMemo, useState, memo } from "react";
+import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
+import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
+import AssignHandlingUnitComponent from "../assign-handling-unit/assign-handling-unit";
+import axios from "axios";
 
-interface UserListComponentProps {
-    // data: Array<UserListProps>;
+export interface InventoryItem {
+    itemCode: string;
+    itemName: string;
+    code: string;
+    capacity: number;
+    stageName: string;
+    stageLevel: number;
+    productionOrderId: string;
 }
 
-const UserListComponent: FC<UserListComponentProps> = ({
-    // data
-}) => {
+const InventoryComponent = () => {
+    // Note: Media query to determine if the screen is small
+    const isSmallScreen = useMediaQuery("(max-width: 768px)")
+    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
+
+    const [selectedItemCode, setSelectedItemCode] = useState<string | null>(null);
+    const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
+    const [inventoryDataCount, setInventoryDataCount] = useState(0);
+
+    // Note: Dispatcher for all Actions
+    const dispatch = useAppDispatch();
+
+    // Item Code List State
+    const { list_Item_Code_Data, totalItemCodeCount } = useAppSelector(({ sapStates }) => sapStates);
+    // console.log('list_item_Code_Data:', list_Item_Code_Data);
+
+    // Transform users data for Select component
+    const itemCodesData = list_Item_Code_Data?.map(user => ({
+        value: user.itemCode,
+        label: user.itemName
+    })) || [];
+
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
 
-    // Note: Router for switch page
-    const route = useRouter()
-
-    const dispatch = useAppDispatch();
-
-    // Note: State for Authentication
-    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
-
-    // Note: State for Users List
-    const { usersList: {
-        users: data,
-        totalCount
-    } } = useAppSelector(({ userStates }) => userStates);
+    // Pagination values for Api call
+    const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Note: State for Table Filters
-    const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
-    const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
-
-    const handleSearchInputVisibility = () => {
-        setIsSearchInputVisible(!isSearchInputVisible);
-    };
-
-    const handleTableFiltersVisibility = () => {
-        setAreTableFiltersVisible(!areTableFiltersVisible);
-    };
-
-    // Note: Function to Edit any User
-    const handleEditUser = (userId: string) => {
-        route.push(routes.editUser(userId));
-    }
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
     // Utility function to calculate optimal column width
     const calculateColumnWidth = (headerText: string, sampleValues: string[], minWidth: number = 80, maxWidth: number = 300) => {
@@ -79,133 +83,98 @@ const UserListComponent: FC<UserListComponentProps> = ({
         return Math.min(Math.max(Math.max(headerWidth, valueWidth), minWidth), maxWidth);
     };
 
-    // Note: Column definitions for the table
-    const columns = useMemo<ColumnDef<UserListProps>[]>(
+    // Note: Columns Data for Assign Groups
+    const columns = useMemo<ColumnDef<InventoryItem>[]>(
         () => [
             {
-                // accessorKey: 'userId',
                 header: 'S.No',
-                cell: ({ row }) => {
-                    // Calculate serial number based on server-side pagination
-                    const serialNumber = (pagination.pageIndex * pagination.pageSize) + row.index + 1;
-                    return (
-                        <Text fw={500} c={customStyles.colors._909090}>
-                            {serialNumber}
-                        </Text>
-                    );
-                },
+                cell: ({ row }) => (
+                    <Text fw={500} c={customStyles.colors._909090}>
+                        {(pagination.pageIndex * pagination.pageSize) + row.index + 1}
+                    </Text>
+                ),
                 size: calculateColumnWidth('S.No', ['99999'], 80, 120), // Assuming max 999 records
             },
             {
-                accessorKey: 'userName',
-                header: 'Username',
+                accessorKey: "itemCode",
+                header: "Item Code",
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
+                    <Text c={customStyles.colors._909090}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Username', (data || []).map(item => item.userName), 150, 400),
+                size: calculateColumnWidth('Item Code', inventoryData?.map(item => String(item.itemCode)) || [], 150, 400),
             },
             {
-                accessorKey: 'email',
-                header: 'Email',
+                accessorKey: "itemName",
+                header: "Item Name",
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Email', (data || []).map(item => item.email), 180, 450),
+                size: calculateColumnWidth('Item Name', inventoryData?.map(item => item.itemName) || [], 180, 450),
             },
             {
-                accessorKey: 'department',
-                header: 'Department',
+                accessorKey: "code",
+                header: "Code",
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500} >
+                    <Text c={customStyles.colors._909090}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Department', (data || []).map(item => item.department), 120, 200),
+                size: calculateColumnWidth('Code', inventoryData?.map(item => item.code) || [], 150, 400),
             },
             {
-                accessorKey: 'phone',
-                header: 'Phone',
+                accessorKey: "capacity",
+                header: "Capacity",
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
+                    <Text c={customStyles.colors._909090}>
+                        {getValue() as number}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Capacity', inventoryData?.map(item => String(item.capacity)) || [], 150, 400),
+            },
+            {
+                accessorKey: "stageName",
+                header: "Stage Name",
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Phone', (data || []).map(item => item.phone), 120, 180),
+                size: calculateColumnWidth('Stage Name', inventoryData?.map(item => item.stageName) || [], 180, 450),
             },
             {
-                accessorKey: 'role',
-                header: 'Role',
+                accessorKey: "stageLevel",
+                header: "Stage Level",
                 cell: ({ getValue }) => (
-                    <Text c={customStyles.colors._909090} fw={500}>
+                    <Text c={customStyles.colors._909090}>
+                        {getValue() as number}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Stage Level', inventoryData?.map(item => String(item.stageLevel)) || [], 150, 400),
+            },
+            {
+                accessorKey: "productionOrderId",
+                header: "Production Order ID",
+                cell: ({ getValue }) => (
+                    <Text
+                        c={customStyles.colors._909090}
+                        style={{
+                            maxWidth: 280,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                        }}
+                    >
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Role', (data || []).map(item => item.role), 100, 150),
+                size: calculateColumnWidth('Production Order ID', inventoryData?.map(item => item.productionOrderId) || [], 180, 450),
             },
-            {
-                accessorKey: 'isActive',
-                header: 'Status',
-                cell: ({ getValue }) => {
-                    const isActive = getValue() as boolean === true;
-
-                    return (
-                        <Badge
-                            leftSection={<IconPointFilled size={18} />}
-                            variant='light'
-                            size='lg'
-                            color={isActive ? customStyles.colors.green : customStyles.colors._909090}
-                            styles={{
-                                root: {
-                                    minWidth: 'fit-content',
-                                    width: 'max-content',
-                                },
-                                label: {
-                                    textTransform: 'capitalize',
-                                    fontWeight: '500',
-                                    fontSize: '1rem',
-                                    whiteSpace: 'nowrap'
-                                }
-                            }}
-                        >
-                            {isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                    )
-                },
-                filterFn: (row, columnId, value) => {
-                    if (!value) return true;
-                    const isActive = row.getValue(columnId) as boolean;
-                    const displayText = isActive ? 'Active' : 'Inactive';
-                    return displayText.toLowerCase().includes(value.toLowerCase());
-                },
-                size: calculateColumnWidth('Status', ['Active', 'Inactive'], 130, 160),
-            },
-            {
-                accessorKey: 'userId',
-                header: 'Action',
-                cell: ({ getValue }) => {
-                    const userId = getValue() as string;
-                    return (
-                        <ActionIcon
-                            variant="light"
-                            size="lg"
-                            c={customStyles.colors._1B59F8}
-                            style={{
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => handleEditUser(userId)}
-                        >
-                            <IconEdit />
-                        </ActionIcon>
-                    )
-                },
-                size: calculateColumnWidth('Action', ['Edit'], 100, 120)
-            }
         ],
-        [data] // Add data as dependency to recalculate when data changes
+        [pagination]
     );
 
     // Custom global filter function to handle Status column properly
@@ -226,9 +195,7 @@ const UserListComponent: FC<UserListComponentProps> = ({
 
         // Handle S.No column (computed value)
         if (columnId === 'S.No') {
-            // For global filter, we need to check against the original row index
-            // since filtering happens before pagination
-            const serialNumber = row.index + 1;
+            const serialNumber = row.index + (table?.getState?.()?.pagination?.pageIndex || 0) * (table?.getState?.()?.pagination?.pageSize || 10) + 1;
             return String(serialNumber).includes(value);
         }
 
@@ -240,20 +207,25 @@ const UserListComponent: FC<UserListComponentProps> = ({
         return false;
     };
 
+    // Note: Table Definition
     const table = useReactTable({
-        data: data,
+        data: inventoryData,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        // Remove client-side filtering and sorting for server-side pagination  
-        // getFilteredRowModel: getFilteredRowModel(),
-        // getSortedRowModel: getSortedRowModel(),
-        // getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+
         onSortingChange: setSorting,
+        enableSorting: true,
+        manualSorting: false, // Disabled for client-side sorting
+
         onGlobalFilterChange: (value) => {
             setGlobalFilter(value);
             // Reset to first page when global filter changes
             setPagination(prev => ({ ...prev, pageIndex: 0 }));
         },
+        enableGlobalFilter: true,
         onColumnFiltersChange: (filters) => {
             setColumnFilters(filters);
             // Reset to first page when column filters change
@@ -261,15 +233,14 @@ const UserListComponent: FC<UserListComponentProps> = ({
         },
         globalFilterFn: (row, columnId, value) => {
             // Get all column IDs to search across
-            const columnIds = ['S.No', 'userName', 'email', 'department', 'phone', 'role', 'isActive'];
+            const columnIds = ['S.No', 'itemCode', 'itemName'];
 
             // Search across all columns
             return columnIds.some((colId: string) => globalFilterFn(row, colId, value));
         },
-        // Enable server-side pagination
         onPaginationChange: setPagination,
         manualPagination: true, // Enable server-side pagination
-        pageCount: Math.ceil(totalCount / pagination.pageSize), // Calculate total pages from server data
+        pageCount: Math.ceil(inventoryDataCount / pagination.pageSize), // Calculate total pages from server data
         state: {
             sorting,
             globalFilter,
@@ -283,140 +254,168 @@ const UserListComponent: FC<UserListComponentProps> = ({
     }, [table.getPageCount()]);
 
     useEffect(() => {
-        if (authenticatedUser) {
-            setIsLoading(true);
+        dispatch(listItemCodes({}));
+    }, []);
 
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+    // useEffect(() => {
+    //     dispatch(listItemCodes({
+    //         lastCount: pagination.pageSize,
+    //         skipRecords: pagination.pageIndex * pagination.pageSize
+    //     }))
+    // }, [pagination.pageIndex, pagination.pageSize]);
 
-            // console.log('Pagination Params: ', pagination.pageIndex, pagination.pageSize, skipRecord);
+    const getBoxesByItemCode = async (itemCode: string) => {
+        try {
+            console.log('Item code:', itemCode);
 
-            dispatch(fetchAllUsers({
-                authToken: authenticatedUser?.token,
-                LastCount: pagination.pageSize, // Fetch only current page records
-                skipRecord: skipRecord
-            })).finally(() => {
-                setIsLoading(false);
+            const res = await axios({
+                method: 'GET',
+                url: `http://163.61.91.173:31131/Track_And_Trace${process.env.NEXT_PUBLIC_GET_BOXES_BY_ITEM_CODE}?itemCode=${itemCode}`,
+                headers: {
+                    'Authorization': `Bearer ${authenticatedUser?.token}`
+                },
+                params: {
+                    LastCount: lastCount,
+                    skipRecord: skipRecord
+                }
             });
+            console.log('Boxes by Item Code Response:', res);
+            const targetData = res?.data?.data?.data;
+            const count = res?.data?.data?.totalCount || 0;
+            setInventoryData(targetData || []);
+            setInventoryDataCount(count);
+        }
+
+        catch (error) {
+            console.error('Something went wrong while fetching boxes by item code:', error);
+            // showNotificationToast('Error', 'Failed to fetch boxes for the selected item code.', 'error');
         };
-    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
+    };
+
+
+    useEffect(() => {
+        if (selectedItemCode) {
+            // console.log('Selected item:', selectedItemCode);
+            selectedItemCode && getBoxesByItemCode(selectedItemCode);
+        }
+    }, [selectedItemCode , pagination.pageIndex, pagination.pageSize]);
 
     return (
-        <Box p={8}>
-            <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
-                <Stack gap={0}>
-                    <Title order={2} c={customStyles.colors._4D4D4D}>User List</Title>
-                    <Text c={customStyles.colors._909090}>List of users</Text>
-                </Stack>
-                <Button
-                    leftSection={<IconUserPlus size={24} />}
-                    className='filledButton'
-                    variant="transparent"
-                    size="md"
-                    radius={8}
-                    onClick={() => route.push('/add-user')}
+        <Box>
+            <Title
+                mb={8}
+                order={isSmallScreen ? 3 : 2}
+                c={customStyles.colors._4D4D4D}
+                size={isSmallScreen ? 'h3' : 'h2'}
+            >
+                Inventory Management
+            </Title>
+            <Text
+                mb={isSmallScreen ? 16 : 24}
+                c={customStyles.colors._909090}
+                size={isSmallScreen ? 'sm' : 'md'}
+            >
+                Inventory Management Screen
+            </Text>
+
+            {/* Search Bar */}
+            <Group
+                p={isSmallScreen ? 16 : 24}
+                justify={isSmallScreen ? 'flex-start' : customStyles.alignment.spaceBetween}
+                align={isSmallScreen ? 'stretch' : 'flex-end'}
+                bg={customStyles.colors.white}
+                style={{ borderRadius: '16px' }}
+                wrap="wrap"
+                gap={isSmallScreen ? 16 : 24}
+            >
+                <Group
+                    w={isSmallScreen ? '100%' : 'auto'}
+                    justify={isSmallScreen ? 'center' : 'flex-start'}
+                    wrap="wrap"
+                    gap={isSmallScreen ? 12 : 16}
                 >
-                    Add User
-                </Button>
+                    <Stack
+                        gap={4}
+                        w={
+                            isSmallScreen
+                                ? "100%"
+                                : isMediumScreen
+                                    ? "60%"
+                                    : 450
+                        }
+                        maw={500}
+                    >
+                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Item Code</Text>
+                        <Select
+                            placeholder="Select Item Code"
+                            data={
+                                itemCodesData.length > 0 ? itemCodesData : [{ value: '', label: 'No item codes available' }]
+                            }
+                            value={selectedItemCode}
+                            onChange={(value) => {
+                                if (!value) {
+                                    setSelectedItemCode(null);
+                                    setInventoryData([]);
+                                    return;
+                                }
+
+                                setSelectedItemCode(value);
+                            }}
+                            clearable
+                            w='100%'
+                            radius={8}
+                            size={isSmallScreen ? 'sm' : 'md'}
+                        />
+                    </Stack>
+                </Group>
             </Group>
+
+            {/* Main Content */}
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
                 <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
-                            Manage Users
+                            Inventories List
                         </Title>
-                        <Text c={customStyles.colors._909090}>View, search, and manage all users by using multiple filters.</Text>
                     </Stack>
-                    {/* <Group gap="xs">
-                        <GlobalSearchFilter
-                            filters={globalFilter}
-                            setFilters={setGlobalFilter}
-                            isSearchInputVisible={isSearchInputVisible}
-                        />
-                        {
-                            !isSearchInputVisible ?
-                                <IconSearch cursor="pointer" size={24} onClick={handleSearchInputVisibility} /> : <IconSearchOff cursor="pointer" size={24} onClick={handleSearchInputVisibility} />
-                        }
-                        {
-                            !areTableFiltersVisible ?
-                                <IconFilter cursor="pointer" size={24} onClick={handleTableFiltersVisibility} /> : <IconFilterOff cursor="pointer" size={24} onClick={handleTableFiltersVisibility} />
-
-                        }
-                        <IconColumns cursor="pointer" size={24} />
-                        <IconBorderCorners cursor="pointer" size={24} />
-                    </Group> */}
                 </Group>
 
                 {/* Table */}
                 <Box
+                    className="show-scroll-bar-overflow"
                     w="100%"
                     mah={700}
-                    style={{
-                        overflowX: 'auto',
-                        overflowY: 'auto',
-                    }}
+                    style={{ overflowX: 'auto' }}
                 >
                     <table style={{
                         width: '100%',
                         borderCollapse: 'collapse',
                         minWidth: 'max-content'
                     }}>
-                        <thead>
-                            {table.getHeaderGroups().map(headerGroup =>
-                            (
-                                <tr key={headerGroup.id}>
+                        <thead                        >
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr
+                                    key={headerGroup.id}
+                                >
                                     {headerGroup.headers.map(header => (
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: '0 10px 10px 10px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
+                                            verticalAlign: 'top',
                                             width: `${header.getSize()}px`,
                                             minWidth: `${header.getSize()}px`,
-                                            maxWidth: `${header.getSize()}px`,
-                                            verticalAlign: 'top',
+                                            maxWidth: 'max-content',
                                         }}>
                                             <Group
                                                 wrap="nowrap"
+                                                gap={6}
                                                 onClick={header.column.getToggleSortingHandler()}
                                             >
-                                                <Text fw={600} c={customStyles.colors._4D4D4D}>
-                                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                                </Text>
-                                                {/* {header.column.getCanSort() && (
-                                                    <ActionIcon
-                                                        variant="subtle"
-                                                        size="xs"
-                                                        c={customStyles.colors._4D4D4D}
-                                                        style={{
-                                                            cursor: 'pointer',
-                                                        }}
-                                                        ml={4}
-                                                    >
-                                                        {(() => {
-                                                            const sortDirection = header.column.getIsSorted();
-                                                            if (sortDirection === 'asc') {
-                                                                return <IconArrowNarrowUp size={16} />;
-                                                            } else if (sortDirection === 'desc') {
-                                                                return <IconArrowNarrowDown size={16} />;
-                                                            } else {
-                                                                return <IconArrowsUpDown size={16} />;
-                                                            }
-                                                        })()}
-                                                    </ActionIcon>
-                                                )} */}
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
                                             </Group>
-                                            {/* Note: Table Filter Input */}
-                                            {/* {
-                                                header.column.getCanFilter() && (
-                                                    <TableColumnsFilter
-                                                        areTableFiltersVisible={areTableFiltersVisible}
-                                                        placeholder={header.column.columnDef.header as string}
-                                                        value={header.column.getFilterValue() as string ?? ''}
-                                                        setValue={value => header.column.setFilterValue(value)}
-                                                    />
-                                                )
-                                            } */}
                                         </th>
                                     ))}
                                 </tr>
@@ -424,7 +423,6 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                // Loading skeleton
                                 Array.from({ length: pagination.pageSize }).map((_, index) => (
                                     <tr key={`loading-${index}`} style={{
                                         borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
@@ -454,14 +452,14 @@ const UserListComponent: FC<UserListComponentProps> = ({
                                         {row.getVisibleCells().map(cell => (
                                             <td key={cell.id} style={{
                                                 textAlign: 'left',
-                                                padding: '12px',
+                                                padding: '10px',
                                                 width: `${cell.column.getSize()}px`,
                                                 minWidth: `${cell.column.getSize()}px`,
-                                                maxWidth: cell.column.id === 'isActive' ? 'fit-content' : 'max-content',
-                                                overflow: cell.column.id === 'isActive' ? 'visible' : 'hidden',
-                                                textOverflow: cell.column.id === 'isActive' ? 'initial' : 'ellipsis',
-                                                whiteSpace: 'nowrap',
+                                                maxWidth: 'max-content',
                                                 verticalAlign: 'middle',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'
                                             }}>
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </td>
@@ -583,13 +581,13 @@ const UserListComponent: FC<UserListComponentProps> = ({
                         </Group>
 
                         <Text size="sm" c={customStyles.colors._909090}>
-                            Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, totalCount)} of {totalCount} entries
+                            Showing {skipRecord + 1} to {Math.min(skipRecord + pagination.pageSize, inventoryDataCount)} of {inventoryDataCount} entries
                         </Text>
                     </Group>
                 </Group>
             </Box>
-        </Box >
+        </Box>
     )
 }
 
-export default UserListComponent
+export default memo(InventoryComponent);

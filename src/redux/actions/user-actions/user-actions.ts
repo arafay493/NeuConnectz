@@ -22,7 +22,7 @@ const fetchAllUsers = createAsyncThunk(
         if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
         const response = await apiGet('/neu-connect/v2/IUserManagementFeature/ListUsers', authToken, params);
-        console.log('Users list: ' , response);
+        console.log('Users list: ', response);
 
         const { status, data } = response;
 
@@ -46,12 +46,7 @@ const addUser = createAsyncThunk(
     ) => {
         const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_USER}`, userData, token);
         console.log(response);
-
-        const { status, data } = response;
-
-        // if (status == 201) {
-            resHandler(response);
-        // };
+        response && resHandler(response);
     }
 );
 

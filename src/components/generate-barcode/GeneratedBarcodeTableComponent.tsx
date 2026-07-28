@@ -285,7 +285,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                         title="Batch Printing History"
                         description="View and manage the history of batch printing jobs."
                     />
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -302,7 +302,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -338,7 +338,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -359,10 +359,10 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -371,7 +371,7 @@ const GeneratedBarcodeTableComponent = ({ generateBarcodeData, pagination, setPa
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

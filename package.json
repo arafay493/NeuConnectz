@@ -20,6 +20,8 @@
     "axios": "^1.8.4",
     "cookies-next": "^5.1.0",
     "dayjs": "^1.11.13",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "lottie-react": "^2.4.1",
     "next": "^15.5.9",
     "react": "^19.0.0",

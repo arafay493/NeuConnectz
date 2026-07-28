@@ -131,9 +131,9 @@ const AddCustomerMasterComponent = () => {
 
         try {
             const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_ADD_CUSTOMER}`, customerData, authenticatedUser?.token);
-            // console.log(response);
+            console.log(response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 201) {
                 showNotificationToast("Success", "Customer added successfully", customStyles.colors._1B59F8);
                 setFormData({
@@ -149,11 +149,19 @@ const AddCustomerMasterComponent = () => {
                 setTags([]);
                 setCities([]);
                 router.push(routes.customerMaster);
-            };
+            }
+
+            else if (!String(status).startsWith('2')) {
+                showNotificationToast("Something went wrong", error || "Failed to add customer", customStyles.colors.red);
+                setFormData({
+                    ...formData,
+                    loading: false,
+                });
+            }
         }
 
         catch (error) {
-            console.log('Add Vehicle Error:', error);
+            console.log('Add Customer Error:', error);
         };
     };
 
@@ -173,7 +181,7 @@ const AddCustomerMasterComponent = () => {
             if (!selectedCountry) throw "Please select a Country";
             if (!selectedProvince) throw "Please select a Province";
             if (!selectedCity) throw "Please select a City";
-            if (customerType == "SubCustomer" && tags.length < 1) throw "Please add at least one Sub Customer";
+            if (tags.length < 1) throw "Please add at least one Sub Customer";
 
             const timestamp = Date.now().toString(36).toUpperCase(); // 7-8 chars
             const random = Math.random().toString(36).substring(2, 6).toUpperCase(); // 4 chars

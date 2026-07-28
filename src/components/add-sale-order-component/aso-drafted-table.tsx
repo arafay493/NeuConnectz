@@ -246,8 +246,17 @@ const AddSaleOrderDraftedTable: FC<AddSaleOrderDraftedTableProps> = ({
     const fetchListAllDraftedSaleOrderItems = async () => {
 
         try {
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DRAFTED_SALES_ORDER_ITEMS}?whsCode=${whsCode}&customerReferenceId=${customerReferenceId}&DeliveryDate=${DeliveryDate}`, authenticatedUser?.token);
+            const params = {
+                lastCount: pagination.pageSize,
+                skipRecords: pagination.pageIndex * pagination.pageSize
+            };
+
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DRAFTED_SALES_ORDER_ITEMS}?whsCode=${whsCode}&customerReferenceId=${customerReferenceId}&DeliveryDate=${DeliveryDate}&lastCount=${pagination.pageSize}&skipRecords=${pagination.pageIndex * pagination.pageSize}`, authenticatedUser?.token);
             console.log('Drafted SO Items List: ', response);
+
+            console.log("Page:", pagination.pageIndex);
+            console.log("Page Size:", pagination.pageSize);
+            console.log("Skip:", pagination.pageIndex * pagination.pageSize);
 
             const { status, data } = response;
             if (status == 200) {
@@ -277,18 +286,23 @@ const AddSaleOrderDraftedTable: FC<AddSaleOrderDraftedTableProps> = ({
         }
     }, [authenticatedUser, pagination.pageIndex, pagination.pageSize, customerReferenceId, whsCode, DeliveryDate]); // Add pagination dependencies for server-side pagination
 
+    // useEffect(() => {
+    //     if (authenticatedUser && customerReferenceId && whsCode && DeliveryDate) {
+    //         setIsLoading(true);
+    //         fetchListAllDraftedSaleOrderItems();
+    //     }
+
+    //     else {
+    //         setDraftedSaleOrderItems([]);
+    //         setDraftedSaleOrderItemsCount(0);
+    //         draftedData([]);
+    //     }
+    // }, [modalClose == false]); // Add pagination dependencies for server-side pagination
     useEffect(() => {
-        if (authenticatedUser && customerReferenceId && whsCode && DeliveryDate) {
-            setIsLoading(true);
+        if (!modalClose) {
             fetchListAllDraftedSaleOrderItems();
         }
-
-        else {
-            setDraftedSaleOrderItems([]);
-            setDraftedSaleOrderItemsCount(0);
-            draftedData([]);
-        }
-    }, [modalClose == false]); // Add pagination dependencies for server-side pagination
+    }, [modalClose]);
 
     return (
         <Paper shadow="md" radius="md" p="xl" withBorder mt={'2%'}>

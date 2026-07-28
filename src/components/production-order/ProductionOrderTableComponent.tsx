@@ -9,11 +9,15 @@ import { formatDate } from "@/lib/date-formatter";
 import { localAssets } from "@/lib/file-paths/file-paths";
 import { customStyles } from "@/styles/custom-theme";
 import { GenerateBarcodeProps, ListProductionOrder } from "@/types/redux-types";
-import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title, GridCol, Grid } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconSearch, IconSearchOff } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
+import { useMediaQuery } from "@mantine/hooks";
+import { useAppDispatch } from "@/redux/store";
+import { listProductionOrder } from "@/redux/actions/production-order-actions/production-order-actions";
 
 interface ProductionOrderTableComponentProps {
     productionOrderList: Array<ListProductionOrder> | null;
@@ -24,6 +28,12 @@ interface ProductionOrderTableComponentProps {
 }
 
 const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPagination, totalCount, onSendBarcode }: ProductionOrderTableComponentProps) => {
+
+    // Note: Media query to determine if the screen is small
+    const isSmallScreen = useMediaQuery("(max-width: 768px)")
+    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1300px)');
+
     // Use totalCount from props if available, otherwise fall back to data length
     const actualTotalCount = totalCount || productionOrderList?.length || 0;
     // Note: Filter States
@@ -31,7 +41,8 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const dispatch = useAppDispatch();
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
@@ -107,6 +118,21 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                 filterFn: stringFilterFn,
                 enableColumnFilter: true,
                 size: calculateColumnWidth('BatchId', (productionOrderList || []).map(item => String(item.id)), 150, 400),
+            },
+            {
+                accessorKey: 'createdDate',
+                header: 'Created Date',
+                cell: ({ getValue }) => {
+                    const dateValue = getValue() as string;
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500} >
+                            {new Date(dateValue).toLocaleDateString()}
+                        </Text>
+                    )
+                },
+                filterFn: stringFilterFn,
+                enableColumnFilter: true,
+                size: calculateColumnWidth('Created Date', (productionOrderList || []).map(item => String(item.createdDate)), 150, 400),
             },
             {
                 accessorKey: 'itemCode',
@@ -305,17 +331,64 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
         return Array.from({ length: table.getPageCount() }, (_, i) => i + 1);
     }, [table.getPageCount()]);
 
+    useEffect(() => {
+        if (selectedDate) {
+            console.log("Selected Date:", selectedDate);
+            dispatch(listProductionOrder({
+                CreatedDate: selectedDate,
+                lastCount: pagination.pageSize,
+                skipRecord: skipRecord
+            }));
+        }
+
+        else {
+            dispatch(listProductionOrder({
+                lastCount: pagination.pageSize,
+                skipRecord: skipRecord
+            }));
+        };
+    }, [selectedDate]);
+
     return (
         <>
+            <Grid
+                mt={16}
+                mb={8}
+                bg={customStyles.colors.white}
+                p={24}
+                align='center'
+                justify="space-between"
+                style={{
+                    borderRadius: '16px',
+                    gap: isSmallScreen ? '16px' : '24px'
+                }}
+            >
+
+                <Stack gap={8}>
+                    <Title order={3} c={customStyles.colors._4D4D4D}>
+                        Production Order
+                    </Title>
+                    <Text c={customStyles.colors._909090}>
+                        View and manage the history of batch printing jobs.
+                    </Text>
+                </Stack>
+
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>Select Date</Text>
+                    <DatePickerInput
+                        placeholder="Select Date"
+                        value={selectedDate}
+                        onChange={(value: string | null) => setSelectedDate(value as string)}
+                        radius={8}
+                        size='md'
+                        clearable
+                    />
+                </GridCol>
+            </Grid>
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
-                {/* Header */}
-                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
-                    <TableTitleComponent
-                        title="Production Order"
-                        description="View and manage the history of batch printing jobs."
-                    />
-                    <Group gap="xs">
+                {/* <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}> */}
+                {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -332,8 +405,8 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
-                </Group>
+                    </Group> */}
+                {/* </Group> */}
 
                 {/* Table */}
                 <Box
@@ -371,7 +444,7 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -392,10 +465,10 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -404,7 +477,7 @@ const ProductionOrderTableComponent = ({ productionOrderList, pagination, setPag
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

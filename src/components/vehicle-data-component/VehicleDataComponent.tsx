@@ -155,7 +155,7 @@ const VehicleDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Vehicle Name', (vehiclesList || []).map(item => item.description), 150, 200),
+                size: calculateColumnWidth('Vehicle Name', (vehiclesList || []).map(item => item.description), 160, 200),
             },
             {
                 accessorKey: 'vehicleNumber',
@@ -165,7 +165,7 @@ const VehicleDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Vehicle Number', (vehiclesList || []).map(item => item.vehicleNumber), 150, 200),
+                size: calculateColumnWidth('Vehicle Number', (vehiclesList || []).map(item => item.vehicleNumber), 160, 200),
             },
             {
                 accessorKey: 'vehicleType',
@@ -175,7 +175,7 @@ const VehicleDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Vehicle Type', (vehiclesList || []).map(item => item.vehicleType), 100, 150),
+                size: calculateColumnWidth('Vehicle Type', (vehiclesList || []).map(item => item.vehicleType), 160, 200),
             },
             {
                 accessorKey: 'capacity',
@@ -235,6 +235,12 @@ const VehicleDataComponent: FC = () => {
                             onClick={() => {
                                 setTargetRow(row?.original);
                                 setOpenDeleteModal(true);
+                            }}
+                            style={{
+                                backgroundColor: 'red',
+                                color: customStyles.colors.white,
+                                border: 'none',
+                                outline: 'none',
                             }}
                         >
                             Delete
@@ -321,11 +327,11 @@ const VehicleDataComponent: FC = () => {
     // Note: Fetch all vehicles...!
     const fetchAllVehicles = async () => {
         try {
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const skipRecords = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (pagination.pageSize !== undefined) params.lastCount = pagination.pageSize;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_VEHICLES}`, authenticatedUser?.token, params);
             console.log('Vehicles: ', response);
@@ -335,6 +341,15 @@ const VehicleDataComponent: FC = () => {
                 setVehiclesList(data?.data?.data || []);
                 setVehiclesCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
+            }
+
+            if (status == 403) {
+                setIsLoading(false);
+                showNotificationToast(
+                    'Something went wrong',
+                    error?.slice(0, error.indexOf(':')) || 'Failed to fetch customers',
+                    customStyles.colors.red
+                );
             }
 
             else if (!String(status).startsWith('2')) {
@@ -368,7 +383,7 @@ const VehicleDataComponent: FC = () => {
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>List of Vehicle, Create vehicle, edit vehicle amd & delete vehicle</Text>
+                    <Text c={customStyles.colors._909090}>List of Vehicle, Create vehicle, edit vehicle and delete vehicle</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -391,7 +406,7 @@ const VehicleDataComponent: FC = () => {
                         </Title>
                         <Text c={customStyles.colors._909090}>Track, edit and review Vehicle Master seamlessly</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -408,7 +423,7 @@ const VehicleDataComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -447,7 +462,7 @@ const VehicleDataComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -468,10 +483,10 @@ const VehicleDataComponent: FC = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -480,7 +495,7 @@ const VehicleDataComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

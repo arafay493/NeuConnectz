@@ -242,7 +242,7 @@ const UpdateVehicletComponent = () => {
                 setContarctorsList([]);
                 setDriversList([]);
                 setVehiclesList([]);
-                router.push(routes.vehicleMaster);
+                // router.push(routes.vehicleMaster);
             }
 
             else if (!String(status).startsWith('2')) {

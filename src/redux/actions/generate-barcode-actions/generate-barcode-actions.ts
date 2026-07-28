@@ -5,21 +5,22 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const fetchGeneratedBarcodeData = createAsyncThunk(
     "generateBarcode/fetchGeneratedBarcodeData",
-    async ({ lastCount, skipRecords }:
+    async ({ lastCount, skipRecord }:
         {
             lastCount?: number,
-            skipRecords?: number
+            skipRecord?: number
         }, { dispatch }) => {
         dispatch(SET_GENERATE_BARCODE_LOADING(true));
 
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
-        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        if (skipRecord !== undefined) params.skipRecord = skipRecord;
 
         const response = await apiGet(
             `/trace-and-track/v2${process.env.NEXT_PUBLIC_FETCH_BARCODE_DATA}`, '',
             params
         );
+        console.log("fetchGeneratedBarcodeData response", response);
 
         const { status, data } = response;
 

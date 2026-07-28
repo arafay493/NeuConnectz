@@ -108,6 +108,7 @@ const AddUserScreen = () => {
 
     // Note: Add / Create user response handler...!
     const handleResponse = (response: any): void => {
+        console.log("Response in component: ", response);
         
         if (response && response.status == 201) {
             // Note: Stop loading...!
@@ -138,7 +139,7 @@ const AddUserScreen = () => {
                 ...userData,
                 loading: false
             });
-            showNotificationToast(`Error with the status code: ${response?.status}`, response?.data?.error, customStyles.colors.red);
+            showNotificationToast(`Error with the status code: ${response?.status}`, response?.error, customStyles.colors.red);
             return;
         };
     };
@@ -162,7 +163,7 @@ const AddUserScreen = () => {
 
         try {
             if (userName.trim().length < 1) throw "Username is required";
-            else if (!email.match(emailRegex)) throw "Email is required";
+            else if (!email.match(emailRegex)) throw "Invalid email format";
             else if (!department) throw "Department is required";
             else if (!role) throw "Role is required";
             else if (!phone.match(phoneRegex)) throw "Invalid phone number format";

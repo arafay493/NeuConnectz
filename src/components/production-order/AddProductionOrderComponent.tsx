@@ -14,25 +14,28 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import TitleComponent from '../common/component-title';
 import { FadeLoader } from "react-spinners";
+import { DatePickerInput } from "@mantine/dates";
+
 
 const initialFormData: ListProductionOrder = {
-    groupId: '0d5d14fd-a450-48d5-9fa0-e76aeab14927',
+    groupId: '',
     qty: 0,
     actualQty: 0,
     itemCode: '',
     itemName: '',
     productionLine: '',
     unitOfMeasurement: '',
-    warehouse: '',
+    warehouse: ''
 }
 
 
 const AddProductionOrderComponent = () => {
     const [formData, setFormData] = useState<ListProductionOrder>(initialFormData);
-
     const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
     const [itemSelected, setItemSelected] = useState<ItemDataProps | null>(null);
     const [scrollItemUserListLoading, setScrollItemUserListLoading] = useState(false);
+    const [mfgDate, setMFGDate] = useState<string | null>(null);
+    const [expDate, setExpDate] = useState<string | null>(null);
 
     const [itemCodesPagination, setItemCodesPagination] = useState({
         pageSize: 10,
@@ -40,21 +43,19 @@ const AddProductionOrderComponent = () => {
     })
 
     const router = useRouter();
-
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
     // Warehouse List State
-    const { wareHousesList: {
-        data: warehouses
-    } } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
+    const { wareHousesList: { data: warehouses } } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
 
     // Item Code List State
-    const { list_Item_Code_Data , totalItemCodeCount } = useAppSelector(({ sapStates }) => sapStates);
-    // console.log('item codes: ', list_Item_Code_Data)
+    const { list_Item_Code_Data, totalItemCodeCount } = useAppSelector(({ sapStates }) => sapStates);
+    console.log('item codes: ', list_Item_Code_Data)
     // console.log('total item code count: ', totalItemCodeCount);
 
     // Handling Unit States
-    const { handlingUnitByItemId } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; })
+    const { handlingUnitByItemId } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; });
+    console.log("handling unit by item id: ", handlingUnitByItemId);
 
     const handleInputChange = (field: string, value: any) => {
         setFormData(prev => ({
@@ -64,12 +65,15 @@ const AddProductionOrderComponent = () => {
     };
 
     // Handle response from API
-    const handleResponse = (status: number) => {
+    const handleResponse = (status: number, message?: string) => {
+        console.log("API response status: ", status);
+
         const errorResponseCodes = {
             400: "Bad Request - Invalid data provided",
             500: "Server Error - Please try again later",
-            409: "Conflict - Production Order with this name already exists"
-        }
+            409: "Conflict - Production Order with this name already exists",
+            422: "Unprocessable Entity - Missing required fields or invalid data format",
+        };
 
         if (status === 200 || status === 201) {
             showNotificationToast("Production Order Added", "Production Order added successfully", customStyles.colors._408CCE);
@@ -78,16 +82,30 @@ const AddProductionOrderComponent = () => {
             setItemSelected(null);
             router.back();
             return;
-        }
+        };
 
         if (errorResponseCodes[status as keyof typeof errorResponseCodes]) {
-            showNotificationToast("Error Adding Production Order", errorResponseCodes[status as keyof typeof errorResponseCodes], customStyles.colors.red);
+            showNotificationToast("Error Adding Production Order", message as string, customStyles.colors.red);
             return;
-        }
+        };
     }
 
     const handleSave = () => {
-        dispatch(addProductionOrder({ body: formData, resHandler: handleResponse }));
+        if (!formData.itemCode || !formData.productionLine || !formData.warehouse) {
+            showNotificationToast("Validation Error", "Please fill in all required fields: Item Code, Production Line, and Warehouse.", customStyles.colors.red);
+            return;
+        };
+
+        if (formData.qty <= 0 || formData.actualQty < 0) {
+            showNotificationToast("Validation Error", "Quantity must be greater than zero.", customStyles.colors.red);
+            return;
+        };
+
+        const formDataToSend: any = {
+            ...formData,
+            groupId: handlingUnitByItemId?.groupId || '',
+        };
+        dispatch(addProductionOrder({ body: formDataToSend, resHandler: handleResponse }));
     };
 
     const handleCancel = () => {
@@ -100,12 +118,12 @@ const AddProductionOrderComponent = () => {
     const debouncedSearch = useCallback((searchTerm: string) => {
         if (searchTimeout) {
             clearTimeout(searchTimeout);
-        }
+        };
 
         const timeout = setTimeout(() => {
             if (searchTerm.trim()) {
-                dispatch(listItemCodes({ keywords: searchTerm }));
-            }
+                dispatch(listItemCodes({}));
+            };
         }, 1000); // 2 seconds delay
 
         setSearchTimeout(timeout);
@@ -116,7 +134,7 @@ const AddProductionOrderComponent = () => {
             // Find the selected item from the list to get item name
             const selectedItem = list_Item_Code_Data?.find(item => item.itemCode === itemCode);
             setItemSelected(selectedItem || null);
-            console.log('Selected item code: ', selectedItem);
+            // console.log('Selected item code: ', selectedItem);
 
             setFormData(prev => ({
                 ...prev,
@@ -125,14 +143,16 @@ const AddProductionOrderComponent = () => {
                 // unitOfMeasurement: selectedItem?.uoms?.[0]?.uomCode || ''
                 unitOfMeasurement: selectedItem?.uom || ''
             }));
-        } else {
+        }
+
+        else {
             setFormData(prev => ({
                 ...prev,
                 itemCode: '',
                 itemName: '',
                 unitOfMeasurement: ''
             }));
-        }
+        };
     };
 
     const handleItemCodeSearch = (searchTerm: string) => {
@@ -140,9 +160,9 @@ const AddProductionOrderComponent = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchAllWareHouses({}))
+        dispatch(fetchAllWareHouses({}));
         dispatch(listItemCodes({}));
-    }, [dispatch])
+    }, [dispatch]);
 
     useEffect(() => {
         if (itemSelected) {
@@ -193,6 +213,10 @@ const AddProductionOrderComponent = () => {
         }
     };
 
+    useEffect(() => {
+        dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID());
+    }, [])
+
     return (
         <Box>
             <TitleComponent
@@ -238,12 +262,16 @@ const AddProductionOrderComponent = () => {
                                     w="100%"
                                     radius={8}
                                     size='md'
-                                    rightSection={scrollItemUserListLoading ? <FadeLoader
-                                        height={15}
-                                        width={3}
-                                        margin={1}
-                                        radius={1}
-                                        color="#1b59f8" /> : null}
+                                    rightSection={
+                                        scrollItemUserListLoading ?
+                                            <FadeLoader
+                                                height={15}
+                                                width={3}
+                                                margin={1}
+                                                radius={1}
+                                                color={customStyles.colors._1B59F8}
+                                            />
+                                            : null}
                                     scrollAreaProps={{
                                         onScrollEndCapture: (e) => OnScrollEndPaginateUserList(e),
                                     }}
@@ -307,7 +335,7 @@ const AddProductionOrderComponent = () => {
                                         <ActionIcon
                                             variant="light"
                                             color="blue"
-                                            onClick={() => handleInputChange('planQuantity', formData.qty + 1)}
+                                            onClick={() => handleInputChange('qty', formData.qty + 1)}
                                         >
                                             <IconPlus size={16} />
                                         </ActionIcon>
@@ -327,6 +355,71 @@ const AddProductionOrderComponent = () => {
                                 />
                             </GridCol>
                         </Grid>
+
+                        {/* New fields */}
+                        {/* <Grid>
+                            <GridCol span={{ base: 12, md: 4 }}>
+                                <Text size="md" mb={8} fw={500}>GTIN</Text>
+                                <TextInput
+                                    type='text'
+                                    size='md'
+                                    placeholder='Enter GTIN'
+                                    onChange={(e) => handleInputChange('gtin', e.target.value)}
+                                    value={formData.gtin}
+                                    radius={8}
+                                />
+                            </GridCol>
+
+                            <GridCol span={{ base: 12, md: 4 }}>
+                                <Text size="md" mb={8} fw={500}>Batch No</Text>
+                                <TextInput
+                                    type='text'
+                                    size='md'
+                                    placeholder='Enter batch number'
+                                    onChange={(e) => handleInputChange('batchNo', e.target.value)}
+                                    value={formData.batchNo}
+                                    radius={8}
+                                />
+                            </GridCol>
+
+                            <GridCol span={{ base: 12, md: 4 }}>
+                                <Text size="md" mb={8} fw={500}> Serial Number </Text>
+                                <TextInput
+                                    type='text'
+                                    size='md'
+                                    placeholder='Enter Serial Number number'
+                                    onChange={(e) => handleInputChange('serialNumber', e.target.value)}
+                                    value={formData.serialNumber}
+                                    radius={8}
+                                />
+                            </GridCol>
+                        </Grid> */}
+
+                        {/* <Grid>
+                            <GridCol span={{ base: 12, md: 4 }}>
+                                <Text size="md" mb={8} fw={500}> MFG </Text>
+                                <DatePickerInput
+                                    placeholder="Select Manufacturing Date"
+                                    value={mfgDate}
+                                    onChange={(value: string | null) => setMFGDate(value as string)}
+                                    radius={8}
+                                    size='md'
+                                    clearable
+                                />
+                            </GridCol>
+
+                            <GridCol span={{ base: 12, md: 4 }}>
+                                <Text size="md" mb={8} fw={500}>EXP</Text>
+                                <DatePickerInput
+                                    placeholder="Select Expiry Date"
+                                    value={expDate}
+                                    onChange={(value: string | null) => setExpDate(value as string)}
+                                    radius={8}
+                                    size='md'
+                                    clearable
+                                />
+                            </GridCol>
+                        </Grid> */}
                     </Stack>
                 </Card>
 

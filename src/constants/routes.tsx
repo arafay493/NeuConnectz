@@ -61,6 +61,7 @@ const authenticatedRoutes: string[] = [
     "/master/update-driver",
     "/master/update-customer",
     "/master/update-vehicle",
+    "/inventory"
 ];
 
 // Note: Defining all routes...!
@@ -95,19 +96,20 @@ const routes: Routes = {
     // Note: Nested Master Pages
     customerMaster: "/master/customer-data",
     productMaster: "/master/product-data",
-    vehicleMaster: "/master/vehicle-data",
-    driverMaster: "/master/driver-data",
+    // vehicleMaster: "/master/vehicle-data",
+    // driverMaster: "/master/driver-data",
     addCustomerMaster: "/master/add-customer",
     addProductMaster: "/master/add-product",
     addVehicleMaster: "/master/add-vehicle",
     addDriverMaster: "/master/add-driver",
-    contractorMaster: "/master/contractor-data",
+    // contractorMaster: "/master/contractor-data",
     addContractorMaster: "/master/add-contractor",
     updateContractor: "/master/update-contractor",
     updateItemMaster: "/master/update-item-master",
     updateDriver: "/master/update-driver",
     updateCustomer: "/master/update-customer",
-    updateVehicle: "/master/update-vehicle"
+    updateVehicle: "/master/update-vehicle",
+    inventory: "/inventory"
 };
 
 // Note: Defining drawer routes...!
@@ -196,15 +198,21 @@ const drawerRoutes: DrawerRoute[] = [
     },
 
     {
+        icon: <IconContainer color='currentColor' size={24} />,
+        label: "Inventory",
+        route: routes.inventory
+    },
+
+    {
         icon: <IconUsersGroup size={24} />,
         label: "Master",
         route: routes.master,
         children: [ // Note: Add nested tabs
             { label: "Customer Master", route: routes.customerMaster },
             { label: "Item Master", route: routes.productMaster },
-            { label: "Vehicle Master", route: routes.vehicleMaster },
-            { label: "Driver Master", route: routes.driverMaster },
-            { label: "Contractor Master", route: routes.contractorMaster }
+            // { label: "Vehicle Master", route: routes.vehicleMaster },
+            // { label: "Driver Master", route: routes.driverMaster },
+            // { label: "Contractor Master", route: routes.contractorMaster }
         ]
     }
 ];

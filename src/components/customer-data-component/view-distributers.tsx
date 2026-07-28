@@ -195,7 +195,7 @@ const SubCustomersModal: FC<Props> = ({
                                     "City",
                                     "Province",
                                     "Status",
-                                    "Actions"
+                                    // "Actions"
                                 ].map(header => (
                                     <th
                                         key={header}
@@ -234,33 +234,6 @@ const SubCustomersModal: FC<Props> = ({
                                         >
                                             {row.isActive ? "Active" : "Inactive"}
                                         </Badge>
-                                    </td>
-
-                                    {/* Actions */}
-                                    <td style={{ padding: "12px" }}>
-                                        <Group gap="xs">
-                                            {/* <Tooltip label="Update Distributor">
-                                                <ActionIcon
-                                                    variant="light"
-                                                    color="blue"
-                                                    radius="md"
-                                                    onClick={() => onUpdate(row.distributorName)}
-                                                >
-                                                    <IconEdit size={16} />
-                                                </ActionIcon>
-                                            </Tooltip> */}
-
-                                            <Tooltip label="Delete Distributor">
-                                                <ActionIcon
-                                                    variant="light"
-                                                    color="red"
-                                                    radius="md"
-                                                    onClick={() => handleDelete(row.distributorName)}
-                                                >
-                                                    <IconTrash size={16} />
-                                                </ActionIcon>
-                                            </Tooltip>
-                                        </Group>
                                     </td>
                                 </tr>
                             ))}

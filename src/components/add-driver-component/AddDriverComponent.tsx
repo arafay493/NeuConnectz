@@ -87,7 +87,7 @@ const AddDriverMasterComponent = () => {
                     loading: false,
                 });
                 setContarctorsList([]);
-                router.push(routes.driverMaster);
+                // router.push(routes.driverMaster);
             };
         }
 
@@ -98,13 +98,17 @@ const AddDriverMasterComponent = () => {
 
     const handleSubmit = () => {
         const { driverFirstName, driverLastName, driverLicense, driverEmail, driverContact, driverAddress } = formData;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        const pakPhoneRegex = /^(?:03\d{9}|923\d{9})$/;
 
         try {
             if (!driverFirstName.trim()) throw "Driver First Name is required";
             if (!driverLastName.trim()) throw "Driver Last Name is required";
             if (!driverLicense.trim()) throw "Driver License is required";
-            if (!driverEmail.trim()) throw "Driver Email Address is required";
+            if (!driverEmail.trim()) throw "Driver Email is required";
+            if (!driverEmail.match(emailRegex)) throw "Invalid email format";
             if (!driverContact.trim()) throw "Driver Contact is required";
+            if (!driverContact.match(pakPhoneRegex)) throw "Invalid phone number format";
             if (!driverAddress.trim()) throw "Driver Address is required";
             if (!formData.transportMode) throw "Please seleect Transportation Mode";
             if (formData.transportMode == "ContractorVehicle" && !formData.contractorId) throw "Please select Contractor";

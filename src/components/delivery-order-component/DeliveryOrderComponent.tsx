@@ -7,8 +7,8 @@ import { routes } from '@/constants/routes';
 import { localAssets } from '@/lib/file-paths/file-paths';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { customStyles } from '@/styles/custom-theme';
-import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title } from '@mantine/core';
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus } from '@tabler/icons-react';
+import { ActionIcon, Badge, Box, Button, Group, Image, Select, Stack, Text, Title, GridCol, Grid } from '@mantine/core';
+import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsDown, IconArrowsUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconEdit, IconFilter, IconFilterOff, IconPointFilled, IconSearch, IconSearchOff, IconUserPlus, IconDownload } from '@tabler/icons-react';
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from '@tanstack/react-table';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -16,6 +16,9 @@ import { GlobalSearchFilter } from '../table-filters/GlobalSearchFilter';
 import { TableColumnsFilter } from '../table-filters/TableColumnsFilter';
 import { apiGet } from '@/lib/api-service';
 import DeliveryOrderFilterBar from './DeliveryOrderFilterBar';
+import { useMediaQuery } from "@mantine/hooks";
+import { DatePickerInput } from "@mantine/dates";
+import generatePDF from '@/constants/save-pdf';
 
 export interface DeliveryOrderProps {
     contractor: {
@@ -44,7 +47,10 @@ export interface DeliveryOrderProps {
         salesOrderNumber: string;
         soDate: string;
         deliveryDate: string;
-        customer: any; // update if you know its structure
+        customer: {
+            customerCode: string;
+            customerName: string;
+        }
     };
     transportMode: string;
     uoM: string;
@@ -54,13 +60,28 @@ export interface DeliveryOrderProps {
         vehicleNumber: string;
         vehicleType: string;
     };
-}
-
+    items: {
+        id: string;
+        itemCode: string;
+        itemName: string;
+        quantity: number;
+        uoM: string;
+        docStatus: string;
+        sapStatus: string;
+    }[];
+};
 
 const DeliveryOrderComponent: FC = () => {
 
+    // Note: Media query to determine if the screen is small
+    const isSmallScreen = useMediaQuery("(max-width: 768px)")
+    const isMediumScreen = useMediaQuery('(max-width: 1024px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1300px)');
+
     const [deliveryOrderItems, setDeliveryOrderItems] = useState<DeliveryOrderProps[]>([]);
     const [deliveryOrderItemsCount, setDeliveryOrderItemsCount] = useState<number>(0);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    console.log('DO List: ', deliveryOrderItems);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -90,6 +111,15 @@ const DeliveryOrderComponent: FC = () => {
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
+    const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+
+    const toggleRow = (rowId: string) => {
+        console.log('Toggling row: ', rowId, expandedRows);
+        setExpandedRows(prev => ({
+            ...prev,
+            [rowId]: !prev[rowId]
+        }));
+    };
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
@@ -118,6 +148,23 @@ const DeliveryOrderComponent: FC = () => {
     const columns = useMemo<ColumnDef<DeliveryOrderProps>[]>(
         () => [
             {
+                id: 'expand',
+                header: '',
+                cell: ({ row }) => (
+                    <ActionIcon
+                        variant="subtle"
+                        onClick={() => toggleRow(row.original.id)}
+                    >
+                        {
+                            expandedRows[row.original.id]
+                                ? <IconChevronDown size={18} />
+                                : <IconChevronRight size={18} />
+                        }
+                    </ActionIcon>
+                ),
+                size: 60,
+            },
+            {
                 header: 'S.No',
                 cell: ({ row }) => {
                     // Calculate serial number based on server-side pagination
@@ -138,7 +185,17 @@ const DeliveryOrderComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Delivery Order', (deliveryOrderItems || []).map(item => item.doNumber), 150, 200),
+                size: calculateColumnWidth('Delivery Order', (deliveryOrderItems || []).map(item => item.doNumber), 200, 200),
+            },
+            {
+                accessorKey: 'salesOrder.customer.customerName',
+                header: 'Customer Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Customer Name', (deliveryOrderItems || []).map(item => item.salesOrder.customer.customerName), 350, 350),
             },
             {
                 accessorKey: 'salesOrder.salesOrderNumber',
@@ -148,7 +205,7 @@ const DeliveryOrderComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Sales Order', (deliveryOrderItems || []).map(item => item.salesOrder.salesOrderNumber), 150, 150),
+                size: calculateColumnWidth('Sales Order', (deliveryOrderItems || []).map(item => item.salesOrder.salesOrderNumber), 200, 200),
             },
             {
                 accessorKey: 'vehicle.vehicleNumber',
@@ -178,10 +235,82 @@ const DeliveryOrderComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Transport', (deliveryOrderItems || []).map(item => item.transportMode), 150, 200),
+                size: calculateColumnWidth('Transport', (deliveryOrderItems || []).map(item => item.transportMode), 200, 200),
+            },
+            {
+                accessorKey: 'contractor.contractorName',
+                header: 'Contractor Name',
+                cell: ({ getValue, row }) => {
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {getValue() as string || 'N/A'}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Contractor Name', (deliveryOrderItems || []).map(item => item?.contractor?.contractorName || 'NA'), 200, 200),
+            },
+            {
+                accessorKey: 'createdBy',
+                header: 'Created By',
+                cell: ({ getValue }) => {
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {getValue() as string}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Created By', (deliveryOrderItems || []).map(item => item.createdBy), 200, 200),
+            },
+            {
+                accessorKey: 'createdDate',
+                header: 'Created Date',
+                cell: ({ getValue }) => {
+                    const date = new Date(getValue() as string);
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {date.toLocaleDateString()}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Created Date', (deliveryOrderItems || []).map(item => item.createdDate), 200, 200),
+            },
+            {
+                accessorKey: 'deliveryDate',
+                header: 'Delivery Date',
+                cell: ({ getValue }) => {
+                    const date = new Date(getValue() as string);
+                    return (
+                        <Text c={customStyles.colors._909090} fw={500}>
+                            {date.toLocaleDateString()}
+                        </Text>
+                    );
+                },
+                size: calculateColumnWidth('Delivery Date', (deliveryOrderItems || []).map(item => item.deliveryDate), 150, 200),
+            },
+            {
+                // accessorKey: 'batchId',
+                header: 'Action',
+                cell: ({ getValue, row }) => {
+                    const rowData = row.original;
+                    return (
+                        <Button
+                            variant="transparent"
+                            className="filledButton"
+                            size="sm"
+                            radius={8}
+                            style={{
+                                cursor: 'pointer',
+                            }}
+                            onClick={() => rowData && generatePDF(rowData as any)}
+                        >
+                            Generate PDF
+                        </Button>
+                    )
+                },
+                size: calculateColumnWidth('Action', ['Edit'], 100, 120)
             }
         ],
-        [deliveryOrderItems] // Add data as dependency to recalculate when data changes
+        [deliveryOrderItems]
     );
 
     // Custom global filter function to handle Status column properly
@@ -255,15 +384,16 @@ const DeliveryOrderComponent: FC = () => {
     }, [table.getPageCount()]);
 
     // Note: Fetch all delivery order items...!
-    const fetchAllDeliveryOrderItems = async () => {
+    const fetchAllDeliveryOrderItems = async (filterByDate?: any) => {
         try {
             const skipRecord = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (pagination.pageSize !== undefined) params.lastCount = pagination.pageSize;
+            if (skipRecord !== undefined) params.skipRecords = skipRecord;
+            if (filterByDate !== undefined) params.CreatedDate = filterByDate;
 
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DELIVERY_ORDER_ITEMS}?DocStatus=Completed&userId=${authenticatedUser?.userId}`, authenticatedUser?.token, params);
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DELIVERY_ORDER_ITEMS}?DocStatus=Completed`, authenticatedUser?.token, params);
             console.log('DO List: ', response);
 
             const { status, data } = response;
@@ -272,6 +402,12 @@ const DeliveryOrderComponent: FC = () => {
                 setDeliveryOrderItemsCount(data?.data?.totalRecords || 0);
                 setIsLoading(false);
             };
+
+            if (!String(status).startsWith('2')) {
+                setIsLoading(false);
+                setDeliveryOrderItems([]);
+                setDeliveryOrderItemsCount(0);
+            }
         }
 
         catch (error) {
@@ -280,20 +416,41 @@ const DeliveryOrderComponent: FC = () => {
     };
 
     useEffect(() => {
+        if (selectedDate) {
+            console.log("Selected Date:", selectedDate);
+            const isoFormat = new Date(selectedDate).toISOString();
+            // dispatch(listProductionOrder({
+            //     CreatedDate: selectedDate,
+            //     lastCount: pagination.pageSize,
+            //     skipRecord: skipRecord
+            // }));
+            fetchAllDeliveryOrderItems(isoFormat);
+        }
+
+        else {
+            fetchAllDeliveryOrderItems();
+        };
+    }, [selectedDate]);
+
+    useEffect(() => {
         if (authenticatedUser) {
             setIsLoading(true);
             fetchAllDeliveryOrderItems();
         };
-    }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]); // Add pagination dependencies for server-side pagination
+    }, [authenticatedUser, pagination.pageIndex, pagination.pageSize]);
 
     return (
         <Box p={8}>
-            <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
+            <Group justify={customStyles.alignment.spaceBetween} align={customStyles.alignment.center} style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
-                    <Title order={2} c={customStyles.colors._4D4D4D}>Delivery Order</Title>
-                    <Text c={customStyles.colors._909090}>Monitor and review how order moves between warehouses and customer</Text>
+                    <Title order={2} c={customStyles.colors._4D4D4D}>
+                        Delivery Order
+                    </Title>
+                    <Text c={customStyles.colors._909090}>
+                        Create, monitor, and control delivery orders from warehouse to customer with real-time visibility.
+                    </Text>
                 </Stack>
-                <Button
+                {/* <Button
                     leftSection={<IconUserPlus size={24} />}
                     className='filledButton'
                     variant="transparent"
@@ -302,28 +459,68 @@ const DeliveryOrderComponent: FC = () => {
                     onClick={() => router.push(routes.addDeliveryOrder)}
                 >
                     Add Delivery Order
-                </Button>
+                </Button> */}
+
+                {/* {
+                    deliveryOrderItems.length > 0 &&
+                    <Button
+                        leftSection={<IconDownload size={24} />}
+                        className='filledButton'
+                        variant="transparent"
+                        size="md"
+                        radius={8}
+                        onClick={() => generatePDF(deliveryOrderItems)}
+                    >
+                        Generate PDF
+                    </Button>
+                } */}
             </Group>
 
-            <DeliveryOrderFilterBar
-                saleOrderNo={saleOrderNo}
-                orderDate={orderDate}
-                itemCode={itemCode}
-                setSaleOrderNo={setSaleOrderNo}
-                setOrderDate={setOrderDate}
-                setItemCode={setItemCode}
-            />
+            <Grid
+                mt={16}
+                mb={8}
+                bg={customStyles.colors.white}
+                p={24}
+                align='center'
+                justify="space-between"
+                style={{
+                    borderRadius: '16px',
+                    gap: isSmallScreen ? '16px' : '24px'
+                }}
+            >
+
+                <Stack gap={8}>
+                    <Title order={3} c={customStyles.colors._4D4D4D}>
+                        Delivery Order
+                    </Title>
+                    <Text c={customStyles.colors._909090}>
+                        Select a date to filter delivery orders and generate a PDF report for that specific date.
+                    </Text>
+                </Stack>
+
+                <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+                    <Text size="md" mb={8} fw={500}>Select Date</Text>
+                    <DatePickerInput
+                        placeholder="Select Date"
+                        value={selectedDate}
+                        onChange={(value: string | null) => setSelectedDate(value as string)}
+                        radius={8}
+                        size='md'
+                        clearable
+                    />
+                </GridCol>
+            </Grid>
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
-                {/* Header */}
-                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+
+                <Group mb={24} justify={customStyles.alignment.spaceBetween} align={customStyles.alignment.center} style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
                             Delivery Order
                         </Title>
                         <Text c={customStyles.colors._909090}>Track and review delivery order seamlessly.</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -340,7 +537,7 @@ const DeliveryOrderComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -364,7 +561,7 @@ const DeliveryOrderComponent: FC = () => {
                                     {headerGroup.headers.map(header => (
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
-                                            textAlign: 'left',
+                                            textAlign: customStyles.alignment.left,
                                             padding: '0 16px 24px 10px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'}`,
                                             width: `${header.getSize()}px`,
@@ -379,31 +576,9 @@ const DeliveryOrderComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
-                                                    <ActionIcon
-                                                        variant="subtle"
-                                                        size="xs"
-                                                        c={customStyles.colors._4D4D4D}
-                                                        style={{
-                                                            cursor: 'pointer',
-                                                        }}
-                                                        ml={4}
-                                                    >
-                                                        {(() => {
-                                                            const sortDirection = header.column.getIsSorted();
-                                                            if (sortDirection === 'asc') {
-                                                                return <IconArrowNarrowUp size={16} />;
-                                                            } else if (sortDirection === 'desc') {
-                                                                return <IconArrowNarrowDown size={16} />;
-                                                            } else {
-                                                                return <IconArrowsUpDown size={16} />;
-                                                            }
-                                                        })()}
-                                                    </ActionIcon>
-                                                )}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -412,7 +587,7 @@ const DeliveryOrderComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>
@@ -427,7 +602,7 @@ const DeliveryOrderComponent: FC = () => {
                                     }}>
                                         {columns.map((_, colIndex) => (
                                             <td key={`loading-cell-${colIndex}`} style={{
-                                                textAlign: 'left',
+                                                textAlign: customStyles.alignment.left,
                                                 padding: '16px',
                                             }}>
                                                 <Box
@@ -444,35 +619,115 @@ const DeliveryOrderComponent: FC = () => {
                                 ))
                             ) : table.getRowModel().rows.length > 0 ? (
                                 table.getRowModel().rows.map(row => (
-                                    <tr key={row.id} style={{
-                                        borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
-                                    }}>
-                                        {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} style={{
-                                                textAlign: 'left',
-                                                padding: '12px',
-                                                width: `${cell.column.getSize()}px`,
-                                                minWidth: `${cell.column.getSize()}px`,
-                                                maxWidth: cell.column.id === 'isActive' ? 'fit-content' : 'max-content',
-                                                overflow: cell.column.id === 'isActive' ? 'visible' : 'hidden',
-                                                textOverflow: cell.column.id === 'isActive' ? 'initial' : 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                                verticalAlign: 'middle',
-                                            }}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </td>
-                                        ))}
-                                    </tr>
+                                    <>
+                                        {/* Main Row */}
+                                        <tr
+                                            key={row.id}
+                                            style={{ borderBottom: `1px solid ${customStyles.colors._E1E7EC}` }}
+                                        >
+                                            {
+                                                row.getVisibleCells().map(cell => (
+                                                    <td
+                                                        key={cell.id}
+                                                        style={{
+                                                            textAlign: customStyles.alignment.left,
+                                                            padding: '12px',
+                                                            verticalAlign: 'middle',
+                                                        }}
+                                                    >
+                                                        {
+                                                            flexRender(
+                                                                cell.column.columnDef.cell,
+                                                                cell.getContext()
+                                                            )
+                                                        }
+                                                    </td>
+                                                ))
+                                            }
+                                        </tr>
+
+                                        {/* Expanded Row */}
+                                        {expandedRows[row.original.id] && (
+                                            <tr>
+                                                <td
+                                                    colSpan={columns.length}
+                                                    style={{
+                                                        padding: '16px',
+                                                        background: '#f8f9fa'
+                                                    }}
+                                                >
+                                                    <Text fw={600} mb={12}>
+                                                        Items
+                                                    </Text>
+
+                                                    <table
+                                                        style={{
+                                                            width: '100%',
+                                                            borderCollapse: 'collapse'
+                                                        }}
+                                                    >
+                                                        <thead>
+                                                            <tr>
+                                                                <th style={{ textAlign: customStyles.alignment.left, padding: '8px' }}>
+                                                                    Item Code
+                                                                </th>
+                                                                <th style={{ textAlign: customStyles.alignment.left, padding: '8px' }}>
+                                                                    Item Name
+                                                                </th>
+                                                                <th style={{ textAlign: customStyles.alignment.left, padding: '8px' }}>
+                                                                    Quantity
+                                                                </th>
+                                                                <th style={{ textAlign: customStyles.alignment.left, padding: '8px' }}>
+                                                                    UOM
+                                                                </th>
+                                                                <th style={{ textAlign: customStyles.alignment.left, padding: '8px' }}>
+                                                                    SAP Status
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            {
+                                                                row.original.items?.map((item, index) => (
+                                                                    <tr key={item.id}>
+                                                                        <td style={{ padding: '8px' }}>
+                                                                            {item.itemCode}
+                                                                        </td>
+
+                                                                        <td style={{ padding: '8px' }}>
+                                                                            {item.itemName}
+                                                                        </td>
+
+                                                                        <td style={{ padding: '8px' }}>
+                                                                            {item.quantity}
+                                                                        </td>
+
+                                                                        <td style={{ padding: '8px' }}>
+                                                                            {item.uoM}
+                                                                        </td>
+
+                                                                        <td style={{ padding: '8px' }}>
+                                                                            {item.sapStatus}
+                                                                        </td>
+                                                                    </tr>
+                                                                ))
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
                                 ))
                             ) : (
                                 <tr>
                                     <td colSpan={columns.length} style={{
-                                        textAlign: 'center',
+                                        textAlign: customStyles.alignment.center,
                                         padding: '32px 16px',
                                         borderBottom: 'none'
                                     }}>
-                                        <Stack justify="center" align="center">
-                                            <Image w={180} h={180} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='not-found' />
+                                        <Stack justify={customStyles.alignment.center} align={customStyles.alignment.center}>
+                                            <Image w={180} h={180} radius={16} component={NextImage} src={localAssets.dataNotFound} alt='Data Not Found' />
                                             <Title order={4} c={customStyles.colors._4D4D4D}>No Data Found</Title>
                                         </Stack>
                                     </td>
@@ -490,9 +745,9 @@ const DeliveryOrderComponent: FC = () => {
                 bg={customStyles.colors.white}
                 style={{ borderRadius: '16px', padding: "12px 24px" }}
             >
-                <Group justify="space-between" align="center">
+                <Group justify={customStyles.alignment.spaceBetween} align={customStyles.alignment.center}>
                     {/* Left side - Page navigation */}
-                    <Group justify="flex-start" align="center" gap="xs">
+                    <Group justify={customStyles.alignment.left} align={customStyles.alignment.center} gap="xs">
                         <ActionIcon
                             className={!table.getCanPreviousPage() ? 'pagination-icon-disabled' : 'pagination-icon'}
                             variant="transparent"
@@ -507,7 +762,7 @@ const DeliveryOrderComponent: FC = () => {
                             <IconChevronLeft size={18} />
                         </ActionIcon>
 
-                        <Group gap="xs" align="center">
+                        <Group gap="xs" align={customStyles.alignment.center}>
                             <Select
                                 w={80}
                                 radius={8}
@@ -546,8 +801,8 @@ const DeliveryOrderComponent: FC = () => {
                     </Group>
 
                     {/* Right side - Page size selector and info */}
-                    <Group gap="md" align="center">
-                        <Group gap="xs" align="center">
+                    <Group gap="md" align={customStyles.alignment.center}>
+                        <Group gap="xs" align={customStyles.alignment.center}>
                             <Text size="sm" c={customStyles.colors._909090}>
                                 Show
                             </Text>

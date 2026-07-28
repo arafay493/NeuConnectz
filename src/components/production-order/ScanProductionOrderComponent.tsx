@@ -34,6 +34,7 @@ import LoaderComponent from "../common/loader/loader";
 import { apiPost } from "@/lib/api-service";
 import { useRouter, usePathname } from 'next/navigation';
 import { routes } from "@/constants/routes";
+import CodeScannerModal from "./scan-code-modal";
 
 const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     const dispatch = useAppDispatch();
@@ -50,6 +51,8 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     const [pausePOLoadingState, setPausePOLoadingState] = useState<boolean>(false);
     const [scannedList, setScannedList] = useState<string[]>([]);
     const [notFoundSet, setNotFoundSet] = useState<Set<string>>(new Set());
+    const [isCodeScannerModalOpen, setIsCodeScannerModalOpen] = useState<boolean>(false);
+    const [selectedScannerType, setSelectedScannerType] = useState<string>("7"); // Default to "7" digits scanning
 
     // const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const inputRef = useRef<HTMLInputElement>(null);
@@ -85,6 +88,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
     }
 
     const handlePrint = async (stageType: 'box' | 'pallet', code: string | null, itemNumber?: number) => {
+        console.log("Printer function called with:", { stageType, code, itemNumber });
         try {
             if (!code) {
                 showNotificationToast("Print Error", "No code provided for printing", customStyles.colors.red);
@@ -103,7 +107,9 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                         "Content-Type": "application/json",
                     }
                 });
-            } catch (fetchError) {
+            }
+
+            catch (fetchError) {
                 throw new Error("Browser Print service is not running. Please start Zebra Browser Print application.");
             }
 
@@ -287,7 +293,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
             showNotificationToast("Print Success", successMessage, customStyles.colors.green);
 
         } catch (error) {
-            console.error("Error in handlePrint:", error);
+            console.error("Error in handlePrint:", error); // Note: Logs if any error occurs during the print process...!
 
             const errorMessage = error instanceof Error ? error.message : "Unknown printing error occurred";
 
@@ -368,7 +374,11 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         console.log('Payload for scan: ', body);
 
         setIsScanning(true);
-        dispatch(scanProductionOrder({ body, resHandler: handleResponse }))
+        dispatch(scanProductionOrder({
+            body,
+            resHandler: handleResponse,
+            apiUrl: selectedScannerType === "7" ? process.env.NEXT_PUBLIC_SCAN_PRODUCTION_ORDER_7_DIGITS || "" : process.env.NEXT_PUBLIC_SCAN_PRODUCTION_ORDER || ""
+        }))
             .finally(() => {
                 inputRef.current?.focus();
             });
@@ -388,17 +398,14 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
             const firstEight = raw
                 .replace(/[^a-fA-F0-9]/g, "")   // remove hyphens
                 .substring(0, 8);              // ALWAYS from start
+            const targetVal = selectedScannerType === "36" ? firstEight : raw;
 
-            // if (firstEight.length === 8) {
-            //     submitScan(firstEight);
-            // }
-
-            if (scannedList.includes(firstEight)) {
-                showNotificationToast("Duplication Error", `${firstEight} already exist`, customStyles.colors.red);
+            if (scannedList.includes(targetVal)) {
+                showNotificationToast("Duplication Error", `${targetVal} already exist`, customStyles.colors.red);
             }
 
             setScannedList((prev) =>
-                prev.includes(firstEight) ? prev : [...prev, firstEight]
+                prev.includes(targetVal) ? prev : [...prev, targetVal]
             );
 
             // clear for next scan
@@ -451,8 +458,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         console.log("Current scanned code state changed:", currentScannedCode);
 
         if (isBoxCompleted) {
-            const boxStage = currentScannedCode
-                ?.find(stage => stage.stageName.toLowerCase() === 'box');
+            const boxStage = currentScannedCode?.find(stage => stage.stageName.toLowerCase() === 'box');
             const boxCode = boxStage?.codes?.[0]?.code || "";
             const boxNumber = boxStage?.scanned || 1; // Use the current scanned count as the box number
             console.log(`Box ${boxNumber} completed, printing label with code:`, boxCode);
@@ -460,8 +466,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
         }
 
         if (isPalletCompleted) {
-            const palletStage = currentScannedCode
-                ?.find(stage => stage.stageName.toLowerCase() === 'pallet');
+            const palletStage = currentScannedCode?.find(stage => stage.stageName.toLowerCase() === 'pallet');
             const palletCode = palletStage?.codes?.[0]?.code || "";
             const palletNumber = palletStage?.scanned || 1; // Use the current scanned count as the pallet number
             console.log(`Pallet ${palletNumber} completed, printing label with code:`, palletCode)
@@ -558,6 +563,12 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
 
     return (
         <Box>
+            <CodeScannerModal
+                open={isCodeScannerModalOpen}
+                onClose={() => setIsCodeScannerModalOpen(false)}
+                selectedScannerType={(val: string) => setSelectedScannerType(val)}
+            />
+
             <TitleComponent
                 title={`Production Order: ${id}`}
                 description="Scan the production order using the provided ID."
@@ -883,6 +894,31 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                 </Text>
                                             </Box>
 
+                                            <Group
+                                                style={{
+                                                    display: "flex",
+                                                    flexDirection: "row",
+                                                    justifyContent: "space-between",
+                                                    alignItems: "center"
+                                                }}
+                                            >
+                                                <Text c={customStyles.colors._4D4D4D} size="md">
+                                                    {selectedScannerType === "7" ? "7 Digits Code Scanning" : "36 Digits Code Scanning"}
+                                                </Text>
+
+                                                <Button
+                                                    className="filledButton"
+                                                    variant="transparent"
+                                                    size="sm"
+                                                    my={8}
+                                                    radius={8}
+                                                    onClick={() => setIsCodeScannerModalOpen(true)}
+                                                >
+                                                    Change Scanning
+                                                </Button>
+                                            </Group>
+
+                                            {/* Note: If 7 digits code selected fetch full value and for 36 existing logic is ok */}
                                             <TextInput
                                                 ref={inputRef}
                                                 label="Scan Barcode"
@@ -899,7 +935,7 @@ const ScanProductionOrderComponent = ({ id }: { id: string }) => {
                                                         .replace(/[^a-fA-F0-9]/g, "")
                                                         .substring(0, 8);
 
-                                                    setScannedValue(cleaned);
+                                                    setScannedValue(selectedScannerType === "36" ? cleaned : e.currentTarget.value);
                                                 }}
                                                 onKeyDown={handleKeyDown}
                                                 autoFocus

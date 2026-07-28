@@ -7,72 +7,54 @@ import { Card, Text, Group, SimpleGrid, ThemeIcon, Stack, Title } from '@mantine
 import { IconChartBar } from '@tabler/icons-react';
 import { customStyles } from '@/styles/custom-theme';
 import { useAppSelector, useAppDispatch } from '@/redux/store';
-import { fetchDashboardAnalytics } from '@/redux/actions/dashboard-actions/dashboard-actions';
 
 const statsData = [
     {
-        label: 'ITR Posted',
+        label: 'Active Lines',
         color: '#FA5A7D',
-        pendingOrIntegrated: "totalItrIntegrated"
+        val: "5/6",
     },
     {
-        label: 'ITR Unposted',
+        label: 'Bottles Produced',
         color: '#FF947A',
-        pendingOrIntegrated: "totalItrPending"
+        val: "125,480",
     },
     {
-        label: 'IT Posted',
+        label: 'Cartons Produced',
         color: '#3CD755',
-        pendingOrIntegrated: "totalItIntegrated"
+        val: "20,913",
     },
     {
-        label: 'IT Unposted',
+        label: 'Pallets Produced',
         color: '#4E7CF4',
-        pendingOrIntegrated: "totalItPending"
+        val: "120"
     },
     {
-        label: 'TR Posted',
+        label: 'Dispatched Today',
         color: '#B97FF6',
-        pendingOrIntegrated: "totalTrIntegrated"
-    },
-    {
-        label: 'TR Unposted',
-        value: 0,
-        color: '#5BB0FF',
-        pendingOrIntegrated: "totalTrPending"
-    },
-
-    {
-        label: 'GRN Posted',
-        color: '#4E7CF4',
-        pendingOrIntegrated: "totalGrnIntegrated"
-    },
-    {
-        label: 'GRN Unposted',
-        color: '#3CD755',
-        pendingOrIntegrated: "totalGrnPending"
-    },
+        val: "105"
+    }
 ];
 
 const DashboardCards = () => {
 
     // Note: Handeling redux here...!
-    const dispatch = useAppDispatch();
-    const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
-    const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
-    
-    // Note: Function to show stats values...!
-    const getStatsValue = (penAndIntValue: string) => {
-        const mergeObj = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
-        const statsObj = mergeObj || {};
-        const statsValue = statsObj ? statsObj[penAndIntValue as keyof typeof statsObj] : 0;
-        return statsValue;
-    };
+    // const dispatch = useAppDispatch();
+    // const { authenticatedUser } = useAppSelector(({ authStates }) => { return authStates });
+    // const { dashboardAnalyticsData } = useAppSelector(({ dashboardStates }) => { return dashboardStates });
 
-    // Note: Fetching dashboard analytics on component mount...!
-    useEffect(() => {
-        if (authenticatedUser) dispatch(fetchDashboardAnalytics(authenticatedUser.token));
-    }, []);
+    // // Note: Function to show stats values...!
+    // const getStatsValue = (penAndIntValue: string) => {
+    //     const mergeObj = { ...dashboardAnalyticsData?.transferStatistics, ...dashboardAnalyticsData?.grnStatistics };
+    //     const statsObj = mergeObj || {};
+    //     const statsValue = statsObj ? statsObj[penAndIntValue as keyof typeof statsObj] : 0;
+    //     return statsValue;
+    // };
+
+    // // Note: Fetching dashboard analytics on component mount...!
+    // useEffect(() => {
+    //     if (authenticatedUser) dispatch(fetchDashboardAnalytics(authenticatedUser.token));
+    // }, []);
 
     return (
         <div>
@@ -94,7 +76,7 @@ const DashboardCards = () => {
             </Stack>
 
             <SimpleGrid
-                cols={{ base: 1, sm: 2, md: 3, lg: 5, xl: 6 }}
+                cols={{ base: 1, sm: 2, md: 3, lg: 5, xl: 5 }}
                 spacing="lg"
                 verticalSpacing="lg"
             >
@@ -107,13 +89,7 @@ const DashboardCards = () => {
                             radius={16}
                             withBorder
                         >
-                            <Group justify={customStyles.alignment.spaceBetween} mb="sm">
-                                <Text size="sm" style={{ color: customStyles.colors._4D4D4D }}>
-                                    {stat.label}
-                                </Text>
-                            </Group>
-
-                            <Group justify={customStyles.alignment.spaceBetween} align="flex-end">
+                            <Group style={{ display: "flex", flexDirection: 'column' }}>
                                 <ThemeIcon
                                     variant="light"
                                     color={'white'}
@@ -123,8 +99,12 @@ const DashboardCards = () => {
                                     <IconChartBar size="1.5rem" />
                                 </ThemeIcon>
 
+                                <Text size="sm" style={{ color: customStyles.colors._4D4D4D }}>
+                                    {stat.label}
+                                </Text>
+
                                 <Text fw={700} size="xl" c="dark">
-                                    {getStatsValue(stat.pendingOrIntegrated)}
+                                    {stat.val}
                                 </Text>
                             </Group>
                         </Card>

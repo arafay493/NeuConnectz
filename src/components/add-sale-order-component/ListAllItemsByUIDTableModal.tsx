@@ -72,7 +72,6 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
     const [areTableFiltersVisible, setAreTableFiltersVisible] = useState(false);
-    const [disableBtn, setDisableBtn] = useState(true);
 
     const handleSearchInputVisibility = () => {
         setIsSearchInputVisible(!isSearchInputVisible);
@@ -250,17 +249,24 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
             const skipRecord = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (pagination.pageSize !== undefined) params.lastCount = pagination.pageSize;
+            if (skipRecord !== undefined) params.skipRecords = skipRecord;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_ITEMS_BY_UID}?userId=${authenticatedUser?.userId}`, authenticatedUser?.token, params);
             console.log('ListAllItemsByUid Res:', response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setlistAllItemsByUid(data?.data?.items || []);
-                setListAllItemsByUidCount(data?.data?.totalRecords || 0);
+                setListAllItemsByUidCount(data?.data?.totalRecords);
                 setIsLoading(false);
+            }
+
+            else if (status == 404) {
+                setlistAllItemsByUid([]);
+                setListAllItemsByUidCount(0);
+                setIsLoading(false);
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
             };
         }
 
@@ -279,7 +285,7 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
     // Note: This hook will run when row selection...!
     useEffect(() => {
         if (targetRow) {
-            console.log('Selected Row: ', targetRow);
+            // console.log('Selected Row: ', targetRow);
         };
     }, [targetRow]);
 
@@ -300,7 +306,7 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
 
         try {
             const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_CREATE_SALE_ORDER}`, obj, authenticatedUser?.token);
-            console.log(response);
+            // console.log(response);
 
             const { status, data } = response;
             if (status == 201) {
@@ -448,12 +454,14 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
                                     ))
                                 ) : table.getRowModel().rows.length > 0 ? (
                                     table.getRowModel().rows.map(row => (
-                                        <tr key={row.id} style={{
-                                            // borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
-                                            borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
-                                            backgroundColor: selectedRowId === row.id ? '#EEF6FF' : 'transparent',
-                                            transition: '0.2s ease',
-                                        }}>
+                                        <tr
+                                            key={row.id}
+                                            style={{
+                                                borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#F0F0F0'}`,
+                                                backgroundColor: selectedRowId === row.id ? '#EEF6FF' : 'transparent',
+                                                transition: '0.2s ease',
+                                            }}
+                                        >
                                             {row.getVisibleCells().map(cell => (
                                                 <td key={cell.id} style={{
                                                     textAlign: 'left',
@@ -530,6 +538,8 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
                                     onChange={value => {
                                         const page = value ? Number(value) - 1 : 0
                                         table.setPageIndex(page)
+                                        setSelectedRowId(null);
+                                        setTargetRow(null);
                                     }}
                                 />
                             </Group>
@@ -542,7 +552,11 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
                                 w={36}
                                 radius={8}
                                 c={customStyles.colors._909090}
-                                onClick={() => table.nextPage()}
+                                onClick={() => {
+                                    table.nextPage();
+                                    setSelectedRowId(null);
+                                    setTargetRow(null);
+                                }}
                                 disabled={!table.getCanNextPage()}
                             >
                                 <IconChevronRight size={18} />
@@ -578,6 +592,8 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
                                     onChange={value => {
                                         const newPageSize = value ? Number(value) : 10;
                                         table.setPageSize(newPageSize);
+                                        setSelectedRowId(null);
+                                        setTargetRow(null);
                                     }}
                                 />
                                 <Text size="sm" c={customStyles.colors._909090}>

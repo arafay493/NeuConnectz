@@ -74,12 +74,6 @@ const LoginScreen = () => {
             showNotificationToast("Login Failed", errorResponseCodes[response.status as keyof typeof errorResponseCodes], customStyles.colors.red);
             return;
         }
-
-        // if (response && response.status !== 200) {
-        //     setLoading(false); // Note: Stop loading...!
-        //     showNotificationToast("Something went wrong!", response?.data?.error, customStyles.colors.red);
-        //     return;
-        // }
     };
 
     // Note: Function to login user...!

@@ -48,6 +48,7 @@ const AssignWarehouseComponent = () => {
         data: warehouses,
         totalCount: warehousesTotalCount
     }, warehousesListByUserId } = useAppSelector(({ wareHouseStates }) => wareHouseStates);
+    console.log("Warehouses List by User ID: ", warehousesListByUserId);
 
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
@@ -444,13 +445,13 @@ const AssignWarehouseComponent = () => {
     }, [authenticatedUser, dispatch, pagination.pageIndex, pagination.pageSize]) // Add pagination dependencies
 
     // Reset warehouse permissions when user changes
-    useEffect(() => {
-        setWarehousePermissions([]);
-        // Also clear the Redux state for warehousesListByUserId when user changes
-        if (selectedUser === null) {
-            dispatch(CLEAR_ALL_WAREHOUSE_STATES());
-        }
-    }, [selectedUser, dispatch]);
+    // useEffect(() => {
+    //     setWarehousePermissions([]);
+    //     // Also clear the Redux state for warehousesListByUserId when user changes
+    //     if (selectedUser === null) {
+    //         dispatch(CLEAR_ALL_WAREHOUSE_STATES());
+    //     }
+    // }, [selectedUser, dispatch]);
 
     // Reset warehouse permissions on component mount/unmount to ensure clean state
     useEffect(() => {
@@ -483,6 +484,12 @@ const AssignWarehouseComponent = () => {
                 userId: selectedUser!
             }))
         }
+
+        else {
+            // Clear warehouses list by user ID when no user is selected
+            console.log('Data cleared for user: ', selectedUser);
+            dispatch(CLEAR_ALL_WAREHOUSE_STATES());
+        }
     }, [selectedUser, authenticatedUser?.token, dispatch]);
 
     // Update warehouse permissions when warehousesListByUserId changes
@@ -493,11 +500,12 @@ const AssignWarehouseComponent = () => {
 
                 warehousesListByUserId.forEach(userWarehouse => {
                     newPermissions.push({
-                        allow: userWarehouse.isActive, // Use isActive for allow permission
+                        allow: true, // Use isActive for allow permission
                         receive: userWarehouse.isReceiver, // Use isReceiver for receive permission
                         whsCode: userWarehouse.whsCode // Store the whsCode
                     });
                 });
+                console.log("Mapped Permissions:", newPermissions);
 
                 setWarehousePermissions(newPermissions);
             } else {
@@ -587,34 +595,23 @@ const AssignWarehouseComponent = () => {
                             placeholder="Select User"
                             data={activeUsersData}
                             value={selectedUser}
-                            onChange={(value) => setSelectedUser(value ?? '')}
+                            // onChange={(value) => setSelectedUser(value ?? '')}
+                            onChange={(value) => {
+                                if (value === null) {
+                                    setSelectedUser(null);
+                                    setWarehousePermissions([]);
+                                }
+                                
+                                else {
+                                    setSelectedUser(value);
+                                }
+                            }}
                             clearable
                             w='100%'
                             radius={8}
                             size={isSmallScreen ? 'sm' : 'md'}
                         />
                     </Stack>
-
-                    {/* Note: Search by warehouse name secion */}
-                    {/* <Stack
-                        gap={4}
-                        w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
-                        maw={isSmallScreen ? '100%' : 350}
-                    >
-                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Search Warehouse Name:</Text>
-                        <TextInput
-                            placeholder="Search by warehouse"
-                            leftSection={<IconSearch size={isSmallScreen ? 16 : 18} />}
-                            //   value={search}
-                            //   onChange={(e) => {
-                            //     setSearch(e.currentTarget.value);
-                            //     setPage(1);
-                            //   }}
-                            w='100%'
-                            size={isSmallScreen ? 'sm' : 'md'}
-                            radius={8}
-                        />
-                    </Stack> */}
                 </Group>
                 <Button
                     variant='transparent'
@@ -642,7 +639,7 @@ const AssignWarehouseComponent = () => {
                             Select user to assign warehouse
                         </Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -659,7 +656,7 @@ const AssignWarehouseComponent = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -686,7 +683,7 @@ const AssignWarehouseComponent = () => {
                                         <th key={header.id} style={{
                                             cursor: 'pointer',
                                             textAlign: 'left',
-                                            padding: '0 16px 24px 16px',
+                                            padding: '0 16px 24px 6px',
                                             borderBottom: `1px solid ${customStyles.colors._E1E7EC || '#E5E5E5'} `,
                                             verticalAlign: 'top',
                                             width: `${header.getSize()} px`,
@@ -701,7 +698,7 @@ const AssignWarehouseComponent = () => {
                                                 {/* <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}> */}
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                                 {/* </Text> */}
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -722,10 +719,10 @@ const AssignWarehouseComponent = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -734,7 +731,7 @@ const AssignWarehouseComponent = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

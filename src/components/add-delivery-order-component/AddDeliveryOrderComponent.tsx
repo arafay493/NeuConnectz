@@ -2,7 +2,7 @@
 
 "use client";
 
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Select,
     Group,
@@ -13,20 +13,16 @@ import {
     Button,
     TextInput,
     Grid,
-    Box,
-    TagsInput
+    Box
 } from "@mantine/core";
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import Loader from '@/components/loader/loader';
+import { useAppSelector } from '@/redux/store';
 import showNotificationToast from '@/lib/notification-toast/notification-toast';
 import { customStyles } from '@/styles/custom-theme';
 import { IconUserPlus } from '@tabler/icons-react';
 import { apiGet, apiPost } from '@/lib/api-service';
 import { useRouter } from 'next/navigation';
 import { routes } from '@/constants/routes';
-import { DatePickerInput } from "@mantine/dates";
 import AddDeliveryOrderDraftedTable from "./ado-drafted-table";
-import ListAllSaleOrderItemsTableModal from "./SaleOrderModal";
 import SaleOrderModal from './SaleOrderModal';
 import ListCompletedSOItemsTableModal from "./ListCompletedSOItemsTableModal";
 
@@ -77,77 +73,82 @@ const AddDeliveryOrderComponent = () => {
 
     // DO Main functionality...!
     // fetch all contractors...!
-    const fetchAllContarctors = async () => {
-        try {
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token);
-            console.log('Contractors', response);
+    // const fetchAllContarctors = async () => {
+    //     try {
+    //         const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token);
+    //         // console.log('Contractors', response);
 
-            const { status, data } = response;
-            if (status == 200) {
-                setContarctorsList(data?.data?.data || []);
-            };
-        }
+    //         const { status, data, error } = response;
+    //         if (status == 200) {
+    //             setContarctorsList(data?.data?.data || []);
+    //         }
 
-        catch (error) {
-            console.log('Something went wrong while fetching all contractors', error);
-        };
-    };
+    //         else if (status == 404) {
+    //             setContarctorsList([]);
+    //             showNotificationToast("Something went wrong", "No contractor found for this user", customStyles.colors.red);
+    //         };
+    //     }
+
+    //     catch (error) {
+    //         console.log('Something went wrong while fetching all contractors', error);
+    //     };
+    // };
 
     // fetch all vehicles by contractor id...!
-    const fetchAllVehiclesByContarctorId = async () => {
-        try {
+    // const fetchAllVehiclesByContarctorId = async () => {
+    //     try {
 
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_VEHICLES_BY_CONTRACTOR_ID}?ContractorId=${formData?.contractorId}`, authenticatedUser?.token);
-            console.log('Vehicles', response);
+    //         const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_VEHICLES_BY_CONTRACTOR_ID}?ContractorId=${formData?.contractorId}`, authenticatedUser?.token);
+    //         // console.log('Vehicles', response);
 
-            const { status, data } = response;
-            if (status == 200) {
-                setVehiclesList(data?.data?.data || []);
-            };
-        }
+    //         const { status, data } = response;
+    //         if (status == 200) {
+    //             setVehiclesList(data?.data?.data || []);
+    //         };
+    //     }
 
-        catch (error) {
-            console.log('Something went wrong while fetching all vehicles by contractor id', error);
-        };
-    };
+    //     catch (error) {
+    //         console.log('Something went wrong while fetching all vehicles by contractor id', error);
+    //     };
+    // };
 
-    useEffect(() => {
-        if (formData.driverName) {
+    // useEffect(() => {
+    //     if (formData.driverName) {
 
-            const fetchDrivers: any = [...driversList];
-            const targetDriver: any = fetchDrivers.find((item: any) => {
-                return item.id == formData.driverName
-            });
-            setFormData({
-                ...formData,
-                driverContact: targetDriver?.phone
-            });
-        };
-    }, [formData.driverName]);
+    //         const fetchDrivers: any = [...driversList];
+    //         const targetDriver: any = fetchDrivers.find((item: any) => {
+    //             return item.id == formData.driverName
+    //         });
+    //         setFormData({
+    //             ...formData,
+    //             driverContact: targetDriver?.phone
+    //         });
+    //     };
+    // }, [formData.driverName]);
 
-    useEffect(() => {
-        if (formData.vehicle) {
-            console.log('Selected vehicle: ', formData.vehicle);
-            const fetchVehicleDrivers: any = vehiclesList.find((item: any) => {
-                return item.vehicleNumber == formData.vehicle
-            });
-            const fetchDrivers: any = [...fetchVehicleDrivers?.drivers];
-            console.log('Vehicle Data: ', fetchDrivers);
-            setDriversList(fetchDrivers);
-        };
-    }, [formData.vehicle]);
+    // useEffect(() => {
+    //     if (formData.vehicle) {
+    //         // console.log('Selected vehicle: ', formData.vehicle);
+    //         const fetchVehicleDrivers: any = vehiclesList.find((item: any) => {
+    //             return item.vehicleNumber == formData.vehicle
+    //         });
+    //         const fetchDrivers: any = [...fetchVehicleDrivers?.drivers];
+    //         // console.log('Vehicle Data: ', fetchDrivers);
+    //         setDriversList(fetchDrivers);
+    //     };
+    // }, [formData.vehicle]);
 
-    useEffect(() => {
-        if (formData.contractorId) {
-            fetchAllVehiclesByContarctorId();
-        };
-    }, [formData.contractorId]);
+    // useEffect(() => {
+    //     if (formData.contractorId) {
+    //         fetchAllVehiclesByContarctorId();
+    //     };
+    // }, [formData.contractorId]);
 
-    useEffect(() => {
-        if (formData.transportMode == "ContractorVehicle") {
-            fetchAllContarctors();
-        };
-    }, [formData.transportMode == "ContractorVehicle"]);
+    // useEffect(() => {
+    //     if (formData.transportMode == "ContractorVehicle") {
+    //         fetchAllContarctors();
+    //     };
+    // }, [formData.transportMode == "ContractorVehicle"]);
 
     // This hook will run when sale order selected...!
     useEffect(() => {
@@ -159,14 +160,14 @@ const AddDeliveryOrderComponent = () => {
 
     // Note: Function to complete completeDeliveryOrder order...!
     const completeDeliveryOrder = async (doData: any) => {
-        console.log('DO Data:', doData);
+        // console.log('DO Data:', doData);
 
         // Enable loader...!
         setFormData((prev) => ({ ...prev, loading: true }));
 
         try {
             const response = await apiPost(`/neu-connect/v2${process.env.NEXT_PUBLIC_COMPLETE_DELIVERY_ORDER}`, doData, authenticatedUser?.token);
-            console.log(response);
+            // console.log(response);
 
             const { status, data } = response;
             if (status == 200) {
@@ -242,6 +243,7 @@ const AddDeliveryOrderComponent = () => {
                 transportMode={formData?.transportMode}
                 vehicleNumber={formData?.vehicle}
                 cnic={formData?.cnic}
+                driverContact={formData?.driverContact}
             />
 
             {/* Note: Screen Head section */}
@@ -315,7 +317,7 @@ const AddDeliveryOrderComponent = () => {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <Select
+                            {/* <Select
                                 label="Contractor"
                                 placeholder="Select Contractor"
                                 withAsterisk
@@ -328,11 +330,19 @@ const AddDeliveryOrderComponent = () => {
                                 value={formData.contractorId}
                                 onChange={(value) => handleChange("contractorId", value)}
                                 disabled={formData.transportMode !== "ContractorVehicle"}
+                            /> */}
+                            <TextInput
+                                label="Contractor"
+                                placeholder="Enter Contractor Name"
+                                withAsterisk
+                                value={formData.contractorId}
+                                onChange={(e) => handleChange("contractorId", e.currentTarget.value)}
+                                disabled={formData.transportMode !== "ContractorVehicle"}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <Select
+                            {/* <Select
                                 label="Vehicle No"
                                 placeholder="Select Vehicle"
                                 withAsterisk
@@ -344,11 +354,18 @@ const AddDeliveryOrderComponent = () => {
                                 }
                                 value={formData.vehicle}
                                 onChange={(value) => handleChange("vehicle", value)}
+                            /> */}
+                            <TextInput
+                                label="Vehicle No"
+                                placeholder="Enter Vehicle No"
+                                withAsterisk
+                                value={formData.vehicle}
+                                onChange={(e) => handleChange("vehicle", e.currentTarget.value)}
                             />
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <Select
+                            {/* <Select
                                 label="Driver Name"
                                 placeholder="Select Driver"
                                 withAsterisk
@@ -360,6 +377,13 @@ const AddDeliveryOrderComponent = () => {
                                 }
                                 value={formData.driverName}
                                 onChange={(value) => handleChange("driverName", value)}
+                            /> */}
+                            <TextInput
+                                label="Driver Name"
+                                placeholder="Enter Driver Name"
+                                withAsterisk
+                                value={formData.driverName}
+                                onChange={(e) => handleChange("driverName", e.currentTarget.value)}
                             />
                         </Grid.Col>
 

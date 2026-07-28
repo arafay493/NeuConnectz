@@ -35,7 +35,9 @@ const GenerateBarcodeComponent = () => {
         openConfirmationModal();
     };
 
-    const { generateBarcodeData, totalCount, loading } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; })
+    const { generateBarcodeData, totalCount, loading } = useAppSelector(({ generateBarcodeStates }) => { return generateBarcodeStates; });
+    console.log("generateBarcodeData", generateBarcodeData, "totalCount", totalCount);
+    console.log("Length of generateBarcodeData", generateBarcodeData?.length);
 
     const responseHandler = (status: number) => {
         if (status === 201) {
@@ -44,7 +46,7 @@ const GenerateBarcodeComponent = () => {
             setQuantity('');
 
             showNotificationToast("Barcode Generated", "Barcode generated successfully", customStyles.colors._408CCE);
-            dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecords: pagination.pageIndex * pagination.pageSize }));
+            dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecord: pagination.pageIndex * pagination.pageSize }));
             return;
         }
 
@@ -74,7 +76,13 @@ const GenerateBarcodeComponent = () => {
     }
 
     useEffect(() => {
-        dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecords: pagination.pageIndex * pagination.pageSize }));
+        console.log("API CALL =>", {
+            pageIndex: pagination.pageIndex,
+            pageSize: pagination.pageSize,
+            skip: pagination.pageIndex * pagination.pageSize
+        });
+
+        dispatch(fetchGeneratedBarcodeData({ lastCount: pagination.pageSize, skipRecord: pagination.pageIndex * pagination.pageSize }));
     }, [pagination.pageIndex, pagination.pageSize, dispatch])
 
     return (

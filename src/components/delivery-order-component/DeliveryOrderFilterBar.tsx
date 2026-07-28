@@ -84,7 +84,7 @@ const DeliveryOrderFilterBar: FC<DeliveryOrderFilterBarProps> = ({
             </GridCol>
 
             {/* Apply Filters Button */}
-            <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
+            {/* <GridCol span={isSmallScreen ? 12 : isMediumScreen ? 6 : isLargeScreen ? 2 : 4}>
                 <Button
                     variant='transparent'
                     className='filledButton'
@@ -97,7 +97,7 @@ const DeliveryOrderFilterBar: FC<DeliveryOrderFilterBarProps> = ({
                 >
                     Export To CSV
                 </Button>
-            </GridCol>
+            </GridCol> */}
         </Grid>
     )
 }

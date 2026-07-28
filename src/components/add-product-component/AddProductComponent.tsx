@@ -76,6 +76,10 @@ const AddItemMasterComponent = () => {
                 router.push(routes.productMaster);
             }
 
+            else if (status == 402) {
+                showNotificationToast("Validation Error", 'Item Code already exists. It must be unique.', customStyles.colors.red);
+            }
+
             else if (!String(status).startsWith('2')) {
                 showNotificationToast("Something went wrong", error, customStyles.colors.red);
                 setFormData({

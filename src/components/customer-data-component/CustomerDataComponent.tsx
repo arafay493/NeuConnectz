@@ -118,6 +118,14 @@ const CustomerDataComponent: FC = () => {
     // Note: View distributers function
     const viewDistributers = (rowData: CustomerDataProps) => {
         console.log('Row Data: ', rowData);
+        if (rowData?.distributerNames == null) {
+            showNotificationToast(
+                'Distributors not found',
+                'No distributors found for this customer',
+                customStyles.colors.red
+            );
+            return;
+        }
         setViewDistributerModal(true);
         setDistributersDetails(null);
         setDistributersDetails(rowData || null);
@@ -248,6 +256,12 @@ const CustomerDataComponent: FC = () => {
                                 setTargetRow(row?.original);
                                 setOpenDeleteModal(true);
                             }}
+                            style={{
+                                backgroundColor: 'red',
+                                color: customStyles.colors.white,
+                                border: 'none',
+                                outline: 'none',
+                            }}
                         >
                             Delete
                         </Button>
@@ -333,20 +347,29 @@ const CustomerDataComponent: FC = () => {
     // Note: Fetch all customers...!
     const fetchAllCustomers = async () => {
         try {
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const skipRecords = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (pagination.pageSize !== undefined) params.lastCount = pagination.pageSize;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CUSTOMERS}`, authenticatedUser?.token, params);
-            console.log(response);
+            console.log('Res: ', response);
 
             const { status, data, error } = response;
             if (status == 200) {
                 setCustomersList(data?.data?.data || []);
                 setCustomersCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
+            }
+
+            if (status == 403) {
+                setIsLoading(false);
+                showNotificationToast(
+                    'Something went wrong',
+                    error?.slice(0, error.indexOf(':')) || 'Failed to fetch customers',
+                    customStyles.colors.red
+                );
             }
 
             else if (!String(status).startsWith('2')) {
@@ -390,7 +413,7 @@ const CustomerDataComponent: FC = () => {
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>List of customer, Create customer, edit customer amd & delete customer</Text>
+                    <Text c={customStyles.colors._909090}>List of customer, Create customer, edit customer and delete customer</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -413,7 +436,7 @@ const CustomerDataComponent: FC = () => {
                         </Title>
                         <Text c={customStyles.colors._909090}>Track, edit and review Customer Master seamlessly</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -430,7 +453,7 @@ const CustomerDataComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -469,7 +492,7 @@ const CustomerDataComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -490,10 +513,10 @@ const CustomerDataComponent: FC = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -502,7 +525,7 @@ const CustomerDataComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

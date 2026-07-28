@@ -84,7 +84,7 @@ const UpdateContractorComponent = () => {
                     country: "",
                     loading: false,
                 });
-                router.push(routes.contractorMaster);
+                // router.push(routes.contractorMaster);
             };
         }
 

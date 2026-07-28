@@ -74,10 +74,15 @@ const AddVehicletMasterComponent = () => {
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token);
             console.log(response);
 
-            const { status, data } = response;
+            const { status, data , error } = response;
             if (status == 200) {
                 setContarctorsList(data?.data?.data || []);
-            };
+            }
+
+            if (!String(status).startsWith("2")) {
+                showNotificationToast("Something went wrong", String(error), customStyles.colors.red);
+                setContarctorsList([]);
+            }
         }
 
         catch (error) {
@@ -110,14 +115,15 @@ const AddVehicletMasterComponent = () => {
             const apiUrl = (formData.selectedTransporterMode == "ContractorVehicle") ? (`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_DRIVERS_BY_CONTRACTOR_ID}?ContractorId=${formData.selectedContractor}`) : (`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_DRIVERS_BY_CONTRACTOR_ID}`)
 
             const response = await apiGet(apiUrl, authenticatedUser?.token);
-            // console.log(response);
+            console.log(response);
 
-            const { status, data } = response;
+            const { status, data , error } = response;
             if (status == 200) {
                 setDriversList(data?.data?.data || []);
             }
 
             if (!String(status).startsWith("2")) {
+                // showNotificationToast("Something went wrong", String(error), customStyles.colors.red);
                 setDriversList([]);
                 handleChange("drivers", []);
             }
@@ -165,7 +171,7 @@ const AddVehicletMasterComponent = () => {
                 });
                 setContarctorsList([]);
                 setDriversList([]);
-                router.push(routes.vehicleMaster);
+                // router.push(routes.vehicleMaster);
             };
         }
 
@@ -326,10 +332,13 @@ const AddVehicletMasterComponent = () => {
                                 label="Drivers"
                                 placeholder="Select Drivers"
                                 withAsterisk
-                                data={driversList.map((driver: any) => ({
+                                data={ driversList.length > 0 ? driversList.map((driver: any) => ({
                                     value: driver.id,            // selected ID will be stored
                                     label: `${driver.firstName} ${driver.lastName}`
-                                }))}
+                                })) : [{
+                                    value: "No company drivers found",
+                                    label: "No company drivers found"
+                                }] }
                                 value={formData.drivers}       // <- Array of selected IDs
                                 onChange={(value) => handleChange("drivers", value)}
                             />

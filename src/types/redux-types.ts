@@ -440,6 +440,12 @@ export interface ListProductionOrder {
     productionLine: string;
     warehouse: string;
     status?: string;
+    gtin?: string;
+    batchNo?: string;
+    serialNumber?: string;
+    mfgDate?: string;
+    expDate?: string;
+    createdDate ?: string;
 }
 
 export interface ScanProductionOrderProps {

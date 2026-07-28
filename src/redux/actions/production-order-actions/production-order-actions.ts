@@ -6,16 +6,18 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const listProductionOrder = createAsyncThunk(
     "productionOrder/fetchGeneratedBarcodeData",
-    async ({ lastCount=40, skipRecords=0 }:
+    async ({ lastCount = 40, skipRecord = 0, CreatedDate }:
         {
             lastCount?: number,
-            skipRecords?: number
+            skipRecord?: number,
+            CreatedDate?: string
         }, { dispatch }) => {
         dispatch(SET_PRODUCTION_ORDER_LOADING(true));
 
-        const params: { [key: string]: number } = {};
+        const params: { [key: string]: any } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
-        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        if (skipRecord !== undefined) params.skipRecord = skipRecord;
+        if (CreatedDate) params.CreatedDate = CreatedDate;
 
         const response = await apiGet(
             `/trace-and-track/v2${process.env.NEXT_PUBLIC_LIST_ALL_PRODUCTION_ORDERS}`, '',
@@ -53,7 +55,7 @@ const fetchProductionById = createAsyncThunk(
         if (status == 200) {
             dispatch(FETCH_PRODUCTION_ORDER_DATA_BY_ID(data?.data));
         }
-        
+
         // else {
         //     dispatch(SET_PRODUCTION_ORDER_LOADING(false));
         // }
@@ -64,13 +66,14 @@ const fetchProductionById = createAsyncThunk(
 
 const addProductionOrder = createAsyncThunk(
     "productionOrder/addProductionOrder",
-    async ({ body, resHandler }: { body: ListProductionOrder; resHandler: ResHandler }, { dispatch }) => {
-        console.log('Add production order: ', body);
+    async ({ body, resHandler }: { body: ListProductionOrder; resHandler: any }, { dispatch }) => {
+        console.log('Add production order data: ', body);
+
         const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ADD_PRODUCTION_ORDER}`, body);
+        console.log("Add production order api response: ", response);
 
-        const { status, data } = response;
-
-        resHandler(status);
+        const { status, data, error } = response;
+        resHandler(status, error);
 
         // dispatch(RESET_HANDLING_UNIT_BY_ITEM_ID());
     }
@@ -78,8 +81,8 @@ const addProductionOrder = createAsyncThunk(
 
 const scanProductionOrder = createAsyncThunk(
     'productionOrder/scanProductionOrder',
-    async ({ body, resHandler }: { body: { productionOrderId: string, barcodes: string[] }; resHandler: any }, { dispatch }) => {
-        const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_SCAN_PRODUCTION_ORDER}`, body);
+    async ({ body, resHandler, apiUrl }: { body: { productionOrderId: string, barcodes: string[] }; resHandler: any, apiUrl: string }, { dispatch }) => {
+        const response = await apiPost(`/trace-and-track/v2${apiUrl}`, body);
         console.log('Scan api res: ', response);
 
         const { status, data, error } = response;

@@ -191,6 +191,12 @@ const ContractorDataComponent: FC = () => {
                                 setTargetRow(row?.original);
                                 setOpenDeleteModal(true);
                             }}
+                            style={{
+                                backgroundColor: 'red',
+                                color: customStyles.colors.white,
+                                border: 'none',
+                                outline: 'none',
+                            }}
                         >
                             Delete
                         </Button>
@@ -276,11 +282,11 @@ const ContractorDataComponent: FC = () => {
     // Note: Fetch all contractors...!
     const fetchAllContarctors = async () => {
         try {
-            const skipRecord = pagination.pageIndex * pagination.pageSize;
+            const skipRecords = pagination.pageIndex * pagination.pageSize;
             const params: { [key: string]: number } = {};
 
-            if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            if (skipRecord !== undefined) params.skipRecord = skipRecord;
+            if (pagination.pageSize !== undefined) params.lastCount = pagination.pageSize;
+            if (skipRecords !== undefined) params.skipRecords = skipRecords;
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CONTRACTORS}`, authenticatedUser?.token, params);
             // console.log('Contractors:', response);
@@ -290,6 +296,15 @@ const ContractorDataComponent: FC = () => {
                 setContarctorsList(data?.data?.data || []);
                 setContractorsCount(data?.data?.totalCount || 0);
                 setIsLoading(false);
+            }
+
+            if (status == 403) {
+                setIsLoading(false);
+                showNotificationToast(
+                    'Something went wrong',
+                    error?.slice(0, error.indexOf(':')) || 'Failed to fetch customers',
+                    customStyles.colors.red
+                );
             }
 
             else if (!String(status).startsWith('2')) {
@@ -323,7 +338,7 @@ const ContractorDataComponent: FC = () => {
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}> List of Contractor, Create contractor, edit contractor and & delete contractor </Text>
+                    <Text c={customStyles.colors._909090}> List of Contractor, Create contractor, edit contractor and delete contractor </Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -346,7 +361,7 @@ const ContractorDataComponent: FC = () => {
                         </Title>
                         <Text c={customStyles.colors._909090}>Track, edit and review Contractor Master seamlessly</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -363,7 +378,7 @@ const ContractorDataComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -402,7 +417,7 @@ const ContractorDataComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -423,10 +438,10 @@ const ContractorDataComponent: FC = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -435,7 +450,7 @@ const ContractorDataComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

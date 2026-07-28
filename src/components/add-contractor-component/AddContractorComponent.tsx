@@ -66,7 +66,7 @@ const AddContractorComponent = () => {
                     country: "",
                     loading: false,
                 });
-                router.push(routes.contractorMaster);
+                // router.push(routes.contractorMaster);
             };
         }
 
@@ -157,11 +157,11 @@ const AddContractorComponent = () => {
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                label="Address"
-                                placeholder="Enter Address"
+                                label="Country"
+                                placeholder="Enter Country Name"
                                 withAsterisk
-                                value={formData.address}
-                                onChange={(e) => handleChange("address", e.currentTarget.value)}
+                                value={formData.country}
+                                onChange={(e) => handleChange("country", e.currentTarget.value)}
                             />
                         </Grid.Col>
 
@@ -177,11 +177,11 @@ const AddContractorComponent = () => {
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
                             <TextInput
-                                label="Country"
-                                placeholder="Enter Country Name"
+                                label="Address"
+                                placeholder="Enter Address"
                                 withAsterisk
-                                value={formData.country}
-                                onChange={(e) => handleChange("country", e.currentTarget.value)}
+                                value={formData.address}
+                                onChange={(e) => handleChange("address", e.currentTarget.value)}
                             />
                         </Grid.Col>
                     </Grid>

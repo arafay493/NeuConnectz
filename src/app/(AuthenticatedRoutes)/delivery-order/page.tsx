@@ -1,6 +1,6 @@
 // Note: Delivery order Screen...!
 
-import React , { memo } from 'react';
+import React from 'react';
 import DeliveryOrderComponent from 'src/components/delivery-order-component/DeliveryOrderComponent';
 
 const DeliveryOrder = () => {
@@ -9,4 +9,4 @@ const DeliveryOrder = () => {
     );
 };
 
-export default memo(DeliveryOrder);
+export default React.memo(DeliveryOrder);

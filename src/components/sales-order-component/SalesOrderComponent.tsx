@@ -125,6 +125,16 @@ const SalesOrderComponent: FC = () => {
                 size: calculateColumnWidth('SO No', (salesOrderItems || []).map(item => item.salesOrderNumber), 150, 200),
             },
             {
+                accessorKey: 'customer.customerName',
+                header: 'Customer Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Customer Name', (salesOrderItems || []).map(item => item.customer.customerName), 200, 200),
+            },
+            {
                 accessorKey: 'customer.customerCode',
                 header: 'Customer Code',
                 cell: ({ getValue }) => (
@@ -132,7 +142,7 @@ const SalesOrderComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Customer Code', (salesOrderItems || []).map(item => item.customer.customerCode), 150, 150),
+                size: calculateColumnWidth('Customer Code', (salesOrderItems || []).map(item => item.customer.customerCode), 200, 200),
             },
             {
                 accessorKey: 'warehouse.whsName',
@@ -143,6 +153,16 @@ const SalesOrderComponent: FC = () => {
                     </Text>
                 ),
                 size: calculateColumnWidth('Warehouse', (salesOrderItems || []).map(item => item.warehouse.whsName), 200, 200),
+            },
+            {
+                accessorKey: 'totalQuantity',
+                header: 'Quantity',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Quantity', (salesOrderItems || []).map(item => item.totalQuantity), 200, 200),
             },
             {
                 accessorKey: 'createdBy',
@@ -159,10 +179,20 @@ const SalesOrderComponent: FC = () => {
                 header: 'Created Date',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
-                        {getValue() as string}
+                        {new Date(String(getValue())).toLocaleDateString()}
                     </Text>
                 ),
-                size: calculateColumnWidth('Created Date', (salesOrderItems || []).map(item => item.createdDate), 150, 200),
+                size: calculateColumnWidth('Created Date', (salesOrderItems || []).map(item => item.createdDate), 200, 200),
+            },
+            {
+                accessorKey: 'deliveryDate',
+                header: 'Delivery Date',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {new Date(String(getValue())).toLocaleDateString()}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Delivery Date', (salesOrderItems || []).map(item => item.deliveryDate), 200, 200),
             },
         ],
         [salesOrderItems] // Add data as dependency to recalculate when data changes
@@ -275,7 +305,7 @@ const SalesOrderComponent: FC = () => {
             <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Sales Order</Title>
-                    <Text c={customStyles.colors._909090}>Monitor and review how order moves between warehouses and customer</Text>
+                    <Text c={customStyles.colors._909090}>Manage, track, and process customer sales orders with full visibility across warehouses and fulfillment stages.</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -309,7 +339,7 @@ const SalesOrderComponent: FC = () => {
                         </Title>
                         <Text c={customStyles.colors._909090}>Track and review sales order seamlessly.</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -326,7 +356,7 @@ const SalesOrderComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -365,7 +395,7 @@ const SalesOrderComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -386,10 +416,10 @@ const SalesOrderComponent: FC = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -398,7 +428,7 @@ const SalesOrderComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

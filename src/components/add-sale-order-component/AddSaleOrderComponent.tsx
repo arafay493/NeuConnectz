@@ -65,14 +65,16 @@ const AddSaleOrderComponent = () => {
 
     // Note: Fetch list all customers of user...!
     const fetchListAllCustomersOfUser = async () => {
-
         try {
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_CUSTOMERS_OF_USER}?userId=${authenticatedUser?.userId}`, authenticatedUser?.token);
             console.log('Customers: ', response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 setCustomersList(data?.data?.data || []);
+            }
+            else if (status == 404) {
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
             }
         }
 
@@ -86,13 +88,17 @@ const AddSaleOrderComponent = () => {
 
         try {
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_WAREHOUSES_OF_USER}?userId=${authenticatedUser?.userId}`, authenticatedUser?.token);
-            // console.log('WH List: ', response);
+            console.log('WH List: ', response);
 
-            const { status, data } = response;
+            const { status, data, error } = response;
             if (status == 200) {
                 const mergeWHData: any = [...data?.data?.destinationWarehouses, ...data?.data?.sourceWarehouses];
                 setWHList(mergeWHData || []);
-            };
+            }
+
+            else if (status == 404) {
+                showNotificationToast("Something went wrong", error, customStyles.colors.red);
+            }
         }
 
         catch (error) {
@@ -294,8 +300,8 @@ const AddSaleOrderComponent = () => {
                         </Grid.Col>
 
                         <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-                            <Text size="md" mb={8} fw={500}>Delivery Date</Text>
                             <DatePickerInput
+                                label="Delivery Date"
                                 placeholder="Select Order Date"
                                 withAsterisk
                                 value={formData.deliveryDate || null}

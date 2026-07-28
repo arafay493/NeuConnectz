@@ -472,27 +472,6 @@ const AssignGroupsComponent = () => {
                             size={isSmallScreen ? 'sm' : 'md'}
                         />
                     </Stack>
-
-                    {/* Note: Search by warehouse name section */}
-                    {/* <Stack
-                        gap={4}
-                        w={isSmallScreen ? '100%' : isMediumScreen ? '48%' : isLargeScreen ? 300 : 250}
-                        maw={isSmallScreen ? '100%' : 350}
-                    >
-                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Search Group Name:</Text>
-                        <TextInput
-                            placeholder="Search by Group"
-                            leftSection={<IconSearch size={isSmallScreen ? 16 : 18} />}
-                            //   value={search}
-                            //   onChange={(e) => {
-                            //     setSearch(e.currentTarget.value);
-                            //     setPage(1);
-                            //   }}
-                            w='100%'
-                            size={isSmallScreen ? 'sm' : 'md'}
-                            radius={8}
-                        />
-                    </Stack> */}
                 </Group>
                 <Button
                     variant='transparent'
@@ -521,7 +500,7 @@ const AssignGroupsComponent = () => {
                             Select user to assign group
                         </Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -538,7 +517,7 @@ const AssignGroupsComponent = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -580,7 +559,7 @@ const AssignGroupsComponent = () => {
                                                 {/* <Text style={{ whiteSpace: 'nowrap' }} fw={600} c={customStyles.colors._4D4D4D}> */}
                                                 {flexRender(header.column.columnDef.header, header.getContext())}
                                                 {/* </Text> */}
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -601,10 +580,10 @@ const AssignGroupsComponent = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -613,7 +592,7 @@ const AssignGroupsComponent = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

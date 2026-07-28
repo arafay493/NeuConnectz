@@ -107,6 +107,10 @@ const ItemMasterDataComponent: FC = () => {
                 // fetchAllItems();
                 setOpenDeleteModal(false);
                 setTargetRow(null);
+                fetchAllItems({
+                    LastCount: 10,
+                    skipRecord: 0
+                })
             };
         }
 
@@ -154,13 +158,13 @@ const ItemMasterDataComponent: FC = () => {
             },
             {
                 accessorKey: 'productCategory',
-                header: 'Category',
+                header: 'Product category',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Category', (itemsList || []).map(item => item.productCategory), 200, 200),
+                size: calculateColumnWidth('Product category', (itemsList || []).map(item => item.productCategory), 200, 200),
             },
             {
                 accessorKey: 'litres',
@@ -170,17 +174,17 @@ const ItemMasterDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Litres', (itemsList || []).map(item => item.litres), 200, 200),
+                size: calculateColumnWidth('Litres', (itemsList || []).map(item => item.litres), 120, 200),
             },
             {
                 accessorKey: 'canQTY',
-                header: 'Cans',
+                header: 'Can Quantity',
                 cell: ({ getValue }) => (
                     <Text c={customStyles.colors._909090} fw={500}>
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Cans', (itemsList || []).map(item => item.canQTY), 150, 200),
+                size: calculateColumnWidth('Can Quantity', (itemsList || []).map(item => item.canQTY), 180, 200),
             },
             {
                 accessorKey: 'cartonSize',
@@ -190,7 +194,7 @@ const ItemMasterDataComponent: FC = () => {
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Carton Size', (itemsList || []).map(item => item.cartonSize), 150, 200),
+                size: calculateColumnWidth('Carton Size', (itemsList || []).map(item => item.cartonSize), 180, 200),
             },
             {
                 accessorKey: 'uom',
@@ -203,10 +207,20 @@ const ItemMasterDataComponent: FC = () => {
                 size: calculateColumnWidth('UOM', (itemsList || []).map(item => item.uom), 150, 200),
             },
             {
+                accessorKey: 'subUOM',
+                header: 'Sub UOM',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Sub UOM', (itemsList || []).map(item => item.subUOM), 150, 200),
+            },
+            {
                 accessorKey: 'action',
                 header: 'Actions',
                 cell: ({ getValue, row }) => (
-                    <Group style={{ display: "flex", flexDirection: "row" }}>
+                    <Group style={{ display: "flex", flexDirection: 'row', gap: '8px' }}>
                         <Button
                             className='filledButton'
                             variant="transparent"
@@ -228,6 +242,12 @@ const ItemMasterDataComponent: FC = () => {
                                 setTargetRow(row?.original);
                                 setOpenDeleteModal(true);
                             }}
+                            style={{
+                                backgroundColor: customStyles.colors.red,
+                                color: customStyles.colors.white,
+                                border: 'none',
+                                outline: 'none',
+                            }}
                         >
                             Delete
                         </Button>
@@ -237,7 +257,7 @@ const ItemMasterDataComponent: FC = () => {
                 enableSorting: false,
             }
         ],
-        [itemsList] // Add data as dependency to recalculate when data changes
+        [itemsList]
     );
 
     // Custom global filter function to handle Status column properly
@@ -319,26 +339,29 @@ const ItemMasterDataComponent: FC = () => {
             }
     ) => {
         try {
-            // const skipRecord = pagination.pageIndex * pagination.pageSize;
-            // const params: { [key: string]: number } = {};
-
-            // if (pagination.pageSize !== undefined) params.LastCount = pagination.pageSize;
-            // if (skipRecord !== undefined) params.skipRecord = skipRecord;
-
             const params: { [key: string]: number } = {};
             if (LastCount !== undefined) params.lastCount = LastCount;
             if (skipRecord !== undefined) params.skipRecords = skipRecord;
 
-            console.log('Pagination Params: ', params);
+            // console.log('Pagination Params: ', params);
 
             const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, authenticatedUser?.token, params);
-            console.log(response);
+            // console.log(response);
 
             const { status, data, error } = response;
             if (status == 200) {
                 setItemsList(data?.data?.items || []);
                 setItemsCount(data?.data?.totalRecords || 0);
                 setIsLoading(false);
+            }
+
+            if (status == 403) {
+                setIsLoading(false);
+                showNotificationToast(
+                    'Something went wrong',
+                    error?.slice(0, error.indexOf(':')) || 'Failed to fetch customers',
+                    customStyles.colors.red
+                );
             }
 
             else if (!String(status).startsWith('2')) {
@@ -358,7 +381,6 @@ const ItemMasterDataComponent: FC = () => {
             const skipRecord = pagination.pageIndex * pagination.pageSize;
 
             setIsLoading(true);
-            // fetchAllItems();
             fetchAllItems({
                 LastCount: pagination.pageSize, // Fetch only current page records
                 skipRecord: skipRecord
@@ -376,10 +398,10 @@ const ItemMasterDataComponent: FC = () => {
                 onConfirm={() => deleteItemMaster()}
             />
 
-            <Group justify="space-between" align="center" style={{ flexShrink: 0, marginBottom: '16px' }}>
+            <Group justify="space-between" align={customStyles.alignment.center} style={{ flexShrink: 0, marginBottom: '16px' }}>
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D}>Master Data</Title>
-                    <Text c={customStyles.colors._909090}>List of Items, Create item, edit item amd & delete item</Text>
+                    <Text c={customStyles.colors._909090}>List of Items, Create item, edit item and delete item</Text>
                 </Stack>
                 <Button
                     leftSection={<IconUserPlus size={24} />}
@@ -395,14 +417,14 @@ const ItemMasterDataComponent: FC = () => {
 
             <Stack p={24} mt={24} bg={customStyles.colors.white} style={{ borderRadius: '16px', width: '100%' }}>
                 {/* Header */}
-                <Group mb={24} justify="space-between" align="center" style={{ flexShrink: 0 }}>
+                <Group mb={24} justify="space-between" align={customStyles.alignment.center} style={{ flexShrink: 0 }}>
                     <Stack gap={0}>
                         <Title order={3} mb={8} c={customStyles.colors._4D4D4D}>
                             Item Master
                         </Title>
                         <Text c={customStyles.colors._909090}>Track, edit and review Item Master seamlessly</Text>
                     </Stack>
-                    <Group gap="xs">
+                    {/* <Group gap="xs">
                         <GlobalSearchFilter
                             filters={globalFilter}
                             setFilters={setGlobalFilter}
@@ -419,7 +441,7 @@ const ItemMasterDataComponent: FC = () => {
                         }
                         <IconColumns cursor="pointer" size={24} />
                         <IconBorderCorners cursor="pointer" size={24} />
-                    </Group>
+                    </Group> */}
                 </Group>
 
                 {/* Table */}
@@ -458,7 +480,7 @@ const ItemMasterDataComponent: FC = () => {
                                                 <Text fw={600} c={customStyles.colors._4D4D4D}>
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                                 </Text>
-                                                {header.column.getCanSort() && (
+                                                {/* {header.column.getCanSort() && (
                                                     <ActionIcon
                                                         variant="subtle"
                                                         size="xs"
@@ -479,10 +501,10 @@ const ItemMasterDataComponent: FC = () => {
                                                             }
                                                         })()}
                                                     </ActionIcon>
-                                                )}
+                                                )} */}
                                             </Group>
                                             {/* Note: Table Filter Input */}
-                                            {
+                                            {/* {
                                                 header.column.getCanFilter() && (
                                                     <TableColumnsFilter
                                                         areTableFiltersVisible={areTableFiltersVisible}
@@ -491,7 +513,7 @@ const ItemMasterDataComponent: FC = () => {
                                                         setValue={value => header.column.setFilterValue(value)}
                                                     />
                                                 )
-                                            }
+                                            } */}
                                         </th>
                                     ))}
                                 </tr>

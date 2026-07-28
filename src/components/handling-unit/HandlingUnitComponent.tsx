@@ -1,7 +1,7 @@
 'use client';
 
-import { Box, Card, Grid, Group, Text, Loader, Center } from "@mantine/core";
-import { IconBox, IconPackage, IconPlus } from "@tabler/icons-react";
+import { Box, Card, Grid, Group, Text, Button, Select, ActionIcon } from "@mantine/core";
+import { IconBox, IconPackage, IconPlus, IconChevronDown, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { PaginationState } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import TitleComponent from "../common/component-title";
@@ -10,11 +10,15 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
 import { customStyles } from "@/styles/custom-theme";
 import LoaderComponent from "../common/loader/loader";
+import axios from "axios";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 const HandlingUnitComponent = () => {
     const dispatch = useAppDispatch();
 
-    const { handlingUnit, totalCount, loading } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; })
+    const { handlingUnit, totalCount, loading } = useAppSelector(({ handlingUnitStates }) => { return handlingUnitStates; });
+    // console.log("Handling Unit Response: ", handlingUnit);
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
     // Note: Router for route changing
     const router = useRouter();
@@ -22,18 +26,68 @@ const HandlingUnitComponent = () => {
     // Note: State for pagination
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 10, // Adjusted to a more reasonable default
+        pageSize: 10,
     });
+
+    const scrolToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
 
     const handlingRouteChange = () => {
         router.push('/handling-unit/add-unit');
+    };
+
+    // Note: Function to delete handling unit...!
+    const handleDelete = async (groupId: string) => {
+        // Implement delete functionality here
+        // console.log("Delete Handling Unit with Group ID: ", groupId);
+
+        const dataToDelete = [];
+        dataToDelete.push(groupId);
+
+        try {
+            const response = await axios({
+                method: 'PATCH',
+                url: `http://163.61.91.173:31131/Track_And_Trace/IGroupFeature/DeleteGroup`,
+                data: { groupIds: dataToDelete },
+                headers: {
+                    'Authorization': `Bearer ${authenticatedUser?.token}`
+                }
+            });
+            // console.log("Delete response: ", response);
+            const { status, data } = response;
+
+            if (status === 200) {
+                showNotificationToast('HU Deleted', 'Handling Unit Deleted Successfully', customStyles.colors._1B59F8);
+                dispatch(fetchHandlingUnits({
+                    lastCount: pagination.pageSize,
+                    skipRecords: pagination.pageIndex * pagination.pageSize
+                }));
+            };
+        }
+
+        catch (error) {
+            console.log("Error deleting handling unit: ", error);
+        };
     }
+
+    const totalPages = Math.ceil(totalCount / pagination.pageSize);
+    const canPreviousPage = pagination.pageIndex > 0;
+    const canNextPage = pagination.pageIndex < totalPages - 1;
+    const numbersArray = Array.from(
+        { length: totalPages },
+        (_, index) => index + 1
+    );
 
     useEffect(() => {
         dispatch(fetchHandlingUnits({
             lastCount: pagination.pageSize,
             skipRecords: pagination.pageIndex * pagination.pageSize
-        }))
+        }));
+        scrolToTop();
     }, [pagination.pageIndex, pagination.pageSize, dispatch]);
 
     return (
@@ -54,12 +108,34 @@ const HandlingUnitComponent = () => {
             }}>
                 {handlingUnit && handlingUnit.length > 0 && (
                     <Grid gutter={24}>
-                        {handlingUnit.map((group) => (
+                        {handlingUnit.map((group, key) => (
                             <Grid.Col key={group.groupId} span={{ base: 12, md: 6 }}>
                                 <Box style={{ borderRadius: '16px', padding: '16px', height: '100%', backgroundColor: customStyles.colors.white }}>
-                                    <Text size="xl" fw={600} mb="sm" c={customStyles.colors._4D4D4D}>
-                                        {group.groupName}
-                                    </Text>
+                                    <Group
+                                        style={{
+                                            // backgroundColor: 'yellow',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            marginBottom: '10px',
+                                        }}
+                                    >
+                                        <Text size="xl" fw={600} c={customStyles.colors._4D4D4D}>
+                                            {`${pagination.pageIndex * pagination.pageSize + key + 1}) ${group.groupName.charAt(0).toUpperCase()}${group.groupName.slice(1).toLowerCase()}`}
+                                        </Text>
+
+                                        <Button
+                                            // leftSection={buttonIcon}
+                                            // className='filledButton'
+                                            variant="transparent"
+                                            size="md"
+                                            radius={8}
+                                            onClick={() => handleDelete(group.groupId)}
+                                            style={{ backgroundColor: "red", color: "#fff" }}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Group>
 
                                     {/* Main Stage */}
                                     <Grid mb="sm">
@@ -83,7 +159,7 @@ const HandlingUnitComponent = () => {
                                                         />
                                                         <Box>
                                                             <Text size="sm" fw={600}>
-                                                                {group.groupStages.name}
+                                                                {`${group?.groupStages?.name?.charAt(0)?.toUpperCase()}${group?.groupStages?.name?.slice(1)?.toLowerCase()}`}
                                                             </Text>
                                                             <Text size="xs" c="gray.6">
                                                                 Level {group.groupStages.level} • Capacity: {group.groupStages.capacity}
@@ -140,6 +216,138 @@ const HandlingUnitComponent = () => {
                         ))}
                     </Grid>
                 )}
+
+                <hr />
+
+                {/* Pagination */}
+                <Box
+                    mt={12}
+                    bg={'customStyles.colors.white'}
+                    style={{
+                        borderRadius: '16px',
+                        padding: "12px 24px"
+                    }}
+                >
+                    <Group
+                        justify="space-between"
+                        align="center"
+                    >
+                        {/* Left side - Page navigation */}
+                        <Group justify="flex-start" align="center" gap="xs">
+                            <ActionIcon
+                                className={!canPreviousPage ? 'pagination-icon-disabled' : 'pagination-icon'}
+                                variant="transparent"
+                                size="lg"
+                                h={36}
+                                w={36}
+                                radius={8}
+                                c={customStyles.colors._909090}
+                                disabled={!canPreviousPage}
+                                onClick={() =>
+                                    setPagination(prev => ({
+                                        ...prev,
+                                        pageIndex: prev.pageIndex - 1,
+                                    }))
+                                }
+                            >
+                                <IconChevronLeft size={18} />
+                            </ActionIcon>
+
+                            <Select
+                                w={80}
+                                radius={8}
+                                rightSection={<IconChevronDown size={18} />}
+                                data={numbersArray.map(num => ({
+                                    value: String(num),
+                                    label: String(num),
+                                }))}
+                                styles={{
+                                    input: {
+                                        border: `1px solid ${customStyles.colors._E1E7EC}`,
+                                    },
+                                }}
+                                value={String(pagination.pageIndex + 1)}
+                                onChange={(value) => {
+                                    const pageIndex = value ? Number(value) - 1 : 0;
+
+                                    setPagination(prev => ({
+                                        ...prev,
+                                        pageIndex,
+                                    }));
+                                }}
+                            />
+
+                            <ActionIcon
+                                className={!canNextPage ? 'pagination-icon-disabled' : 'pagination-icon'}
+                                variant="transparent"
+                                size="lg"
+                                h={36}
+                                w={36}
+                                radius={8}
+                                c={customStyles.colors._909090}
+                                disabled={!canNextPage}
+                                onClick={() =>
+                                    setPagination(prev => ({
+                                        ...prev,
+                                        pageIndex: prev.pageIndex + 1,
+                                    }))
+                                }
+                            >
+                                <IconChevronRight size={18} />
+                            </ActionIcon>
+
+                            <Text size="md" c={customStyles.colors._4D4D4D}>
+                                / {totalPages} pages
+                            </Text>
+                        </Group>
+
+                        {/* Right side - Page size selector and info */}
+                        <Group gap="md" align="center">
+                            <Group gap="xs" align="center">
+                                <Text size="sm" c={customStyles.colors._909090}>
+                                    Show
+                                </Text>
+                                <Select
+                                    w={80}
+                                    radius={8}
+                                    rightSection={<IconChevronDown size={18} />}
+                                    data={[
+                                        { value: '5', label: '5' },
+                                        { value: '10', label: '10' },
+                                        { value: '20', label: '20' },
+                                        { value: '50', label: '50' },
+                                        { value: '100', label: '100' }
+                                    ]}
+                                    styles={{
+                                        input: {
+                                            border: `1px solid ${customStyles.colors._E1E7EC}`
+                                        }
+                                    }}
+                                    value={String(pagination.pageSize)}
+                                    // onChange={value => {
+                                    //     const newPageSize = value ? Number(value) : 10;
+                                    //     table.setPageSize(newPageSize);
+                                    // }}
+                                    onChange={(value) => {
+                                        const newPageSize = Number(value);
+
+                                        setPagination({
+                                            pageIndex: 0,
+                                            pageSize: newPageSize,
+                                        });
+                                    }}
+                                />
+                                <Text size="sm" c={customStyles.colors._909090}>
+                                    per page
+                                </Text>
+                            </Group>
+
+                            <Text size="sm" c={customStyles.colors._909090}>
+                                Showing {(pagination.pageIndex * pagination.pageSize) + 1} to {Math.min((pagination.pageIndex + 1) * pagination.pageSize, totalCount)} of {totalCount} entries
+                            </Text>
+                        </Group>
+                    </Group>
+                </Box>
             </Box>
 
             {/* Loader Overlay with Blurry Background */}

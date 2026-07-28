@@ -38,10 +38,10 @@ const wareHouseSlice = createSlice({
         },
 
         CLEAR_ALL_WAREHOUSE_STATES: (state) => {
-            state.wareHousesList = {
-                data: [],
-                totalCount: 0
-            };
+            // state.wareHousesList = {
+            //     data: [],
+            //     totalCount: 0
+            // };
             state.warehousesListByUserId = [];
             state.warehouseErrorState = "";
         },

@@ -1,5 +1,6 @@
 import { handleRefreshToken } from "@/constants/refresh-token";
 import { apiGet, apiPost } from "@/lib/api-service";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 import {
     FETCH_ALL_WAREHOUSES,
     FETCH_WAREHOUSES_BY_USER_ID,
@@ -41,12 +42,21 @@ const fetchWarehousesListByUserId = createAsyncThunk(
         { authToken, userId }: { authToken: string, userId: string },
         { dispatch }
     ) => {
+        console.log("User ID for fetching warehouses: ", userId);
+
         const response = await apiGet(`/neu-connect/v2/IWarehouseFeature/ListAllWarehousesByUserId?userId=${userId}`, authToken);
+        console.log("fetchWarehousesListByUserId response: ", response);
 
         const { status, data } = response;
 
         if (status == 200) {
-            dispatch(FETCH_WAREHOUSES_BY_USER_ID(data?.data));
+            const whData = [ ...data?.data?.destinationWarehouses, ...data?.data?.sourceWarehouses ];
+            console.log(`Warehouses for user:`, whData);
+            dispatch(FETCH_WAREHOUSES_BY_USER_ID(whData));
+        }
+
+        else if (status == 404) {
+            showNotificationToast("Something went wrong", `No warehouses found for the user: ${userId}.`, 'red');
         };
     }
 );

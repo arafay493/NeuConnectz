@@ -2,6 +2,7 @@ import { apiGet, apiPost } from "@/lib/api-service";
 import { FETCH_HANDLING_UNIT_DATA, GET_HANDLING_UNIT_BY_ITEM_ID, SET_HANDLING_UNIT_LOADING } from "@/redux/reducers/handling-unit-reducer/handling-unit-reducer";
 import { AddHandlingUnit } from "@/types/redux-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 const fetchHandlingUnits = createAsyncThunk(
     "handlingUnit/fetchHandlingUnits",
@@ -16,7 +17,7 @@ const fetchHandlingUnits = createAsyncThunk(
 
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
-        if (skipRecords !== undefined) params.skipRecords = skipRecords;
+        if (skipRecords !== undefined) params.skipRecord = skipRecords;
 
         try {
             const response = await apiGet(
@@ -63,25 +64,60 @@ const addHandlingUnit = createAsyncThunk(
     "handlingUnit/addHandlingUnit",
     async ({ body, resHandler }: { body: AddHandlingUnit, resHandler: (status: number) => void }, { dispatch }) => {
         const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ADD_HANDLING_UNIT}`, body);
-        const { status, data } = response;
+        console.log('Add handeling unit res: ', response);
+        const { status, data, error } = response;
 
-        resHandler(status);
+        if (status == 201 || status == 200) {
+            resHandler(status);
+        }
+        else {
+            showNotificationToast("Error while Adding Handling Unit", error, 'red');
+        }
+
     }
 );
+
+
 
 const assignHandlingUnitToItems = createAsyncThunk(
     "handlingUnit/assignHandlingUnitToItems",
     async ({ body, resHandler }: { body: { groupId: string, itemIds: string[] }, resHandler: (status: number) => void }, { dispatch }) => {
+        console.log("Assign Handling Unit to items body: ", body);
         const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_ASSIGN_GROUP_TO_ITEMS}`, body);
         console.log('Assign handeling unit res: ', response);
         const { status, data } = response;
-
         resHandler(status);
+    }
+);
+
+const unassignHandlingUnitFromItems = createAsyncThunk(
+    "handlingUnit/unassignHandlingUnitFromItems",
+    async ({ body }: { body: { groupId: string, itemIds: string[] } }, { dispatch }) => {
+        console.log("Unassign Handling Unit from items body: ", body);
+
+        if (body.itemIds.length === 0) {
+            showNotificationToast("No items selected", 'Please select at least one item to unassign', 'red');
+            return;
+        };
+
+        const response = await apiPost(`/trace-and-track/v2${process.env.NEXT_PUBLIC_UNASSIGN_GROUP_TO_ITEMS}`, body);
+        console.log('Unassign handeling unit res: ', response);
+        const { status, data, error } = response;
+
+        if (status == 201 || status == 200) {
+            showNotificationToast("Unassigned successful", 'Handling Unit unassigned from items successfully', '#408CCE');
+            return;
+        };
+
+        if (!String(status).startsWith('2')) {
+            showNotificationToast("Something went wrong", error, 'red');
+            return;
+        }
     }
 );
 
 export {
     addHandlingUnit, assignHandlingUnitToItems, fetchHandlingUnits,
-    getHandlingUnitByItemId
+    getHandlingUnitByItemId, unassignHandlingUnitFromItems
 };
 

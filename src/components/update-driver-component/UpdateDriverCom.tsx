@@ -109,7 +109,7 @@ const UpdateDriverComponent = () => {
                 });
                 setContarctorsList([]);
                 setDriversList([]);
-                router.push(routes.driverMaster);
+                // router.push(routes.driverMaster);
             };
         }
 

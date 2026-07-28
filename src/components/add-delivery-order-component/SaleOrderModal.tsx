@@ -149,7 +149,17 @@ const ListAllSaleOrderItemsTableModal: FC<ListAllSaleOrderItemsTableModalProps> 
                         {getValue() as string}
                     </Text>
                 ),
-                size: calculateColumnWidth('Customer Code', (salesOrderItems || []).map(item => item.customer.customerCode), 150, 150),
+                size: calculateColumnWidth('Customer Code', (salesOrderItems || []).map(item => item.customer.customerCode), 200, 200),
+            },
+            {
+                accessorKey: 'customer.customerName',
+                header: 'Customer Name',
+                cell: ({ getValue }) => (
+                    <Text c={customStyles.colors._909090} fw={500}>
+                        {getValue() as string}
+                    </Text>
+                ),
+                size: calculateColumnWidth('Customer Name', (salesOrderItems || []).map(item => item.customer.customerName), 200, 200),
             },
             {
                 accessorKey: 'warehouse.whsName',
