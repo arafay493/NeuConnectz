@@ -103,7 +103,7 @@ const AddUserScreen = () => {
                 loading: false
             });
             showNotificationToast("User Created", "User created successfully", customStyles.colors._408CCE);
-            dispatch(fetchAllUsers({ authToken: token }));
+            // dispatch(fetchAllUsers({ authToken: token }));
             clearAllStates();
             router.push(routes.qTrackUsersList);
             return;
