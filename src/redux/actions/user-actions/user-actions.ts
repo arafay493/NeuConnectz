@@ -89,7 +89,7 @@ const addQtrackUser = createAsyncThunk(
       token,
       resHandler,
     }: {
-      userData: CreateUserDataType;
+      userData: any;
       token: string;
       resHandler: ResHandler;
     }
