@@ -9,9 +9,11 @@ export type Routes = {
     // stockMovement: string;
     // reconciliation: string;
     usersList: string;
+    qTrackUsersList: string;
     assignGroup: string;
     assignWareHouse: string;
     addUser: string;
+    addQTrackUser: string;
     // configuration: string;
     // integrationMonitor: string;
     editUser: (uid: string) => string;

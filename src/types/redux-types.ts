@@ -19,6 +19,11 @@ export interface UserStateType {
         users: Array<UserListProps>,
         totalCount: number,
     };
+    qtrackUsersList: {
+        // users: Array<UserListProps>,
+        users: any,
+        totalCount: number,
+    };
     listDepartmentData: {
         departments: Array<GenerateListDepartmentProps> | null;
         totalCount: number;

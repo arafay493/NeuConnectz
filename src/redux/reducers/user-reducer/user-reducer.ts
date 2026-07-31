@@ -9,6 +9,10 @@ const initialState: UserStateType = {
         users: [],
         totalCount: 0
     },
+    qtrackUsersList: {
+        users: [],
+        totalCount: 0
+    },
     listDepartmentData: {
         departments: [],
         totalCount: 0
@@ -25,6 +29,10 @@ const userSlice = createSlice({
                 users: [],
                 totalCount: 0
             };
+            state.qtrackUsersList = {
+                users: [],
+                totalCount: 0
+            };
             state.usersErrorState = "You are not authorized to access this data!";
         },
 
@@ -33,12 +41,21 @@ const userSlice = createSlice({
             state.usersList = action?.payload;
         },
 
+        FETCH_ALL_QTRACK_USERS: (state, action: PayloadAction<any>) => {
+            state.usersErrorState = ""
+            state.qtrackUsersList = action?.payload?.data;
+        },
+
         FETCH_ALL_LIST_DEPARTMENTS: (state, action: PayloadAction<any>) => {
             state.listDepartmentData = action?.payload;
         },
 
         CLEAR_ALL_USER_STATES: (state) => {
             state.usersList = {
+                users: [],
+                totalCount: 0
+            };
+            state.qtrackUsersList = {
                 users: [],
                 totalCount: 0
             };
@@ -55,6 +72,7 @@ export const
     {
         UNAUTHORIZE_USER_TRYING_TO_ACCESS_USERS_DATA,
         FETCH_ALL_USERS,
+        FETCH_ALL_QTRACK_USERS,
         FETCH_ALL_LIST_DEPARTMENTS,
         CLEAR_ALL_USER_STATES
     } = userSlice.actions;
