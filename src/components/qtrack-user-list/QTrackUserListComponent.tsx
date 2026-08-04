@@ -1,7 +1,7 @@
 "use client";
 
 import { routes } from "@/constants/routes";
-import { fetchAllQtrackUsers } from "@/redux/actions/user-actions/user-actions";
+import { fetchAllQtrackUsers, updateQTrackUser } from "@/redux/actions/user-actions/user-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
 import { UserListProps } from "@/types/redux-types";
@@ -12,6 +12,7 @@ import {
     Button,
     Group,
     Stack,
+    Switch,
     Text,
     Title,
 } from "@mantine/core";
@@ -27,6 +28,8 @@ import {
 import { useRouter } from "next/navigation";
 import { FC, useEffect, useMemo, useState } from "react";
 import TanStackTable from "../tanStackTable/TanStackTable";
+import { notifications } from "@mantine/notifications";
+import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 interface UserListComponentProps {
     // data: Array<UserListProps>;
@@ -60,6 +63,35 @@ const QTrackUserListComponent: FC<UserListComponentProps> = () => {
     // Note: Function to Edit any User
     const handleEditUser = (userId: string) => {
         route.push(routes.editUser(userId));
+    };
+
+    const userStatusChangeResHandler = (response: any) => {
+        if (response.status === 200 || response.status === 201) {
+            showNotificationToast("User Update", response.data?.message || "User status updated successfully", customStyles.colors._408CCE);
+            dispatch(
+                fetchAllQtrackUsers({
+                    authToken: authenticatedUser?.token!,
+                    LastCount: pagination.pageSize,
+                    skipRecord,
+                })
+            )
+        } else {
+            showNotificationToast("Error", response.data?.message || response.data?.error || response.error, customStyles.colors.red);
+        }
+    };
+
+    const handleUserStatusChange = async (
+        userId: string,
+        isActive: boolean
+    ) => {
+        dispatch(
+            updateQTrackUser({
+                authToken: authenticatedUser?.token!,
+                userId,
+                isActive,
+                resHandler: userStatusChangeResHandler,
+            })
+        );
     };
 
     const columns = useMemo<ColumnDef<UserListProps>[]>(
@@ -147,6 +179,41 @@ const QTrackUserListComponent: FC<UserListComponentProps> = () => {
                     );
                 },
             },
+            {
+                accessorKey: "actions",
+                header: "Actions",
+                cell: ({ row, getValue }) => {
+                    const isActive = row.original.isActive;
+                    const userId = row.original.userId;
+
+                    return (
+                        <Switch
+                            checked={isActive}
+                            color="green"
+                            size="lg"
+                            onLabel="Inactive"
+                            offLabel="Active"
+                            styles={{
+                                track: {
+                                    width: 80,
+                                },
+                                trackLabel: {
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    width: "100%",
+                                    fontSize: 11,
+                                    fontWeight: 800,
+                                },
+                            }}
+                            onChange={(event) => {
+                                const checked = event.currentTarget.checked;
+                                handleUserStatusChange(userId, checked);
+                            }}
+                        />
+                    );
+                },
+            },
             // {
             //     accessorKey: "userId",
             //     header: "Action",
@@ -229,7 +296,7 @@ const QTrackUserListComponent: FC<UserListComponentProps> = () => {
             >
                 <Stack gap={0}>
                     <Title order={2} c={customStyles.colors._4D4D4D} style={{ fontWeight: 700, fontSize: 24 }}>
-                       QTrack User List
+                        QTrack User List
                     </Title>
                     <Text c={customStyles.colors._909090} style={{ fontWeight: 500, fontSize: 16 }}>List of qtrack user and create qtrack user.</Text>
                 </Stack>
@@ -259,7 +326,7 @@ const QTrackUserListComponent: FC<UserListComponentProps> = () => {
                 searchable={true}
                 apiFilter={apiFilter}
                 setApiFilter={setApiFilter}
-                headerTextAllowed = {true}
+                headerTextAllowed={true}
             // skipRecord={0}
             />
         </Box>

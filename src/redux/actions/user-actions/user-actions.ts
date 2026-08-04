@@ -156,6 +156,45 @@ const updateUser = createAsyncThunk(
     }
 );
 
+export const updateQTrackUser = createAsyncThunk(
+  "user/updateQTrackUser",
+  async (
+    {
+      authToken,
+      userId,
+      isActive,
+      resHandler,
+    }: {
+      authToken: string;
+      userId: string;
+      isActive: boolean;
+      resHandler?: (response: any) => void;
+    },
+    { dispatch }
+  ) => {
+    try {
+      const response = await axios.put(
+        `${QTRACK_BASE_URL}/QTrack/IUserManagementFeature/UpdateActivationStatus`,
+        {
+          userId,
+          isActive,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+
+      resHandler?.(response);
+      
+
+    } catch (error) {
+      console.error("Update QTrack User Error:", error);
+    }
+  }
+);
+
 // Note: Action function fetch all list departments...!
 const fetchAllListDepartments = createAsyncThunk(
     "user/fetchAllListDepartments",
