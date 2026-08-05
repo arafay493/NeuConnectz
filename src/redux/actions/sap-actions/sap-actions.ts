@@ -332,8 +332,9 @@ const fetchAllVendorCodes = createAsyncThunk(
 const listItemCodes = createAsyncThunk(
     "sap/listItemCodes",
     async (
-        { lastCount = 10, skipRecords = 0 }:
+        { authToken = '', lastCount = 10, skipRecords = 0 }:
             {
+                authToken?: string
                 lastCount?: number,
                 skipRecords?: number
             }, { dispatch }) => {
@@ -342,7 +343,7 @@ const listItemCodes = createAsyncThunk(
         if (lastCount !== undefined) params.lastCount = String(lastCount);
         if (skipRecords !== undefined) params.skipRecords = String(skipRecords);
 
-        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, '', params);
+        const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_All_ITEMS}`, authToken, params);
         // console.log('Res: ', response);
 
         const { status, data } = response;

@@ -1,23 +1,17 @@
 'use client';
 
-import { stringFilterFn } from "@/constants/table-filteration";
 import { localAssets } from "@/lib/file-paths/file-paths";
-import showNotificationToast from "@/lib/notification-toast/notification-toast";
-import { assignHandlingUnitToItems, fetchHandlingUnits, unassignHandlingUnitFromItems } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
-import { getItemByGroupId, listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
+import { listItemCodes } from "@/redux/actions/sap-actions/sap-actions";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { customStyles } from "@/styles/custom-theme";
-import { ItemDataByHandlingUnitId, ItemDataProps } from "@/types/redux-types";
-import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconPackage, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
-import NextImage from 'next/image';
-import { useCallback, useEffect, useMemo, useState, memo } from "react";
-import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
-import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
-import AssignHandlingUnitComponent from "../assign-handling-unit/assign-handling-unit";
 import axios from "axios";
+import NextImage from 'next/image';
+import { memo, useEffect, useMemo, useState } from "react";
+import { FadeLoader } from "react-spinners";
 
 export interface InventoryItem {
     itemCode: string;
@@ -56,15 +50,21 @@ const InventoryComponent = () => {
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
+    const [itemCodePagination, setItemCodePagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
 
-    // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const skipRecordItemCodeList = itemCodePagination.pageIndex * itemCodePagination.pageSize;
+
     const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [scrollItemLoading, setScrollItemLoading] = useState(false);
 
     const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
@@ -254,15 +254,15 @@ const InventoryComponent = () => {
     }, [table.getPageCount()]);
 
     useEffect(() => {
-        dispatch(listItemCodes({}));
-    }, []);
-
-    // useEffect(() => {
-    //     dispatch(listItemCodes({
-    //         lastCount: pagination.pageSize,
-    //         skipRecords: pagination.pageIndex * pagination.pageSize
-    //     }))
-    // }, [pagination.pageIndex, pagination.pageSize]);
+        setScrollItemLoading(true)
+        dispatch(listItemCodes({
+            authToken: authenticatedUser?.token as string,
+            lastCount: itemCodePagination.pageSize,
+            skipRecords: skipRecordItemCodeList
+        })).finally(() => {
+            setScrollItemLoading(false);
+        });
+    }, [authenticatedUser?.token]);
 
     const getBoxesByItemCode = async (itemCode: string) => {
         try {
@@ -298,7 +298,52 @@ const InventoryComponent = () => {
             // console.log('Selected item:', selectedItemCode);
             selectedItemCode && getBoxesByItemCode(selectedItemCode);
         }
-    }, [selectedItemCode , pagination.pageIndex, pagination.pageSize]);
+    }, [selectedItemCode, pagination.pageIndex, pagination.pageSize]);
+
+    const handleRemove = () => {
+        setInventoryData([])
+        setSelectedItemCode(null)
+        setItemCodePagination({
+            pageIndex: 0,
+            pageSize: 10,
+        })
+    }
+
+    const handleSelect = (value: string) => {
+        setSelectedItemCode(value ?? "")
+    }
+
+    const handleScrollEndPaginateItemCodeList = (e: any) => {
+        const target = e.currentTarget;
+
+        const hasMore = itemCodesData.length < totalItemCodeCount;
+        const reachedBottom =
+            target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+        if (hasMore && reachedBottom && !scrollItemLoading) {
+            setScrollItemLoading(true);
+
+            setItemCodePagination((prev) => {
+                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageIndex = prev.pageIndex + 1;
+
+                dispatch(
+                    listItemCodes({
+                        authToken: authenticatedUser?.token as string,
+                        lastCount: updatedPageSize,
+                        skipRecords: 0,
+                    })
+                ).finally(() => {
+                    setScrollItemLoading(false);
+                });
+
+                return {
+                    pageSize: updatedPageSize,
+                    pageIndex: updatedPageIndex,
+                };
+            });
+        }
+    };
 
     return (
         <Box>
@@ -345,26 +390,44 @@ const InventoryComponent = () => {
                         }
                         maw={500}
                     >
-                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Item Code</Text>
+                        <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Item Code <span style={{ color: "red" }}>*</span></Text>
                         <Select
                             placeholder="Select Item Code"
-                            data={
-                                itemCodesData.length > 0 ? itemCodesData : [{ value: '', label: 'No item codes available' }]
-                            }
+                            nothingFoundMessage="No item codes available"
+                            data={itemCodesData}
                             value={selectedItemCode}
-                            onChange={(value) => {
-                                if (!value) {
-                                    setSelectedItemCode(null);
-                                    setInventoryData([]);
-                                    return;
+                            onChange={(value: any) => {
+                                if (value === null) {
+                                    handleRemove();
+                                } else {
+                                    handleSelect(value);
                                 }
-
-                                setSelectedItemCode(value);
                             }}
+                            searchable
                             clearable
-                            w='100%'
+                            w={250}
                             radius={8}
-                            size={isSmallScreen ? 'sm' : 'md'}
+                            maxDropdownHeight={200}
+                            size={isSmallScreen ? "sm" : "md"}
+                            styles={{
+                                option: {
+                                    fontSize: "13px",
+                                },
+                            }}
+                            rightSection={
+                                scrollItemLoading ? (
+                                    <FadeLoader
+                                        height={15}
+                                        width={3}
+                                        margin={1}
+                                        radius={1}
+                                        color="#1b59f8"
+                                    />
+                                ) : <IconChevronDown stroke={1} />
+                            }
+                            scrollAreaProps={{
+                                onScrollEndCapture: handleScrollEndPaginateItemCodeList,
+                            }}
                         />
                     </Stack>
                 </Group>
