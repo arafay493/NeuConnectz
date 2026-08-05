@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import TitleComponent from "../common/component-title";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
+import { deleteHandlingUnit, fetchHandlingUnits } from "@/redux/actions/handling-unit-actions/handling-unit-actions";
 import { customStyles } from "@/styles/custom-theme";
 import LoaderComponent from "../common/loader/loader";
 import axios from "axios";
@@ -41,38 +41,56 @@ const HandlingUnitComponent = () => {
     };
 
     // Note: Function to delete handling unit...!
-    const handleDelete = async (groupId: string) => {
-        // Implement delete functionality here
-        // console.log("Delete Handling Unit with Group ID: ", groupId);
+    // const handleDelete = async (groupId: string) => {
+    //     // Implement delete functionality here
+    //     // console.log("Delete Handling Unit with Group ID: ", groupId);
 
-        const dataToDelete = [];
-        dataToDelete.push(groupId);
+    //     const dataToDelete = [];
+    //     dataToDelete.push(groupId);
 
-        try {
-            const response = await axios({
-                method: 'PATCH',
-                url: `http://163.61.91.173:31131/Track_And_Trace/IGroupFeature/DeleteGroup`,
-                data: { groupIds: dataToDelete },
-                headers: {
-                    'Authorization': `Bearer ${authenticatedUser?.token}`
-                }
-            });
-            // console.log("Delete response: ", response);
-            const { status, data } = response;
+    //     try {
+    //         const response = await axios({
+    //             method: 'PATCH',
+    //             url: `http://163.61.91.173:31131/Track_And_Trace/IGroupFeature/DeleteGroup`,
+    //             data: { groupIds: dataToDelete },
+    //             headers: {
+    //                 'Authorization': `Bearer ${authenticatedUser?.token}`
+    //             }
+    //         });
+    //         // console.log("Delete response: ", response);
+    //         const { status, data } = response;
 
-            if (status === 200) {
-                showNotificationToast('HU Deleted', 'Handling Unit Deleted Successfully', customStyles.colors._1B59F8);
-                dispatch(fetchHandlingUnits({
-                    lastCount: pagination.pageSize,
-                    skipRecords: pagination.pageIndex * pagination.pageSize
-                }));
-            };
-        }
+    //         if (status === 200) {
+    //             showNotificationToast('HU Deleted', 'Handling Unit Deleted Successfully', customStyles.colors._1B59F8);
+    //             dispatch(fetchHandlingUnits({
+    //                 lastCount: pagination.pageSize,
+    //                 skipRecords: pagination.pageIndex * pagination.pageSize
+    //             }));
+    //         };
+    //     }
 
-        catch (error) {
-            console.log("Error deleting handling unit: ", error);
-        };
-    }
+    //     catch (error) {
+    //         console.log("Error deleting handling unit: ", error);
+    //     };
+    // }
+
+    const handleDelete = (groupId: string) => {
+        dispatch(
+            deleteHandlingUnit({
+                authToken: authenticatedUser?.token || "",
+                groupId,
+                resHandler: () => {
+                    dispatch(
+                        fetchHandlingUnits({
+                            authToken: authenticatedUser?.token,
+                            lastCount: pagination.pageSize,
+                            skipRecords: pagination.pageIndex * pagination.pageSize,
+                        })
+                    );
+                },
+            })
+        );
+    };
 
     const totalPages = Math.ceil(totalCount / pagination.pageSize);
     const canPreviousPage = pagination.pageIndex > 0;

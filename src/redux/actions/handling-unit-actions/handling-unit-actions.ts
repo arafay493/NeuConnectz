@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "@/lib/api-service";
+import { apiGet, apiPatch, apiPost } from "@/lib/api-service";
 import { FETCH_HANDLING_UNIT_DATA, GET_HANDLING_UNIT_BY_ITEM_ID, SET_HANDLING_UNIT_LOADING } from "@/redux/reducers/handling-unit-reducer/handling-unit-reducer";
 import { AddHandlingUnit } from "@/types/redux-types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -117,8 +117,57 @@ const unassignHandlingUnitFromItems = createAsyncThunk(
     }
 );
 
+const deleteHandlingUnit = createAsyncThunk(
+    "handlingUnit/deleteHandlingUnit",
+    async (
+        {
+            authToken,
+            groupId,
+            resHandler,
+        }: {
+            authToken: string;
+            groupId: string;
+            resHandler?: (status: number) => void;
+        },
+        { dispatch }
+    ) => {
+        try {
+            const response = await apiPatch(
+                `/trace-and-track/v2/IGroupFeature/DeleteGroup`,
+                {
+                    groupIds: [groupId],
+                },
+                authToken
+            );
+
+            const { status, error } = response;
+
+            if (status === 200 || status === 201) {
+                showNotificationToast(
+                    "HU Deleted",
+                    "Handling Unit Deleted Successfully",
+                    "#1B59F8"
+                );
+
+                resHandler?.(status);
+            } else {
+                showNotificationToast(
+                    "Delete Failed",
+                    error,
+                    "red"
+                );
+            }
+
+            return response;
+        } catch (error) {
+            console.log("Error deleting handling unit:", error);
+            throw error;
+        }
+    }
+);
+
 export {
     addHandlingUnit, assignHandlingUnitToItems, fetchHandlingUnits,
-    getHandlingUnitByItemId, unassignHandlingUnitFromItems
+    getHandlingUnitByItemId, unassignHandlingUnitFromItems, deleteHandlingUnit
 };
 

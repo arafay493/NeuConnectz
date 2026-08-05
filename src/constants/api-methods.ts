@@ -7,6 +7,7 @@ const API_METHODS: ApiMethods = {
     GET: "GET",
     PUT: "PUT",
     DELETE: "DELETE",
+    PATCH: "PATCH",
 };
 
 export default API_METHODS;

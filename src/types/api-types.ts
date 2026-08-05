@@ -5,6 +5,7 @@ export interface ApiMethods {
     GET: string,
     PUT: string,
     DELETE: string,
+    PATCH: string,
 };
 
 export interface Urls {

@@ -102,3 +102,40 @@ export const apiDelete = async (endpoint: string, authToken?: string) => {
         return { success: false, error: error.message, status };
     }
 };
+
+// Generic function for PATCH requests
+export const apiPatch = async (
+    endpoint: string,
+    payload: any,
+    authToken?: string
+) => {
+    try {
+        const response = await axiosInstance({
+            method: API_METHODS.PATCH,
+            url: endpoint,
+            data: payload,
+            headers: {
+                "Auth-Token": authToken,
+            },
+        });
+
+        return {
+            success: true,
+            data: response.data,
+            status: response.status,
+        };
+    } catch (error: any) {
+        const { status, data } = error?.response || {};
+
+        // Handle 401 - Unauthorized
+        if (status === 401) {
+            handleRefreshToken(error.message);
+        }
+
+        return {
+            success: false,
+            error: data?.message || error.message,
+            status,
+        };
+    }
+};
