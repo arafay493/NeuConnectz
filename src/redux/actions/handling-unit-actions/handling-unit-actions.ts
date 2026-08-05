@@ -6,14 +6,15 @@ import showNotificationToast from "@/lib/notification-toast/notification-toast";
 
 const fetchHandlingUnits = createAsyncThunk(
     "handlingUnit/fetchHandlingUnits",
-    async ({ lastCount = 40, skipRecords = 0 }:
+    async ({ authToken = '', lastCount = 10, skipRecords = 0 }:
         {
+            authToken?: string,
             lastCount?: number,
             skipRecords?: number
         }, { dispatch }) => {
 
         // Set loading to true at the start
-        dispatch(SET_HANDLING_UNIT_LOADING(true));
+        // dispatch(SET_HANDLING_UNIT_LOADING(true));
 
         const params: { [key: string]: number } = {};
         if (lastCount !== undefined) params.LastCount = lastCount;
@@ -21,7 +22,7 @@ const fetchHandlingUnits = createAsyncThunk(
 
         try {
             const response = await apiGet(
-                `/trace-and-track/v2${process.env.NEXT_PUBLIC_LIST_HANDLING_UNIT}`, '',
+                `/trace-and-track/v2${process.env.NEXT_PUBLIC_LIST_HANDLING_UNIT}`, authToken,
                 params
             );
 
@@ -31,14 +32,14 @@ const fetchHandlingUnits = createAsyncThunk(
                 dispatch(FETCH_HANDLING_UNIT_DATA(data?.data));
             } else {
                 // Set loading to false if request fails
-                dispatch(SET_HANDLING_UNIT_LOADING(false));
+                // dispatch(SET_HANDLING_UNIT_LOADING(false));
             }
 
             return response;
         } catch (error) {
             // Set loading to false if request fails
-            dispatch(SET_HANDLING_UNIT_LOADING(false));
-            throw error;
+            // dispatch(SET_HANDLING_UNIT_LOADING(false));
+            // throw error;
         }
     }
 );

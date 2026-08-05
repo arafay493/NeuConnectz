@@ -10,12 +10,11 @@ import { customStyles } from "@/styles/custom-theme";
 import { ItemDataByHandlingUnitId, ItemDataProps } from "@/types/redux-types";
 import { ActionIcon, Box, Button, Checkbox, Group, Image, Select, Stack, Text, Title } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconArrowNarrowDown, IconArrowNarrowUp, IconArrowsUpDown, IconBorderCorners, IconChevronDown, IconChevronLeft, IconChevronRight, IconColumns, IconFilter, IconFilterOff, IconPackage, IconSearch, IconSearchOff } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronLeft, IconChevronRight, IconPackage } from "@tabler/icons-react";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, PaginationState, SortingState, useReactTable } from "@tanstack/react-table";
 import NextImage from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { GlobalSearchFilter } from "../table-filters/GlobalSearchFilter";
-import { TableColumnsFilter } from "../table-filters/TableColumnsFilter";
+import { FadeLoader } from "react-spinners";
 
 const AssignHandlingUnitComponent = () => {
     // Note: Media query to determine if the screen is small
@@ -34,7 +33,7 @@ const AssignHandlingUnitComponent = () => {
     // Item Code List State
     const { list_Item_Code_Data, totalItemCodeCount, list_item_Code_Data_By_Group_Id } = useAppSelector(({ sapStates }) => sapStates);
 
-    const { handlingUnit } = useAppSelector(({ handlingUnitStates }) => handlingUnitStates);
+    const { handlingUnit,totalCount } = useAppSelector(({ handlingUnitStates }) => handlingUnitStates);
 
     // Transform users data for Select component
     const selectHandlingUnitData = handlingUnit
@@ -48,15 +47,23 @@ const AssignHandlingUnitComponent = () => {
         pageIndex: 0,
         pageSize: 10, // Adjusted to a more reasonable default
     });
+    const [handlingUnitPagination, setHandlingUnitPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
 
     // Pagination values for Api call
     const skipRecord = pagination.pageIndex * pagination.pageSize;
+    const skipRecordHandlingUnitList = handlingUnitPagination.pageIndex * handlingUnitPagination.pageSize;
     const lastCount = pagination.pageSize;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [scrollItemLoading, setScrollItemLoading] = useState(false);
+
+    const { authenticatedUser } = useAppSelector(({ authStates }) => authStates);
 
     // Note: State for Table Filters
     const [isSearchInputVisible, setIsSearchInputVisible] = useState(false);
@@ -339,8 +346,16 @@ const AssignHandlingUnitComponent = () => {
 
     useEffect(() => {
         dispatch(listItemCodes({}));
-        dispatch(fetchHandlingUnits({}))
-    }, [dispatch])
+        // dispatch(fetchHandlingUnits({}))
+        setScrollItemLoading(true)
+        dispatch(fetchHandlingUnits({
+            authToken: authenticatedUser?.token as string,
+            lastCount: handlingUnitPagination.pageSize,
+            skipRecords: skipRecordHandlingUnitList
+        })).finally(() => {
+            setScrollItemLoading(false);
+        });
+    }, [authenticatedUser?.token])
 
     useEffect(() => {
         dispatch(listItemCodes({
@@ -409,6 +424,51 @@ const AssignHandlingUnitComponent = () => {
         })
     };
 
+    const handleRemove = () => {
+        setItemPermission(undefined);
+        setSelectedHandlingUnit(null)
+        setHandlingUnitPagination({
+            pageIndex: 0,
+            pageSize: 10,
+        })
+    }
+
+    const handleSelect = (value: string) => {
+        setSelectedHandlingUnit(value ?? "")
+    }
+
+    const handleScrollEndPaginateItemCodeList = (e: any) => {
+        const target = e.currentTarget;
+
+        const hasMore = selectHandlingUnitData.length < totalCount;
+        const reachedBottom =
+            target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+        if (hasMore && reachedBottom && !scrollItemLoading) {
+            setScrollItemLoading(true);
+
+            setHandlingUnitPagination((prev) => {
+                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageIndex = prev.pageIndex + 1;
+
+                dispatch(
+                    fetchHandlingUnits({
+                        authToken: authenticatedUser?.token as string,
+                        lastCount: updatedPageSize,
+                        skipRecords: 0,
+                    })
+                ).finally(() => {
+                    setScrollItemLoading(false);
+                });
+
+                return {
+                    pageSize: updatedPageSize,
+                    pageIndex: updatedPageIndex,
+                };
+            });
+        }
+    };
+
     return (
         <Box>
             <Title
@@ -449,7 +509,7 @@ const AssignHandlingUnitComponent = () => {
                         maw={isSmallScreen ? '100%' : 350}
                     >
                         <Text size={isSmallScreen ? "sm" : "md"} mb={4} fw={500}>Select Handling Unit</Text>
-                        <Select
+                        {/* <Select
                             placeholder="Select Handling Unit"
                             data={
                                 selectHandlingUnitData.length > 0 ? selectHandlingUnitData : [{ value: '', label: 'No Handling Units Available' }]
@@ -468,6 +528,44 @@ const AssignHandlingUnitComponent = () => {
                             w='100%'
                             radius={8}
                             size={isSmallScreen ? 'sm' : 'md'}
+                        /> */}
+                        <Select
+                            placeholder="Select Handling Unit"
+                            nothingFoundMessage="No Handling Units Available"
+                            data={selectHandlingUnitData}
+                            value={selectedHandlingUnit}
+                            onChange={(value: any) => {
+                                if (value === null) {
+                                    handleRemove();
+                                } else {
+                                    handleSelect(value);
+                                }
+                            }}
+                            searchable
+                            clearable
+                            w={250}
+                            radius={8}
+                            maxDropdownHeight={200}
+                            size={isSmallScreen ? "sm" : "md"}
+                            styles={{
+                                option: {
+                                    fontSize: "13px",
+                                },
+                            }}
+                            rightSection={
+                                scrollItemLoading ? (
+                                    <FadeLoader
+                                        height={15}
+                                        width={3}
+                                        margin={1}
+                                        radius={1}
+                                        color="#1b59f8"
+                                    />
+                                ) : <IconChevronDown stroke={1} size={20} />
+                            }
+                            scrollAreaProps={{
+                                onScrollEndCapture: handleScrollEndPaginateItemCodeList,
+                            }}
                         />
                     </Stack>
                 </Group>
