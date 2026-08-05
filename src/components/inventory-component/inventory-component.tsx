@@ -314,17 +314,36 @@ const InventoryComponent = () => {
     }
 
     const handleScrollEndPaginateItemCodeList = (e: any) => {
+        // const target = e.currentTarget;
+
+        // const hasMore = itemCodesData.length < totalItemCodeCount;
+        // const reachedBottom =
+        //     target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+        // if (hasMore && reachedBottom && !scrollItemLoading) {
+
         const target = e.currentTarget;
-
         const hasMore = itemCodesData.length < totalItemCodeCount;
-        const reachedBottom =
-            target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+        const shouldLoad =
+            target.scrollHeight - target.scrollTop <= target.clientHeight + 20;
+        const remaining = totalItemCodeCount - itemCodesData.length;
 
-        if (hasMore && reachedBottom && !scrollItemLoading) {
+        if (remaining <= 15 && remaining > 0) {
+            dispatch(
+                listItemCodes({
+                    authToken: authenticatedUser?.token as string,
+                    lastCount: totalItemCodeCount,
+                    skipRecords: 0,
+                })
+            );
+            return
+        }
+
+        if (hasMore && shouldLoad && !scrollItemLoading) {
             setScrollItemLoading(true);
 
             setItemCodePagination((prev) => {
-                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageSize = prev.pageSize + 10;
                 const updatedPageIndex = prev.pageIndex + 1;
 
                 dispatch(
@@ -407,7 +426,7 @@ const InventoryComponent = () => {
                             clearable
                             w={250}
                             radius={8}
-                            maxDropdownHeight={200}
+                            maxDropdownHeight={180}
                             size={isSmallScreen ? "sm" : "md"}
                             styles={{
                                 option: {
@@ -423,7 +442,7 @@ const InventoryComponent = () => {
                                         radius={1}
                                         color="#1b59f8"
                                     />
-                                ) : <IconChevronDown stroke={1} />
+                                ) : <IconChevronDown stroke={1} size={20} />
                             }
                             scrollAreaProps={{
                                 onScrollEndCapture: handleScrollEndPaginateItemCodeList,

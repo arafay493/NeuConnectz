@@ -33,7 +33,7 @@ const AssignHandlingUnitComponent = () => {
     // Item Code List State
     const { list_Item_Code_Data, totalItemCodeCount, list_item_Code_Data_By_Group_Id } = useAppSelector(({ sapStates }) => sapStates);
 
-    const { handlingUnit,totalCount } = useAppSelector(({ handlingUnitStates }) => handlingUnitStates);
+    const { handlingUnit, totalCount } = useAppSelector(({ handlingUnitStates }) => handlingUnitStates);
 
     // Transform users data for Select component
     const selectHandlingUnitData = handlingUnit
@@ -439,16 +439,27 @@ const AssignHandlingUnitComponent = () => {
 
     const handleScrollEndPaginateItemCodeList = (e: any) => {
         const target = e.currentTarget;
-
         const hasMore = selectHandlingUnitData.length < totalCount;
-        const reachedBottom =
-            target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+        const shouldLoad =
+            target.scrollHeight - target.scrollTop <= target.clientHeight + 20;
+        const remaining = totalCount - selectHandlingUnitData.length;
 
-        if (hasMore && reachedBottom && !scrollItemLoading) {
+        if (remaining <= 15 && remaining > 0) {
+            dispatch(
+                fetchHandlingUnits({
+                    authToken: authenticatedUser?.token as string,
+                    lastCount: totalCount,
+                    skipRecords: 0,
+                })
+            );
+            return
+        }
+
+        if (hasMore && shouldLoad && !scrollItemLoading) {
             setScrollItemLoading(true);
 
             setHandlingUnitPagination((prev) => {
-                const updatedPageSize = prev.pageSize + 5;
+                const updatedPageSize = prev.pageSize + 10;
                 const updatedPageIndex = prev.pageIndex + 1;
 
                 dispatch(
@@ -545,7 +556,7 @@ const AssignHandlingUnitComponent = () => {
                             clearable
                             w={250}
                             radius={8}
-                            maxDropdownHeight={200}
+                            maxDropdownHeight={150}
                             size={isSmallScreen ? "sm" : "md"}
                             styles={{
                                 option: {
