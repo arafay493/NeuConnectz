@@ -35,11 +35,13 @@ const AddSaleOrderComponent = () => {
     const [formData, setFormData] = useState({
         salesPerson: "",
         customerName: "",
+        subCustomerName: "",
         whName: "",
         deliveryDate: "",
         loading: false,
         distributor: ""
     });
+    // console.log("🚀 ~ AddSaleOrderComponent ~ formData:", formData)
     const [customersList, setCustomersList] = useState([]);
     const [whList, setWHList] = useState([]);
     const [openModal, setOpenModal] = useState(false);
@@ -135,6 +137,7 @@ const AddSaleOrderComponent = () => {
                 setFormData({
                     salesPerson: "",
                     customerName: "",
+                    subCustomerName: "",
                     whName: "",
                     deliveryDate: "",
                     loading: false,
@@ -158,13 +161,15 @@ const AddSaleOrderComponent = () => {
 
         try {
             if (!formData?.customerName) throw "Please select customer";
+            if (!formData?.subCustomerName) throw "Please select sub customer";
             if (!formData?.whName) throw "Please select warehouse";
             if (!formData?.deliveryDate) throw "Please select delivery date";
             if (draftedItems.length < 1) throw "No drafted sale order items available!";
 
             const obj = {
                 wareHouseCode: formData?.whName,
-                customerReferenceId: formData?.customerName
+                customerReferenceId: formData?.customerName,
+                subCustomerName: formData?.subCustomerName
             };
             completeSaleOrder(obj);
         }
@@ -203,6 +208,7 @@ const AddSaleOrderComponent = () => {
                 open={openModal}
                 close={() => setOpenModal(false)}
                 customerReferenceId={formData.customerName}
+                subCustomerName={formData.subCustomerName}
                 whsCode={formData.whName}
                 deliveryDate={formData.deliveryDate}
             />
@@ -277,8 +283,9 @@ const AddSaleOrderComponent = () => {
                                         label: distributor
                                     }))
                                 }
-                                value={formData.distributor || null}
-                                onChange={(value) => handleChange("distributor", value)}
+                                value={formData.subCustomerName || null}
+                                // onChange={(value) => handleChange("distributor", value)}
+                                onChange={(value) => handleChange("subCustomerName", value)}
                                 disabled={formData.customerName == ""}
                             />
                         </Grid.Col>
@@ -318,6 +325,7 @@ const AddSaleOrderComponent = () => {
                         openListItemsModal={() => setOpenModal(true)}
                         customerReferenceId={formData.customerName}
                         whsCode={formData.whName}
+                        subCustomerName = {formData.subCustomerName}
                         DeliveryDate={formData.deliveryDate}
                         modalClose={openModal}
                         draftedData={fetchDraftedItemsData}

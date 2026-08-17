@@ -42,6 +42,7 @@ interface AddSaleOrderDraftedTableProps {
     openListItemsModal: () => void,
     whsCode: string,
     customerReferenceId: string,
+    subCustomerName: string,
     DeliveryDate: string,
     modalClose: boolean,
     draftedData: (data: any[]) => void;
@@ -51,6 +52,7 @@ const AddSaleOrderDraftedTable: FC<AddSaleOrderDraftedTableProps> = ({
     openListItemsModal,
     DeliveryDate,
     customerReferenceId,
+    subCustomerName,
     whsCode,
     modalClose,
     draftedData
@@ -251,7 +253,7 @@ const AddSaleOrderDraftedTable: FC<AddSaleOrderDraftedTableProps> = ({
                 skipRecords: pagination.pageIndex * pagination.pageSize
             };
 
-            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DRAFTED_SALES_ORDER_ITEMS}?whsCode=${whsCode}&customerReferenceId=${customerReferenceId}&DeliveryDate=${DeliveryDate}&lastCount=${pagination.pageSize}&skipRecords=${pagination.pageIndex * pagination.pageSize}`, authenticatedUser?.token);
+            const response = await apiGet(`/neu-connect/v2${process.env.NEXT_PUBLIC_LIST_ALL_DRAFTED_SALES_ORDER_ITEMS}?whsCode=${whsCode}&customerReferenceId=${customerReferenceId}&subCustomerName=${subCustomerName}&DeliveryDate=${DeliveryDate}&lastCount=${pagination.pageSize}&skipRecords=${pagination.pageIndex * pagination.pageSize}`, authenticatedUser?.token);
             console.log('Drafted SO Items List: ', response);
 
             console.log("Page:", pagination.pageIndex);

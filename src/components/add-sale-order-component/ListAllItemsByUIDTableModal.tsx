@@ -18,6 +18,7 @@ interface ListAllItemsByUidTableModalProps {
     open: boolean,
     close: () => void,
     customerReferenceId: string,
+    subCustomerName: string,
     whsCode: string,
     deliveryDate: string
 };
@@ -41,7 +42,7 @@ interface ListAllMasterItemsByUidProps {
     groupCode: string
 }
 
-const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ open, close, customerReferenceId, deliveryDate, whsCode }) => {
+const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ open, close, subCustomerName, customerReferenceId, deliveryDate, whsCode }) => {
 
     const [listAllItemsByUid, setlistAllItemsByUid] = useState<ListAllMasterItemsByUidProps[]>([]);
     const [listAllItemsByUidCount, setListAllItemsByUidCount] = useState<number>(0);
@@ -294,6 +295,7 @@ const ListAllItemsByUidTableModal: FC<ListAllItemsByUidTableModalProps> = ({ ope
         const utcDate = new Date(deliveryDate).toISOString();
 
         const obj = {
+            subCustomerName: subCustomerName,
             customerReferenceId: customerReferenceId,
             whsCode: whsCode,
             itemCode: targetRow?.itemCode,
