@@ -30,6 +30,7 @@ const InventoryComponent = () => {
 
     const [selectedItemCode, setSelectedItemCode] = useState<string | null>(null);
     const [inventoryData, setInventoryData] = useState<InventoryItem[]>([]);
+    console.log("🚀 ~ InventoryComponent ~ inventoryData:", inventoryData)
     const [inventoryDataCount, setInventoryDataCount] = useState(0);
 
     // Note: Dispatcher for all Actions
@@ -280,7 +281,7 @@ const InventoryComponent = () => {
                 }
             });
             console.log('Boxes by Item Code Response:', res);
-            const targetData = res?.data?.data?.data;
+            const targetData = res?.data?.data?.data || [];
             const count = res?.data?.data?.totalCount || 0;
             setInventoryData(targetData || []);
             setInventoryDataCount(count);

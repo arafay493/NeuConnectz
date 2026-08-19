@@ -31,6 +31,15 @@ export interface UserStateType {
     usersErrorState: string;
 };
 
+// Note: User reducer state types...!
+export interface InventoryStateType {
+    inventoryList: {
+        data: any,
+        totalCount: number,
+    };
+    ErrorState: string;
+};
+
 export interface UserListProps {
     userId: string,
     userName: string,

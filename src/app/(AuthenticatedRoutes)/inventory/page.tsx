@@ -1,7 +1,7 @@
 'use server';
 
 import React from "react";
-import InventoryComponent from "@/components/inventory-component/inventory-component";
+import InventoryComponent from "@/components/inventory-component/Component";
 
 const ProductionOrderScreen = () => {
     return (
