@@ -5,7 +5,6 @@ import { PaginationState } from '@tanstack/react-table';
 import { FC, memo, useEffect, useState } from 'react';
 import Columns from './Columns';
 import TanStackTable from '../tanStackTable/TanStackTable';
-import FilterSection from './FilterSection';
 import useDocumentDetails from './useDocumentDetails';
 import { fetchAllInventory } from '@/redux/actions/inventory-actions/inventory-actions';
 type ApiProp = {
